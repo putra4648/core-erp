@@ -1,0 +1,66 @@
+package id.putra.core_erp.warehouse.module.inbound.service.adapter.query.impl;
+
+import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import id.putra.core_erp.warehouse.module.inbound.converter.ReceivingConverter;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Receiving;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.ReceivingLine;
+import id.putra.core_erp.warehouse.module.inbound.model.repository.ReceivingLineRepository;
+import id.putra.core_erp.warehouse.module.inbound.model.repository.ReceivingRepository;
+import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.ReceivingQueryAdapter;
+import id.putra.core_erp.warehouse.shared.base.dto.response.attribute.MetaAttribute;
+import id.putra.core_erp.warehouse.shared.enums.ResponseEnum;
+import id.putra.core_erp.warehouse.shared.exceptions.ModuleException;
+import jakarta.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class ReceivingQueryAdapterImpl implements ReceivingQueryAdapter {
+
+    private final ReceivingRepository receivingRepository;
+    private final ReceivingLineRepository receivingLineRepository;
+
+    @Override
+    public ReceivingDto getById(@NonNull Long id, @NonNull Pageable pageable) {
+        Receiving receiving = receivingRepository.findById(id)
+                .orElseThrow(() -> new ModuleException(ResponseEnum.DATA_NOT_FOUND));
+
+        ReceivingDto dto = ReceivingConverter.toDto(receiving);
+        Page<ReceivingLine> linesPage = receivingLineRepository.findByReceivingId(id, pageable);
+
+        dto.setReceivingLines(linesPage.getContent().stream()
+                .map(ReceivingConverter::toLineDto)
+                .collect(java.util.stream.Collectors.toList()));
+
+        dto.setMeta(MetaAttribute.builder()
+                .page(linesPage.getNumber())
+                .size(linesPage.getSize())
+                .total(linesPage.getTotalElements())
+                .lastPage(linesPage.getTotalPages())
+                .build());
+
+        return dto;
+    }
+
+    @Override
+    public Page<ReceivingDto> getAll(String search, @NonNull Pageable pageable) {
+        Specification<Receiving> spec = (root, query, criteriaBuilder) -> {
+            if (search == null || search.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            Predicate code = criteriaBuilder.like(root.get("code"), "%" + search + "%");
+            Predicate poCode = criteriaBuilder.like(root.get("purchaseOrder").get("code"), "%" + search + "%");
+            return criteriaBuilder.or(code, poCode);
+        };
+        return receivingRepository.findAll(spec, pageable).map(ReceivingConverter::toDto);
+    }
+}
+

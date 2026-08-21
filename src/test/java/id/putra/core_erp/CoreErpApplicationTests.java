@@ -1,13 +1,17 @@
 package id.putra.core_erp;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.modulith.core.ApplicationModules;
+import org.springframework.modulith.docs.Documenter;
 
-@SpringBootTest
 class CoreErpApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void createApplicationModuleModel() {
+		ApplicationModules modules = ApplicationModules.of(CoreErpApplication.class);
+		modules.forEach(System.out::println);
+		modules.verify();
+		new Documenter(modules).writeDocumentation();
 	}
-
 }
+

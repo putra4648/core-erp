@@ -1,0 +1,41 @@
+package id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.impl;
+
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import id.putra.core_erp.warehouse.module.warehouse.converter.ContactPersonWarehouseConverter;
+import id.putra.core_erp.warehouse.module.warehouse.dto.ContactPersonWarehouseDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.repository.ContactPersonWarehouseRepository;
+import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.ContactPersonWarehouseCommandAdapter;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = false)
+public class ContactPersonWarehouseCommandAdapterImpl implements ContactPersonWarehouseCommandAdapter {
+
+    private final ContactPersonWarehouseRepository contactPersonWarehouseRepository;
+
+    @Override
+    public void add(List<ContactPersonWarehouseDto> dtos) {
+        var entities = dtos.stream().map(ContactPersonWarehouseConverter::toEntity).toList();
+        contactPersonWarehouseRepository.saveAll(Objects.requireNonNull(entities));
+    }
+
+    @Override
+    public void update(List<ContactPersonWarehouseDto> dtos) {
+        var entities = dtos.stream().map(ContactPersonWarehouseConverter::toEntity).toList();
+        contactPersonWarehouseRepository.saveAll(Objects.requireNonNull(entities));
+    }
+
+    @Override
+    public void delete(List<ContactPersonWarehouseDto> dtos) {
+        var ids = dtos.stream().map(d -> d.getId()).toList();
+        contactPersonWarehouseRepository.deleteAllById(Objects.requireNonNull(ids));
+    }
+
+}
+

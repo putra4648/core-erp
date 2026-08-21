@@ -1,0 +1,60 @@
+package id.putra.core_erp.warehouse.module.inbound.model.entity;
+
+import java.sql.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import id.putra.core_erp.warehouse.shared.enums.OrderStatus;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+
+@Entity
+@Table
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EntityListeners(AuditingEntityListener.class)
+public class Receiving {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Builder.Default
+    private String receivingNumber = UUID.randomUUID().toString();
+    private Date receivedDate;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "receiving", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReceivingLine> receivingLines;
+
+    @CreatedBy
+    private String receivedBy;
+
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "purchase_order_id")
+    private PurchaseOrder purchaseOrder;
+}
+

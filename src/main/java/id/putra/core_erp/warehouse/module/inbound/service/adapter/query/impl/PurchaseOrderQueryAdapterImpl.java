@@ -1,0 +1,76 @@
+package id.putra.core_erp.warehouse.module.inbound.service.adapter.query.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import id.putra.core_erp.warehouse.module.inbound.converter.PurchaseOrderConverter;
+import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrder;
+import id.putra.core_erp.warehouse.module.inbound.model.repository.PurchaseOrderLineRepository;
+import id.putra.core_erp.warehouse.module.inbound.model.repository.PurchaseOrderRepository;
+import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.PurchaseOrderQueryAdapter;
+import id.putra.core_erp.warehouse.shared.base.dto.response.attribute.MetaAttribute;
+import id.putra.core_erp.warehouse.shared.enums.ResponseEnum;
+import id.putra.core_erp.warehouse.shared.exceptions.ModuleException;
+import jakarta.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class PurchaseOrderQueryAdapterImpl implements PurchaseOrderQueryAdapter {
+
+    private final PurchaseOrderRepository purchaseOrderRepository;
+    private final PurchaseOrderLineRepository purchaseOrderLineRepository;
+
+    @Override
+    public PurchaseOrderDto getById(@NonNull Long id, @NonNull Pageable pageable) {
+
+        PurchaseOrder po = purchaseOrderRepository.findById(id)
+                .orElseThrow(() -> new ModuleException(ResponseEnum.DATA_NOT_FOUND));
+
+        PurchaseOrderDto dto = PurchaseOrderConverter.toDto(po);
+        Page<id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrderLine> linesPage = purchaseOrderLineRepository
+                .findByPurchaseOrderId(id, pageable);
+
+        dto.setPurchaseOrderLines(linesPage.getContent().stream()
+                .map(PurchaseOrderConverter::toLineDto)
+                .collect(java.util.stream.Collectors.toList()));
+
+        dto.setMeta(MetaAttribute.builder()
+                .page(linesPage.getNumber())
+                .size(linesPage.getSize())
+                .total(linesPage.getTotalElements())
+                .lastPage(linesPage.getTotalPages())
+                .build());
+
+        return dto;
+    }
+
+    @Override
+    public Page<PurchaseOrderDto> getAll(PurchaseOrderDto dto, @NonNull Pageable pageable) {
+        Specification<PurchaseOrder> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (dto != null) {
+                if (StringUtils.hasText(dto.getPoNumber())) {
+                    predicates.add(cb.like(root.get("poNumber"), "%" + dto.getPoNumber() + "%"));
+                }
+
+                if (dto.getStatus() != null) {
+                    predicates.add(cb.equal(root.get("status"), dto.getStatus()));
+                }
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return purchaseOrderRepository.findAll(spec, pageable).map(PurchaseOrderConverter::toDto);
+    }
+}
+

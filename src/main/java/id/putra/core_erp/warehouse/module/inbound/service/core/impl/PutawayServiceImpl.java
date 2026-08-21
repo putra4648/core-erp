@@ -1,0 +1,47 @@
+package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import id.putra.core_erp.warehouse.module.inbound.dto.PutawayDto;
+import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.PutawayCommandAdapter;
+import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.PutawayQueryAdapter;
+import id.putra.core_erp.warehouse.module.inbound.service.core.PutawayService;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class PutawayServiceImpl implements PutawayService {
+
+    private final PutawayCommandAdapter putawayCommandAdapter;
+    private final PutawayQueryAdapter putawayQueryAdapter;
+
+    @Override
+    public PutawayDto create(PutawayDto dto) {
+        return putawayCommandAdapter.add(dto);
+    }
+
+    @Override
+    public PutawayDto update(PutawayDto dto) {
+        return putawayCommandAdapter.update(dto);
+    }
+
+    @Override
+    public Boolean delete(Long id) {
+        PutawayDto dto = new PutawayDto();
+        dto.setId(id);
+        return putawayCommandAdapter.delete(dto);
+    }
+
+    @Override
+    public PutawayDto getById(Long id) {
+        return putawayQueryAdapter.getById(id);
+    }
+
+    @Override
+    public List<PutawayDto> getAll(PutawayDto filter) {
+        return putawayQueryAdapter.getAll(filter);
+    }
+}
+

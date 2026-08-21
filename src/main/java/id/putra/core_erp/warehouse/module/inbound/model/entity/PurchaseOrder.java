@@ -1,0 +1,58 @@
+package id.putra.core_erp.warehouse.module.inbound.model.entity;
+
+import java.sql.Date;
+import java.util.List;
+
+import id.putra.core_erp.shared.entity.Supplier;
+import id.putra.core_erp.warehouse.shared.enums.OrderStatus;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+
+@Entity
+@Table
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PurchaseOrder {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String poNumber;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    private Date orderDate;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PurchaseOrderLine> purchaseOrderLines;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "purchaseOrder")
+    private List<Receiving> receivings;
+
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+}
+
+

@@ -1,0 +1,41 @@
+package id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.impl;
+
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import id.putra.core_erp.warehouse.module.warehouse.converter.WarehouseConverter;
+import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.repository.WarehouseRepository;
+import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.WarehouseCommandAdapter;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = false)
+public class WarehouseCommandAdapterImpl implements WarehouseCommandAdapter {
+
+    private final WarehouseRepository warehouseRepository;
+
+    @Override
+    public void save(List<WarehouseDto> dtos) {
+        var entities = dtos.stream().map(d -> WarehouseConverter.toEntity(d)).toList();
+        warehouseRepository.saveAll(Objects.requireNonNull(entities));
+    }
+
+    @Override
+    public void update(List<WarehouseDto> dtos) {
+        var entities = dtos.stream().map(d -> WarehouseConverter.toEntity(d)).toList();
+        warehouseRepository.saveAll(Objects.requireNonNull(entities));
+    }
+
+    @Override
+    public void delete(List<WarehouseDto> dtos) {
+        var ids = dtos.stream().map(d -> d.getId()).toList();
+        warehouseRepository.deleteAllById(Objects.requireNonNull(ids));
+    }
+
+}
+

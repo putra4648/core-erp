@@ -1,0 +1,40 @@
+package id.putra.core_erp.warehouse.module.outbound.model.entity;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.ToString;
+
+@Entity
+@Table
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Packing {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String packageNumber;
+  @Column(precision = 12, scale = 2)
+  private BigDecimal weight;
+  private String dimension;
+
+  @ToString.Exclude
+  @OneToMany(mappedBy = "packing")
+  private List<Shipment> shipments;
+}
+
