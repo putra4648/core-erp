@@ -1,10 +1,9 @@
 package id.putra.core_erp.warehouse.module.warehouse.model.entity;
 
-import java.io.Serializable;
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inbound.model.entity.ReceivingLine;
 import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.ReceivingLine;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class Location extends BaseEntity implements Serializable {
+public class Location extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,5 +52,3 @@ public class Location extends BaseEntity implements Serializable {
     private List<ReceivingLine> receivingLines;
 
 }
-
-

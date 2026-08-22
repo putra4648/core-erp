@@ -13,8 +13,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,7 +28,6 @@ public class RFQ extends BaseModel {
     private String id;
 
     @Column(name = "due_date")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -64,4 +61,3 @@ public class RFQ extends BaseModel {
     private List<ApprovalDto> temApprovalDtos;
 
 }
-

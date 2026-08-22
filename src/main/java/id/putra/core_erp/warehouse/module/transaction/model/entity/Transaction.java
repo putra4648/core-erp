@@ -1,6 +1,5 @@
 package id.putra.core_erp.warehouse.module.transaction.model.entity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -33,7 +32,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class Transaction extends BaseEntity implements Serializable {
+public class Transaction extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -64,5 +63,3 @@ public class Transaction extends BaseEntity implements Serializable {
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<TransactionItem> items;
 }
-
-

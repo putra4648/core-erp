@@ -1,7 +1,5 @@
 package id.putra.core_erp.shared.entity;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class UnitOfMeasure extends BaseEntity implements Serializable {
+public class UnitOfMeasure extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

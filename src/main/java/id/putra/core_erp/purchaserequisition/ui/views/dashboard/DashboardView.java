@@ -14,7 +14,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.purchaserequisition.repository.ItemRepo;
@@ -152,5 +151,3 @@ public class DashboardView extends VerticalLayout {
         return section;
     }
 }
-
-

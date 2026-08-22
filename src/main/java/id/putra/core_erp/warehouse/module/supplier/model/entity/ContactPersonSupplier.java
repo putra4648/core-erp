@@ -1,7 +1,5 @@
 package id.putra.core_erp.warehouse.module.supplier.model.entity;
 
-import java.io.Serializable;
-
 import id.putra.core_erp.shared.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +21,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class ContactPersonSupplier extends BaseEntity implements Serializable {
+public class ContactPersonSupplier extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,5 +32,3 @@ public class ContactPersonSupplier extends BaseEntity implements Serializable {
     private Long quantity;
 
 }
-
-

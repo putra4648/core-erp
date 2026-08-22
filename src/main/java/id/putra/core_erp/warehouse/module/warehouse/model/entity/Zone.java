@@ -1,6 +1,5 @@
 package id.putra.core_erp.warehouse.module.warehouse.model.entity;
 
-import java.io.Serializable;
 import java.util.List;
 
 import id.putra.core_erp.shared.entity.BaseEntity;
@@ -30,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
 @ToString(exclude = { "warehouse", "racks" })
-public class Zone extends BaseEntity implements Serializable {
+public class Zone extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,5 +50,3 @@ public class Zone extends BaseEntity implements Serializable {
     private List<Rack> racks;
 
 }
-
-

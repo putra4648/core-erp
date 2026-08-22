@@ -1,8 +1,5 @@
 package id.putra.core_erp.shared.entity;
 
-import java.io.Serializable;
-
-import id.putra.core_erp.shared.entity.ContactPersonCustomer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class Customer extends BaseEntity implements Serializable {
+public class Customer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,4 +37,3 @@ public class Customer extends BaseEntity implements Serializable {
     @JoinColumn(name = "contact_person_id")
     private ContactPersonCustomer contactPerson;
 }
-

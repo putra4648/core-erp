@@ -7,3 +7,8 @@ services:
       - 'POSTGRES_USER=admin'
     ports:
       - 5432:5432
+    volumes:
+      - core_erp_db:/var/lib/postgresql
+
+volumes:
+  core_erp_db:

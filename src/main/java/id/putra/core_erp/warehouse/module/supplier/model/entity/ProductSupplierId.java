@@ -1,15 +1,13 @@
 package id.putra.core_erp.warehouse.module.supplier.model.entity;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Embeddable
 @Getter
@@ -18,11 +16,10 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
-public class ProductSupplierId implements Serializable {
+public class ProductSupplierId {
     @Column(name = "product_id")
     private Long productId;
 
     @Column(name = "supplier_id")
     private String supplierId;
 }
-

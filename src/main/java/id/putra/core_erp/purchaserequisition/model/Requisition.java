@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
 import id.putra.core_erp.purchaserequisition.dto.ApprovalDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,8 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,7 +43,6 @@ public class Requisition extends BaseModel {
     private BigInteger currency;
 
     @Column(name = "due_date")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date dueDate;
 
     @Column(name = "investment_id")
@@ -60,7 +58,6 @@ public class Requisition extends BaseModel {
     private String budgetDetailId;
 
     @Column(name = "budget_date")
-    @Temporal(TemporalType.DATE)
     private Date budgetDate;
 
     @Column(name = "current_approval_stage", columnDefinition = "integer default 0")
@@ -91,4 +88,3 @@ public class Requisition extends BaseModel {
     @OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequisitionDetail> details;
 }
-
