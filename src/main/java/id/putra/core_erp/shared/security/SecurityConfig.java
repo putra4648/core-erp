@@ -1,9 +1,8 @@
 package id.putra.core_erp.shared.security;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +14,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -32,7 +30,7 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.client.provider.auth0.issuer-uri}")
     private String issuer;
 
-    @Value("${spring.security.oauth2.client.registration.auth0.client-id:}")
+    @Value("${spring.security.oauth2.client.registration.auth0.client-id}")
     private String clientId;
 
     @Bean
@@ -70,55 +68,22 @@ public class SecurityConfig {
             authorities.forEach(authority -> {
                 mappedAuthorities.add(authority);
 
-                Map<String, Object> attributes = null;
+                // Ekstrak custom claim roles dari Auth0 OIDC Token
                 if (authority instanceof OidcUserAuthority oidcAuth) {
-                    attributes = oidcAuth.getAttributes();
-                } else if (authority instanceof OAuth2UserAuthority oauth2Auth) {
-                    attributes = oauth2Auth.getAttributes();
-                }
-
-                if (attributes != null) {
-                    extractRolesAndPermissions(attributes, mappedAuthorities);
+                    log.info("OidcAuth: {}", oidcAuth.getIdToken().getClaims());
+                    List<String> roles = oidcAuth.getIdToken()
+                            .getClaimAsStringList("https://putracoderz.my.id/erp/roles");
+                    if (roles != null) {
+                        for (String role : roles) {
+                            // Format menjadi standard Spring Security: ROLE_ADMIN, ROLE_USER
+                            mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+                        }
+                    }
                 }
             });
             log.info("Mapped authorities: {}", mappedAuthorities);
 
             return mappedAuthorities;
         };
-    }
-
-    private void extractRolesAndPermissions(Map<String, Object> attributes, Set<GrantedAuthority> mappedAuthorities) {
-        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-            String key = entry.getKey().toLowerCase();
-            if (key.endsWith("/roles") || key.equals("roles") || key.endsWith("/groups") || key.equals("groups")) {
-                Object value = entry.getValue();
-                if (value instanceof Collection<?> collection) {
-                    for (Object item : collection) {
-                        if (item != null) {
-                            String role = item.toString().trim().toUpperCase();
-                            if (!role.startsWith("ROLE_")) {
-                                role = "ROLE_" + role;
-                            }
-                            mappedAuthorities.add(new SimpleGrantedAuthority(role));
-                        }
-                    }
-                } else if (value instanceof String roleStr) {
-                    String role = roleStr.trim().toUpperCase();
-                    if (!role.startsWith("ROLE_")) {
-                        role = "ROLE_" + role;
-                    }
-                    mappedAuthorities.add(new SimpleGrantedAuthority(role));
-                }
-            } else if (key.endsWith("/permissions") || key.equals("permissions")) {
-                Object value = entry.getValue();
-                if (value instanceof Collection<?> collection) {
-                    for (Object item : collection) {
-                        if (item != null) {
-                            mappedAuthorities.add(new SimpleGrantedAuthority(item.toString().trim()));
-                        }
-                    }
-                }
-            }
-        }
     }
 }
