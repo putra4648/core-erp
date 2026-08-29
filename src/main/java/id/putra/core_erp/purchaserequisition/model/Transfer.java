@@ -15,8 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,7 +33,7 @@ public class Transfer extends BaseModel {
     private String title;
 
     @Column(name = "due_date")
-    @Temporal(TemporalType.TIMESTAMP)
+
     private Date dueDate;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -77,4 +75,3 @@ public class Transfer extends BaseModel {
     private ApprovalDto tempPurchaserApprovalDto;
 
 }
-

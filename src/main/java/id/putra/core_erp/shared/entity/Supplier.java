@@ -1,6 +1,5 @@
 package id.putra.core_erp.shared.entity;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class Supplier extends BaseEntity implements Serializable {
+public class Supplier extends BaseEntity {
 
     @Id
     @Column(name = "acc_no", nullable = false)

@@ -1,11 +1,10 @@
 package id.putra.core_erp.warehouse.module.transaction.model.entity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-import id.putra.core_erp.warehouse.module.inventory.model.entity.InventoryItem;
 import id.putra.core_erp.shared.entity.BaseEntity;
 import id.putra.core_erp.shared.entity.Product;
+import id.putra.core_erp.warehouse.module.inventory.model.entity.InventoryItem;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +28,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class TransactionItem extends BaseEntity implements Serializable {
+public class TransactionItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,5 +60,3 @@ public class TransactionItem extends BaseEntity implements Serializable {
     private String serialNumber;
     private String notes;
 }
-
-

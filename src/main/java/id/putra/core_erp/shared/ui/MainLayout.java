@@ -1,7 +1,5 @@
 package id.putra.core_erp.shared.ui;
 
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -21,18 +19,19 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.dom.ThemeList;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.spring.security.AuthenticationContext;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-@AnonymousAllowed
+import id.putra.core_erp.shared.security.SecurityService;
+import jakarta.annotation.security.PermitAll;
+
+@PermitAll
 public class MainLayout extends AppLayout {
 
-    private final AuthenticationContext authContext;
+    private final SecurityService securityService;
 
-    public MainLayout(AuthenticationContext authContext) {
-        this.authContext = authContext;
+    public MainLayout(SecurityService securityService) {
+        this.securityService = securityService;
         setPrimarySection(Section.DRAWER);
         createHeader();
         createDrawer();
@@ -59,11 +58,14 @@ public class MainLayout extends AppLayout {
         themeToggle.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         themeToggle.setAriaLabel("Toggle dark mode");
 
-        String username = authContext.getAuthenticatedUser(DefaultOidcUser.class)
-                .map(DefaultOidcUser::getName)
-                .orElse("User");
+        var userOpt = securityService.getAuthenticatedUser();
+        String username = userOpt.map(SecurityService.AuthenticatedUser::name).orElse("User");
+        String pictureUrl = userOpt.map(SecurityService.AuthenticatedUser::pictureUrl).orElse("");
 
         Avatar avatar = new Avatar(username);
+        if (pictureUrl != null && !pictureUrl.isBlank()) {
+            avatar.setImage(pictureUrl);
+        }
         avatar.addClassNames(LumoUtility.Margin.Right.SMALL);
 
         MenuBar userMenu = new MenuBar();
@@ -71,7 +73,7 @@ public class MainLayout extends AppLayout {
         MenuItem userMenuItem = userMenu.addItem(avatar);
         SubMenu subMenu = userMenuItem.getSubMenu();
         subMenu.addItem("Settings", e -> UI.getCurrent().navigate("settings"));
-        subMenu.addItem("Logout", e -> authContext.logout());
+        subMenu.addItem("Logout", e -> securityService.logout());
 
         HorizontalLayout header = new HorizontalLayout(toggle, title, themeToggle, userMenu);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);

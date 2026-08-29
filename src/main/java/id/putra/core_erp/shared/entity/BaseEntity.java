@@ -1,6 +1,5 @@
 package id.putra.core_erp.shared.entity;
 
-import java.io.Serializable;
 import java.time.LocalTime;
 
 import org.springframework.data.annotation.CreatedBy;
@@ -25,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class BaseEntity implements Serializable {
+public class BaseEntity {
 
     @CreatedDate
     @Column(name = "created_at")

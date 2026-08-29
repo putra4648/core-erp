@@ -1,6 +1,5 @@
 package id.putra.core_erp.warehouse.module.inventory.model.entity;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 import id.putra.core_erp.shared.entity.BaseEntity;
@@ -28,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class InventoryItem extends BaseEntity implements Serializable {
+public class InventoryItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,5 +46,3 @@ public class InventoryItem extends BaseEntity implements Serializable {
     private Product product;
 
 }
-
-
