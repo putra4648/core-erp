@@ -19,18 +19,26 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
 import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingLineDto;
 import id.putra.core_erp.warehouse.module.inbound.service.core.ReceivingOrderService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "inbound/receiving", layout = MainLayout.class)
 @PageTitle("Receiving | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({
+        ReceivingDto.class,
+        ReceivingLineDto.class,
+        PurchaseOrderDto.class
+})
 public class ReceivingView extends VerticalLayout {
 
     private final ReceivingOrderService receivingOrderService;
-    private final Grid<ReceivingDto> grid = new Grid<>(ReceivingDto.class, false);
+    private final Grid<ReceivingDto> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public ReceivingView(ReceivingOrderService receivingOrderService) {

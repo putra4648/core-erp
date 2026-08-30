@@ -1,5 +1,11 @@
 package id.putra.core_erp.warehouse.ui.views.master;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.data.domain.PageRequest;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -20,23 +26,21 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.supplier.dto.ContactPersonSupplierDto;
 import id.putra.core_erp.warehouse.module.supplier.dto.SupplierDto;
 import id.putra.core_erp.warehouse.module.supplier.service.core.SupplierService;
-import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Route(value = "master/suppliers", layout = MainLayout.class)
 @PageTitle("Suppliers | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({ SupplierDto.class, ContactPersonSupplierDto.class })
 public class SupplierView extends VerticalLayout {
 
     private final SupplierService supplierService;
-    private final Grid<SupplierDto> grid = new Grid<>(SupplierDto.class, false);
+    private final Grid<SupplierDto> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public SupplierView(SupplierService supplierService) {
@@ -225,6 +229,3 @@ public class SupplierView extends VerticalLayout {
         confirmDialog.open();
     }
 }
-
-
-

@@ -65,7 +65,7 @@ public class ReportsView extends VerticalLayout {
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         });
         generateBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        
+
         DownloadHandler downloadHandler = DownloadHandler.fromInputStream((event) -> {
             String csvContent = "Report Type,Start Date,End Date,Generated At\n" +
                     "\"" + reportType.getValue() + "\",\"" + startDate.getValue() + "\",\"" + endDate.getValue()
@@ -91,6 +91,3 @@ public class ReportsView extends VerticalLayout {
         add(container);
     }
 }
-
-
-

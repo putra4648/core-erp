@@ -35,6 +35,10 @@ public class CoreErpApplication implements AppShellConfigurator {
 					com.google.zxing.qrcode.QRCodeWriter.class,
 					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
 					MemberCategory.INVOKE_PUBLIC_METHODS);
+
+			hints.reflection().registerType(java.util.UUID[].class,
+					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+					MemberCategory.INVOKE_PUBLIC_METHODS);
 		}
 	}
 

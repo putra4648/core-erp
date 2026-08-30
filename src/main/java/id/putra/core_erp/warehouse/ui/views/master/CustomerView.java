@@ -2,6 +2,7 @@ package id.putra.core_erp.warehouse.ui.views.master;
 
 import java.util.List;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.data.domain.PageRequest;
 
 import com.vaadin.flow.component.button.Button;
@@ -25,19 +26,20 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.customer.dto.ContactPersonCustomerDto;
 import id.putra.core_erp.warehouse.module.customer.dto.CustomerDto;
 import id.putra.core_erp.warehouse.module.customer.service.core.CustomerService;
-import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/customer", layout = MainLayout.class)
 @PageTitle("Customers | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({ CustomerDto.class, ContactPersonCustomerDto.class })
 public class CustomerView extends VerticalLayout {
 
     private final CustomerService customerService;
-    private final Grid<CustomerDto> grid = new Grid<>(CustomerDto.class, false);
+    private final Grid<CustomerDto> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public CustomerView(CustomerService customerService) {
@@ -68,7 +70,8 @@ public class CustomerView extends VerticalLayout {
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("Add Customer", VaadinIcon.PLUS.create(), e -> openCustomerDialog(CustomerDto.builder().build() ));
+        Button addButton = new Button("Add Customer", VaadinIcon.PLUS.create(),
+                e -> openCustomerDialog(CustomerDto.builder().build()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -81,8 +84,10 @@ public class CustomerView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(c -> c.getCode() != null ? c.getCode() : "").setHeader("Customer Code").setAutoWidth(true).setSortable(true);
-        grid.addColumn(c -> c.getName() != null ? c.getName() : "").setHeader("Customer Name").setFlexGrow(1).setSortable(true);
+        grid.addColumn(c -> c.getCode() != null ? c.getCode() : "").setHeader("Customer Code").setAutoWidth(true)
+                .setSortable(true);
+        grid.addColumn(c -> c.getName() != null ? c.getName() : "").setHeader("Customer Name").setFlexGrow(1)
+                .setSortable(true);
         grid.addColumn(c -> c.getContactPerson() != null ? c.getContactPerson().getName() : "-")
                 .setHeader("Contact Person").setFlexGrow(1);
         grid.addColumn(c -> c.getContactPerson() != null ? c.getContactPerson().getEmail() : "-")
@@ -140,12 +145,17 @@ public class CustomerView extends VerticalLayout {
         nameField.setValue(customer.getName() != null ? customer.getName() : "");
         activeCheck.setValue(customer.getIsActive() != null ? customer.getIsActive() : true);
 
-        cpNameField.setValue(customer.getContactPerson().getName() != null ? customer.getContactPerson().getName() : "");
-        cpEmailField.setValue(customer.getContactPerson().getEmail() != null ? customer.getContactPerson().getEmail() : "");
-        cpPhoneField.setValue(customer.getContactPerson().getPhone() != null ? customer.getContactPerson().getPhone() : "");
-        cpAddressField.setValue(customer.getContactPerson().getAddress() != null ? customer.getContactPerson().getAddress() : "");
+        cpNameField
+                .setValue(customer.getContactPerson().getName() != null ? customer.getContactPerson().getName() : "");
+        cpEmailField
+                .setValue(customer.getContactPerson().getEmail() != null ? customer.getContactPerson().getEmail() : "");
+        cpPhoneField
+                .setValue(customer.getContactPerson().getPhone() != null ? customer.getContactPerson().getPhone() : "");
+        cpAddressField.setValue(
+                customer.getContactPerson().getAddress() != null ? customer.getContactPerson().getAddress() : "");
 
-        FormLayout formLayout = new FormLayout(codeField, nameField, activeCheck, cpNameField, cpEmailField, cpPhoneField, cpAddressField);
+        FormLayout formLayout = new FormLayout(codeField, nameField, activeCheck, cpNameField, cpEmailField,
+                cpPhoneField, cpAddressField);
         dialog.add(formLayout);
 
         Button saveBtn = new Button("Save", e -> {
@@ -168,7 +178,8 @@ public class CustomerView extends VerticalLayout {
                     dialog.close();
                     refreshData();
                 } catch (Exception ex) {
-                    Notification.show("Failed to save customer: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                    Notification
+                            .show("Failed to save customer: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
                             .addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
             }
@@ -205,6 +216,3 @@ public class CustomerView extends VerticalLayout {
         confirmDialog.open();
     }
 }
-
-
-

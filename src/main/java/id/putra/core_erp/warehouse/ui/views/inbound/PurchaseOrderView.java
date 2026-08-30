@@ -19,18 +19,26 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.warehouse.module.inbound.dto.ItemDto;
 import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
+import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderLineDto;
 import id.putra.core_erp.warehouse.module.inbound.service.core.PurchaseOrderService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "inbound/purchase-order", layout = MainLayout.class)
 @PageTitle("Purchase Orders | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({
+        PurchaseOrderDto.class,
+        PurchaseOrderLineDto.class,
+        ItemDto.class
+})
 public class PurchaseOrderView extends VerticalLayout {
 
     private final PurchaseOrderService purchaseOrderService;
-    private final Grid<PurchaseOrderDto> grid = new Grid<>(PurchaseOrderDto.class, false);
+    private final Grid<PurchaseOrderDto> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public PurchaseOrderView(PurchaseOrderService purchaseOrderService) {

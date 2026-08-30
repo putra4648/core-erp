@@ -24,8 +24,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.shared.security.SecurityService;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @PermitAll
+@RegisterReflectionForBinding({ SecurityService.AuthenticatedUser.class })
 public class MainLayout extends AppLayout {
 
     private final SecurityService securityService;
