@@ -123,9 +123,15 @@ public class ProductView extends VerticalLayout {
         TextField nameField = new TextField("Product Name");
         TextArea descField = new TextArea("Description");
 
-        IntegerField qtyField = new IntegerField("Quantity");
-        IntegerField minStockField = new IntegerField("Min Stock");
-        IntegerField maxStockField = new IntegerField("Max Stock");
+        IntegerField qtyField = new IntegerField("Quantity", 1, (value) -> {
+
+        });
+        IntegerField minStockField = new IntegerField("Min Stock", 1, (value) -> {
+
+        });
+        IntegerField maxStockField = new IntegerField("Max Stock", 1, (value) -> {
+
+        });
         Checkbox activeCheck = new Checkbox("Is Active");
 
         binder.forField(skuField).asRequired("SKU is required").bind(ProductDto::getSku, ProductDto::setSku);

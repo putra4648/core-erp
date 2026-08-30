@@ -1,4 +1,4 @@
-package id.putra.core_erp.warehouse.ui.views.reports;
+package id.putra.core_erp.shared.ui;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +22,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.DownloadResponse;
 
-import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "reports", layout = MainLayout.class)
