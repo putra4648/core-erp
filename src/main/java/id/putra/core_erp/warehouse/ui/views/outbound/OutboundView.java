@@ -1,5 +1,6 @@
 package id.putra.core_erp.warehouse.ui.views.outbound;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.data.domain.PageRequest;
 
 import com.vaadin.flow.component.button.Button;
@@ -19,18 +20,21 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
 import id.putra.core_erp.warehouse.module.outbound.service.core.SalesOrderService;
-import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "outbound", layout = MainLayout.class)
 @PageTitle("Outbound | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({
+        SalesOrderDto.class
+})
 public class OutboundView extends VerticalLayout {
 
     private final SalesOrderService salesOrderService;
-    private final Grid<SalesOrderDto> grid = new Grid<>(SalesOrderDto.class, false);
+    private final Grid<SalesOrderDto> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public OutboundView(SalesOrderService salesOrderService) {
@@ -61,7 +65,8 @@ public class OutboundView extends VerticalLayout {
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("New Outbound Order", VaadinIcon.PLUS.create(), e -> openOrderDialog(new SalesOrderDto()));
+        Button addButton = new Button("New Outbound Order", VaadinIcon.PLUS.create(),
+                e -> openOrderDialog(new SalesOrderDto()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -74,9 +79,12 @@ public class OutboundView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(so -> so.getSoNumber() != null ? so.getSoNumber() : "").setHeader("SO Number").setAutoWidth(true).setSortable(true);
-        grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date").setAutoWidth(true);
-        grid.addColumn(so -> so.getCustomerId() != null ? "Customer #" + so.getCustomerId() : "-").setHeader("Customer").setFlexGrow(1);
+        grid.addColumn(so -> so.getSoNumber() != null ? so.getSoNumber() : "").setHeader("SO Number").setAutoWidth(true)
+                .setSortable(true);
+        grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date")
+                .setAutoWidth(true);
+        grid.addColumn(so -> so.getCustomerId() != null ? "Customer #" + so.getCustomerId() : "-").setHeader("Customer")
+                .setFlexGrow(1);
 
         grid.addComponentColumn(so -> {
             String status = so.getStatus() != null ? so.getStatus() : "PENDING";
@@ -156,6 +164,3 @@ public class OutboundView extends VerticalLayout {
         confirmDialog.open();
     }
 }
-
-
-

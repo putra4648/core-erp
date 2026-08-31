@@ -2,6 +2,7 @@ package id.putra.core_erp.warehouse.ui.views.master;
 
 import java.util.List;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.data.domain.PageRequest;
 
 import com.vaadin.flow.component.button.Button;
@@ -23,18 +24,19 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inventory.dto.CategoryDto;
 import id.putra.core_erp.warehouse.module.inventory.service.core.CategoryCoreService;
-import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/categories", layout = MainLayout.class)
 @PageTitle("Categories | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({ CategoryDto.class })
 public class CategoryView extends VerticalLayout {
 
     private final CategoryCoreService categoryCoreService;
-    private final Grid<CategoryDto> grid = new Grid<>(CategoryDto.class, false);
+    private final Grid<CategoryDto> grid = new Grid<>(CategoryDto.class);
     private final TextField searchField = new TextField();
 
     public CategoryView(CategoryCoreService categoryCoreService) {
@@ -65,7 +67,8 @@ public class CategoryView extends VerticalLayout {
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("Add Category", VaadinIcon.PLUS.create(), e -> openCategoryDialog(new CategoryDto()));
+        Button addButton = new Button("Add Category", VaadinIcon.PLUS.create(),
+                e -> openCategoryDialog(new CategoryDto()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -80,8 +83,10 @@ public class CategoryView extends VerticalLayout {
     private void configureGrid() {
         grid.setSizeFull();
         grid.addColumn(c -> c.getId() != null ? c.getId().toString() : "").setHeader("ID").setAutoWidth(true);
-        grid.addColumn(c -> c.getName() != null ? c.getName() : "").setHeader("Category Name").setSortable(true).setFlexGrow(1);
-        grid.addColumn(c -> c.getDescription() != null ? c.getDescription() : "").setHeader("Description").setFlexGrow(2);
+        grid.addColumn(c -> c.getName() != null ? c.getName() : "").setHeader("Category Name").setSortable(true)
+                .setFlexGrow(1);
+        grid.addColumn(c -> c.getDescription() != null ? c.getDescription() : "").setHeader("Description")
+                .setFlexGrow(2);
 
         grid.addComponentColumn(category -> {
             Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openCategoryDialog(category));
@@ -132,7 +137,8 @@ public class CategoryView extends VerticalLayout {
                     dialog.close();
                     refreshData();
                 } catch (Exception ex) {
-                    Notification.show("Failed to save category: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                    Notification
+                            .show("Failed to save category: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
                             .addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
             }
@@ -169,6 +175,3 @@ public class CategoryView extends VerticalLayout {
         confirmDialog.open();
     }
 }
-
-
-

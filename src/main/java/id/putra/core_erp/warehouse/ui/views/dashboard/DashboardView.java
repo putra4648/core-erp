@@ -18,6 +18,7 @@ import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.WarehouseCoreService;
 import id.putra.core_erp.warehouse.shared.base.dto.ProductDto;
 import id.putra.core_erp.shared.ui.MainLayout;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
@@ -25,6 +26,11 @@ import java.util.List;
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Dashboard | WMS Pro")
 @AnonymousAllowed
+@RegisterReflectionForBinding({
+        DashboardView.ActivityItem.class,
+        ProductDto.class,
+        WarehouseDto.class
+})
 public class DashboardView extends VerticalLayout {
 
     private final ProductCoreService productService;
@@ -101,7 +107,7 @@ public class DashboardView extends VerticalLayout {
         H3 header = new H3("Recent Operational Activity");
         header.addClassNames("mt-l", "mb-s", "text-l", "font-semibold");
 
-        Grid<ActivityItem> activityGrid = new Grid<>(ActivityItem.class, false);
+        Grid<ActivityItem> activityGrid = new Grid<>();
         activityGrid.setWidthFull();
         activityGrid.setAllRowsVisible(true);
 
@@ -144,7 +150,7 @@ public class DashboardView extends VerticalLayout {
         add(section);
     }
 
-    private record ActivityItem(String type, String title, String time, int quantity) {
+    public static record ActivityItem(String type, String title, String time, int quantity) {
     }
 }
 

@@ -24,16 +24,19 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.warehouse.module.inventory.dto.InventoryItemDto;
 import id.putra.core_erp.warehouse.module.inventory.service.core.InventoryItemCoreService;
+import id.putra.core_erp.warehouse.shared.base.dto.ProductDto;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "inventory", layout = MainLayout.class)
 @PageTitle("Inventory | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({ InventoryItemDto.class, ProductDto.class })
 public class InventoryView extends VerticalLayout {
 
     private final InventoryItemCoreService inventoryService;
-    private final Grid<InventoryItemDto> grid = new Grid<>(InventoryItemDto.class, false);
+    private final Grid<InventoryItemDto> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public InventoryView(InventoryItemCoreService inventoryService) {

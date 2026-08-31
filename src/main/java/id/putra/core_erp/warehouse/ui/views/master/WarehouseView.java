@@ -2,6 +2,7 @@ package id.putra.core_erp.warehouse.ui.views.master;
 
 import java.util.List;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.data.domain.PageRequest;
 
 import com.vaadin.flow.component.button.Button;
@@ -25,6 +26,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.warehouse.dto.LocationDto;
 import id.putra.core_erp.warehouse.module.warehouse.dto.RackDto;
 import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
@@ -33,12 +35,17 @@ import id.putra.core_erp.warehouse.module.warehouse.service.core.LocationCoreSer
 import id.putra.core_erp.warehouse.module.warehouse.service.core.RackCoreService;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.WarehouseCoreService;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.ZoneCoreService;
-import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/warehouses", layout = MainLayout.class)
 @PageTitle("Warehouses | WMS Pro")
 @PermitAll
+@RegisterReflectionForBinding({
+        WarehouseDto.class,
+        ZoneDto.class,
+        RackDto.class,
+        LocationDto.class
+})
 public class WarehouseView extends VerticalLayout {
 
     private final WarehouseCoreService warehouseService;
@@ -54,7 +61,7 @@ public class WarehouseView extends VerticalLayout {
     private final Tab tabLocations = new Tab("Locations");
 
     public WarehouseView(WarehouseCoreService warehouseService, ZoneCoreService zoneService,
-                         RackCoreService rackService, LocationCoreService locationService) {
+            RackCoreService rackService, LocationCoreService locationService) {
         this.warehouseService = warehouseService;
         this.zoneService = zoneService;
         this.rackService = rackService;
@@ -66,7 +73,7 @@ public class WarehouseView extends VerticalLayout {
 
         addHeader();
         configureTabs();
-        
+
         contentArea.setSizeFull();
         contentArea.setPadding(false);
         add(tabs, contentArea);
@@ -101,7 +108,7 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Warehouses Panel ---
     private void showWarehousesPanel() {
-        Grid<WarehouseDto> grid = new Grid<>(WarehouseDto.class, false);
+        Grid<WarehouseDto> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search warehouses...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
@@ -114,7 +121,8 @@ public class WarehouseView extends VerticalLayout {
         };
         search.addValueChangeListener(e -> refresh.run());
 
-        Button addBtn = new Button("Add Warehouse", VaadinIcon.PLUS.create(), e -> openWarehouseDialog(WarehouseDto.builder().build(), refresh));
+        Button addBtn = new Button("Add Warehouse", VaadinIcon.PLUS.create(),
+                e -> openWarehouseDialog(WarehouseDto.builder().build(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -124,7 +132,8 @@ public class WarehouseView extends VerticalLayout {
         grid.setSizeFull();
         grid.addColumn(w -> w.getId() != null ? w.getId().toString() : "").setHeader("ID").setAutoWidth(true);
         grid.addColumn(w -> w.getName() != null ? w.getName() : "").setHeader("Warehouse Name").setFlexGrow(1);
-        grid.addColumn(w -> w.getLocation() != null ? w.getLocation() : "").setHeader("Location/Address").setFlexGrow(1);
+        grid.addColumn(w -> w.getLocation() != null ? w.getLocation() : "").setHeader("Location/Address")
+                .setFlexGrow(1);
         grid.addColumn(w -> w.getArea() != null ? w.getArea() + " m²" : "-").setHeader("Area").setAutoWidth(true);
 
         grid.addComponentColumn(wh -> {
@@ -140,10 +149,12 @@ public class WarehouseView extends VerticalLayout {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 try {
                     warehouseService.delete(List.of(wh));
-                    Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     refresh.run();
                 } catch (Exception ex) {
-                    Notification.show("Delete failed: " + ex.getMessage(), 4000, Notification.Position.TOP_END).addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    Notification.show("Delete failed: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
             });
             delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
@@ -185,11 +196,13 @@ public class WarehouseView extends VerticalLayout {
                 } else {
                     warehouseService.save(List.of(dto));
                 }
-                Notification.show("Warehouse saved", 3000, Notification.Position.TOP_END).addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                Notification.show("Warehouse saved", 3000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();
                 onSave.run();
             } catch (Exception ex) {
-                Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END).addThemeVariants(NotificationVariant.LUMO_ERROR);
+                Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -199,7 +212,7 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Zones Panel ---
     private void showZonesPanel() {
-        Grid<ZoneDto> grid = new Grid<>(ZoneDto.class, false);
+        Grid<ZoneDto> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search zones...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
@@ -211,7 +224,8 @@ public class WarehouseView extends VerticalLayout {
         };
         search.addValueChangeListener(e -> refresh.run());
 
-        Button addBtn = new Button("Add Zone", VaadinIcon.PLUS.create(), e -> openZoneDialog(ZoneDto.builder().build(), refresh));
+        Button addBtn = new Button("Add Zone", VaadinIcon.PLUS.create(),
+                e -> openZoneDialog(ZoneDto.builder().build(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -244,7 +258,8 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(code, name, type));
 
         Button save = new Button("Save", e -> {
-            ZoneDto dto = zone.toBuilder().code(code.getValue()).name(name.getValue()).type(type.getValue()).isActive(true).build();
+            ZoneDto dto = zone.toBuilder().code(code.getValue()).name(name.getValue()).type(type.getValue())
+                    .isActive(true).build();
             zoneService.add(List.of(dto));
             dialog.close();
             onSave.run();
@@ -256,7 +271,7 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Racks Panel ---
     private void showRacksPanel() {
-        Grid<RackDto> grid = new Grid<>(RackDto.class, false);
+        Grid<RackDto> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search racks...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
@@ -268,7 +283,8 @@ public class WarehouseView extends VerticalLayout {
         };
         search.addValueChangeListener(e -> refresh.run());
 
-        Button addBtn = new Button("Add Rack", VaadinIcon.PLUS.create(), e -> openRackDialog(RackDto.builder().build(), refresh));
+        Button addBtn = new Button("Add Rack", VaadinIcon.PLUS.create(),
+                e -> openRackDialog(RackDto.builder().build(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -307,7 +323,7 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Locations Panel ---
     private void showLocationsPanel() {
-        Grid<LocationDto> grid = new Grid<>(LocationDto.class, false);
+        Grid<LocationDto> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search locations / bin numbers...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
@@ -319,7 +335,8 @@ public class WarehouseView extends VerticalLayout {
         };
         search.addValueChangeListener(e -> refresh.run());
 
-        Button addBtn = new Button("Add Location", VaadinIcon.PLUS.create(), e -> openLocationDialog(LocationDto.builder().build(), refresh));
+        Button addBtn = new Button("Add Location", VaadinIcon.PLUS.create(),
+                e -> openLocationDialog(LocationDto.builder().build(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -328,7 +345,8 @@ public class WarehouseView extends VerticalLayout {
 
         grid.setSizeFull();
         grid.addColumn(l -> l.getName() != null ? l.getName() : "").setHeader("Location Name").setFlexGrow(1);
-        grid.addColumn(l -> l.getBinNumber() != null ? l.getBinNumber() : "").setHeader("Bin Number").setAutoWidth(true);
+        grid.addColumn(l -> l.getBinNumber() != null ? l.getBinNumber() : "").setHeader("Bin Number")
+                .setAutoWidth(true);
         grid.addColumn(l -> l.getType() != null ? l.getType() : "").setHeader("Type").setAutoWidth(true);
 
         contentArea.add(toolbar, grid);
@@ -343,7 +361,8 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(name, bin, type));
 
         Button save = new Button("Save", e -> {
-            LocationDto dto = LocationDto.builder().name(name.getValue()).binNumber(bin.getValue()).type(type.getValue()).isActive(true).build();
+            LocationDto dto = LocationDto.builder().name(name.getValue()).binNumber(bin.getValue())
+                    .type(type.getValue()).isActive(true).build();
             locationService.add(List.of(dto));
             dialog.close();
             onSave.run();
@@ -353,6 +372,3 @@ public class WarehouseView extends VerticalLayout {
         dialog.open();
     }
 }
-
-
-

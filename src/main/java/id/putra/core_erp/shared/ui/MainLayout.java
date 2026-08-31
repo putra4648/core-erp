@@ -1,5 +1,7 @@
 package id.putra.core_erp.shared.ui;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -26,6 +28,7 @@ import id.putra.core_erp.shared.security.SecurityService;
 import jakarta.annotation.security.PermitAll;
 
 @PermitAll
+@RegisterReflectionForBinding({ SecurityService.AuthenticatedUser.class })
 public class MainLayout extends AppLayout {
 
     private final SecurityService securityService;
@@ -105,8 +108,8 @@ public class MainLayout extends AppLayout {
         prNav.setLabel("PURCHASE REQUISITION");
         prNav.addItem(new SideNavItem("Requisitions", "requisitions", VaadinIcon.CLIPBOARD_CHECK.create()));
         prNav.addItem(new SideNavItem("Request for Quotation", "rfq", VaadinIcon.MONEY.create()));
-        prNav.addItem(new SideNavItem("Budget Planning", "budgets", VaadinIcon.CHART_LINE.create()));
-        prNav.addItem(new SideNavItem("Transfer Requests", "transfers", VaadinIcon.EXCHANGE.create()));
+        // prNav.addItem(new SideNavItem("Transfer Requests", "transfers",
+        // VaadinIcon.EXCHANGE.create()));
         prNav.setWidthFull();
 
         SideNav masterNav = new SideNav();
@@ -116,19 +119,27 @@ public class MainLayout extends AppLayout {
         masterNav.addItem(new SideNavItem("Suppliers", "master/suppliers", VaadinIcon.TRUCK.create()));
         masterNav.addItem(new SideNavItem("Customers", "master/customer", VaadinIcon.USERS.create()));
         masterNav.addItem(new SideNavItem("Warehouses", "master/warehouses", VaadinIcon.BUILDING.create()));
-        masterNav.addItem(new SideNavItem("PR Items", "items", VaadinIcon.LIST.create()));
-        masterNav.addItem(new SideNavItem("Companies", "company", VaadinIcon.OFFICE.create()));
+        masterNav.addItem(new SideNavItem("Budget Planning", "budgets", VaadinIcon.CHART_LINE.create()));
+        // TODO: add PR Items
+        // masterNav.addItem(new SideNavItem("PR Items", "items",
+        // VaadinIcon.LIST.create()));
+        // TODO: add Companies
+        // masterNav.addItem(new SideNavItem("Companies", "company",
+        // VaadinIcon.OFFICE.create()));
         masterNav.setWidthFull();
 
         SideNav reportsNav = new SideNav();
         reportsNav.setLabel("REPORTS & ANALYTICS");
         reportsNav.addItem(new SideNavItem("WMS Reports", "reports", VaadinIcon.PIE_CHART.create()));
-        reportsNav.addItem(new SideNavItem("PR Dashboard", "pr/dashboard", VaadinIcon.CHART.create()));
+        // TODO: add PR Dashboard
+        // reportsNav.addItem(new SideNavItem("PR Dashboard", "pr/dashboard",
+        // VaadinIcon.CHART.create()));
         reportsNav.setWidthFull();
 
         SideNav adminNav = new SideNav();
         adminNav.setLabel("ADMINISTRATION");
-        adminNav.addItem(new SideNavItem("User Management", "users", VaadinIcon.USER_CHECK.create()));
+        // adminNav.addItem(new SideNavItem("User Management", "users",
+        // VaadinIcon.USER_CHECK.create()));
         adminNav.addItem(new SideNavItem("System Settings", "settings", VaadinIcon.COG.create()));
         adminNav.addItem(new SideNavItem("Help & Support", "help", VaadinIcon.QUESTION_CIRCLE.create()));
         adminNav.setWidthFull();
@@ -136,6 +147,7 @@ public class MainLayout extends AppLayout {
         VerticalLayout navContainer = new VerticalLayout(mainNav, warehouseNav, prNav, masterNav, reportsNav, adminNav);
         navContainer.setPadding(true);
         navContainer.setSpacing(true);
+        navContainer.setWidthFull();
 
         Scroller scroller = new Scroller(navContainer);
         scroller.addClassNames(LumoUtility.Padding.SMALL);
