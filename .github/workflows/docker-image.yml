@@ -1,0 +1,110 @@
+name: Spring Boot Native CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ----------------------------------------------------
+  # 1. BUILD & TEST (Native Image Compilation)
+  # ----------------------------------------------------
+  build-native:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup GraalVM JDK
+      uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '25'           # Adjust with your Java version
+        distribution: 'graalvm'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        native-image-musl: false
+
+    - name: Cache Maven Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    - name: Build Native Executable & Run Tests
+      # Untuk Gradle, gunakan: ./gradlew nativeCompile
+      run: ./mvnw -Pnative -Pproduction native:compile
+
+    - name: Upload Native Binary Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: native-binary
+        path: target/*.exec # Sesuaikan dengan lokasi output binary (misal: target/app)
+
+  # ----------------------------------------------------
+  # 2. PACKAGE & PUSH DOCKER IMAGE
+  # ----------------------------------------------------
+  docker-build:
+    needs: build-native
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download Native Binary
+      uses: actions/download-artifact@v4
+      with:
+        name: native-binary
+        path: target/
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  # ----------------------------------------------------
+  # 3. DEPLOYMENT (Contoh ke Server via SSH)
+  # ----------------------------------------------------
+  # deploy:
+  #   needs: docker-build
+  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Deploy to Server via SSH
+  #     uses: appleboy/ssh-action@v1.0.3
+  #     with:
+  #       host: ${{ secrets.SERVER_HOST }}
+  #       username: ${{ secrets.SERVER_USER }}
+  #       key: ${{ secrets.SERVER_SSH_KEY }}
+  #       script: |
+  #         docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+  #         docker stop core-erp-app || true
+  #         docker rm core-erp-app || true
+  #         docker run -d --name core-erp-app -p 8080:8080 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
