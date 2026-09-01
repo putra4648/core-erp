@@ -39,7 +39,7 @@ jobs:
 
     - name: Build Native Executable & Run Tests
       # Untuk Gradle, gunakan: ./gradlew nativeCompile
-      run: ./mvnw -Pnative -Pproduction native:compile
+      run: mvn -Pnative -Pproduction native:compile
 
     - name: Upload Native Binary Artifact
       uses: actions/upload-artifact@v4
