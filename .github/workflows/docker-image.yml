@@ -12,99 +12,102 @@ env:
 
 jobs:
   # ----------------------------------------------------
-  # 1. BUILD & TEST (Native Image Compilation)
+  # 1. PR / FAST FEEDBACK (Cepat: Hanya Build JAR & Test)
+  # ----------------------------------------------------
+  pr-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven # Caching otomatis bawaan setup-java
+
+      - name: Fast Test & Package (Standard JVM)
+        run: mvn clean test package -DskipNativeBuild
+
+  # ----------------------------------------------------
+  # 2. MAIN BRANCH BUILD (Native Image Compilation)
   # ----------------------------------------------------
   build-native:
+    # Hanya jalan saat push ke main (Merge PR)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup GraalVM JDK
-      uses: graalvm/setup-graalvm@v1
-      with:
-        java-version: '25'           # Adjust with your Java version
-        distribution: 'graalvm'
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        native-image-musl: false
+      - name: Setup GraalVM JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: 'maven' # Menggantikan actions/cache manual
 
-    - name: Cache Maven Dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+      - name: Build Native Executable
+        # Membatasi MAVEN_OPTS agar RAM runner tidak kepenuhan/swapping
+        env:
+          MAVEN_OPTS: "-Xmx6g"
+        # Menambahkan parameter pembatas thread & opsi kompilasi
+        run: |
+          mvn -Pnative native:compile \
+            -Dspring-boot.build-image.opt-level=0 \
+            -Dnative.buildArgs="-H:NumberOfThreads=2"
 
-    - name: Build Native Executable & Run Tests
-      # Untuk Gradle, gunakan: ./gradlew nativeCompile
-      run: mvn -Pnative -Pproduction native:compile
-
-    - name: Upload Native Binary Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: native-binary
-        path: target/*.exec # Sesuaikan dengan lokasi output binary (misal: target/app)
+      - name: Upload Native Binary Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-binary
+          path: target/* # Ubah jika nama binary spesifik (misal: target/app)
 
   # ----------------------------------------------------
-  # 2. PACKAGE & PUSH DOCKER IMAGE
+  # 3. PACKAGE & PUSH DOCKER IMAGE
   # ----------------------------------------------------
   docker-build:
     needs: build-native
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
       packages: write
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Download Native Binary
-      uses: actions/download-artifact@v4
-      with:
-        name: native-binary
-        path: target/
+      - name: Download Native Binary
+        uses: actions/download-artifact@v4
+        with:
+          name: native-binary
+          path: target/
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      # Memastikan file binary memiliki hak akses eksekusi sebelum di-pack ke Docker
+      - name: Make binary executable
+        run: chmod +x target/*
 
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Build and Push Docker Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  # ----------------------------------------------------
-  # 3. DEPLOYMENT (Contoh ke Server via SSH)
-  # ----------------------------------------------------
-  # deploy:
-  #   needs: docker-build
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Deploy to Server via SSH
-  #     uses: appleboy/ssh-action@v1.0.3
-  #     with:
-  #       host: ${{ secrets.SERVER_HOST }}
-  #       username: ${{ secrets.SERVER_USER }}
-  #       key: ${{ secrets.SERVER_SSH_KEY }}
-  #       script: |
-  #         docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-  #         docker stop core-erp-app || true
-  #         docker rm core-erp-app || true
-  #         docker run -d --name core-erp-app -p 8080:8080 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          # Menambahkan cache layer docker agar pendorongan image lebih cepat
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
