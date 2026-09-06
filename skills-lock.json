@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "migrate-spring-to-quarkus": {
+      "source": "quarkusio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/migrate-spring-to-quarkus/SKILL.md",
+      "computedHash": "84c802a0d97b9cc768631b6c4fd8f1e87a3155ab8a1a40c38616d6490511f505"
+    },
+    "quarkus-update": {
+      "source": "quarkusio/skills",
+      "sourceType": "github",
+      "skillPath": "skills/quarkus-update/SKILL.md",
+      "computedHash": "51164b5ef7d5a68637d11607ace77e0adbdcc9439bda623b6801a1b8f0714625"
+    }
+  }
+}
