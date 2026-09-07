@@ -3,15 +3,7 @@ package id.putra.core_erp.purchase_requisition.dto;
 import java.util.List;
 
 import id.putra.core_erp.purchase_requisition.enums.BudgetEnum;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
 public class BudgetDetailDto {
     private String name;
     private String budget_no;
@@ -19,4 +11,52 @@ public class BudgetDetailDto {
     private BudgetEnum type;
     private List<BudgetTypeDto> plans;
     private String total_budget;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBudget_no() {
+        return budget_no;
+    }
+
+    public void setBudget_no(String budget_no) {
+        this.budget_no = budget_no;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public BudgetEnum getType() {
+        return type;
+    }
+
+    public void setType(BudgetEnum type) {
+        this.type = type;
+    }
+
+    public List<BudgetTypeDto> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<BudgetTypeDto> plans) {
+        this.plans = plans;
+    }
+
+    public String getTotal_budget() {
+        return total_budget;
+    }
+
+    public void setTotal_budget(String total_budget) {
+        this.total_budget = total_budget;
+    }
 }

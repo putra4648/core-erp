@@ -22,12 +22,10 @@ import id.putra.core_erp.purchase_requisition.dto.CompanyDto;
 import id.putra.core_erp.purchase_requisition.service.CompanyService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "company", layout = MainLayout.class)
 @PageTitle("Company Profile | Purchase Requisition System")
 @PermitAll
-@RegisterReflectionForBinding({ CompanyDto.class })
 public class CompanyView extends VerticalLayout {
 
     private final CompanyService companyService;

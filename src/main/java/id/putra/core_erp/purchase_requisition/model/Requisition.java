@@ -16,13 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "requisition")
 public class Requisition extends BaseModel {
@@ -87,4 +81,156 @@ public class Requisition extends BaseModel {
 
     @OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequisitionDetail> details;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getRejectNote() {
+        return rejectNote;
+    }
+
+    public void setRejectNote(String rejectNote) {
+        this.rejectNote = rejectNote;
+    }
+
+    public BigInteger getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(BigInteger currency) {
+        this.currency = currency;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public String getInvestmentId() {
+        return investmentId;
+    }
+
+    public void setInvestmentId(String investmentId) {
+        this.investmentId = investmentId;
+    }
+
+    public BigInteger getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigInteger unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getBudgetDetailId() {
+        return budgetDetailId;
+    }
+
+    public void setBudgetDetailId(String budgetDetailId) {
+        this.budgetDetailId = budgetDetailId;
+    }
+
+    public Date getBudgetDate() {
+        return budgetDate;
+    }
+
+    public void setBudgetDate(Date budgetDate) {
+        this.budgetDate = budgetDate;
+    }
+
+    public Integer getCurrentApprovalStage() {
+        return currentApprovalStage;
+    }
+
+    public void setCurrentApprovalStage(Integer currentApprovalStage) {
+        this.currentApprovalStage = currentApprovalStage;
+    }
+
+    public Integer getTotalApprovalStage() {
+        return totalApprovalStage;
+    }
+
+    public void setTotalApprovalStage(Integer totalApprovalStage) {
+        this.totalApprovalStage = totalApprovalStage;
+    }
+
+    public String getLastApproved() {
+        return lastApproved;
+    }
+
+    public void setLastApproved(String lastApproved) {
+        this.lastApproved = lastApproved;
+    }
+
+    public List<ApprovalDto> getTemApprovalDtos() {
+        return temApprovalDtos;
+    }
+
+    public void setTemApprovalDtos(List<ApprovalDto> temApprovalDtos) {
+        this.temApprovalDtos = temApprovalDtos;
+    }
+
+    public ApprovalDto getTempPurchaserApprovalDto() {
+        return tempPurchaserApprovalDto;
+    }
+
+    public void setTempPurchaserApprovalDto(ApprovalDto tempPurchaserApprovalDto) {
+        this.tempPurchaserApprovalDto = tempPurchaserApprovalDto;
+    }
+
+    public Budget getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Budget budget) {
+        this.budget = budget;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public List<RequisitionDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<RequisitionDetail> details) {
+        this.details = details;
+    }
 }

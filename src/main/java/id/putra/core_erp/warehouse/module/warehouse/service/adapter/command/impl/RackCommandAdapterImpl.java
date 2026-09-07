@@ -1,40 +1,29 @@
 package id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.impl;
 
 import java.util.List;
-import java.util.Objects;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import id.putra.core_erp.warehouse.module.warehouse.converter.RackConverter;
 import id.putra.core_erp.warehouse.module.warehouse.dto.RackDto;
 import id.putra.core_erp.warehouse.module.warehouse.model.repository.RackRepository;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.RackCommandAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = false)
+@ApplicationScoped
 public class RackCommandAdapterImpl implements RackCommandAdapter {
-    private final RackRepository rackRepository;
+
+    @Inject
+    private RackRepository rackRepository;
 
     @Override
     public void add(List<RackDto> dtos) {
-        var entities = dtos.stream().map(RackConverter::toEntity).toList();
-        rackRepository.saveAll(Objects.requireNonNull(entities));
     }
 
     @Override
     public void update(List<RackDto> dtos) {
-        var entities = dtos.stream().map(RackConverter::toEntity).toList();
-        rackRepository.saveAll(Objects.requireNonNull(entities));
     }
 
     @Override
     public void delete(List<RackDto> dtos) {
-        var ids = dtos.stream().map(d -> d.getId()).toList();
-        rackRepository.deleteAllById(Objects.requireNonNull(ids));
     }
 
 }
-

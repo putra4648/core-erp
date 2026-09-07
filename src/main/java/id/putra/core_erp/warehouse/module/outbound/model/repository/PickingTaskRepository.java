@@ -1,11 +1,10 @@
 package id.putra.core_erp.warehouse.module.outbound.model.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
 import id.putra.core_erp.warehouse.module.outbound.model.entity.PickingTask;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface PickingTaskRepository extends JpaRepository<PickingTask, Long>, JpaSpecificationExecutor<PickingTask> {
+@ApplicationScoped
+public class PickingTaskRepository implements PanacheRepositoryBase<PickingTask, Long> {
 
 }
-

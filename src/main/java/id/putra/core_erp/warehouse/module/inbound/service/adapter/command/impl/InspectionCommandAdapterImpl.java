@@ -1,47 +1,36 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command.impl;
 
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import id.putra.core_erp.warehouse.module.inbound.converter.QualityInspectionConverter;
 import id.putra.core_erp.warehouse.module.inbound.dto.QualityInspectionDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.QualityInspection;
 import id.putra.core_erp.warehouse.module.inbound.model.repository.QualityInspectionRepository;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.InspectionCommandAdapter;
-import id.putra.core_erp.warehouse.shared.enums.ResponseEnum;
-import id.putra.core_erp.warehouse.shared.exceptions.ModuleException;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = false)
+@ApplicationScoped
 public class InspectionCommandAdapterImpl implements InspectionCommandAdapter {
 
-    private final QualityInspectionRepository qualityInspectionRepository;
+    @Inject
+    private QualityInspectionRepository qualityInspectionRepository;
 
     @Override
     public QualityInspectionDto add(QualityInspectionDto dto) {
-        var entity = QualityInspectionConverter.toEntity(dto);
-        return QualityInspectionConverter.toDto(qualityInspectionRepository.save(Objects.requireNonNull(entity)));
+        QualityInspection inspection = new QualityInspection();
+        inspection.setId(dto.getId());
+        // inspection.setResult(dto.getResult());
+        // inspection.setRemarks(dto.getRemarks());
+        // inspection.setReceivingLine(dto.getReceivingLine());
+        qualityInspectionRepository.persist(inspection);
+        return dto;
     }
 
     @Override
     public QualityInspectionDto update(QualityInspectionDto dto) {
-        var entity = QualityInspectionConverter.toEntity(dto);
-        return QualityInspectionConverter.toDto(qualityInspectionRepository.save(Objects.requireNonNull(entity)));
+        return null;
     }
 
     @Override
     public Boolean delete(Long id) {
-        if (id == null) {
-            throw new ModuleException(ResponseEnum.INVALID_PARAM);
-        }
-        if (qualityInspectionRepository.existsById(id)) {
-            qualityInspectionRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        return null;
     }
 }
-

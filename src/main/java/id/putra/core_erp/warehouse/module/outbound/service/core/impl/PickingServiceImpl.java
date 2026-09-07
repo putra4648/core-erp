@@ -1,18 +1,20 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core.impl;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
+
 import id.putra.core_erp.warehouse.module.outbound.dto.PickingTaskDto;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.PickingTaskCommandAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.PickingTaskQueryAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.core.PickingService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class PickingServiceImpl implements PickingService {
-    private final PickingTaskCommandAdapter pickingTaskCommandAdapter;
-    private final PickingTaskQueryAdapter pickingTaskQueryAdapter;
+    @Inject
+    private PickingTaskCommandAdapter pickingTaskCommandAdapter;
+    @Inject
+    private PickingTaskQueryAdapter pickingTaskQueryAdapter;
 
     @Override
     public PickingTaskDto create(PickingTaskDto dto) {
@@ -44,4 +46,3 @@ public class PickingServiceImpl implements PickingService {
         return pickingTaskQueryAdapter.getAll(filter);
     }
 }
-

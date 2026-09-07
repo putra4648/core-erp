@@ -1,7 +1,5 @@
 package id.putra.core_erp.warehouse.ui.views.inbound;
 
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -19,18 +17,14 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ItemDto;
-import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
-import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderLineDto;
-import id.putra.core_erp.warehouse.module.inbound.service.core.PurchaseOrderService;
 import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
+import id.putra.core_erp.warehouse.module.inbound.service.core.PurchaseOrderService;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "inbound/purchase-order", layout = MainLayout.class)
 @PageTitle("Purchase Orders | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({
         PurchaseOrderDto.class,
         PurchaseOrderLineDto.class,
         ItemDto.class
@@ -69,7 +63,8 @@ public class PurchaseOrderView extends VerticalLayout {
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("New Purchase Order", VaadinIcon.PLUS.create(), e -> openPoDialog(PurchaseOrderDto.builder().build()));
+        Button addButton = new Button("New Purchase Order", VaadinIcon.PLUS.create(),
+                e -> openPoDialog(PurchaseOrderDto.builder().build()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -82,9 +77,12 @@ public class PurchaseOrderView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(p -> p.getPoNumber() != null ? p.getPoNumber() : "").setHeader("PO Number").setAutoWidth(true).setSortable(true);
-        grid.addColumn(p -> p.getOrderDate() != null ? p.getOrderDate().toString() : "-").setHeader("Order Date").setAutoWidth(true);
-        grid.addColumn(p -> p.getSupplierId() != null ? "Supplier #" + p.getSupplierId() : "-").setHeader("Supplier").setFlexGrow(1);
+        grid.addColumn(p -> p.getPoNumber() != null ? p.getPoNumber() : "").setHeader("PO Number").setAutoWidth(true)
+                .setSortable(true);
+        grid.addColumn(p -> p.getOrderDate() != null ? p.getOrderDate().toString() : "-").setHeader("Order Date")
+                .setAutoWidth(true);
+        grid.addColumn(p -> p.getSupplierId() != null ? "Supplier #" + p.getSupplierId() : "-").setHeader("Supplier")
+                .setFlexGrow(1);
 
         grid.addComponentColumn(po -> {
             String status = po.getStatus() != null ? po.getStatus().name() : "DRAFT";
@@ -139,7 +137,7 @@ public class PurchaseOrderView extends VerticalLayout {
     private void openDetailsDialog(PurchaseOrderDto po) {
         Dialog dialog = new Dialog("Purchase Order: " + po.getPoNumber());
         dialog.setWidth("600px");
-        
+
         VerticalLayout layout = new VerticalLayout();
         layout.add(new Paragraph("PO Number: " + po.getPoNumber()));
         layout.add(new Paragraph("Status: " + (po.getStatus() != null ? po.getStatus().name() : "DRAFT")));
@@ -171,6 +169,3 @@ public class PurchaseOrderView extends VerticalLayout {
         confirmDialog.open();
     }
 }
-
-
-

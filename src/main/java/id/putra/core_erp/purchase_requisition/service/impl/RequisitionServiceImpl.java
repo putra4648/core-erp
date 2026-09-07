@@ -6,19 +6,11 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
@@ -42,25 +34,19 @@ import id.putra.core_erp.purchase_requisition.repository.BudgetDetailRepo;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
-import id.putra.core_erp.purchase_requisition.repository.UserRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
-import id.putra.core_erp.purchase_requisition.util.AppFileUtil;
-import id.putra.core_erp.purchase_requisition.util.AppUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import io.quarkus.oidc.OidcTenantConfig.Authentication;
+import jakarta.annotation.Resource;
+import jakarta.transaction.Transactional;
 
-@Service("requisitionService")
-@Transactional(rollbackFor = { ParseException.class, RequisitionException.class,
-        BudgetException.class })
-@RequiredArgsConstructor
-@Slf4j
+@Transactional(rollbackOn = { Exception.class })
+
 public class RequisitionServiceImpl implements RequisitionService {
 
     private final TransferRequestRepo transferRequestRepo;
     private final RequisitionRepo requisitionRepo;
     private final DepartmentRepo departmentRepo;
     private final BudgetDetailRepo budgetDetailRepo;
-    private final UserRepo userRepo;
 
     @Override
     public String handleData(AppDto<RequisitionDto> dto) {
@@ -74,12 +60,12 @@ public class RequisitionServiceImpl implements RequisitionService {
             Requisition entity = new Requisition();
             String generatedID = AppUtil.generatedIdFromZeros("FTS", count);
             dtoToEntityAdd(generatedID, params, entity);
-            requisitionRepo.save(entity);
+            requisitionRepo.persist(entity);
             return MessageConstant.SUCCESS;
         } else {
             Requisition entity = reqOpt.get();
             dtoToEntityUpdate(params, entity);
-            requisitionRepo.save(entity);
+            requisitionRepo.persist(entity);
             return MessageConstant.UPDATE;
         }
     }
@@ -87,7 +73,7 @@ public class RequisitionServiceImpl implements RequisitionService {
     @Override
     public List<RequisitionDto> getAll(AppDto<RequisitionDto> dto) {
         List<RequisitionDto> list = new ArrayList<>();
-        requisitionRepo.findAll().forEach(r -> list.add(entityToDto(r)));
+        requisitionRepo.findAll().list().forEach(r -> list.add(entityToDto(r)));
         return list;
     }
 
@@ -325,7 +311,7 @@ public class RequisitionServiceImpl implements RequisitionService {
             Path path = Paths.get(AppFileUtil.getServerPath(), "data", "requisitions", filename);
             return new InputStreamResource(new FileInputStream(path.toFile()));
         } catch (IOException e) {
-            log.error("Error reading file {}: {}", filename, e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error reading file " + filename, e);
         }
     }
@@ -469,7 +455,7 @@ public class RequisitionServiceImpl implements RequisitionService {
                     }
                 }
                 budgetDetail.setDetails(budgetTypes);
-                budgetDetailRepo.save(budgetDetail);
+                budgetDetailRepopersist(budgetDetail);
             }
         }
 
@@ -502,7 +488,7 @@ public class RequisitionServiceImpl implements RequisitionService {
                             Path fileBase64 = AppFileUtil.createFileFromBase64(dtl.getId(), "requisitions", file);
                             specFilenames.add(fileBase64.toString());
                         } catch (IOException e) {
-                            log.error(e.getMessage(), e.getCause());
+                            e.printStackTrace();
                         }
                     });
                 }
@@ -554,7 +540,7 @@ public class RequisitionServiceImpl implements RequisitionService {
                         try {
                             Files.deleteIfExists(Paths.get(file));
                         } catch (IOException e) {
-                            log.error(e.getMessage(), e.getCause());
+                            e.printStackTrace();
                         }
                     });
                 }
@@ -578,7 +564,7 @@ public class RequisitionServiceImpl implements RequisitionService {
                             Path fileFromBase64 = AppFileUtil.createFileFromBase64(dtl.getId(), "requisitions", file);
                             specFilenames.add(fileFromBase64.toString());
                         } catch (IOException e) {
-                            log.error(e.getMessage(), e.getCause());
+                            e.printStackTrace();
                         }
                     });
                     detail.setSpecFiles(specFilenames);

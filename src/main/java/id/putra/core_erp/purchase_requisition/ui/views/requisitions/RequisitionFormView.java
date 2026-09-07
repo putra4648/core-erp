@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -56,7 +54,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "requisitions/form", layout = MainLayout.class)
 @PageTitle("Requisition Form | PR System")
 @PermitAll
-@RegisterReflectionForBinding({
         RequisitionDto.class,
         RequisitionDetailDto.class,
         ApprovalDto.class,
@@ -105,7 +102,7 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         this.budgetDetailRepo = budgetDetailRepo;
         this.itemRepo = itemRepo;
 
-        departmentRepo.findAll().forEach(departmentList::add);
+        departmentRepo.findAll().list().forEach(departmentList::add);
 
         setSizeFull();
         setPadding(true);

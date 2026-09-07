@@ -10,20 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
 
 @Entity
 @Table
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Packing {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +22,46 @@ public class Packing {
   private BigDecimal weight;
   private String dimension;
 
-  @ToString.Exclude
   @OneToMany(mappedBy = "packing")
   private List<Shipment> shipments;
-}
 
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getPackageNumber() {
+    return packageNumber;
+  }
+
+  public void setPackageNumber(String packageNumber) {
+    this.packageNumber = packageNumber;
+  }
+
+  public BigDecimal getWeight() {
+    return weight;
+  }
+
+  public void setWeight(BigDecimal weight) {
+    this.weight = weight;
+  }
+
+  public String getDimension() {
+    return dimension;
+  }
+
+  public void setDimension(String dimension) {
+    this.dimension = dimension;
+  }
+
+  public List<Shipment> getShipments() {
+    return shipments;
+  }
+
+  public void setShipments(List<Shipment> shipments) {
+    this.shipments = shipments;
+  }
+}

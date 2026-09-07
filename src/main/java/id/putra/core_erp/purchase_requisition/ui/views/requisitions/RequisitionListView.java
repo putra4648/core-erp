@@ -30,12 +30,10 @@ import id.putra.core_erp.purchase_requisition.service.RequisitionService;
 import id.putra.core_erp.shared.security.SecurityService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "requisitions", layout = MainLayout.class)
 @PageTitle("Purchase Requisitions | PR System")
 @PermitAll
-@RegisterReflectionForBinding({ RequisitionDto.class, AppDto.class })
 public class RequisitionListView extends VerticalLayout {
 
     private final RequisitionService requisitionService;
@@ -163,7 +161,7 @@ public class RequisitionListView extends VerticalLayout {
             // deptIds.addAll(currentUser.get().getOtherDepts());
             // }
             // } else {
-            // departmentRepo.findAll().forEach(d -> deptIds.add(d.getDeptNumber()));
+            // departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getDeptNumber()));
             // }
 
             if (deptIds.isEmpty()) {

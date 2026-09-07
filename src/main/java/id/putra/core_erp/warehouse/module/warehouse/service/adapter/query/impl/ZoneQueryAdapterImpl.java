@@ -1,46 +1,20 @@
 package id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.impl;
 
-import java.util.Objects;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import id.putra.core_erp.warehouse.module.warehouse.converter.ZoneConverter;
 import id.putra.core_erp.warehouse.module.warehouse.dto.ZoneDto;
-import id.putra.core_erp.warehouse.module.warehouse.model.entity.Zone;
 import id.putra.core_erp.warehouse.module.warehouse.model.repository.ZoneRepository;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.ZoneQueryAdapter;
-import jakarta.persistence.criteria.Predicate;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
+@ApplicationScoped
 public class ZoneQueryAdapterImpl implements ZoneQueryAdapter {
 
-    private final ZoneRepository zoneRepository;
-
-    @Override
-    public Page<ZoneDto> getZones(ZoneDto dto, Pageable pageable) {
-        Specification<Zone> specs = (root, criteria, builder) -> {
-            Predicate name = builder.like(root.get("name"),
-                    "%" + (StringUtils.hasText(dto.getName()) ? dto.getName() : "") + "%");
-            return builder.and(name);
-        };
-        Pageable safePageable = Objects.requireNonNull(pageable);
-        return zoneRepository.findAll(specs, safePageable).map(ZoneConverter::toDto);
-    }
+    @Inject
+    private ZoneRepository zoneRepository;
 
     @Override
     public ZoneDto getZone(ZoneDto dto) {
-        Long safeId = Objects.requireNonNull(dto.getId());
-        var z = zoneRepository.findById(safeId);
-        return z.map(ZoneConverter::toDto).orElse(null);
+        var z = zoneRepository.findById(dto.getId());
+        return null;
     }
-
 }
-

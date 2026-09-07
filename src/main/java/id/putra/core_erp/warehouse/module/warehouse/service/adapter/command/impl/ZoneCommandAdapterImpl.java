@@ -1,40 +1,35 @@
 package id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.impl;
 
 import java.util.List;
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import id.putra.core_erp.warehouse.module.warehouse.dto.ZoneDto;
-import id.putra.core_erp.warehouse.module.warehouse.converter.ZoneConverter;
 import id.putra.core_erp.warehouse.module.warehouse.model.repository.ZoneRepository;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.ZoneCommandAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = false)
+@ApplicationScoped
 public class ZoneCommandAdapterImpl implements ZoneCommandAdapter {
-    private final ZoneRepository zoneRepository;
+
+    @Inject
+    private ZoneRepository zoneRepository;
 
     @Override
     public void add(List<ZoneDto> dtos) {
-        var entities = dtos.stream().map(ZoneConverter::toEntity).toList();
-        zoneRepository.saveAll(Objects.requireNonNull(entities));
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'add'");
     }
 
     @Override
     public void update(List<ZoneDto> dtos) {
-        var entities = dtos.stream().map(ZoneConverter::toEntity).toList();
-        zoneRepository.saveAll(Objects.requireNonNull(entities));
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
     public void delete(List<ZoneDto> dtos) {
-        var ids = dtos.stream().map(d -> d.getId()).toList();
-        zoneRepository.deleteAllById(Objects.requireNonNull(ids));
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
 }
-

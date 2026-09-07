@@ -24,14 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.ItemDto;
@@ -41,8 +34,11 @@ import id.putra.core_erp.purchase_requisition.model.ItemMeasurement;
 import id.putra.core_erp.purchase_requisition.repository.ItemRepo;
 import id.putra.core_erp.purchase_requisition.repository.SupplierRepo;
 import id.putra.core_erp.purchase_requisition.service.ItemService;
-import id.putra.core_erp.purchase_requisition.util.AppFileUtil;
 import id.putra.core_erp.shared.entity.Supplier;
+import io.quarkus.panache.common.Sort;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -50,29 +46,26 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Service("itemService")
-@RequiredArgsConstructor
-@Transactional
-@Slf4j
+@ApplicationScoped
 public class ItemServiceImpl implements ItemService {
 
-    private final ItemRepo itemRepo;
-    private final SupplierRepo supplierRepo;
+    @Inject
+    private ItemRepo itemRepo;
+    @Inject
+    private SupplierRepo supplierRepo;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public void addItem(ItemDto body, MultipartFile itemImage,
-            List<MultipartFile> docs) throws Exception {
-        Optional<Item> itemOptional = itemRepo.findById(body.getItem_number());
+    public void addItem(ItemDto body, FileUpload itemImage,
+            List<FileUpload> docs) throws Exception {
+        Optional<Item> itemOptional = itemRepo.findByIdOptional(body.getItem_number());
         if (!itemOptional.isPresent()) {
             Item entity = dtoToEntity(new Item(), body);
             handleImage(false, entity, itemImage, docs);
-            itemRepo.save(entity);
+            itemRepo.persist(entity);
         } else {
             String message = MessageFormat.format(MessageConstant.EXIST, body.getItem_number());
             throw new IllegalArgumentException(message);
@@ -131,14 +124,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void updateItem(ItemDto dto, MultipartFile itemImage,
-            List<MultipartFile> itemDocs) throws Exception {
+    public void updateItem(ItemDto dto, FileUpload itemImage,
+            List<FileUpload> itemDocs) throws Exception {
         if (dto.getItem_number() != null) {
             Optional<Item> itemOptional = itemRepo.findById(dto.getItem_number());
             if (itemOptional.isPresent()) {
                 Item updatedEntity = dtoToEntity(itemOptional.get(), dto);
                 handleImage(true, updatedEntity, itemImage, itemDocs);
-                itemRepo.save(updatedEntity);
+                itemRepo.persist(updatedEntity);
             } else {
                 String message = MessageFormat.format(MessageConstant.NOT_FOUND, dto.getItem_number());
                 throw new IllegalArgumentException(message);
@@ -148,7 +141,7 @@ public class ItemServiceImpl implements ItemService {
             if (item.isPresent()) {
                 Item updatedEntity = dtoToEntity(item.get(), dto);
                 handleImage(true, updatedEntity, itemImage, itemDocs);
-                itemRepo.save(updatedEntity);
+                itemRepo.persist(updatedEntity);
             } else {
                 String message = MessageFormat.format(MessageConstant.NOT_FOUND, dto.getName());
                 throw new IllegalArgumentException(message);
@@ -218,8 +211,8 @@ public class ItemServiceImpl implements ItemService {
         return entity;
     }
 
-    private void handleImage(boolean isUpdate, Item entity, MultipartFile itemImage,
-            List<MultipartFile> docs) throws IOException {
+    private void handleImage(boolean isUpdate, Item entity, FileUpload itemImage,
+            List<FileUpload> docs) throws IOException {
         Path path = null;
 
         if (isUpdate) {
@@ -240,7 +233,7 @@ public class ItemServiceImpl implements ItemService {
                     try {
                         Files.deleteIfExists(Paths.get(docPath));
                     } catch (IOException e) {
-                        log.error(e.getMessage(), e.getCause());
+                        e.printStackTrace();
                     }
                 });
                 entity.setDocsPath(null);
@@ -248,7 +241,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         if (itemImage != null && !itemImage.isEmpty()) {
-            path = AppFileUtil.createFileFromMultipartFile(entity.getItemNumber(), "items", itemImage);
+            path = AppFileUtil.createFileFromFileUpload(entity.getItemNumber(), "items", itemImage);
             entity.setItemImagePath(path.toString());
         }
 
@@ -256,10 +249,10 @@ public class ItemServiceImpl implements ItemService {
             List<String> docsPath = new ArrayList<>();
             docs.stream().forEach(data -> {
                 try {
-                    Path docPath = AppFileUtil.createFileFromMultipartFile(entity.getItemNumber(), "docs", data);
+                    Path docPath = AppFileUtil.createFileFromFileUpload(entity.getItemNumber(), "docs", data);
                     docsPath.add(docPath.toString());
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e.getCause());
+                    e.printStackTrace();
                 }
             });
             entity.setDocsPath(docsPath);
@@ -285,7 +278,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void importItems(MultipartFile file) throws Exception {
+    public void importItems(FileUpload file) throws Exception {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
@@ -322,13 +315,13 @@ public class ItemServiceImpl implements ItemService {
                 itemsToSave.add(item);
             }
 
-            itemRepo.saveAll(itemsToSave);
+            itemRepo.persist(itemsToSave);
         }
     }
 
     @Override
     public Resource exportItems() throws Exception {
-        List<Item> items = StreamSupport.stream(itemRepo.findAll().spliterator(), false)
+        List<Item> items = StreamSupport.stream(itemRepo.findAll().list().spliterator(), false)
                 .collect(Collectors.toList());
 
         try (Workbook workbook = new XSSFWorkbook()) {

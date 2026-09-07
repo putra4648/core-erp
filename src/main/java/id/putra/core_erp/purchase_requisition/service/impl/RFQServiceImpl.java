@@ -9,13 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
 import id.putra.core_erp.purchase_requisition.dto.AppFileDto;
@@ -28,24 +21,16 @@ import id.putra.core_erp.purchase_requisition.exception.RequisitionException;
 import id.putra.core_erp.purchase_requisition.model.RFQ;
 import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.RFQRepo;
-import id.putra.core_erp.purchase_requisition.repository.UserRepo;
 import id.putra.core_erp.purchase_requisition.service.RFQService;
-import id.putra.core_erp.purchase_requisition.util.AppFileUtil;
-import id.putra.core_erp.purchase_requisition.util.AppUtil;
+import io.quarkus.oidc.OidcTenantConfig.Authentication;
+import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Service("rfqService")
-@RequiredArgsConstructor
-@Transactional(readOnly = false, rollbackFor = { RFQException.class, Exception.class })
-@Slf4j
 public class RFQServiceImpl implements RFQService {
 
     private final RFQRepo rfqRepository;
-    private final UserRepo userRepo;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -60,7 +45,7 @@ public class RFQServiceImpl implements RFQService {
             Long count = rfqRepository.count();
             String id = AppUtil.generatedIdFromZeros("RFQ", count);
             RFQ entity = dtoToEntityAdd(params, id, new RFQ());
-            rfqRepository.save(entity);
+            rfqRepository.persist(entity);
             return MessageConstant.SUCCESS;
         } else {
             Optional<RFQ> rfqOpt = rfqRepository.findById(params.getId());
@@ -70,7 +55,7 @@ public class RFQServiceImpl implements RFQService {
                         .findByUsernameIgnoreCase(authentication != null ? authentication.getName() : "");
                 RFQ entity = dtoToEntityUpdate(userOpt.map(u -> u.getNrp()).orElse(null), params,
                         rfqOpt.get());
-                rfqRepository.save(entity);
+                rfqRepository.persist(entity);
             } else {
                 throw new RFQException("RFQ is not found");
             }
@@ -85,7 +70,7 @@ public class RFQServiceImpl implements RFQService {
         List<RFQDto> dtos = new ArrayList<>();
 
         if (params == null) {
-            rfqRepository.findAll().forEach(r -> dtos.add(entityToDto(r)));
+            rfqRepository.findAll().list().forEach(r -> dtos.add(entityToDto(r)));
             return dtos;
         }
 
@@ -251,7 +236,7 @@ public class RFQServiceImpl implements RFQService {
                 }
                 return null;
             } catch (IOException e) {
-                log.error(e.getMessage());
+                e.printStackTrace();
                 throw new RuntimeException("Error reading file", e);
             }
         } else {
@@ -355,7 +340,7 @@ public class RFQServiceImpl implements RFQService {
 
                         suppliers.add(data);
                     } catch (IOException e) {
-                        log.error(e.getMessage(), e.getCause());
+                        e.printStackTrace();
                     }
                 }
             });

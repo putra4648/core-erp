@@ -1,34 +1,32 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core.impl;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.SalesOrderCommandAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.SalesOrderQueryAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.core.SalesOrderService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class SalesOrderServiceImpl implements SalesOrderService {
-    private final SalesOrderCommandAdapter salesOrderCommandAdapter;
-    private final SalesOrderQueryAdapter salesOrderQueryAdapter;
+    @Inject
+    private SalesOrderCommandAdapter salesOrderCommandAdapter;
+    @Inject
+    private SalesOrderQueryAdapter salesOrderQueryAdapter;
 
     @Override
-    public SalesOrderDto create(SalesOrderDto dto) {
-        return salesOrderCommandAdapter.add(dto);
+    public void create(SalesOrderDto dto) {
+
     }
 
     @Override
-    public SalesOrderDto update(SalesOrderDto dto) {
-        return salesOrderCommandAdapter.update(dto);
+    public void update(SalesOrderDto dto) {
+
     }
 
     @Override
-    public Boolean delete(Long id) {
-        return salesOrderCommandAdapter.delete(id);
+    public void delete(Long id) {
+
     }
 
     @Override
@@ -36,9 +34,4 @@ public class SalesOrderServiceImpl implements SalesOrderService {
         return salesOrderQueryAdapter.getById(id);
     }
 
-    @Override
-    public Page<SalesOrderDto> getAll(String search, Pageable pageable) {
-        return salesOrderQueryAdapter.getAll(search, pageable);
-    }
 }
-

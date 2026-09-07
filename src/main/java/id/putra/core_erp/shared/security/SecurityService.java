@@ -5,18 +5,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.stereotype.Component;
-
-import com.vaadin.flow.spring.security.AuthenticationContext;
+import io.quarkus.oidc.OidcTenantConfig.Authentication;
 
 @Component
-@RegisterReflectionForBinding({ SecurityService.AuthenticatedUser.class })
 public class SecurityService {
 
     private final AuthenticationContext authenticationContext;

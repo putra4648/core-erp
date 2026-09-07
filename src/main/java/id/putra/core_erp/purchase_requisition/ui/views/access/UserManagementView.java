@@ -3,8 +3,6 @@ package id.putra.core_erp.purchase_requisition.ui.views.access;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -35,7 +33,6 @@ import id.putra.core_erp.purchase_requisition.model.Group;
 import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.GroupRepo;
-import id.putra.core_erp.purchase_requisition.repository.UserRepo;
 import id.putra.core_erp.purchase_requisition.service.DepartmentsService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
@@ -43,20 +40,12 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "users", layout = MainLayout.class)
 @PageTitle("Users & Departments | PR System")
 @PermitAll
-@RegisterReflectionForBinding({
-        UsersDto.class,
-        DepartmentDto.class,
-        Department.class,
-        Group.class,
-        Users.class
-})
 public class UserManagementView extends VerticalLayout {
 
     // private final UserService userService;
     private final DepartmentsService departmentsService;
     private final DepartmentRepo departmentRepo;
     private final GroupRepo groupRepo;
-    private final UserRepo userRepo;
 
     private final Tab usersTab = new Tab(VaadinIcon.USERS.create(), new Span("Users"));
     private final Tab deptsTab = new Tab(VaadinIcon.BUILDING.create(), new Span("Departments"));
@@ -235,7 +224,7 @@ public class UserManagementView extends VerticalLayout {
 
     private void refreshDepts() {
         deptList.clear();
-        departmentRepo.findAll().forEach(deptList::add);
+        departmentRepo.findAll().list().forEach(deptList::add);
         deptGrid.setItems(deptList);
     }
 
@@ -266,7 +255,7 @@ public class UserManagementView extends VerticalLayout {
 
     private void refreshGroups() {
         groupList.clear();
-        groupRepo.findAll().forEach(groupList::add);
+        groupRepo.findAll().list().forEach(groupList::add);
         groupGrid.setItems(groupList);
     }
 
@@ -282,7 +271,7 @@ public class UserManagementView extends VerticalLayout {
         nameField.setRequired(true);
 
         List<Users> allUsers = new ArrayList<>();
-        userRepo.findAll().forEach(allUsers::add);
+        userRepo.findAll().list().forEach(allUsers::add);
 
         ComboBox<Users> managerCombo = new ComboBox<>("Department Manager");
         managerCombo.setItemLabelGenerator(u -> u.getFullname() != null ? u.getFullname() : "-");
@@ -382,7 +371,7 @@ public class UserManagementView extends VerticalLayout {
             g.setName(nameField.getValue());
 
             try {
-                groupRepo.save(g);
+                groupRepo.persist(g);
                 Notification.show("Group saved", 3000, Notification.Position.TOP_CENTER)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();
@@ -415,14 +404,14 @@ public class UserManagementView extends VerticalLayout {
         TextField emailField = new TextField("Email");
 
         List<Department> dList = new ArrayList<>();
-        departmentRepo.findAll().forEach(dList::add);
+        departmentRepo.findAll().list().forEach(dList::add);
 
         ComboBox<Department> deptCombo = new ComboBox<>("Department");
         deptCombo.setItemLabelGenerator(d -> d.getDeptNumber() + " - " + d.getDeptName());
         deptCombo.setItems(dList);
 
         List<Group> gList = new ArrayList<>();
-        groupRepo.findAll().forEach(gList::add);
+        groupRepo.findAll().list().forEach(gList::add);
 
         ComboBox<Group> groupCombo = new ComboBox<>("Group / Role");
         groupCombo.setItemLabelGenerator(g -> g.getName());

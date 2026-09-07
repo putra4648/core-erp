@@ -1,11 +1,9 @@
 package id.putra.core_erp.warehouse.module.inventory.model.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
 import id.putra.core_erp.shared.entity.Category;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSpecificationExecutor<Category> {
+@ApplicationScoped
+public class CategoryRepository implements PanacheRepository<Category> {
 }
-
-

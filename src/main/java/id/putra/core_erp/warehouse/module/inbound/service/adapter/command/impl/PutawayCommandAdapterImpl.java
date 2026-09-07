@@ -1,15 +1,10 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command.impl;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import id.putra.core_erp.warehouse.module.inbound.dto.PutawayDto;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.PutawayCommandAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = false)
+@ApplicationScoped
 public class PutawayCommandAdapterImpl implements PutawayCommandAdapter {
 
     @Override
@@ -30,4 +25,3 @@ public class PutawayCommandAdapterImpl implements PutawayCommandAdapter {
         return false;
     }
 }
-

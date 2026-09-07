@@ -2,29 +2,20 @@ package id.putra.core_erp.warehouse.module.outbound.service.adapter.query.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import id.putra.core_erp.warehouse.module.outbound.converter.PackingConverter;
 import id.putra.core_erp.warehouse.module.outbound.dto.PackingDto;
 import id.putra.core_erp.warehouse.module.outbound.model.repository.PackingRepository;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.PackingQueryAdapter;
-import lombok.RequiredArgsConstructor;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class PackingQueryAdapterImpl implements PackingQueryAdapter {
     private final PackingRepository packingRepository;
 
     @Override
     public PackingDto getById(Long id) {
-        return packingRepository.findById(id).map(PackingConverter::toDto).orElse(null);
+        return packingRepository.findById(id).map(PackingDto::toDto).orElse(null);
     }
 
     @Override
     public List<PackingDto> getAll(PackingDto filter) {
-        return packingRepository.findAll().stream().map(PackingConverter::toDto).toList();
+        return packingRepository.findAll().list().stream().map(PackingDto::toDto).toList();
     }
 }
-

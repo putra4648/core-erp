@@ -2,26 +2,21 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.warehouse.dto.LocationDto;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.LocationCommandAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.LocationQueryAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.LocationCoreService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class LocationServiceImpl implements LocationCoreService {
-    private final LocationQueryAdapter locationQueryAdapter;
-    private final LocationCommandAdapter locationCommandAdapter;
 
-    @Override
-    public Page<LocationDto> getLocations(LocationDto dto, Pageable pageable) {
-        return locationQueryAdapter.getLocations(dto, pageable);
-    }
+    @Inject
+    private LocationQueryAdapter locationQueryAdapter;
+
+    @Inject
+    private LocationCommandAdapter locationCommandAdapter;
 
     @Override
     public LocationDto getLocation(LocationDto dto) {
@@ -44,4 +39,3 @@ public class LocationServiceImpl implements LocationCoreService {
     }
 
 }
-

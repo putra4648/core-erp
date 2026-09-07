@@ -1,10 +1,9 @@
 package id.putra.core_erp.warehouse.module.customer.model.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import id.putra.core_erp.shared.entity.ContactPersonCustomer;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface ContactPersonCustomerRepository extends JpaRepository<ContactPersonCustomer, Long> {
+@ApplicationScoped
+public class ContactPersonCustomerRepository implements PanacheRepository<ContactPersonCustomer> {
 }
-
-

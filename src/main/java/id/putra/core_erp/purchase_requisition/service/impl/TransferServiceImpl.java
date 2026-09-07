@@ -11,12 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
 import id.putra.core_erp.purchase_requisition.dto.AppFileDto;
@@ -34,23 +28,14 @@ import id.putra.core_erp.purchase_requisition.model.Transfer;
 import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.InventoryRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
-import id.putra.core_erp.purchase_requisition.repository.UserRepo;
 import id.putra.core_erp.purchase_requisition.service.TransferService;
-import id.putra.core_erp.purchase_requisition.util.AppFileUtil;
-import id.putra.core_erp.purchase_requisition.util.AppUtil;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import io.quarkus.oidc.OidcTenantConfig.Authentication;
+import jakarta.annotation.Resource;
 
-@Slf4j
-@Service("transferService")
-@RequiredArgsConstructor
-@Transactional(rollbackOn = { RuntimeException.class })
 public class TransferServiceImpl implements TransferService {
 
     private final InventoryRepo inventoryRepo;
     private final TransferRequestRepo transferRequestRepo;
-    private final UserRepo userRepo;
 
     @Override
     public String handleData(AppDto<TransferDto> dto) {
@@ -62,7 +47,7 @@ public class TransferServiceImpl implements TransferService {
         if (params.getId() == null || params.getId().isBlank()) {
             String id = AppUtil.generatedIdFromZeros("TFQ", count);
             Transfer entity = dtoToEntityAdd(params, id, new Transfer());
-            transferRequestRepo.save(entity);
+            transferRequestRepo.persist(entity);
             return MessageConstant.SUCCESS;
         } else {
             Optional<Transfer> rfqOpt = transferRequestRepo.findById(params.getId());
@@ -70,12 +55,12 @@ public class TransferServiceImpl implements TransferService {
                 Optional<Users> userOpt = userRepo
                         .findByUsernameIgnoreCase(authentication != null ? authentication.getName() : "");
                 Transfer entity = dtoToEntityUpdate(userOpt.map(u -> u.getNrp()).orElse(null), params, rfqOpt.get());
-                transferRequestRepo.save(entity);
+                transferRequestRepo.persist(entity);
                 return MessageConstant.UPDATE;
             } else {
                 String id = AppUtil.generatedIdFromZeros("TFQ", count);
                 Transfer entity = dtoToEntityAdd(params, id, new Transfer());
-                transferRequestRepo.save(entity);
+                transferRequestRepo.persist(entity);
                 return MessageConstant.SUCCESS;
             }
         }
@@ -260,7 +245,6 @@ public class TransferServiceImpl implements TransferService {
             Path path = Paths.get(AppFileUtil.getServerPath(), "data", from, filename);
             return new InputStreamResource(new FileInputStream(path.toFile()));
         } catch (IOException e) {
-            log.error(e.getMessage());
             throw new RuntimeException("Error downloading file", e);
         }
     }
@@ -331,7 +315,7 @@ public class TransferServiceImpl implements TransferService {
                         try {
                             Files.deleteIfExists(Paths.get(file.getName()));
                         } catch (IOException e) {
-                            log.error(e.getMessage(), e.getCause());
+                            e.printStackTrace();
                         }
                     });
                 }
@@ -352,9 +336,8 @@ public class TransferServiceImpl implements TransferService {
                     specFiles.forEach(file -> {
                         try {
                             Path fileFromBase64 = AppFileUtil.createFileFromBase64(dtl.getId(), "requisitions", file);
-                            log.info("File " + fileFromBase64 + " is created");
                         } catch (IOException e) {
-                            log.error(e.getMessage(), e.getCause());
+                            e.printStackTrace();
                         }
                     });
                     detail.setSpec_files(specFiles.stream().map(data -> {
@@ -458,7 +441,7 @@ public class TransferServiceImpl implements TransferService {
                             BigInteger qty = inv.getQty() != null ? inv.getQty() : BigInteger.ZERO;
                             BigInteger dtlQty = dtl.getItem_qty() != null ? dtl.getItem_qty() : BigInteger.ZERO;
                             inv.setQty(qty.subtract(dtlQty));
-                            inventoryRepo.save(inv);
+                            inventoryRepo.persist(inv);
 
                             if (inv.getQty().compareTo(BigInteger.ZERO) == 0) {
                                 inventoryRepo.delete(inv);

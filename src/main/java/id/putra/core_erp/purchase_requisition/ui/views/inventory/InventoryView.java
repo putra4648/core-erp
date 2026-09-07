@@ -23,12 +23,10 @@ import id.putra.core_erp.purchase_requisition.dto.InventoryDto;
 import id.putra.core_erp.purchase_requisition.service.InventoryService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "pr/inventory", layout = MainLayout.class)
 @PageTitle("PR Inventory | CORE ERP")
 @PermitAll
-@RegisterReflectionForBinding({ InventoryDto.class, AppDto.class })
 public class InventoryView extends VerticalLayout {
 
     private final InventoryService inventoryService;

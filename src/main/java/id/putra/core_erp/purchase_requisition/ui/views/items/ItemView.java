@@ -31,12 +31,10 @@ import id.putra.core_erp.purchase_requisition.service.ItemService;
 import id.putra.core_erp.purchase_requisition.service.SupplierService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "items", layout = MainLayout.class)
 @PageTitle("Items Catalog | PR System")
 @PermitAll
-@RegisterReflectionForBinding({ ItemDto.class, SupplierDto.class })
 public class ItemView extends VerticalLayout {
 
     private final ItemService itemService;

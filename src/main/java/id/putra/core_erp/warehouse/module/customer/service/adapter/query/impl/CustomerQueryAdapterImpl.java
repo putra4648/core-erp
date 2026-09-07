@@ -1,32 +1,18 @@
 package id.putra.core_erp.warehouse.module.customer.service.adapter.query.impl;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.customer.dto.CustomerDto;
-import id.putra.core_erp.warehouse.module.customer.converter.CustomerConverter;
 import id.putra.core_erp.warehouse.module.customer.model.repository.CustomerRepository;
 import id.putra.core_erp.warehouse.module.customer.service.adapter.query.CustomerQueryAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class CustomerQueryAdapterImpl implements CustomerQueryAdapter {
-    private final CustomerRepository repository;
-
-    @Override
-    public Page<CustomerDto> getAll(Pageable pageable, String search) {
-        // Implement search logic here
-        Pageable safePageable = java.util.Objects.requireNonNull(pageable);
-        return repository.findAll(safePageable).map(CustomerConverter::toDto);
-    }
+    @Inject
+    private CustomerRepository repository;
 
     @Override
     public CustomerDto getById(Long id) {
-        Long safeId = java.util.Objects.requireNonNull(id);
-        var entity = repository.findById(safeId).orElseThrow();
-        return CustomerConverter.toDto(entity);
+        return null;
     }
 }
-

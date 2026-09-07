@@ -9,6 +9,4 @@ public interface ReceivingCommandAdapter {
 
     Boolean delete(Long id);
 
-    ReceivingDto patch(ReceivingDto body);
 }
-

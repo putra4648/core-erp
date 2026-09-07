@@ -2,16 +2,16 @@ package id.putra.core_erp.purchase_requisition.service;
 
 import java.util.List;
 
-import org.springframework.core.io.Resource;
-import org.springframework.web.multipart.MultipartFile;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.dto.ItemDto;
+import jakarta.annotation.Resource;
 
 public interface ItemService {
         void addItem(
                         ItemDto body,
-                        MultipartFile itemImage,
-                        List<MultipartFile> itemDocs) throws Exception;
+                        FileUpload itemImage,
+                        List<FileUpload> itemDocs) throws Exception;
 
         List<ItemDto> getItems(
                         String search,
@@ -24,14 +24,14 @@ public interface ItemService {
 
         void updateItem(
                         ItemDto dto,
-                        MultipartFile itemImage,
-                        List<MultipartFile> itemDocs) throws Exception;
+                        FileUpload itemImage,
+                        List<FileUpload> itemDocs) throws Exception;
 
         ItemDto getItemDetail(String id);
 
         Boolean isItemExist(String id);
 
-        void importItems(MultipartFile file) throws Exception;
+        void importItems(FileUpload file) throws Exception;
 
         Resource exportItems() throws Exception;
 }

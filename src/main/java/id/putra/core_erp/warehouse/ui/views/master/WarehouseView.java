@@ -2,9 +2,6 @@ package id.putra.core_erp.warehouse.ui.views.master;
 
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -40,12 +37,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "master/warehouses", layout = MainLayout.class)
 @PageTitle("Warehouses | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({
-        WarehouseDto.class,
-        ZoneDto.class,
-        RackDto.class,
-        LocationDto.class
-})
 public class WarehouseView extends VerticalLayout {
 
     private final WarehouseCoreService warehouseService;
@@ -194,7 +185,7 @@ public class WarehouseView extends VerticalLayout {
                 if (isEdit) {
                     warehouseService.update(List.of(dto));
                 } else {
-                    warehouseService.save(List.of(dto));
+                    warehouseServicepersist(List.of(dto));
                 }
                 Notification.show("Warehouse saved", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);

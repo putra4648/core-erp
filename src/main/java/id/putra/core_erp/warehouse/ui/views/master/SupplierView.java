@@ -3,9 +3,6 @@ package id.putra.core_erp.warehouse.ui.views.master;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -36,7 +33,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "master/suppliers", layout = MainLayout.class)
 @PageTitle("Suppliers | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ SupplierDto.class, ContactPersonSupplierDto.class })
 public class SupplierView extends VerticalLayout {
 
     private final SupplierService supplierService;

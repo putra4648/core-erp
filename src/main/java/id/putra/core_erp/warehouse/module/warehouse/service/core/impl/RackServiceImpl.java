@@ -2,26 +2,21 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.warehouse.dto.RackDto;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.RackCommandAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.RackQueryAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.RackCoreService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class RackServiceImpl implements RackCoreService {
-    private final RackQueryAdapter rackQueryAdapter;
-    private final RackCommandAdapter rackCommandAdapter;
 
-    @Override
-    public Page<RackDto> getRacks(RackDto dto, Pageable pageable) {
-        return rackQueryAdapter.getRacks(dto, pageable);
-    }
+    @Inject
+    private RackQueryAdapter rackQueryAdapter;
+
+    @Inject
+    private RackCommandAdapter rackCommandAdapter;
 
     @Override
     public RackDto getRack(RackDto rackDto) {
@@ -44,4 +39,3 @@ public class RackServiceImpl implements RackCoreService {
     }
 
 }
-

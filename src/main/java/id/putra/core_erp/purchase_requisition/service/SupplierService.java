@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.core.io.Resource;
-import org.springframework.web.multipart.MultipartFile;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
+import jakarta.annotation.Resource;
 
 public interface SupplierService {
-    void addSupplier(SupplierDto body, MultipartFile logoFile) throws Exception;
+    void addSupplier(SupplierDto body, FileUpload logoFile) throws Exception;
 
-    void updateSupplier(SupplierDto dto, MultipartFile logoFile) throws Exception;
+    void updateSupplier(SupplierDto dto, FileUpload logoFile) throws Exception;
 
     List<SupplierDto> getSupplier(
             String search,
@@ -28,7 +28,7 @@ public interface SupplierService {
 
     List<SupplierDto> getSupplierDropdown();
 
-    void importSuppliers(MultipartFile file) throws Exception;
+    void importSuppliers(FileUpload file) throws Exception;
 
     Resource exportSuppliers() throws Exception;
 }

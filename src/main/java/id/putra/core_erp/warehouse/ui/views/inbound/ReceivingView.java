@@ -1,7 +1,5 @@
 package id.putra.core_erp.warehouse.ui.views.inbound;
 
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -19,18 +17,14 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
-import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
-import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingLineDto;
-import id.putra.core_erp.warehouse.module.inbound.service.core.ReceivingOrderService;
 import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import id.putra.core_erp.warehouse.module.inbound.service.core.ReceivingOrderService;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "inbound/receiving", layout = MainLayout.class)
 @PageTitle("Receiving | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({
         ReceivingDto.class,
         ReceivingLineDto.class,
         PurchaseOrderDto.class
@@ -69,7 +63,8 @@ public class ReceivingView extends VerticalLayout {
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("New Goods Receipt", VaadinIcon.PLUS.create(), e -> openReceivingDialog(new ReceivingDto()));
+        Button addButton = new Button("New Goods Receipt", VaadinIcon.PLUS.create(),
+                e -> openReceivingDialog(new ReceivingDto()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -82,9 +77,12 @@ public class ReceivingView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(r -> r.getReceivingNumber() != null ? r.getReceivingNumber() : "").setHeader("Receiving #").setAutoWidth(true).setSortable(true);
-        grid.addColumn(r -> r.getReceivedDate() != null ? r.getReceivedDate().toString() : "-").setHeader("Received Date").setAutoWidth(true);
-        grid.addColumn(r -> r.getPurchaseOrder() != null ? r.getPurchaseOrder().getPoNumber() : "-").setHeader("PO Number").setFlexGrow(1);
+        grid.addColumn(r -> r.getReceivingNumber() != null ? r.getReceivingNumber() : "").setHeader("Receiving #")
+                .setAutoWidth(true).setSortable(true);
+        grid.addColumn(r -> r.getReceivedDate() != null ? r.getReceivedDate().toString() : "-")
+                .setHeader("Received Date").setAutoWidth(true);
+        grid.addColumn(r -> r.getPurchaseOrder() != null ? r.getPurchaseOrder().getPoNumber() : "-")
+                .setHeader("PO Number").setFlexGrow(1);
 
         grid.addComponentColumn(receiving -> {
             String status = receiving.getStatus() != null ? receiving.getStatus() : "COMPLETED";
@@ -144,7 +142,8 @@ public class ReceivingView extends VerticalLayout {
 
     private void confirmDelete(ReceivingDto receiving) {
         Dialog confirmDialog = new Dialog("Delete Receiving");
-        confirmDialog.add(new Paragraph("Are you sure you want to delete receiving record '" + receiving.getReceivingNumber() + "'?"));
+        confirmDialog.add(new Paragraph(
+                "Are you sure you want to delete receiving record '" + receiving.getReceivingNumber() + "'?"));
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
@@ -164,6 +163,3 @@ public class ReceivingView extends VerticalLayout {
         confirmDialog.open();
     }
 }
-
-
-

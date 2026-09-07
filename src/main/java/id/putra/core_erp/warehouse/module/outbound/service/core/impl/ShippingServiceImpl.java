@@ -1,18 +1,20 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core.impl;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
+
 import id.putra.core_erp.warehouse.module.outbound.dto.ShipmentDto;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.ShipmentCommandAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.ShipmentQueryAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.core.ShippingService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class ShippingServiceImpl implements ShippingService {
-    private final ShipmentCommandAdapter shipmentCommandAdapter;
-    private final ShipmentQueryAdapter shipmentQueryAdapter;
+    @Inject
+    private ShipmentCommandAdapter shipmentCommandAdapter;
+    @Inject
+    private ShipmentQueryAdapter shipmentQueryAdapter;
 
     @Override
     public ShipmentDto create(ShipmentDto dto) {
@@ -44,4 +46,3 @@ public class ShippingServiceImpl implements ShippingService {
         return shipmentQueryAdapter.getAll(filter);
     }
 }
-

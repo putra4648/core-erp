@@ -23,15 +23,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.SupplierAddressDto;
@@ -40,34 +32,32 @@ import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
 import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.purchase_requisition.repository.SupplierRepo;
 import id.putra.core_erp.purchase_requisition.service.SupplierService;
-import id.putra.core_erp.purchase_requisition.util.AppFileUtil;
 import id.putra.core_erp.shared.entity.Supplier;
 import id.putra.core_erp.shared.entity.SupplierAddress;
 import id.putra.core_erp.shared.entity.SupplierContact;
 import id.putra.core_erp.shared.entity.SupplierPOAddress;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import io.quarkus.panache.common.Sort;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service("supplierService")
-@RequiredArgsConstructor
-@Transactional
-@Slf4j
+@ApplicationScoped
 public class SupplierServiceImpl implements SupplierService {
-
-    private final SupplierRepo supplierRepo;
+    @Inject
+    private SupplierRepo supplierRepo;
 
     @Override
-    public void addSupplier(SupplierDto body, MultipartFile logoFile)
+    public void addSupplier(SupplierDto body, FileUpload logoFile)
             throws Exception {
         Optional<Supplier> supplier = supplierRepo.findById(body.getAcc_no());
         if (!supplier.isPresent()) {
             Supplier entity = dtoToEntity(new Supplier(), body);
             if (logoFile != null && !logoFile.isEmpty()) {
-                Path path = AppFileUtil.createFileFromMultipartFile(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
+                Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
                         logoFile);
                 entity.setSupplierLogoPath(path.toString());
             }
-            supplierRepo.save(entity);
+            supplierRepo.persist(entity);
         } else {
             String message = MessageFormat.format(MessageConstant.EXIST, "Supplier ", body.getAcc_no());
             throw new IllegalArgumentException(message);
@@ -107,13 +97,6 @@ public class SupplierServiceImpl implements SupplierService {
         if (status == null || status.isBlank()) {
             status = "";
         }
-
-        Pageable pageable = PageRequest.of(page - 1, perPage, sort);
-        Page<Supplier> pageResult = supplierRepo
-                .findAllByNameContainingIgnoreCaseAndStatusStartingWithIgnoreCase(
-                        search,
-                        status,
-                        pageable);
 
         return pageResult.getContent().stream().map(this::entityToDto).toList();
     }
@@ -210,7 +193,7 @@ public class SupplierServiceImpl implements SupplierService {
             try {
                 dto.setLogo_image(AppFileUtil.readFileToBase64(data.getSupplierLogoPath()));
             } catch (Exception e) {
-                log.error(e.getMessage(), e.getCause());
+                e.printStackTrace();
             }
         }
         dto.setType(data.getType());
@@ -255,7 +238,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public void updateSupplier(SupplierDto body, MultipartFile logoFile)
+    public void updateSupplier(SupplierDto body, FileUpload logoFile)
             throws Exception {
         Optional<Supplier> supplier = supplierRepo.findById(body.getAcc_no());
         if (supplier.isPresent()) {
@@ -263,18 +246,18 @@ public class SupplierServiceImpl implements SupplierService {
 
             if (logoFile != null && !logoFile.isEmpty()) {
                 if (entity.getSupplierLogoPath() != null) {
-                    Path path = AppFileUtil.recreateFileFromMultipartFile(entity.getAccNo(), logoFile,
+                    Path path = AppFileUtil.recreateFileFromFileUpload(entity.getAccNo(), logoFile,
                             AppFileUtil.SUPPLIER_FOLDER,
                             entity.getSupplierLogoPath());
                     entity.setSupplierLogoPath(path.toString());
                 } else {
-                    Path path = AppFileUtil.createFileFromMultipartFile(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
+                    Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
                             logoFile);
                     entity.setSupplierLogoPath(path.toString());
                 }
             }
             Supplier updatedEntity = dtoToEntity(entity, body);
-            supplierRepo.save(updatedEntity);
+            supplierRepo.persist(updatedEntity);
         } else {
             String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + body.getAcc_no());
             throw new IllegalArgumentException(message);
@@ -289,7 +272,7 @@ public class SupplierServiceImpl implements SupplierService {
             Supplier entity = supplier.get();
             entity.setStatus(entity.getStatus().equalsIgnoreCase("ACTIVE") ? StatusEnum.INACTIVE.getValue()
                     : StatusEnum.ACTIVE.getValue());
-            supplierRepo.save(entity);
+            supplierRepo.persist(entity);
         } else {
             String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier ", supplierId);
             throw new IllegalArgumentException(message);
@@ -304,7 +287,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public void importSuppliers(MultipartFile file) throws Exception {
+    public void importSuppliers(FileUpload file) throws Exception {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
@@ -328,13 +311,11 @@ public class SupplierServiceImpl implements SupplierService {
                 Supplier supplier = parseRowToSupplier(row);
                 if (supplier != null) {
                     suppliersToSave.add(supplier);
-                } else {
-                    log.warn("Skipping row {} due to invalid data.", row.getRowNum());
                 }
             }
 
             if (!suppliersToSave.isEmpty()) {
-                supplierRepo.saveAll(suppliersToSave);
+                supplierRepo.persist(suppliersToSave);
             } else {
                 throw new IllegalArgumentException("No valid suppliers found in the file.");
             }
@@ -357,13 +338,12 @@ public class SupplierServiceImpl implements SupplierService {
             supplier.setNotes(getCellValueAsString(row.getCell(9)));
 
             if (supplier.getAccNo().isEmpty() || supplier.getName().isEmpty()) {
-                log.warn("Missing mandatory fields in row {}.", row.getRowNum());
                 return null;
             }
 
             return supplier;
         } catch (Exception e) {
-            log.error("Error parsing row {}: {}", row.getRowNum(), e.getMessage(), e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -394,7 +374,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public Resource exportSuppliers() throws Exception {
-        List<Supplier> suppliers = StreamSupport.stream(supplierRepo.findAll().spliterator(), false)
+        List<Supplier> suppliers = StreamSupport.stream(supplierRepo.findAll().list().spliterator(), false)
                 .collect(Collectors.toList());
 
         try (Workbook workbook = new XSSFWorkbook()) {

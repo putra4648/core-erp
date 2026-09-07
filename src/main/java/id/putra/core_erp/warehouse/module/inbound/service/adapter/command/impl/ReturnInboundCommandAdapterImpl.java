@@ -1,15 +1,10 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command.impl;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import id.putra.core_erp.warehouse.module.inbound.dto.ReturnDto;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.ReturnInboundCommandAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = false)
+@ApplicationScoped
 public class ReturnInboundCommandAdapterImpl implements ReturnInboundCommandAdapter {
 
     @Override
@@ -30,4 +25,3 @@ public class ReturnInboundCommandAdapterImpl implements ReturnInboundCommandAdap
         return false;
     }
 }
-

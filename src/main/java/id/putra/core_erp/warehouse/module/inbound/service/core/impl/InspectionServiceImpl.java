@@ -2,20 +2,21 @@ package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.inbound.dto.QualityInspectionDto;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.InspectionCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.InspectionQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.InspectionService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class InspectionServiceImpl implements InspectionService {
 
-    private final InspectionCommandAdapter inspectionCommandAdapter;
-    private final InspectionQueryAdapter inspectionQueryAdapter;
+    @Inject
+    private InspectionCommandAdapter inspectionCommandAdapter;
+
+    @Inject
+    private InspectionQueryAdapter inspectionQueryAdapter;
 
     @Override
     public QualityInspectionDto create(QualityInspectionDto dto) {
@@ -42,4 +43,3 @@ public class InspectionServiceImpl implements InspectionService {
         return inspectionQueryAdapter.getAll(filter);
     }
 }
-

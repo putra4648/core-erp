@@ -3,27 +3,23 @@ package id.putra.core_erp.purchase_requisition.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import id.putra.core_erp.purchase_requisition.dto.GroupsDto;
 import id.putra.core_erp.purchase_requisition.repository.GroupRepo;
 import id.putra.core_erp.purchase_requisition.service.GroupsService;
-import lombok.RequiredArgsConstructor;
+import io.quarkus.oidc.OidcTenantConfig.Authentication;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service("groupService")
-@RequiredArgsConstructor
-@Transactional
+@ApplicationScoped
 public class GroupServiceImpl implements GroupsService {
 
-    private final GroupRepo companyGroupRepo;
+    @Inject
+    private GroupRepo companyGroupRepo;
 
     @Override
     public List<GroupsDto> getGroups() {
         List<GroupsDto> dtos = new ArrayList<>();
-        companyGroupRepo.findAll().forEach(data -> {
+        companyGroupRepo.findAll().list().forEach(data -> {
             GroupsDto dto = new GroupsDto();
             dto.setCode(data.getCode());
             dto.setName(data.getName());

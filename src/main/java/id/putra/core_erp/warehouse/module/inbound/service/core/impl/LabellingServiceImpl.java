@@ -2,20 +2,21 @@ package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.inbound.dto.LabellingDto;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.LabellingCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.LabellingQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.LabellingService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class LabellingServiceImpl implements LabellingService {
 
-    private final LabellingCommandAdapter labellingCommandAdapter;
-    private final LabellingQueryAdapter labellingQueryAdapter;
+    @Inject
+    private LabellingCommandAdapter labellingCommandAdapter;
+
+    @Inject
+    private LabellingQueryAdapter labellingQueryAdapter;
 
     @Override
     public LabellingDto create(LabellingDto dto) {
@@ -44,4 +45,3 @@ public class LabellingServiceImpl implements LabellingService {
         return labellingQueryAdapter.getAll(filter);
     }
 }
-

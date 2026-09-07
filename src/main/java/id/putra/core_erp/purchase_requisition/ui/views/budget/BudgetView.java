@@ -31,17 +31,11 @@ import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.BudgetService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "budgets", layout = MainLayout.class)
 @PageTitle("Budgets | Purchase Requisition System")
 @PermitAll
-@RegisterReflectionForBinding({
-        BudgetDto.class,
-        BudgetDetailDto.class,
-        DepartmentDto.class,
-        Department.class
-})
+
 public class BudgetView extends VerticalLayout {
 
     private final BudgetService budgetService;
@@ -59,7 +53,7 @@ public class BudgetView extends VerticalLayout {
         setPadding(true);
         setSpacing(true);
 
-        departmentRepo.findAll().forEach(departmentList::add);
+        departmentRepo.findAll().list().forEach(departmentList::add);
 
         H2 header = new H2("Budget Planning & Management");
         header.addClassNames(LumoUtility.FontSize.XLARGE);

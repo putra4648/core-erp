@@ -2,26 +2,20 @@ package id.putra.core_erp.warehouse.module.inventory.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.inventory.dto.CategoryDto;
 import id.putra.core_erp.warehouse.module.inventory.service.adapter.command.CategoryCommandAdapter;
 import id.putra.core_erp.warehouse.module.inventory.service.adapter.query.CategoryQueryAdapter;
 import id.putra.core_erp.warehouse.module.inventory.service.core.CategoryCoreService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class CategoryServiceImpl implements CategoryCoreService {
-    private final CategoryQueryAdapter categoryQueryAdapter;
-    private final CategoryCommandAdapter categoryCommandAdapter;
+    @Inject
+    private CategoryQueryAdapter categoryQueryAdapter;
 
-    @Override
-    public Page<CategoryDto> getCategories(CategoryDto dto, Pageable pageable) {
-        return categoryQueryAdapter.getCategories(dto, pageable);
-    }
+    @Inject
+    private CategoryCommandAdapter categoryCommandAdapter;
 
     @Override
     public CategoryDto getCategory(CategoryDto dto) {
@@ -30,7 +24,7 @@ public class CategoryServiceImpl implements CategoryCoreService {
 
     @Override
     public void save(List<CategoryDto> dtos) {
-        categoryCommandAdapter.save(dtos);
+        categoryCommandAdapterpersist(dtos);
     }
 
     @Override
@@ -44,4 +38,3 @@ public class CategoryServiceImpl implements CategoryCoreService {
     }
 
 }
-

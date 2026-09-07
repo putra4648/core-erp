@@ -2,14 +2,9 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import id.putra.core_erp.warehouse.module.warehouse.dto.LocationDto;
 
 public interface LocationCoreService {
-
-    Page<LocationDto> getLocations(LocationDto dto, Pageable pageable);
 
     LocationDto getLocation(LocationDto dto);
 
@@ -19,4 +14,3 @@ public interface LocationCoreService {
 
     void delete(List<LocationDto> dtos);
 }
-

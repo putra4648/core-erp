@@ -12,43 +12,26 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "transaction_items")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-@SuperBuilder
 public class TransactionItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "transaction_id", nullable = false)
     private Transaction transaction;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "source_inv_item_id")
     private InventoryItem sourceInventoryItem;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "dest_inv_item_id")
     private InventoryItem destInventoryItem;
@@ -59,4 +42,92 @@ public class TransactionItem extends BaseEntity {
     private String lotNumber;
     private String serialNumber;
     private String notes;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public InventoryItem getSourceInventoryItem() {
+        return sourceInventoryItem;
+    }
+
+    public void setSourceInventoryItem(InventoryItem sourceInventoryItem) {
+        this.sourceInventoryItem = sourceInventoryItem;
+    }
+
+    public InventoryItem getDestInventoryItem() {
+        return destInventoryItem;
+    }
+
+    public void setDestInventoryItem(InventoryItem destInventoryItem) {
+        this.destInventoryItem = destInventoryItem;
+    }
+
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getLotNumber() {
+        return lotNumber;
+    }
+
+    public void setLotNumber(String lotNumber) {
+        this.lotNumber = lotNumber;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 }

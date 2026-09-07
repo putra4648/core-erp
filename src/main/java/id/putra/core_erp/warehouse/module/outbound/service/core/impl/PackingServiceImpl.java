@@ -1,18 +1,20 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core.impl;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
+
 import id.putra.core_erp.warehouse.module.outbound.dto.PackingDto;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.PackingCommandAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.PackingQueryAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.core.PackingService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class PackingServiceImpl implements PackingService {
-    private final PackingCommandAdapter packingCommandAdapter;
-    private final PackingQueryAdapter packingQueryAdapter;
+    @Inject
+    private PackingCommandAdapter packingCommandAdapter;
+    @Inject
+    private PackingQueryAdapter packingQueryAdapter;
 
     @Override
     public PackingDto create(PackingDto dto) {
@@ -44,4 +46,3 @@ public class PackingServiceImpl implements PackingService {
         return packingQueryAdapter.getAll(filter);
     }
 }
-

@@ -2,16 +2,11 @@ package id.putra.core_erp.warehouse.module.outbound.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.outbound.dto.CarrierDto;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.CarrierCommandAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.CarrierQueryAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.core.CarrierService;
-import lombok.RequiredArgsConstructor;
 
-@Service
-@RequiredArgsConstructor
 public class CarrierServiceImpl implements CarrierService {
     private final CarrierCommandAdapter carrierCommandAdapter;
     private final CarrierQueryAdapter carrierQueryAdapter;
@@ -45,4 +40,3 @@ public class CarrierServiceImpl implements CarrierService {
         return carrierQueryAdapter.getAll(filter);
     }
 }
-

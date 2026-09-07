@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -22,9 +20,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
 import id.putra.core_erp.purchase_requisition.dto.TransferDto;
-import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.TransferService;
 import id.putra.core_erp.shared.ui.MainLayout;
@@ -33,7 +29,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "transfers", layout = MainLayout.class)
 @PageTitle("Transfers | Purchase Requisition System")
 @PermitAll
-@RegisterReflectionForBinding({
         TransferDto.class,
         AppDto.class,
         DepartmentDto.class,
@@ -106,7 +101,7 @@ public class TransferView extends VerticalLayout {
             params.setSearch(searchField.getValue() != null ? searchField.getValue() : "");
 
             List<String> deptIds = new ArrayList<>();
-            departmentRepo.findAll().forEach(d -> deptIds.add(d.getDeptNumber()));
+            departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getDeptNumber()));
             params.setDeptIds(deptIds);
             appDto.setParams(params);
 

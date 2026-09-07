@@ -9,11 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import id.putra.core_erp.purchase_requisition.dto.BudgetDetailDto;
 import id.putra.core_erp.purchase_requisition.dto.BudgetDto;
@@ -26,16 +22,22 @@ import id.putra.core_erp.purchase_requisition.repository.BudgetDetailRepo;
 import id.putra.core_erp.purchase_requisition.repository.BudgetRepo;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.BudgetService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
-@Service("budgetService")
-@RequiredArgsConstructor
-@Transactional(rollbackFor = { ParseException.class })
+@ApplicationScoped
+@Transactional(rollbackOn = { ParseException.class })
 public class BudgetServiceImpl implements BudgetService {
 
-    private final BudgetRepo budgetRepo;
-    private final DepartmentRepo departmentRepo;
-    private final BudgetDetailRepo budgetDetailRepo;
+    @Inject
+    private BudgetRepo budgetRepo;
+
+    @Inject
+    private DepartmentRepo departmentRepo;
+
+    @Inject
+    private BudgetDetailRepo budgetDetailRepo;
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
 
@@ -50,7 +52,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         Date year = simpleDateFormat.parse(new SimpleDateFormat("yyyy").format(calendar.getTime()));
 
-        Iterable<Department> dept = departmentRepo.findAllById(Objects.requireNonNull(deptId));
+        List<Department> dept = departmentRepo.findAll().list();
         Map<String, Object> result = new HashMap<>();
 
         budgetRepo.findByDepartmentInAndFiscalYearAfter(dept, year).forEach(budget -> {
@@ -111,8 +113,9 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public void addOrUpdateBudget(BudgetDto body) throws ParseException {
-        if (budgetRepo.existsById(Objects.requireNonNull(body.getId()))) {
-            Budget entity = budgetRepo.findById(Objects.requireNonNull(body.getId())).get();
+        Long id = Long.parseLong(body.getId());
+        if (budgetRepo.findByIdOptional(id).isPresent()) {
+            Budget entity = budgetRepo.findById(id);
             entity.setFiscalYear(simpleDateFormat.parse(body.getFy()));
 
             List<BudgetDetail> details = entity.getDetails();
@@ -142,14 +145,14 @@ public class BudgetServiceImpl implements BudgetService {
                 });
             }
             entity.setDetails(details);
-            budgetRepo.save(entity);
+            budgetRepo.persist(entity);
         } else {
             Budget entity = new Budget();
             entity.setId(body.getId());
 
             if (body.getDepartment() != null && body.getDepartment().getDept_number() != null) {
                 Optional<Department> deptOpt = departmentRepo
-                        .findById(Objects.requireNonNull(body.getDepartment().getDept_number()));
+                        .findByDeptNumber(body.getDepartment().getDept_number());
                 deptOpt.ifPresent(entity::setDepartment);
             }
 
@@ -182,7 +185,7 @@ public class BudgetServiceImpl implements BudgetService {
                 });
             }
             entity.setDetails(details);
-            budgetRepo.save(entity);
+            budgetRepo.persist(entity);
         }
     }
 
@@ -212,7 +215,7 @@ public class BudgetServiceImpl implements BudgetService {
     public BudgetDetailDto getBudgetDetail(String deptId, String budgetId) {
         BudgetDetailDto dto = new BudgetDetailDto();
 
-        Optional<BudgetDetail> detailOpt = budgetDetailRepo.findById(Objects.requireNonNull(budgetId));
+        Optional<BudgetDetail> detailOpt = budgetDetailRepo.findByBudgetId(budgetId);
 
         if (detailOpt.isPresent()) {
             BudgetDetail d = detailOpt.get();

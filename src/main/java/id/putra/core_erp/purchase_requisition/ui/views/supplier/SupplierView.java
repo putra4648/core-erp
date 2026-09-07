@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -37,7 +35,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "pr/suppliers", layout = MainLayout.class)
 @PageTitle("PR Suppliers | CORE ERP")
 @PermitAll
-@RegisterReflectionForBinding({ SupplierDto.class })
 public class SupplierView extends VerticalLayout {
 
     private final SupplierService supplierService;

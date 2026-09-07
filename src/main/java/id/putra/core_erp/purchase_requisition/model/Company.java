@@ -9,20 +9,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "company")
 public class Company extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comp_id", nullable = false)
-    private Integer compId;
+    private Long compId;
 
     @Column(name = "comp_name", nullable = false, unique = true)
     private String compName;
@@ -54,5 +48,85 @@ public class Company extends BaseModel {
 
     @Column(name = "comp_needAutoCloseOrder")
     private Boolean compNeedAutoCloseOrder;
+
+    public Long getId() {
+        return compId;
+    }
+
+    public void setId(Long compId) {
+        this.compId = compId;
+    }
+
+    public String getCompName() {
+        return compName;
+    }
+
+    public void setCompName(String compName) {
+        this.compName = compName;
+    }
+
+    public String getCompTelp() {
+        return compTelp;
+    }
+
+    public void setCompTelp(String compTelp) {
+        this.compTelp = compTelp;
+    }
+
+    public String getCompNPWP() {
+        return compNPWP;
+    }
+
+    public void setCompNPWP(String compNPWP) {
+        this.compNPWP = compNPWP;
+    }
+
+    public String getCompLogopath() {
+        return compLogopath;
+    }
+
+    public void setCompLogopath(String compLogopath) {
+        this.compLogopath = compLogopath;
+    }
+
+    public String getCompAccbank() {
+        return compAccbank;
+    }
+
+    public void setCompAccbank(String compAccbank) {
+        this.compAccbank = compAccbank;
+    }
+
+    public Date getCompEndyear() {
+        return compEndyear;
+    }
+
+    public void setCompEndyear(Date compEndyear) {
+        this.compEndyear = compEndyear;
+    }
+
+    public List<String> getCompCurrencies() {
+        return compCurrencies;
+    }
+
+    public void setCompCurrencies(List<String> compCurrencies) {
+        this.compCurrencies = compCurrencies;
+    }
+
+    public Boolean getCompNeedRegisterApproval() {
+        return compNeedRegisterApproval;
+    }
+
+    public void setCompNeedRegisterApproval(Boolean compNeedRegisterApproval) {
+        this.compNeedRegisterApproval = compNeedRegisterApproval;
+    }
+
+    public Boolean getCompNeedAutoCloseOrder() {
+        return compNeedAutoCloseOrder;
+    }
+
+    public void setCompNeedAutoCloseOrder(Boolean compNeedAutoCloseOrder) {
+        this.compNeedAutoCloseOrder = compNeedAutoCloseOrder;
+    }
 
 }

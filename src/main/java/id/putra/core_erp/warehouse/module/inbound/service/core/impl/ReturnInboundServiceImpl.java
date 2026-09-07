@@ -2,20 +2,20 @@ package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.inbound.dto.ReturnDto;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.ReturnInboundCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.ReturnInboundQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.ReturnInboundService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class ReturnInboundServiceImpl implements ReturnInboundService {
 
-    private final ReturnInboundCommandAdapter returnInboundCommandAdapter;
-    private final ReturnInboundQueryAdapter returnInboundQueryAdapter;
+    @Inject
+    private ReturnInboundCommandAdapter returnInboundCommandAdapter;
+    @Inject
+    private ReturnInboundQueryAdapter returnInboundQueryAdapter;
 
     @Override
     public ReturnDto create(ReturnDto dto) {
@@ -44,4 +44,3 @@ public class ReturnInboundServiceImpl implements ReturnInboundService {
         return returnInboundQueryAdapter.getAll(filter);
     }
 }
-

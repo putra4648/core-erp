@@ -8,39 +8,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.dto.CompanyDto;
 import id.putra.core_erp.purchase_requisition.model.Company;
 import id.putra.core_erp.purchase_requisition.repository.CompanyRepo;
 import id.putra.core_erp.purchase_requisition.service.CompanyService;
-import id.putra.core_erp.purchase_requisition.util.AppFileUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service("companyService")
-@RequiredArgsConstructor
-@Transactional(rollbackFor = { IOException.class, ParseException.class })
-@Slf4j
+@ApplicationScoped
 public class CompanyServiceImpl implements CompanyService {
 
-    private final CompanyRepo companyRepo;
+    @Inject
+    private CompanyRepo companyRepo;
 
     @Override
-    public void handleCompany(CompanyDto dto, MultipartFile logo)
+    public void handleCompany(CompanyDto dto, FileUpload logo)
             throws ParseException, IOException {
-        Optional<Company> comp = companyRepo.findById(dto.getId() != null ? dto.getId() : 1);
+        Optional<Company> comp = companyRepo.findByIdOptional(dto.getId());
         Company company;
 
         if (comp.isPresent()) {
             company = comp.get();
             getCompany(company, dto, logo);
-            companyRepo.save(company);
+            companyRepo.persist(company);
         } else {
             company = getCompany(new Company(), dto, logo);
-            companyRepo.save(company);
+            companyRepo.persist(company);
         }
     }
 
@@ -49,7 +44,7 @@ public class CompanyServiceImpl implements CompanyService {
         return getCompanyDto();
     }
 
-    private Company getCompany(Company company, CompanyDto dto, MultipartFile logo) throws ParseException, IOException {
+    private Company getCompany(Company company, CompanyDto dto, FileUpload logo) throws ParseException, IOException {
         company.setCompName(dto.getName());
         company.setCompTelp(dto.getTelp());
         company.setCompNPWP(dto.getNpwp());
@@ -67,11 +62,11 @@ public class CompanyServiceImpl implements CompanyService {
         company.setCompNeedRegisterApproval(dto.getIsRegisterApproval());
         if (logo != null && !logo.isEmpty()) {
             try {
-                Path logoPath = AppFileUtil.recreateFileFromMultipartFile(logo.getOriginalFilename(), logo, "data",
+                Path logoPath = AppFileUtil.recreateFileFromFileUpload(logo.getOriginalFilename(), logo, "data",
                         company.getCompLogopath());
                 company.setCompLogopath(logoPath.toString());
             } catch (IOException e) {
-                log.error(e.getMessage(), e.getCause());
+                e.printStackTrace();
             }
         }
         return company;
@@ -85,7 +80,7 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = companyOpt.get();
 
         CompanyDto dto = new CompanyDto();
-        dto.setId(company.getCompId());
+        dto.setId(company.getId());
         dto.setName(company.getCompName());
         dto.setTelp(company.getCompTelp());
         dto.setNpwp(company.getCompNPWP());
@@ -94,7 +89,7 @@ public class CompanyServiceImpl implements CompanyService {
             try {
                 dto.setLogo_image(AppFileUtil.readFileToBase64(company.getCompLogopath()));
             } catch (IOException e) {
-                log.error(e.getMessage(), e.getCause());
+                e.printStackTrace();
             }
         }
 

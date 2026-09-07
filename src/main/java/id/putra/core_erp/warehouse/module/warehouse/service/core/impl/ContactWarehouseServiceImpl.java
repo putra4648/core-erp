@@ -2,26 +2,20 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.warehouse.dto.ContactPersonWarehouseDto;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.ContactPersonWarehouseCommandAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.ContactPersonWarehouseQueryAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.ContactPersonWarehouseCoreService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class ContactWarehouseServiceImpl implements ContactPersonWarehouseCoreService {
-    private final ContactPersonWarehouseQueryAdapter contactPersonWarehouseQueryAdapter;
-    private final ContactPersonWarehouseCommandAdapter contactPersonCommandAdapter;
+    @Inject
+    private ContactPersonWarehouseQueryAdapter contactPersonWarehouseQueryAdapter;
 
-    @Override
-    public Page<ContactPersonWarehouseDto> getContacts(ContactPersonWarehouseDto dto, Pageable pageable) {
-        return contactPersonWarehouseQueryAdapter.getContacts(dto, pageable);
-    }
+    @Inject
+    private ContactPersonWarehouseCommandAdapter contactPersonCommandAdapter;
 
     @Override
     public ContactPersonWarehouseDto getContact(ContactPersonWarehouseDto dto) {
@@ -44,4 +38,3 @@ public class ContactWarehouseServiceImpl implements ContactPersonWarehouseCoreSe
     }
 
 }
-

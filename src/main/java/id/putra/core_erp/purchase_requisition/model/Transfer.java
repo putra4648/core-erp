@@ -15,13 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "transfer_request")
 public class Transfer extends BaseModel {
@@ -73,5 +67,117 @@ public class Transfer extends BaseModel {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
     private ApprovalDto tempPurchaserApprovalDto;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public List<SupplierDto> getSuppliers() {
+        return suppliers;
+    }
+
+    public void setSuppliers(List<SupplierDto> suppliers) {
+        this.suppliers = suppliers;
+    }
+
+    public List<TransferDetailDto> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<TransferDetailDto> details) {
+        this.details = details;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRejectNote() {
+        return rejectNote;
+    }
+
+    public void setRejectNote(String rejectNote) {
+        this.rejectNote = rejectNote;
+    }
+
+    public Integer getCurrentApprovalStage() {
+        return currentApprovalStage;
+    }
+
+    public void setCurrentApprovalStage(Integer currentApprovalStage) {
+        this.currentApprovalStage = currentApprovalStage;
+    }
+
+    public Integer getTotalApprovalStage() {
+        return totalApprovalStage;
+    }
+
+    public void setTotalApprovalStage(Integer totalApprovalStage) {
+        this.totalApprovalStage = totalApprovalStage;
+    }
+
+    public String getLastApproved() {
+        return lastApproved;
+    }
+
+    public void setLastApproved(String lastApproved) {
+        this.lastApproved = lastApproved;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public List<ApprovalDto> getTemApprovalDtos() {
+        return temApprovalDtos;
+    }
+
+    public void setTemApprovalDtos(List<ApprovalDto> temApprovalDtos) {
+        this.temApprovalDtos = temApprovalDtos;
+    }
+
+    public ApprovalDto getTempPurchaserApprovalDto() {
+        return tempPurchaserApprovalDto;
+    }
+
+    public void setTempPurchaserApprovalDto(ApprovalDto tempPurchaserApprovalDto) {
+        this.tempPurchaserApprovalDto = tempPurchaserApprovalDto;
+    }
 
 }

@@ -5,24 +5,12 @@ import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public class BaseModel {
+public abstract class BaseModel {
 
     @Column(name = "created_by")
     private String userCreateBy;
@@ -38,16 +26,36 @@ public class BaseModel {
     @UpdateTimestamp(source = SourceType.DB)
     private Instant updatedDate;
 
-    /// Before any insert data
-    @PrePersist
-    public void beforeAnyInsert() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        this.setUserCreateBy(name);
+    public String getUserCreateBy() {
+        return userCreateBy;
     }
 
-    @PreUpdate
-    public void beforeAnyUpdate() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        this.setUserUpdateBy(name);
+    public void setUserCreateBy(String userCreateBy) {
+        this.userCreateBy = userCreateBy;
     }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getUserUpdateBy() {
+        return userUpdateBy;
+    }
+
+    public void setUserUpdateBy(String userUpdateBy) {
+        this.userUpdateBy = userUpdateBy;
+    }
+
+    public Instant getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Instant updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
 }

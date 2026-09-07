@@ -5,26 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.vaadin.flow.spring.security.VaadinSecurityConfigurer;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
-@Slf4j
+
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.client.provider.auth0.issuer-uri}")

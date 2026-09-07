@@ -13,15 +13,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "rfq")
-@Getter
-@Setter
-@NoArgsConstructor
 public class RFQ extends BaseModel {
 
     @Id
@@ -59,5 +53,93 @@ public class RFQ extends BaseModel {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_approvals", columnDefinition = "jsonb")
     private List<ApprovalDto> temApprovalDtos;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public List<SupplierDto> getSuppliers() {
+        return suppliers;
+    }
+
+    public void setSuppliers(List<SupplierDto> suppliers) {
+        this.suppliers = suppliers;
+    }
+
+    public List<RequisitionDetailDto> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<RequisitionDetailDto> details) {
+        this.details = details;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRejectNote() {
+        return rejectNote;
+    }
+
+    public void setRejectNote(String rejectNote) {
+        this.rejectNote = rejectNote;
+    }
+
+    public Integer getCurrentApprovalStage() {
+        return currentApprovalStage;
+    }
+
+    public void setCurrentApprovalStage(Integer currentApprovalStage) {
+        this.currentApprovalStage = currentApprovalStage;
+    }
+
+    public Integer getTotalApprovalStage() {
+        return totalApprovalStage;
+    }
+
+    public void setTotalApprovalStage(Integer totalApprovalStage) {
+        this.totalApprovalStage = totalApprovalStage;
+    }
+
+    public String getLastApproved() {
+        return lastApproved;
+    }
+
+    public void setLastApproved(String lastApproved) {
+        this.lastApproved = lastApproved;
+    }
+
+    public List<ApprovalDto> getTemApprovalDtos() {
+        return temApprovalDtos;
+    }
+
+    public void setTemApprovalDtos(List<ApprovalDto> temApprovalDtos) {
+        this.temApprovalDtos = temApprovalDtos;
+    }
 
 }

@@ -3,19 +3,8 @@ package id.putra.core_erp.warehouse.module.inbound.dto;
 import java.sql.Date;
 import java.util.List;
 
-import id.putra.core_erp.warehouse.shared.base.dto.response.attribute.MetaAttribute;
-import id.putra.core_erp.warehouse.shared.enums.OrderStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import id.putra.core_erp.shared.enums.OrderStatus;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class PurchaseOrderDto {
     private Long id;
     private String poNumber;
@@ -23,6 +12,53 @@ public class PurchaseOrderDto {
     private Date orderDate;
     private Long supplierId;
     private List<PurchaseOrderLineDto> purchaseOrderLines;
-    private MetaAttribute meta;
-}
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPoNumber() {
+        return poNumber;
+    }
+
+    public void setPoNumber(String poNumber) {
+        this.poNumber = poNumber;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public Long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Long supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public List<PurchaseOrderLineDto> getPurchaseOrderLines() {
+        return purchaseOrderLines;
+    }
+
+    public void setPurchaseOrderLines(List<PurchaseOrderLineDto> purchaseOrderLines) {
+        this.purchaseOrderLines = purchaseOrderLines;
+    }
+
+}

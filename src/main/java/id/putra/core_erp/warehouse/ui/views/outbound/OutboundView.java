@@ -1,8 +1,5 @@
 package id.putra.core_erp.warehouse.ui.views.outbound;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -28,7 +25,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "outbound", layout = MainLayout.class)
 @PageTitle("Outbound | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({
         SalesOrderDto.class
 })
 public class OutboundView extends VerticalLayout {

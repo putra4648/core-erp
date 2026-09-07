@@ -1,9 +1,10 @@
 package id.putra.core_erp.purchase_requisition.repository;
 
-import org.springframework.data.repository.CrudRepository;
-
+import jakarta.enterprise.context.ApplicationScoped;
 import id.putra.core_erp.purchase_requisition.model.Inventory;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
 
-public interface InventoryRepo extends CrudRepository<Inventory, String> {
+@ApplicationScoped
+public class InventoryRepo implements PanacheRepository<Inventory> {
 
 }

@@ -7,13 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "approval")
 public class Approval extends BaseModel {
@@ -32,6 +26,38 @@ public class Approval extends BaseModel {
     @ManyToOne
     @JoinColumn(name = "requisition_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Requisition requisition;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Users getUsers() {
+        return users;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public Requisition getRequisition() {
+        return requisition;
+    }
+
+    public void setRequisition(Requisition requisition) {
+        this.requisition = requisition;
+    }
 
     // @Column(name = "is_approved")
     // private Boolean isApproved;

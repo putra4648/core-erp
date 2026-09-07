@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
 import id.putra.core_erp.purchase_requisition.dto.InventoryDto;
@@ -18,10 +16,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import lombok.RequiredArgsConstructor;
 
-@Service("inventoryService")
-@RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepo inventoryRepo;
@@ -33,7 +28,7 @@ public class InventoryServiceImpl implements InventoryService {
     public String handleData(AppDto<InventoryDto> dto) {
         if (dto != null && dto.getParams() != null) {
             Inventory entity = dtoToEntity(new Inventory(), dto.getParams());
-            inventoryRepo.save(entity);
+            inventoryRepo.persist(entity);
             return MessageConstant.SUCCESS;
         }
         return null;
@@ -44,7 +39,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         if (params != null) {
             params.forEach(param -> {
-                Optional<Inventory> invOpt = inventoryRepo.findById(param.getPart_number());
+                Optional<Inventory> invOpt = inventoryRepo.findByIdOptional(param.getPart_number());
                 Inventory entity;
                 if (invOpt.isPresent()) {
                     entity = invOpt.get();
@@ -70,7 +65,7 @@ public class InventoryServiceImpl implements InventoryService {
                 } else {
                     entity = dtoToEntity(new Inventory(), param);
                 }
-                inventoryRepo.save(entity);
+                inventoryRepo.persist(entity);
             });
         }
     }

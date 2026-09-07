@@ -153,7 +153,7 @@ public class SettingsView extends DefaultComponent {
     public void saveAction() {
         if (binder.writeBeanIfValid(form)) {
             try {
-                parameterLookupService.saveAll(List.of(form));
+                parameterLookupService.persist(List.of(form));
                 this.parameterGrid.getDataProvider().refreshAll();
                 this.closeDialog();
                 Notification

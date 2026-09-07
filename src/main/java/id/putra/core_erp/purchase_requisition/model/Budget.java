@@ -11,11 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "budget")
 public class Budget extends BaseModel {
@@ -32,4 +28,36 @@ public class Budget extends BaseModel {
 
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BudgetDetail> details;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public Date getFiscalYear() {
+        return fiscalYear;
+    }
+
+    public void setFiscalYear(Date fiscalYear) {
+        this.fiscalYear = fiscalYear;
+    }
+
+    public List<BudgetDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<BudgetDetail> details) {
+        this.details = details;
+    }
 }

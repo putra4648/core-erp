@@ -1,8 +1,5 @@
 package id.putra.core_erp.warehouse.ui.views.master;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -25,15 +22,14 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.dto.ProductDto;
 import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inventory.service.core.ProductCoreService;
-import id.putra.core_erp.warehouse.shared.base.dto.ProductDto;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/products", layout = MainLayout.class)
 @PageTitle("Products | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ ProductDto.class })
 public class ProductView extends VerticalLayout {
 
     private final ProductCoreService productService;
@@ -163,7 +159,7 @@ public class ProductView extends VerticalLayout {
                         Notification.show("Product updated successfully", 3000, Notification.Position.TOP_END)
                                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     } else {
-                        productService.save(product);
+                        productServicepersist(product);
                         Notification.show("Product created successfully", 3000, Notification.Position.TOP_END)
                                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     }

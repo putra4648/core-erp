@@ -2,9 +2,6 @@ package id.putra.core_erp.warehouse.ui.views.master;
 
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -32,7 +29,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "master/categories", layout = MainLayout.class)
 @PageTitle("Categories | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ CategoryDto.class })
 public class CategoryView extends VerticalLayout {
 
     private final CategoryCoreService categoryCoreService;
@@ -130,7 +126,7 @@ public class CategoryView extends VerticalLayout {
                         Notification.show("Category updated successfully", 3000, Notification.Position.TOP_END)
                                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     } else {
-                        categoryCoreService.save(List.of(category));
+                        categoryCoreServicepersist(List.of(category));
                         Notification.show("Category created successfully", 3000, Notification.Position.TOP_END)
                                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     }

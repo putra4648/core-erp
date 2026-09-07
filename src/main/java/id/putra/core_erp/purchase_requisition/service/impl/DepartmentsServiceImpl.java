@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
 import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
@@ -20,22 +16,21 @@ import id.putra.core_erp.purchase_requisition.model.Approval;
 import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
-import id.putra.core_erp.purchase_requisition.repository.UserRepo;
 import id.putra.core_erp.purchase_requisition.service.DepartmentsService;
-import lombok.RequiredArgsConstructor;
+import io.quarkus.panache.common.Sort;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service("departmentsService")
-@RequiredArgsConstructor
-@Transactional
+@ApplicationScoped
 public class DepartmentsServiceImpl implements DepartmentsService {
 
-    private final DepartmentRepo departmentRepo;
-    private final UserRepo userRepo;
+    @Inject
+    private DepartmentRepo departmentRepo;
 
     @Override
     public List<DepartmentDto> getDepartmentDropdown() {
         List<DepartmentDto> dtos = new ArrayList<>();
-        departmentRepo.findAll().forEach(data -> dtos.add(entityToDto(data)));
+        departmentRepo.findAll().list().forEach(data -> dtos.add(entityToDto(data)));
         return dtos;
     }
 
@@ -66,19 +61,19 @@ public class DepartmentsServiceImpl implements DepartmentsService {
 
     @Override
     public void addDepartment(DepartmentDto body) {
-        Optional<Department> dept = departmentRepo.findById(body.getDept_number());
+        Optional<Department> dept = departmentRepo.findByIdOptional(body.getId());
         if (dept.isPresent()) {
             String message = MessageFormat.format(MessageConstant.EXIST, "Department ", body.getDept_number());
             throw new IllegalArgumentException(message);
         } else {
             Department entity = new Department();
-            departmentRepo.save(dtoToEntity(entity, body));
+            departmentRepo.persist(dtoToEntity(entity, body));
         }
     }
 
     @Override
-    public DepartmentDto getDetailDepartment(String id) {
-        Optional<Department> deptOptional = departmentRepo.findById(id);
+    public DepartmentDto getDetailDepartment(Long id) {
+        Optional<Department> deptOptional = departmentRepo.findByIdOptional(id);
         if (deptOptional.isPresent()) {
             Department dept = deptOptional.get();
             return entityToDto(dept);
@@ -90,10 +85,10 @@ public class DepartmentsServiceImpl implements DepartmentsService {
 
     @Override
     public void updateDepartment(DepartmentDto body) {
-        Optional<Department> dept = departmentRepo.findById(body.getDept_number());
+        Optional<Department> dept = departmentRepo.findByDeptNumber(body.getDept_number());
         if (dept.isPresent()) {
             Department updatedEntity = dtoToEntity(dept.get(), body);
-            departmentRepo.save(updatedEntity);
+            departmentRepo.persist(updatedEntity);
         } else {
             String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Department " + body.getDept_number());
             throw new IllegalArgumentException(message);
@@ -101,12 +96,12 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public void updateDepartmentStatus(String deptId) {
-        Optional<Department> dept = departmentRepo.findById(deptId);
+    public void updateDepartmentStatus(Long deptId) {
+        Optional<Department> dept = departmentRepo.findByIdOptional(deptId);
         if (dept.isPresent()) {
             Department entity = dept.get();
             entity.setStatus(entity.getStatus() == StatusEnum.ACTIVE ? StatusEnum.INACTIVE : StatusEnum.ACTIVE);
-            departmentRepo.save(entity);
+            departmentRepo.persist(entity);
         } else {
             String message = MessageFormat.format(MessageConstant.UPDATE_STATUS, "department ", deptId);
             throw new IllegalArgumentException(message);
@@ -174,20 +169,24 @@ public class DepartmentsServiceImpl implements DepartmentsService {
         entity.setDeptNumber(data.getDept_number());
         entity.setStatus(data.getStatus());
 
-        if (data.getDept_manager() != null && data.getDept_manager().getNrp() != null) {
-            Optional<Users> user = userRepo.findById(data.getDept_manager().getNrp());
-            user.ifPresent(entity::setDeptManager);
-        }
+        // if (data.getDept_manager() != null && data.getDept_manager().getNrp() !=
+        // null) {
+        // Optional<Users> user = userRepo.findById(data.getDept_manager().getNrp());
+        // user.ifPresent(entity::setDeptManager);
+        // }
 
-        if (data.getDept_purchaser() != null && data.getDept_purchaser().getNrp() != null) {
-            Optional<Users> user = userRepo.findById(data.getDept_purchaser().getNrp());
-            user.ifPresent(entity::setDeptPurchaser);
-        }
+        // if (data.getDept_purchaser() != null && data.getDept_purchaser().getNrp() !=
+        // null) {
+        // Optional<Users> user = userRepo.findById(data.getDept_purchaser().getNrp());
+        // user.ifPresent(entity::setDeptPurchaser);
+        // }
 
-        if (data.getApproval_president() != null && data.getApproval_president().getNrp() != null) {
-            Optional<Users> user = userRepo.findById(data.getApproval_president().getNrp());
-            user.ifPresent(entity::setApprovalPresident);
-        }
+        // if (data.getApproval_president() != null &&
+        // data.getApproval_president().getNrp() != null) {
+        // Optional<Users> user =
+        // userRepo.findById(data.getApproval_president().getNrp());
+        // user.ifPresent(entity::setApprovalPresident);
+        // }
 
         List<Approval> approvals = entity.getApprovals();
         if (approvals != null) {
@@ -200,12 +199,12 @@ public class DepartmentsServiceImpl implements DepartmentsService {
             for (ApprovalDto approvalDto : data.getApprovals()) {
                 if (approvalDto.getUsers() != null && approvalDto.getUsers().getNrp() != null) {
                     Approval approval = new Approval();
-                    Optional<Users> user1 = userRepo.findById(approvalDto.getUsers().getNrp());
-                    if (user1.isPresent()) {
-                        approval.setDepartment(entity);
-                        approval.setUsers(user1.get());
-                        approvals.add(approval);
-                    }
+                    // Optional<Users> user1 = userRepo.findById(approvalDto.getUsers().getNrp());
+                    // if (user1.isPresent()) {
+                    // approval.setDepartment(entity);
+                    // approval.setUsers(user1.get());
+                    // approvals.add(approval);
+                    // }
                 }
             }
         }
@@ -214,10 +213,10 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public List<ApprovalDto> getDeptApprovals(String deptId) {
+    public List<ApprovalDto> getDeptApprovals(Long deptId) {
         List<ApprovalDto> dtos = new ArrayList<>();
 
-        departmentRepo.findById(deptId).ifPresent(value -> {
+        departmentRepo.findByIdOptional(deptId).ifPresent(value -> {
             if (value.getApprovals() != null) {
                 dtos.addAll(value.getApprovals().stream().map(apr -> {
                     ApprovalDto dto = new ApprovalDto();
@@ -237,9 +236,9 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public ApprovalDto getDeptApprovalPurchaser(String deptId) {
+    public ApprovalDto getDeptApprovalPurchaser(Long deptId) {
         ApprovalDto dto = null;
-        Optional<Department> deptOpt = departmentRepo.findById(deptId);
+        Optional<Department> deptOpt = departmentRepo.findByIdOptional(deptId);
         if (deptOpt.isPresent()) {
             dto = new ApprovalDto();
             Department dept = deptOpt.get();

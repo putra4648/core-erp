@@ -1,7 +1,5 @@
 package id.putra.core_erp.shared.ui;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -28,7 +26,6 @@ import id.putra.core_erp.shared.security.SecurityService;
 import jakarta.annotation.security.PermitAll;
 
 @PermitAll
-@RegisterReflectionForBinding({ SecurityService.AuthenticatedUser.class })
 public class MainLayout extends AppLayout {
 
     private final SecurityService securityService;

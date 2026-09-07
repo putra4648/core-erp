@@ -2,20 +2,21 @@ package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.inbound.dto.PutawayDto;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.PutawayCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.PutawayQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.PutawayService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class PutawayServiceImpl implements PutawayService {
 
-    private final PutawayCommandAdapter putawayCommandAdapter;
-    private final PutawayQueryAdapter putawayQueryAdapter;
+    @Inject
+    private PutawayCommandAdapter putawayCommandAdapter;
+
+    @Inject
+    private PutawayQueryAdapter putawayQueryAdapter;
 
     @Override
     public PutawayDto create(PutawayDto dto) {
@@ -44,4 +45,3 @@ public class PutawayServiceImpl implements PutawayService {
         return putawayQueryAdapter.getAll(filter);
     }
 }
-

@@ -1,38 +1,19 @@
 package id.putra.core_erp.warehouse.module.outbound.service.adapter.query.impl;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import id.putra.core_erp.warehouse.module.outbound.converter.SalesOrderConverter;
 import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
-import id.putra.core_erp.warehouse.module.outbound.model.entity.SalesOrder;
 import id.putra.core_erp.warehouse.module.outbound.model.repository.SalesOrderRepository;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.SalesOrderQueryAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
+@ApplicationScoped
 public class SalesOrderQueryAdapterImpl implements SalesOrderQueryAdapter {
-    private final SalesOrderRepository salesOrderRepository;
+    @Inject
+    private SalesOrderRepository salesOrderRepository;
 
     @Override
     public SalesOrderDto getById(Long id) {
-        return salesOrderRepository.findById(id).map(SalesOrderConverter::toDto).orElse(null);
+        return null;
     }
 
-    @Override
-    public Page<SalesOrderDto> getAll(String search, Pageable pageable) {
-        Specification<SalesOrder> spec = (root, query, criteriaBuilder) -> {
-            if (search == null || search.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            }
-            return criteriaBuilder.like(root.get("soNumber"), "%" + search + "%");
-        };
-        return salesOrderRepository.findAll(spec, pageable).map(SalesOrderConverter::toDto);
-    }
 }
-

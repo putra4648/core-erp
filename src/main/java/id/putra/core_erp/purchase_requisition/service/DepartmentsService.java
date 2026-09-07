@@ -13,13 +13,13 @@ public interface DepartmentsService {
 
     void addDepartment(DepartmentDto body);
 
-    DepartmentDto getDetailDepartment(String id);
+    DepartmentDto getDetailDepartment(Long id);
 
     void updateDepartment(DepartmentDto body);
 
-    void updateDepartmentStatus(String id);
+    void updateDepartmentStatus(Long id);
 
-    List<ApprovalDto> getDeptApprovals(String deptId);
+    List<ApprovalDto> getDeptApprovals(Long deptId);
 
-    ApprovalDto getDeptApprovalPurchaser(String deptId);
+    ApprovalDto getDeptApprovalPurchaser(Long deptId);
 }

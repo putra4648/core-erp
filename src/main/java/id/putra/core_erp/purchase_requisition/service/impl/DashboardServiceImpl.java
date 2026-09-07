@@ -9,22 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
-import id.putra.core_erp.purchase_requisition.repository.UserRepo;
 import id.putra.core_erp.purchase_requisition.service.DashboardService;
-import lombok.RequiredArgsConstructor;
+import io.quarkus.oidc.OidcTenantConfig.Authentication;
 
-@Service("dashboardService")
-@RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
 
     private final RequisitionRepo requisitionRepo;
-    private final UserRepo userRepo;
+
     private final SimpleDateFormat sdf = new SimpleDateFormat("MMM");
 
     @Override

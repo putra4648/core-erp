@@ -1,19 +1,7 @@
 package id.putra.core_erp.warehouse.module.warehouse.dto;
 
-import id.putra.core_erp.warehouse.shared.base.dto.BaseDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import id.putra.core_erp.shared.dto.BaseDto;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@EqualsAndHashCode(callSuper = false)
 public class LocationDto extends BaseDto {
     private Long id;
     private String name;
@@ -22,5 +10,53 @@ public class LocationDto extends BaseDto {
     private String binNumber;
     /** parent rack id to avoid circular nested DTOs */
     private String rackId;
-}
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public String getBinNumber() {
+        return binNumber;
+    }
+
+    public void setBinNumber(String binNumber) {
+        this.binNumber = binNumber;
+    }
+
+    public String getRackId() {
+        return rackId;
+    }
+
+    public void setRackId(String rackId) {
+        this.rackId = rackId;
+    }
+
+}

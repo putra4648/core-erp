@@ -5,21 +5,34 @@ import java.math.BigInteger;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
 public class BudgetTypeDto {
     @JsonAlias("budget_date")
     @JsonProperty("budget_date")
     private String budgetDateStr;
     private BigInteger plan;
     private BigInteger actual;
+
+    public String getBudgetDateStr() {
+        return budgetDateStr;
+    }
+
+    public void setBudgetDateStr(String budgetDateStr) {
+        this.budgetDateStr = budgetDateStr;
+    }
+
+    public BigInteger getPlan() {
+        return plan;
+    }
+
+    public void setPlan(BigInteger plan) {
+        this.plan = plan;
+    }
+
+    public BigInteger getActual() {
+        return actual;
+    }
+
+    public void setActual(BigInteger actual) {
+        this.actual = actual;
+    }
 }

@@ -2,13 +2,9 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import id.putra.core_erp.warehouse.module.warehouse.dto.ContactPersonWarehouseDto;
 
 public interface ContactPersonWarehouseCoreService {
-    Page<ContactPersonWarehouseDto> getContacts(ContactPersonWarehouseDto dto, Pageable pageable);
 
     ContactPersonWarehouseDto getContact(ContactPersonWarehouseDto dto);
 
@@ -18,4 +14,3 @@ public interface ContactPersonWarehouseCoreService {
 
     void delete(List<ContactPersonWarehouseDto> dtos);
 }
-

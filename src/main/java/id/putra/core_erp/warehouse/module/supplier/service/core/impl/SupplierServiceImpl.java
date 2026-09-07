@@ -2,26 +2,20 @@ package id.putra.core_erp.warehouse.module.supplier.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.supplier.dto.SupplierDto;
 import id.putra.core_erp.warehouse.module.supplier.service.adapter.command.SupplierCommandAdapter;
 import id.putra.core_erp.warehouse.module.supplier.service.adapter.query.SupplierQueryAdapter;
 import id.putra.core_erp.warehouse.module.supplier.service.core.SupplierService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class SupplierServiceImpl implements SupplierService {
-    private final SupplierCommandAdapter supplierCommandAdapter;
-    private final SupplierQueryAdapter supplierQueryAdapter;
+    @Inject
+    private SupplierCommandAdapter supplierCommandAdapter;
 
-    @Override
-    public Page<SupplierDto> getAll(Pageable pageable, String search) {
-        return supplierQueryAdapter.getAll(pageable, search);
-    }
+    @Inject
+    private SupplierQueryAdapter supplierQueryAdapter;
 
     @Override
     public SupplierDto getById(Long id) {
@@ -35,8 +29,8 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public SupplierDto update(Long id, SupplierDto dto) {
-        return supplierCommandAdapter.update(id, dto);
+    public void update(Long id, SupplierDto dto) {
+        supplierCommandAdapter.update(id, dto);
     }
 
     @Override
@@ -44,4 +38,3 @@ public class SupplierServiceImpl implements SupplierService {
         supplierCommandAdapter.delete(id);
     }
 }
-

@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -30,7 +28,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "rfq", layout = MainLayout.class)
 @PageTitle("Request For Quotations | PR System")
 @PermitAll
-@RegisterReflectionForBinding({ RFQDto.class, AppDto.class })
 public class RfqView extends VerticalLayout {
 
     private final RFQService rfqService;

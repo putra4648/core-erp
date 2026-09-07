@@ -1,45 +1,22 @@
 package id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.impl;
 
-import java.util.Objects;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import id.putra.core_erp.warehouse.module.warehouse.converter.RackConverter;
 import id.putra.core_erp.warehouse.module.warehouse.dto.RackDto;
-import id.putra.core_erp.warehouse.module.warehouse.model.entity.Rack;
 import id.putra.core_erp.warehouse.module.warehouse.model.repository.RackRepository;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.RackQueryAdapter;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
+@ApplicationScoped
 public class RackQueryAdapterImpl implements RackQueryAdapter {
-    private final RackRepository rackRepository;
+
+    @Inject
+    private RackRepository rackRepository;
 
     @Override
-    public Page<RackDto> getRacks(RackDto dto, Pageable pageable) {
-        Specification<Rack> specs = (root, criteria, builder) -> {
-            Predicate name = builder.like(root.get("name"),
-                    "%" + (StringUtils.hasText(dto.getName()) ? dto.getName() : "") + "%");
-            return builder.and(name);
-        };
+    public RackDto getRackById(RackDto dto) {
 
-        Pageable safePageable = Objects.requireNonNull(pageable);
-        return rackRepository.findAll(specs, safePageable).map(RackConverter::toDto);
-    }
-
-    @Override
-    public RackDto getRackById(RackDto rackDto) {
-        Long safeId = Objects.requireNonNull(rackDto.getId());
-        return rackRepository.findById(safeId).map(RackConverter::toDto).orElse(null);
+        var r = rackRepository.findById(dto.getId());
+        return null;
     }
 
 }
-

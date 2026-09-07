@@ -1,44 +1,67 @@
 package id.putra.core_erp.shared.entity;
 
-import java.time.LocalTime;
-
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
-@Getter
-@Setter
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 public class BaseEntity {
 
-    @CreatedDate
+    // Auto-timestamped fields - no Spring SecurityContextHolder needed!
     @Column(name = "created_at")
-    private LocalTime createdAt;
-
-    @CreatedBy
+    private Instant createdAt;
     @Column(name = "created_by")
     private String createdBy;
 
-    @LastModifiedDate
     @Column(name = "updated_at")
-    private LocalTime updatedAt;
 
-    @LastModifiedBy
+    private Instant updatedAt;
     @Column(name = "updated_by")
     private String updatedBy;
+
+    // Lifecycle callbacks for auto-timestamping
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
 }

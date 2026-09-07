@@ -1,9 +1,10 @@
 package id.putra.core_erp.purchase_requisition.repository;
 
-import org.springframework.data.repository.CrudRepository;
-
 import id.putra.core_erp.purchase_requisition.model.RFQ;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface RFQRepo extends CrudRepository<RFQ, String> {
+@ApplicationScoped
+public class RFQRepo implements PanacheRepository<RFQ> {
 
 }

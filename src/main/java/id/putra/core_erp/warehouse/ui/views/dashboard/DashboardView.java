@@ -1,5 +1,7 @@
 package id.putra.core_erp.warehouse.ui.views.dashboard;
 
+import java.util.List;
+
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -13,24 +15,16 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+import id.putra.core_erp.shared.dto.ProductDto;
+import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inventory.service.core.ProductCoreService;
 import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.WarehouseCoreService;
-import id.putra.core_erp.warehouse.shared.base.dto.ProductDto;
-import id.putra.core_erp.shared.ui.MainLayout;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.List;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Dashboard | WMS Pro")
 @AnonymousAllowed
-@RegisterReflectionForBinding({
-        DashboardView.ActivityItem.class,
-        ProductDto.class,
-        WarehouseDto.class
-})
 public class DashboardView extends VerticalLayout {
 
     private final ProductCoreService productService;
@@ -153,6 +147,3 @@ public class DashboardView extends VerticalLayout {
     public static record ActivityItem(String type, String title, String time, int quantity) {
     }
 }
-
-
-

@@ -9,6 +9,4 @@ public interface PurchaseOrderCommandAdapter {
 
     Boolean delete(Long id);
 
-    PurchaseOrderDto patch(PurchaseOrderDto dto);
 }
-

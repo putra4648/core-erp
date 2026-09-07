@@ -25,12 +25,10 @@ import id.putra.core_erp.purchase_requisition.dto.CategoryDto;
 import id.putra.core_erp.purchase_requisition.service.CategoryService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "pr/categories", layout = MainLayout.class)
 @PageTitle("PR Categories | CORE ERP")
 @PermitAll
-@RegisterReflectionForBinding({ CategoryDto.class })
 public class CategoryView extends VerticalLayout {
 
     private final CategoryService categoryService;

@@ -1,23 +1,11 @@
 package id.putra.core_erp.warehouse.module.customer.service.core;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import id.putra.core_erp.warehouse.module.customer.converter.CustomerConverter;
 import id.putra.core_erp.warehouse.module.customer.dto.CustomerDto;
-import id.putra.core_erp.shared.entity.ContactPersonCustomer;
 import id.putra.core_erp.warehouse.module.customer.model.repository.CustomerRepository;
-import id.putra.core_erp.shared.entity.Customer;
-import id.putra.core_erp.warehouse.shared.enums.ResponseEnum;
-import id.putra.core_erp.warehouse.shared.exceptions.ModuleException;
+import jakarta.transaction.Transactional;
 
-@Service
 @Transactional
 public class CustomerService {
     private final CustomerRepository repository;
@@ -26,49 +14,19 @@ public class CustomerService {
         this.repository = repository;
     }
 
-    public Page<CustomerDto> getAll(String search, Pageable pageable) {
-        Specification<Customer> spec = (root, query, cb) -> search == null || search.isEmpty() ? cb.conjunction()
-                : cb.like(root.get("name"), "%" + search + "%");
-        Pageable safePageable = java.util.Objects.requireNonNull(pageable);
-        return repository.findAll(spec, safePageable).map(CustomerConverter::toDto);
-    }
-
     public CustomerDto getById(Long id) {
-        return repository.findById(id).map(CustomerConverter::toDto).orElseThrow(() -> new ModuleException(ResponseEnum.DATA_NOT_FOUND));
+        return null;
     }
 
     public List<CustomerDto> create(List<CustomerDto> dtos) {
-        List<Customer> entities = dtos.stream().map(CustomerConverter::toEntity).collect(Collectors.toList());
-        return repository.saveAll(entities).stream().map(CustomerConverter::toDto).collect(Collectors.toList());
+        return null;
     }
 
     public CustomerDto update(Long id, CustomerDto dto) {
-        Long safeId = java.util.Objects.requireNonNull(id);
-        Customer entity = repository.findById(safeId).orElseThrow(() -> new ModuleException(ResponseEnum.DATA_NOT_FOUND));
-        
-        entity.setName(dto.getName());
-        entity.setCode(dto.getCode());
-        entity.setIsActive(dto.getIsActive());
-        
-        // Handle contact person update mapping if needed
-        if (dto.getContactPerson() != null) {
-            if (entity.getContactPerson() == null) {
-                entity.setContactPerson(new ContactPersonCustomer());
-            }
-            entity.getContactPerson().setName(dto.getContactPerson().getName());
-            entity.getContactPerson().setEmail(dto.getContactPerson().getEmail());
-            entity.getContactPerson().setPhone(dto.getContactPerson().getPhone());
-            entity.getContactPerson().setAddress(dto.getContactPerson().getAddress());
-        }
-
-        return CustomerConverter.toDto(repository.save(entity));
+        return null;
     }
 
     public void delete(Long id) {
-        Long safeId = java.util.Objects.requireNonNull(id);
-        repository.deleteById(safeId);
+        repository.deleteById(id);
     }
 }
-
-
-

@@ -2,26 +2,21 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.warehouse.module.warehouse.dto.ZoneDto;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.ZoneCommandAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.ZoneQueryAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.ZoneCoreService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class ZoneServiceImpl implements ZoneCoreService {
-    private final ZoneQueryAdapter zoneQueryAdapter;
-    private final ZoneCommandAdapter zoneCommandAdapter;
 
-    @Override
-    public Page<ZoneDto> getZones(ZoneDto dto, Pageable pageable) {
-        return zoneQueryAdapter.getZones(dto, pageable);
-    }
+    @Inject
+    private ZoneQueryAdapter zoneQueryAdapter;
+
+    @Inject
+    private ZoneCommandAdapter zoneCommandAdapter;
 
     @Override
     public ZoneDto getZone(ZoneDto zoneDto) {
@@ -44,4 +39,3 @@ public class ZoneServiceImpl implements ZoneCoreService {
     }
 
 }
-

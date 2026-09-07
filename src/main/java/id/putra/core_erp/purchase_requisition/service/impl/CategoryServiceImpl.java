@@ -5,21 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
 import id.putra.core_erp.purchase_requisition.dto.CategoryDto;
 import id.putra.core_erp.purchase_requisition.repository.CategoryRepo;
 import id.putra.core_erp.purchase_requisition.service.CategoryService;
 import id.putra.core_erp.shared.entity.Category;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
-@Service("categoryService")
 @Transactional(rollbackOn = { Exception.class })
-@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    private final CategoryRepo categoryRepo;
+    @Inject
+    private CategoryRepo categoryRepo;
 
     @Override
     public void addCategory(CategoryDto dto) {
@@ -34,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
             } else {
                 entity.setParentId(null);
             }
-            categoryRepo.save(entity);
+            categoryRepo.persist(entity);
         } else {
             throw new IllegalArgumentException("Category with name '" + dto.getName() + "' already exists");
         }
@@ -101,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void updateCategory(CategoryDto dto) {
         if (dto.getId() != null && !dto.getId().isBlank()) {
             long id = Long.parseLong(dto.getId());
-            categoryRepo.findById(id).ifPresent(entity -> {
+            categoryRepo.findByIdOptional(id).ifPresent(entity -> {
                 entity.setName(dto.getName());
                 if (dto.getParent_id() != null && !dto.getParent_id().isBlank()
                         && !"null".equalsIgnoreCase(dto.getParent_id())) {
@@ -109,7 +106,7 @@ public class CategoryServiceImpl implements CategoryService {
                 } else {
                     entity.setParentId(null);
                 }
-                categoryRepo.save(entity);
+                categoryRepo.persist(entity);
             });
         }
     }
@@ -118,7 +115,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> getCategoryDropdown() {
         List<CategoryDto> dtos = new ArrayList<>();
 
-        categoryRepo.findAll().forEach(data -> {
+        categoryRepo.findAll().list().forEach(data -> {
             dtos.add(entityToDto(data));
         });
         return dtos;

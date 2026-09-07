@@ -1,37 +1,28 @@
 package id.putra.core_erp.warehouse.module.customer.service.adapter.command.impl;
 
-import org.springframework.stereotype.Service;
-
-import id.putra.core_erp.warehouse.module.customer.converter.ContactPersonCustomerConverter;
 import id.putra.core_erp.warehouse.module.customer.dto.ContactPersonCustomerDto;
 import id.putra.core_erp.warehouse.module.customer.model.repository.ContactPersonCustomerRepository;
 import id.putra.core_erp.warehouse.module.customer.service.adapter.command.ContactPersonCustomerCommandAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class ContactPersonCustomerCommandAdapterImpl implements ContactPersonCustomerCommandAdapter {
-    private final ContactPersonCustomerRepository repository;
+    @Inject
+    private ContactPersonCustomerRepository repository;
 
     @Override
     public ContactPersonCustomerDto create(ContactPersonCustomerDto dto) {
-        var entity = ContactPersonCustomerConverter.toEntity(dto);
-        var saved = repository.save(java.util.Objects.requireNonNull(entity));
-        return ContactPersonCustomerConverter.toDto(saved);
+        throw new UnsupportedOperationException("Unimplemented method 'create'");
     }
 
     @Override
     public ContactPersonCustomerDto update(Long id, ContactPersonCustomerDto dto) {
-        Long safeId = java.util.Objects.requireNonNull(id);
-        var entity = repository.findById(safeId).orElseThrow();
-        var saved = repository.save(java.util.Objects.requireNonNull(entity));
-        return ContactPersonCustomerConverter.toDto(saved);
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
     public void delete(Long id) {
-        Long safeId = java.util.Objects.requireNonNull(id);
-        repository.deleteById(safeId);
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 }
-

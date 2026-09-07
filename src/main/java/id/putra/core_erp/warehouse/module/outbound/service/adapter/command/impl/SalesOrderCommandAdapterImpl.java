@@ -1,40 +1,26 @@
 package id.putra.core_erp.warehouse.module.outbound.service.adapter.command.impl;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import id.putra.core_erp.warehouse.module.outbound.converter.SalesOrderConverter;
 import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
 import id.putra.core_erp.warehouse.module.outbound.model.repository.SalesOrderRepository;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.SalesOrderCommandAdapter;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = false)
+@ApplicationScoped
 public class SalesOrderCommandAdapterImpl implements SalesOrderCommandAdapter {
-
-    private final SalesOrderRepository salesOrderRepository;
+    @Inject
+    private SalesOrderRepository salesOrderRepository;
 
     @Override
-    public SalesOrderDto add(SalesOrderDto dto) {
-        var entity = SalesOrderConverter.toEntity(dto);
-        return SalesOrderConverter.toDto(salesOrderRepository.save(java.util.Objects.requireNonNull(entity)));
+    public void add(SalesOrderDto dto) {
     }
 
     @Override
-    public SalesOrderDto update(SalesOrderDto dto) {
-        var entity = SalesOrderConverter.toEntity(dto);
-        return SalesOrderConverter.toDto(salesOrderRepository.save(java.util.Objects.requireNonNull(entity)));
+    public void update(SalesOrderDto dto) {
     }
 
     @Override
-    public Boolean delete(Long id) {
-        if (salesOrderRepository.existsById(id)) {
-            salesOrderRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    public void delete(Long id) {
+
     }
 }
-

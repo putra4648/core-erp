@@ -1,22 +1,22 @@
 package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import org.jspecify.annotations.NonNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.PurchaseOrderCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.PurchaseOrderQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.PurchaseOrderService;
-import lombok.RequiredArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@Service
-@RequiredArgsConstructor
+@ApplicationScoped
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
-    private final PurchaseOrderCommandAdapter purchaseOrderCommandAdapter;
-    private final PurchaseOrderQueryAdapter purchaseOrderQueryAdapter;
+    @Inject
+    private PurchaseOrderCommandAdapter purchaseOrderCommandAdapter;
+
+    @Inject
+    private PurchaseOrderQueryAdapter purchaseOrderQueryAdapter;
 
     @Override
     public PurchaseOrderDto create(PurchaseOrderDto dto) {
@@ -33,19 +33,4 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         return purchaseOrderCommandAdapter.delete(id);
     }
 
-    @Override
-    public PurchaseOrderDto getById(@NonNull Long id, @NonNull Pageable pageable) {
-        return purchaseOrderQueryAdapter.getById(id, pageable);
-    }
-
-    @Override
-    public Page<PurchaseOrderDto> getAll(PurchaseOrderDto dto, @NonNull Pageable pageable) {
-        return purchaseOrderQueryAdapter.getAll(dto, pageable);
-    }
-
-    @Override
-    public PurchaseOrderDto patch(PurchaseOrderDto dto) {
-        return purchaseOrderCommandAdapter.patch(dto);
-    }
 }
-
