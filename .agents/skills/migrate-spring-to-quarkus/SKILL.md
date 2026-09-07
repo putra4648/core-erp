@@ -28,11 +28,11 @@ Modular, gate-driven migration of Spring Boot applications to Quarkus.
 
 Load the relevant reference file when working on a module:
 
-| Reference | Use during |
-|---|---|
-| [references/dependency-map.md](references/dependency-map.md) | Build module: dependency and plugin mapping |
+| Reference                                                    | Use during                                                  |
+| ------------------------------------------------------------ | ----------------------------------------------------------- |
+| [references/dependency-map.md](references/dependency-map.md) | Build module: dependency and plugin mapping                 |
 | [references/annotation-map.md](references/annotation-map.md) | Code module: annotation, DI, REST, Data, Security migration |
-| [references/config-map.md](references/config-map.md) | Build module: configuration property migration |
+| [references/config-map.md](references/config-map.md)         | Build module: configuration property migration              |
 
 
 ## Step 1: Analyze & Choose Strategy
@@ -88,14 +88,14 @@ After the user has chosen a strategy, check if the target project is a git repos
 - For each module, evaluate whether it applies to this project. A module executes only when its gate status is: **PASS**.
 - Inspect the project to determine the gate result — do not rely on blind grep commands; use your understanding of the codebase.
 
-| Module                          | Gate Check                                                                                                                | Gate Result                                                                              |
-|---------------------------------|---------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
-| [jdk](modules/jdk.md)           | JDK 21+ required                                   | **ALWAYS** -- stop migration if < 21 |
-| [build](modules/build.md)       | Spring Boot parent/starters/`spring-boot-maven-plugin` in `pom.xml`, or Spring Boot/`io.spring.dependency-management` plugins in `build.gradle(.kts)` | **PASS** if Spring Boot build markers found; **SKIP** otherwise                          |
-| [code](modules/code.md)         | Spring annotations in Java sources (`@Component`, `@Service`, `@Controller`, `@Repository`, `@Entity`, `@Autowired`, etc.) | **PASS** if Spring annotations found; **SKIP** otherwise                                 |
-| [frontend](modules/frontend.md) | Thymeleaf/JSP templates in `templates/` or static resources in `static/`                                                  | **PASS** if view layer found; **SKIP** otherwise                                         |
-| [testing](modules/testing.md)   | Spring test annotations in test sources (`@SpringBootTest`, `@WebMvcTest`, `@MockBean`)                                   | **PASS** if Spring tests found; **SKIP** otherwise                                       |
-| [cleanup](modules/cleanup.md)   | Leftover Spring artifacts after all other modules                                                                          | **ALWAYS** — runs after all other modules                                                |
+| Module                          | Gate Check                                                                                                                                            | Gate Result                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| [jdk](modules/jdk.md)           | JDK 21+ required                                                                                                                                      | **ALWAYS** -- stop migration if < 21                            |
+| [build](modules/build.md)       | Spring Boot parent/starters/`spring-boot-maven-plugin` in `pom.xml`, or Spring Boot/`io.spring.dependency-management` plugins in `build.gradle(.kts)` | **PASS** if Spring Boot build markers found; **SKIP** otherwise |
+| [code](modules/code.md)         | Spring annotations in Java sources (`@Component`, `                                                                                                   |
+| [frontend](modules/frontend.md) | Thymeleaf/JSP templates in `templates/` or static resources in `static/`                                                                              | **PASS** if view layer found; **SKIP** otherwise                |
+| [testing](modules/testing.md)   | Spring test annotations in test sources (`@SpringBootTest`, `@WebMvcTest`, `@MockBean`)                                                               | **PASS** if Spring tests found; **SKIP** otherwise              |
+| [cleanup](modules/cleanup.md)   | Leftover Spring artifacts after all other modules                                                                                                     | **ALWAYS** — runs after all other modules                       |
 
 ### Execution Protocol
 
@@ -128,14 +128,14 @@ The module will use the current project state and the chosen strategy (if alread
 
 Run each check in order. A check fails = stop and fix before continuing.
 
-| # | Check | Command (Maven / Gradle) | Pass criteria |
-|---|-------|---------|---------------|
-| 1 | **Builds** | `./mvnw clean package -DskipTests` / `./gradlew clean build -x test` | Exit code 0, no compilation errors |
-| 2 | **No Spring deps** | Search build file for `org.springframework` | Zero Spring deps (except Spring compat extensions if using that strategy) |
-| 3 | **Has Quarkus** | Search build file for `io.quarkus` | Quarkus BOM and at least one extension present |
-| 4 | **Tests pass** | `./mvnw test` / `./gradlew test` | All tests pass using `@QuarkusTest` |
-| 5 | **Starts up** | `./mvnw quarkus:dev` / `./gradlew quarkusDev` | App starts, `curl http://localhost:8080/q/health` returns UP |
-| 6 | **No leftover templates** | Search for Thymeleaf/JSP references | None remaining (unless intentionally kept) |
+| #   | Check                     | Command (Maven / Gradle)                                             | Pass criteria                                                             |
+| --- | ------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 1   | **Builds**                | `./mvnw clean package -DskipTests` / `./gradlew clean build -x test` | Exit code 0, no compilation errors                                        |
+| 2   | **No Spring deps**        | Search build file for `org.springframework`                          | Zero Spring deps (except Spring compat extensions if using that strategy) |
+| 3   | **Has Quarkus**           | Search build file for `io.quarkus`                                   | Quarkus BOM and at least one extension present                            |
+| 4   | **Tests pass**            | `./mvnw test` / `./gradlew test`                                     | All tests pass using `@QuarkusTest`                                       |
+| 5   | **Starts up**             | `./mvnw quarkus:dev` / `./gradlew quarkusDev`                        | App starts, `curl http://localhost:8080/q/health` returns UP              |
+| 6   | **No leftover templates** | Search for Thymeleaf/JSP references                                  | None remaining (unless intentionally kept)                                |
 
 ## Step 5: Migration Review (Self-Reflection)
 
@@ -165,30 +165,30 @@ Present the review as a structured report:
 - Estimated cost: [~$X.XX — token counts × per-model pricing from anthropic.com/pricing]
 
 ### Changes by Module
-| Module | Files changed | Key changes |
-|--------|--------------|-------------|
-| build | pom.xml or build.gradle(.kts), application.properties | ... |
-| code | ... | ... |
-| frontend | ... | ... |
-| testing | ... | ... |
+| Module   | Files changed                                         | Key changes |
+| -------- | ----------------------------------------------------- | ----------- |
+| build    | pom.xml or build.gradle(.kts), application.properties | ...         |
+| code     | ...                                                   | ...         |
+| frontend | ...                                                   | ...         |
+| testing  | ...                                                   | ...         |
 
 ### Validation Results
-| Check | Result | Notes |
-|-------|--------|-------|
-| Builds | PASS/FAIL | |
-| No Spring deps | PASS/FAIL | |
-| Has Quarkus | PASS/FAIL | |
-| Tests pass | PASS/FAIL | |
-| Starts up | PASS/FAIL | |
-| No leftover templates | PASS/FAIL | |
+| Check                 | Result    | Notes |
+| --------------------- | --------- | ----- |
+| Builds                | PASS/FAIL |       |
+| No Spring deps        | PASS/FAIL |       |
+| Has Quarkus           | PASS/FAIL |       |
+| Tests pass            | PASS/FAIL |       |
+| Starts up             | PASS/FAIL |       |
+| No leftover templates | PASS/FAIL |       |
 
 ### Unmigrated Code (TODOs)
 | File | Line | What | Why not migrated |
-|------|------|------|-----------------|
+| ---- | ---- | ---- | ---------------- |
 
 ### Removed Code
 | File | What was removed | Justification |
-|------|-----------------|---------------|
+| ---- | ---------------- | ------------- |
 
 ### Skill Improvement Suggestions
 - [Any missing mappings, unclear instructions, or edge cases discovered]
