@@ -2,7 +2,7 @@ package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReturnDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Return;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.ReturnInboundCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.ReturnInboundQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.ReturnInboundService;
@@ -18,29 +18,29 @@ public class ReturnInboundServiceImpl implements ReturnInboundService {
     private ReturnInboundQueryAdapter returnInboundQueryAdapter;
 
     @Override
-    public ReturnDto create(ReturnDto dto) {
+    public Return create(Return dto) {
         return returnInboundCommandAdapter.add(dto);
     }
 
     @Override
-    public ReturnDto update(ReturnDto dto) {
+    public Return update(Return dto) {
         return returnInboundCommandAdapter.update(dto);
     }
 
     @Override
     public Boolean delete(Long id) {
-        ReturnDto dto = new ReturnDto();
+        Return dto = new Return();
         dto.setId(id);
         return returnInboundCommandAdapter.delete(dto);
     }
 
     @Override
-    public ReturnDto getById(Long id) {
+    public Return getById(Long id) {
         return returnInboundQueryAdapter.getById(id);
     }
 
     @Override
-    public List<ReturnDto> getAll(ReturnDto filter) {
+    public List<Return> getAll(Return filter) {
         return returnInboundQueryAdapter.getAll(filter);
     }
 }

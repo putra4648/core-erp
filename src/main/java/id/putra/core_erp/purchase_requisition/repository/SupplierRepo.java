@@ -3,6 +3,7 @@ package id.putra.core_erp.purchase_requisition.repository;
 import java.util.List;
 import java.util.Optional;
 
+import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.shared.entity.Supplier;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,6 +21,10 @@ public class SupplierRepo implements PanacheRepository<Supplier> {
 
     public int countByNameContainingIgnoreCase(String name) {
         return (int) count("name ilike ?1", "%" + name + "%");
+    }
+
+    public List<Supplier> findByStatus(StatusEnum status) {
+        return list("status", status);
     }
 
     //

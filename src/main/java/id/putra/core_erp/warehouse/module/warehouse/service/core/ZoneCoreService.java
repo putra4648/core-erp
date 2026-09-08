@@ -2,15 +2,20 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.ZoneDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Zone;
+import io.quarkus.panache.common.Page;
 
 public interface ZoneCoreService {
 
-    ZoneDto getZone(ZoneDto zoneDto);
+    Zone getZone(Zone zoneDto);
 
-    void add(List<ZoneDto> dtos);
+    void add(List<Zone> dtos);
 
-    void update(List<ZoneDto> dtos);
+    void update(List<Zone> dtos);
 
-    void delete(List<ZoneDto> dtos);
+    void delete(List<Zone> dtos);
+
+    DataProvider<Zone, Void> getZones(Zone param, Page ofSize);
 }

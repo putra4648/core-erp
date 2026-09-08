@@ -1,10 +1,26 @@
 package id.putra.core_erp.purchase_requisition.service;
 
-import id.putra.core_erp.purchase_requisition.dto.TransferDto;
+import java.util.List;
+
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
+import id.putra.core_erp.purchase_requisition.model.Transfer;
+import io.vertx.mutiny.core.file.AsyncFile;
 
-public interface TransferService
-        extends AppData<TransferDto>, AppApproval<TransferDto, ApprovalEnum>,
-        AppDownloadFile<TransferDto> {
+public interface TransferService {
 
+        void add(Transfer dto);
+
+        void update(Transfer dto);
+
+        void delete(Long id);
+
+        List<Transfer> findAll(Transfer dto);
+
+        Transfer getById(Transfer dto);
+
+        Boolean checkApprovalFlow(Transfer dto);
+
+        ApprovalEnum checkStatusApprovalIsPermanent(Transfer dto);
+
+        AsyncFile download(Transfer dto);
 }

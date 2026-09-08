@@ -1,6 +1,15 @@
-package id.putra.core_erp.warehouse.module.inventory.dto;
+package id.putra.core_erp.warehouse.module.inbound.model.entity;
 
-public class CategoryDto {
+import com.vaadin.flow.component.template.Id;
+
+import id.putra.core_erp.purchase_requisition.model.BaseModel;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table
+public class Return extends BaseModel {
+    @Id
     private Long id;
     private String name;
     private String description;
@@ -28,5 +37,4 @@ public class CategoryDto {
     public void setDescription(String description) {
         this.description = description;
     }
-
 }

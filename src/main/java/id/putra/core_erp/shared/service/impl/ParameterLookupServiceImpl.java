@@ -5,6 +5,7 @@ import java.util.List;
 import id.putra.core_erp.shared.entity.ParameterLookup;
 import id.putra.core_erp.shared.repository.ParameterLookupRepository;
 import id.putra.core_erp.shared.service.ParameterLookupService;
+import io.quarkus.panache.common.Page;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -37,6 +38,11 @@ public class ParameterLookupServiceImpl implements ParameterLookupService {
     @Override
     public void persist(List<ParameterLookup> parameterLookups) throws Exception {
         parameterLookupRepository.persist(parameterLookups);
+    }
+
+    @Override
+    public List<ParameterLookup> getAllParameterLookups(String search, Page page) {
+        return parameterLookupRepository.find("search = ?1", search).page(page).list();
     }
 
 }

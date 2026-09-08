@@ -2,7 +2,7 @@ package id.putra.core_erp.warehouse.module.outbound.service.adapter.command.impl
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.outbound.dto.PickingTaskDto;
+import id.putra.core_erp.warehouse.module.outbound.model.entity.PickingTask;
 import id.putra.core_erp.warehouse.module.outbound.model.repository.PickingTaskRepository;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.PickingTaskCommandAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,15 +14,15 @@ public class PickingTaskCommandAdapterImpl implements PickingTaskCommandAdapter 
     private PickingTaskRepository pickingTaskRepository;
 
     @Override
-    public void add(List<PickingTaskDto> dtos) {
+    public void add(List<PickingTask> dtos) {
     }
 
     @Override
-    public void update(List<PickingTaskDto> dtos) {
+    public void update(List<PickingTask> dtos) {
     }
 
     @Override
-    public void delete(List<PickingTaskDto> dtos) {
+    public void delete(List<PickingTask> dtos) {
 
     }
 }

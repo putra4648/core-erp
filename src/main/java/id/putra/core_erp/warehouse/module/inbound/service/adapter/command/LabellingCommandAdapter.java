@@ -1,12 +1,11 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.LabellingDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Labelling;
 
 public interface LabellingCommandAdapter {
-    LabellingDto add(LabellingDto dto);
+    Labelling add(Labelling dto);
 
-    LabellingDto update(LabellingDto dto);
+    Labelling update(Labelling dto);
 
-    Boolean delete(LabellingDto dto);
+    Boolean delete(Labelling dto);
 }
-

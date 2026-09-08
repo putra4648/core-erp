@@ -12,7 +12,7 @@ public class InventoryRepo implements PanacheRepository<Inventory> {
         return find("itemNumber = ?1", itemNumber).firstResultOptional();
     }
 
-    public Optional<Inventory> findByIdPartNumber(String partNumber) {
-        return find("partNumber = ?1", partNumber).firstResultOptional();
+    public Inventory findByPartNumber(String partNumber) {
+        return find("partNumber = ?1", partNumber).firstResult();
     }
 }

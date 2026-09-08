@@ -1,8 +1,5 @@
 package id.putra.core_erp.purchase_requisition.ui.views.company;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -18,7 +15,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.CompanyDto;
+import id.putra.core_erp.purchase_requisition.model.Company;
 import id.putra.core_erp.purchase_requisition.service.CompanyService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
@@ -85,25 +82,25 @@ public class CompanyView extends VerticalLayout {
 
     private void loadCompanyData() {
         try {
-            CompanyDto dto = companyService.getProfile();
+            Company dto = companyService.getProfile();
             if (dto != null) {
                 companyId = dto.getId() != null ? dto.getId() : 1;
                 nameField.setValue(dto.getName() != null ? dto.getName() : "");
                 telpField.setValue(dto.getTelp() != null ? dto.getTelp() : "");
                 npwpField.setValue(dto.getNpwp() != null ? dto.getNpwp() : "");
                 accBankField.setValue(dto.getAccountBank() != null ? dto.getAccountBank() : "");
-                if (dto.getFinancialEndYear() != null && !dto.getFinancialEndYear().isBlank()) {
+                if (dto.getFinancialEndYear() != null) {
                     try {
-                        Date d = new SimpleDateFormat("yyyy-MM-dd").parse(dto.getFinancialEndYear());
-                        endYearPicker.setValue(d.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
+                        endYearPicker.setValue(dto.getFinancialEndYear().toInstant()
+                                .atZone(java.time.ZoneId.systemDefault()).toLocalDate());
                     } catch (Exception ignored) {
                     }
                 }
-                curr1Field.setValue(dto.getCurr1() != null ? dto.getCurr1() : "IDR");
-                curr2Field.setValue(dto.getCurr2() != null ? dto.getCurr2() : "USD");
-                curr3Field.setValue(dto.getCurr3() != null ? dto.getCurr3() : "EUR");
-                autoCloseOrderBox.setValue(Boolean.TRUE.equals(dto.getIsAutoCloseOrder()));
-                registerApprovalBox.setValue(Boolean.TRUE.equals(dto.getIsRegisterApproval()));
+                // curr1Field.setValue(dto.getCurr1() != null ? dto.getCurr1() : "IDR");
+                // curr2Field.setValue(dto.getCurr2() != null ? dto.getCurr2() : "USD");
+                // curr3Field.setValue(dto.getCurr3() != null ? dto.getCurr3() : "EUR");
+                // autoCloseOrderBox.setValue(Boolean.TRUE.equals(dto.getIsAutoCloseOrder()));
+                // registerApprovalBox.setValue(Boolean.TRUE.equals(dto.getIsRegisterApproval()));
             }
         } catch (Exception ex) {
             // handle
@@ -111,22 +108,22 @@ public class CompanyView extends VerticalLayout {
     }
 
     private void handleSave() {
-        CompanyDto dto = new CompanyDto();
+        Company dto = new Company();
         dto.setId(companyId);
         dto.setName(nameField.getValue());
         dto.setTelp(telpField.getValue());
         dto.setNpwp(npwpField.getValue());
         dto.setAccountBank(accBankField.getValue());
         if (endYearPicker.getValue() != null) {
-            dto.setFinancialEndYear(endYearPicker.getValue().toString());
+            // dto.setFinancialEndYear(endYearPicker.getValue());
         } else {
-            dto.setFinancialEndYear(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+            dto.setFinancialEndYear(null);
         }
-        dto.setCurr1(curr1Field.getValue());
-        dto.setCurr2(curr2Field.getValue());
-        dto.setCurr3(curr3Field.getValue());
-        dto.setIsAutoCloseOrder(autoCloseOrderBox.getValue());
-        dto.setIsRegisterApproval(registerApprovalBox.getValue());
+        // dto.setCurr1(curr1Field.getValue());
+        // dto.setCurr2(curr2Field.getValue());
+        // dto.setCurr3(curr3Field.getValue());
+        // dto.setIsAutoCloseOrder(autoCloseOrderBox.getValue());
+        // dto.setIsRegisterApproval(registerApprovalBox.getValue());
 
         try {
             companyService.handleCompany(dto, null);

@@ -1,8 +1,8 @@
 package id.putra.core_erp.warehouse.module.warehouse.service.adapter.query;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.LocationDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Location;
 
 public interface LocationQueryAdapter {
 
-    LocationDto getLocation(LocationDto dto);
+    Location getLocation(Location dto);
 }

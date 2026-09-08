@@ -1,6 +1,6 @@
 package id.putra.core_erp.warehouse.module.inventory.service.adapter.query.impl;
 
-import id.putra.core_erp.warehouse.module.inventory.dto.CategoryDto;
+import id.putra.core_erp.shared.entity.Category;
 import id.putra.core_erp.warehouse.module.inventory.model.repository.CategoryRepository;
 import id.putra.core_erp.warehouse.module.inventory.service.adapter.query.CategoryQueryAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -13,7 +13,7 @@ public class CategoryQueryAdapterImpl implements CategoryQueryAdapter {
     private CategoryRepository categoryRepository;
 
     @Override
-    public CategoryDto getCategoryById(CategoryDto dto) {
+    public Category getCategoryById(Category category) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

@@ -6,9 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
-import id.putra.core_erp.purchase_requisition.dto.RequisitionDetailDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
+import id.putra.core_erp.shared.entity.Supplier;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,11 +24,11 @@ public class RFQ extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "suppliers", columnDefinition = "jsonb")
-    private List<SupplierDto> suppliers;
+    private List<Supplier> suppliers;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "details", columnDefinition = "jsonb")
-    private List<RequisitionDetailDto> details;
+    private List<RequisitionDetail> details;
 
     @Column(name = "note")
     private String note;
@@ -52,7 +50,7 @@ public class RFQ extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_approvals", columnDefinition = "jsonb")
-    private List<ApprovalDto> temApprovalDtos;
+    private List<Approval> temApprovals;
 
     public Long getId() {
         return id;
@@ -70,19 +68,19 @@ public class RFQ extends BaseModel {
         this.dueDate = dueDate;
     }
 
-    public List<SupplierDto> getSuppliers() {
+    public List<Supplier> getSuppliers() {
         return suppliers;
     }
 
-    public void setSuppliers(List<SupplierDto> suppliers) {
+    public void setSuppliers(List<Supplier> suppliers) {
         this.suppliers = suppliers;
     }
 
-    public List<RequisitionDetailDto> getDetails() {
+    public List<RequisitionDetail> getDetails() {
         return details;
     }
 
-    public void setDetails(List<RequisitionDetailDto> details) {
+    public void setDetails(List<RequisitionDetail> details) {
         this.details = details;
     }
 
@@ -134,12 +132,12 @@ public class RFQ extends BaseModel {
         this.lastApproved = lastApproved;
     }
 
-    public List<ApprovalDto> getTemApprovalDtos() {
-        return temApprovalDtos;
+    public List<Approval> getTemApprovals() {
+        return temApprovals;
     }
 
-    public void setTemApprovalDtos(List<ApprovalDto> temApprovalDtos) {
-        this.temApprovalDtos = temApprovalDtos;
+    public void setTemApprovals(List<Approval> temApprovalDtos) {
+        this.temApprovals = temApprovalDtos;
     }
 
 }

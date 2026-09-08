@@ -3,6 +3,7 @@ package id.putra.core_erp.purchase_requisition.service.impl;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,12 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import id.putra.core_erp.purchase_requisition.dto.BudgetDetailDto;
-import id.putra.core_erp.purchase_requisition.dto.BudgetDto;
-import id.putra.core_erp.purchase_requisition.dto.BudgetTypeDto;
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
 import id.putra.core_erp.purchase_requisition.model.Budget;
 import id.putra.core_erp.purchase_requisition.model.BudgetDetail;
+import id.putra.core_erp.purchase_requisition.model.BudgetType;
 import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.repository.BudgetDetailRepo;
 import id.putra.core_erp.purchase_requisition.repository.BudgetRepo;
@@ -43,8 +41,8 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Map<String, Object> getBudgets(List<String> deptId) throws ParseException {
-        List<BudgetDto> current = new ArrayList<>();
-        List<BudgetDto> past = new ArrayList<>();
+        List<Budget> current = new ArrayList<>();
+        List<Budget> past = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -56,26 +54,26 @@ public class BudgetServiceImpl implements BudgetService {
         Map<String, Object> result = new HashMap<>();
 
         budgetRepo.findByDepartmentInAndFiscalYearAfter(dept, year).forEach(budget -> {
-            BudgetDto dto = new BudgetDto();
+            Budget dto = new Budget();
 
             if (budget.getDepartment() != null) {
-                DepartmentDto departmentDto = new DepartmentDto();
-                departmentDto.setDept_name(budget.getDepartment().getDeptName());
-                departmentDto.setDept_number(budget.getDepartment().getDeptNumber());
-                dto.setDepartment(departmentDto);
+                Department Department = new Department();
+                Department.setDeptName(budget.getDepartment().getDeptName());
+                Department.setDeptNumber(budget.getDepartment().getDeptNumber());
+                dto.setDepartment(Department);
             }
 
             dto.setId(budget.getId());
             if (budget.getFiscalYear() != null) {
-                dto.setFy(simpleDateFormat.format(budget.getFiscalYear()));
+                dto.setFiscalYear(budget.getFiscalYear());
             }
-            dto.setCreated_by(budget.getUserCreateBy());
-            dto.setUpdated_by(budget.getUserUpdateBy());
-            if (budget.getCreatedDate() != null) {
-                dto.setCreated_date(Date.from(budget.getCreatedDate()));
+            dto.setCreateBy(budget.getCreateBy());
+            dto.setUpdateBy(budget.getUpdateBy());
+            if (budget.getCreateDate() != null) {
+                dto.setCreateDate(Instant.from(budget.getCreateDate()));
             }
-            if (budget.getUpdatedDate() != null) {
-                dto.setUpdated_date(Date.from(budget.getUpdatedDate()));
+            if (budget.getUpdateDate() != null) {
+                dto.setUpdateDate(Instant.from(budget.getUpdateDate()));
             }
 
             current.add(dto);
@@ -83,26 +81,26 @@ public class BudgetServiceImpl implements BudgetService {
         result.put("current", current);
 
         budgetRepo.findByDepartmentInAndFiscalYearBefore(dept, year).forEach(budget -> {
-            BudgetDto dto = new BudgetDto();
+            Budget dto = new Budget();
 
             if (budget.getDepartment() != null) {
-                DepartmentDto departmentDto = new DepartmentDto();
-                departmentDto.setDept_name(budget.getDepartment().getDeptName());
-                departmentDto.setDept_number(budget.getDepartment().getDeptNumber());
-                dto.setDepartment(departmentDto);
+                Department Department = new Department();
+                Department.setDeptName(budget.getDepartment().getDeptName());
+                Department.setDeptNumber(budget.getDepartment().getDeptNumber());
+                dto.setDepartment(Department);
             }
 
             dto.setId(budget.getId());
             if (budget.getFiscalYear() != null) {
-                dto.setFy(simpleDateFormat.format(budget.getFiscalYear()));
+                dto.setFiscalYear(budget.getFiscalYear());
             }
-            dto.setCreated_by(budget.getUserCreateBy());
-            dto.setUpdated_by(budget.getUserUpdateBy());
-            if (budget.getCreatedDate() != null) {
-                dto.setCreated_date(Date.from(budget.getCreatedDate()));
+            dto.setCreateBy(budget.getCreateBy());
+            dto.setUpdateBy(budget.getUpdateBy());
+            if (budget.getCreateDate() != null) {
+                dto.setCreateDate(Instant.from(budget.getCreateDate()));
             }
-            if (budget.getUpdatedDate() != null) {
-                dto.setUpdated_date(Date.from(budget.getUpdatedDate()));
+            if (budget.getUpdateDate() != null) {
+                dto.setUpdateDate(Instant.from(budget.getUpdateDate()));
             }
 
             past.add(dto);
@@ -112,11 +110,11 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public void addOrUpdateBudget(BudgetDto body) throws ParseException {
+    public void addOrUpdateBudget(Budget body) throws ParseException {
         Long id = Long.parseLong(body.getId());
         if (budgetRepo.findByIdOptional(id).isPresent()) {
             Budget entity = budgetRepo.findById(id);
-            entity.setFiscalYear(simpleDateFormat.parse(body.getFy()));
+            entity.setFiscalYear(body.getFiscalYear());
 
             List<BudgetDetail> details = entity.getDetails();
 
@@ -129,9 +127,9 @@ public class BudgetServiceImpl implements BudgetService {
                     budgetDetail.setType(b.getType());
                     budgetDetail.setNote(b.getNote());
 
-                    if (b.getPlans() != null) {
-                        List<BudgetTypeDto> detailDtos = b.getPlans().stream().map(d -> {
-                            BudgetTypeDto dtlDto = new BudgetTypeDto();
+                    if (b.getDetails() != null) {
+                        List<BudgetType> detailDtos = b.getDetails().stream().map(d -> {
+                            BudgetType dtlDto = new BudgetType();
                             dtlDto.setBudgetDateStr(d.getBudgetDateStr());
                             dtlDto.setPlan(d.getPlan());
                             dtlDto.setActual(d.getActual());
@@ -150,14 +148,14 @@ public class BudgetServiceImpl implements BudgetService {
             Budget entity = new Budget();
             entity.setId(body.getId());
 
-            if (body.getDepartment() != null && body.getDepartment().getDept_number() != null) {
+            if (body.getDepartment() != null && body.getDepartment().getDeptNumber() != null) {
                 Optional<Department> deptOpt = departmentRepo
-                        .findByDeptNumber(body.getDepartment().getDept_number());
+                        .findByDeptNumber(body.getDepartment().getDeptNumber());
                 deptOpt.ifPresent(entity::setDepartment);
             }
 
-            if (body.getFy() != null) {
-                entity.setFiscalYear(simpleDateFormat.parse(body.getFy()));
+            if (body.getFiscalYear() != null) {
+                entity.setFiscalYear(body.getFiscalYear());
             }
 
             List<BudgetDetail> details = new ArrayList<>();
@@ -169,9 +167,9 @@ public class BudgetServiceImpl implements BudgetService {
                     budgetDetail.setType(b.getType());
                     budgetDetail.setNote(b.getNote());
 
-                    if (b.getPlans() != null) {
-                        List<BudgetTypeDto> detailDtos = b.getPlans().stream().map(d -> {
-                            BudgetTypeDto dtlDto = new BudgetTypeDto();
+                    if (b.getDetails() != null) {
+                        List<BudgetType> detailDtos = b.getDetails().stream().map(d -> {
+                            BudgetType dtlDto = new BudgetType();
                             dtlDto.setBudgetDateStr(d.getBudgetDateStr());
                             dtlDto.setPlan(d.getPlan());
                             dtlDto.setActual(d.getActual());
@@ -190,20 +188,20 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public List<BudgetDetailDto> getBudgetsDetail(String deptId, String budgetId, String filter) {
-        List<BudgetDetailDto> dtos = new ArrayList<>();
+    public List<BudgetDetail> getBudgetsDetail(String deptId, String budgetId, String filter) {
+        List<BudgetDetail> dtos = new ArrayList<>();
         budgetDetailRepo.findAllBudgetDetailsByDeptIdAndBudgetIdAndType(deptId, budgetId, filter).forEach(d -> {
-            BudgetDetailDto detailDto = new BudgetDetailDto();
+            BudgetDetail detailDto = new BudgetDetail();
             detailDto.setId(d.getId());
             detailDto.setName(d.getName());
             detailDto.setType(d.getType());
             detailDto.setNote(d.getNote());
 
-            List<BudgetTypeDto> plans = new ArrayList<>();
+            List<BudgetType> plans = new ArrayList<>();
             if (d.getDetails() != null) {
                 d.getDetails().forEach(plans::add);
             }
-            detailDto.setPlans(plans);
+            detailDto.setDetails(plans);
 
             dtos.add(detailDto);
         });
@@ -212,8 +210,8 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public BudgetDetailDto getBudgetDetail(String deptId, String budgetId) {
-        BudgetDetailDto dto = new BudgetDetailDto();
+    public BudgetDetail getBudgetDetail(String deptId, String budgetId) {
+        BudgetDetail dto = new BudgetDetail();
 
         Optional<BudgetDetail> detailOpt = budgetDetailRepo.findByBudgetId(budgetId);
 
@@ -224,28 +222,28 @@ public class BudgetServiceImpl implements BudgetService {
             dto.setNote(d.getNote());
             dto.setType(d.getType());
 
-            List<BudgetTypeDto> plans = new ArrayList<>();
+            List<BudgetType> plans = new ArrayList<>();
             if (d.getDetails() != null) {
                 d.getDetails().forEach(plans::add);
             }
-            dto.setPlans(plans);
+            dto.setDetails(plans);
         }
         return dto;
     }
 
     @Override
-    public List<BudgetDetailDto> getBudgetsDetail(String deptId, String year) {
-        List<BudgetDetailDto> dtos = new ArrayList<>();
+    public List<BudgetDetail> getBudgetsDetail(String deptId, String year) {
+        List<BudgetDetail> dtos = new ArrayList<>();
 
         budgetDetailRepo.findAllBudgetDetailsByDeptIdAndYear(deptId, year)
                 .forEach(d -> {
-                    BudgetDetailDto detailDto = new BudgetDetailDto();
+                    BudgetDetail detailDto = new BudgetDetail();
                     detailDto.setId(d.getId());
                     detailDto.setName(d.getName());
                     detailDto.setType(d.getType());
                     detailDto.setNote(d.getNote());
 
-                    List<BudgetTypeDto> plans = new ArrayList<>();
+                    List<BudgetType> plans = new ArrayList<>();
                     if (d.getDetails() != null) {
                         d.getDetails().forEach(plans::add);
                     }
@@ -255,7 +253,7 @@ public class BudgetServiceImpl implements BudgetService {
                                     && data.getBudgetDateStr().equalsIgnoreCase(currentMonth))
                             .map(data -> data.getPlan() != null ? data.getPlan() : BigInteger.ZERO).findFirst()
                             .orElse(BigInteger.ZERO);
-                    detailDto.setTotal_budget(String.valueOf(totalBudget));
+                    detailDto.setTotalBudget(totalBudget);
 
                     dtos.add(detailDto);
                 });

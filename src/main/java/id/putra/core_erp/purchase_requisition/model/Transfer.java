@@ -6,9 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
-import id.putra.core_erp.purchase_requisition.dto.TransferDetailDto;
+import id.putra.core_erp.shared.entity.Supplier;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -32,11 +30,11 @@ public class Transfer extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "suppliers", columnDefinition = "jsonb")
-    private List<SupplierDto> suppliers;
+    private List<Supplier> suppliers;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "details", columnDefinition = "jsonb")
-    private List<TransferDetailDto> details;
+    private List<TransferDetail> details;
 
     @Column(name = "note")
     private String note;
@@ -62,11 +60,11 @@ public class Transfer extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_approvals", columnDefinition = "jsonb")
-    private List<ApprovalDto> temApprovalDtos;
+    private List<Approval> temApprovals;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
-    private ApprovalDto tempPurchaserApprovalDto;
+    private Approval tempPurchaserApproval;
 
     public Long getId() {
         return id;
@@ -92,19 +90,19 @@ public class Transfer extends BaseModel {
         this.dueDate = dueDate;
     }
 
-    public List<SupplierDto> getSuppliers() {
+    public List<Supplier> getSuppliers() {
         return suppliers;
     }
 
-    public void setSuppliers(List<SupplierDto> suppliers) {
+    public void setSuppliers(List<Supplier> suppliers) {
         this.suppliers = suppliers;
     }
 
-    public List<TransferDetailDto> getDetails() {
+    public List<TransferDetail> getDetails() {
         return details;
     }
 
-    public void setDetails(List<TransferDetailDto> details) {
+    public void setDetails(List<TransferDetail> details) {
         this.details = details;
     }
 
@@ -164,20 +162,20 @@ public class Transfer extends BaseModel {
         this.department = department;
     }
 
-    public List<ApprovalDto> getTemApprovalDtos() {
-        return temApprovalDtos;
+    public List<Approval> getTemApprovals() {
+        return temApprovals;
     }
 
-    public void setTemApprovalDtos(List<ApprovalDto> temApprovalDtos) {
-        this.temApprovalDtos = temApprovalDtos;
+    public void setTemApprovals(List<Approval> temApprovalDtos) {
+        this.temApprovals = temApprovalDtos;
     }
 
-    public ApprovalDto getTempPurchaserApprovalDto() {
-        return tempPurchaserApprovalDto;
+    public Approval getTempPurchaserApproval() {
+        return tempPurchaserApproval;
     }
 
-    public void setTempPurchaserApprovalDto(ApprovalDto tempPurchaserApprovalDto) {
-        this.tempPurchaserApprovalDto = tempPurchaserApprovalDto;
+    public void setTempPurchaserApproval(Approval tempPurchaserApprovalDto) {
+        this.tempPurchaserApproval = tempPurchaserApprovalDto;
     }
 
 }

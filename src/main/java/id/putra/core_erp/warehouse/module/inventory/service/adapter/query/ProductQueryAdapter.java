@@ -1,9 +1,9 @@
 package id.putra.core_erp.warehouse.module.inventory.service.adapter.query;
 
-import id.putra.core_erp.shared.dto.ProductDto;
+import id.putra.core_erp.shared.entity.Product;
 
 public interface ProductQueryAdapter {
 
-    ProductDto getProductById(ProductDto dto);
+    Product getProductById(Product dto);
 
 }

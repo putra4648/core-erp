@@ -25,11 +25,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
 import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.purchase_requisition.service.SupplierService;
+import id.putra.core_erp.shared.entity.Supplier;
 import id.putra.core_erp.shared.enums.TypeEnum;
 import id.putra.core_erp.shared.ui.MainLayout;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "pr/suppliers", layout = MainLayout.class)
@@ -41,8 +42,8 @@ public class SupplierView extends VerticalLayout {
 
     private final TextField searchField = new TextField();
     private final ComboBox<String> statusFilter = new ComboBox<>();
-    private final Grid<SupplierDto> grid = new Grid<>();
-    private final List<SupplierDto> supplierList = new ArrayList<>();
+    private final Grid<Supplier> grid = new Grid<>();
+    private final List<Supplier> supplierList = new ArrayList<>();
 
     public SupplierView(SupplierService supplierService) {
         this.supplierService = supplierService;
@@ -83,7 +84,7 @@ public class SupplierView extends VerticalLayout {
     private void configureGrid() {
         grid.setSizeFull();
 
-        grid.addColumn(s -> s.getAcc_no() != null ? s.getAcc_no() : "-").setHeader("Account No").setAutoWidth(true);
+        grid.addColumn(s -> s.getAccNo() != null ? s.getAccNo() : "-").setHeader("Account No").setAutoWidth(true);
         grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(2);
         grid.addColumn(s -> s.getPhone() != null ? s.getPhone() : "-").setHeader("Phone").setFlexGrow(1);
         grid.addColumn(s -> s.getCurrency() != null ? s.getCurrency() : "-").setHeader("Currency").setAutoWidth(true);
@@ -116,7 +117,7 @@ public class SupplierView extends VerticalLayout {
             String search = searchField.getValue() != null ? searchField.getValue() : "";
             String status = statusFilter.getValue() != null ? statusFilter.getValue() : "ACTIVE";
 
-            List<SupplierDto> res = supplierService.getSupplier(search, status, 1, 100, "name", "asc");
+            List<Supplier> res = supplierService.getSupplier(search, status, Page.ofSize(100));
             supplierList.clear();
             if (res != null) {
                 supplierList.addAll(res);
@@ -128,7 +129,7 @@ public class SupplierView extends VerticalLayout {
         }
     }
 
-    private void toggleStatus(SupplierDto s) {
+    private void toggleStatus(Supplier s) {
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("id", s.getId());
@@ -140,7 +141,7 @@ public class SupplierView extends VerticalLayout {
         }
     }
 
-    private void openSupplierDialog(SupplierDto editSupplier) {
+    private void openSupplierDialog(Supplier editSupplier) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle(editSupplier == null ? "Add Supplier" : "Edit Supplier");
         dialog.setWidth("600px");
@@ -160,12 +161,12 @@ public class SupplierView extends VerticalLayout {
 
         if (editSupplier != null) {
             nameField.setValue(editSupplier.getName() != null ? editSupplier.getName() : "");
-            accNoField.setValue(editSupplier.getAcc_no() != null ? editSupplier.getAcc_no() : "");
+            accNoField.setValue(editSupplier.getAccNo() != null ? editSupplier.getAccNo() : "");
             phoneField.setValue(editSupplier.getPhone() != null ? editSupplier.getPhone() : "");
             faxField.setValue(editSupplier.getFax() != null ? editSupplier.getFax() : "");
             websiteField.setValue(editSupplier.getWebsite() != null ? editSupplier.getWebsite() : "");
             npwpField.setValue(editSupplier.getNpwp() != null ? editSupplier.getNpwp() : "");
-            accBankField.setValue(editSupplier.getAcc_bank() != null ? editSupplier.getAcc_bank() : "");
+            accBankField.setValue(editSupplier.getAccBank() != null ? editSupplier.getAccBank() : "");
             currField.setValue(editSupplier.getCurrency() != null ? editSupplier.getCurrency() : "IDR");
             notesField.setValue(editSupplier.getNotes() != null ? editSupplier.getNotes() : "");
         }
@@ -180,14 +181,14 @@ public class SupplierView extends VerticalLayout {
                 return;
             }
 
-            SupplierDto dto = new SupplierDto();
+            Supplier dto = new Supplier();
             dto.setName(nameField.getValue());
-            dto.setAcc_no(accNoField.getValue());
+            dto.setAccNo(accNoField.getValue());
             dto.setPhone(phoneField.getValue());
             dto.setFax(faxField.getValue());
             dto.setWebsite(websiteField.getValue());
             dto.setNpwp(npwpField.getValue());
-            dto.setAcc_bank(accBankField.getValue());
+            dto.setAccBank(accBankField.getValue());
             dto.setCurrency(currField.getValue());
             dto.setNotes(notesField.getValue());
             dto.setType(TypeEnum.TRADE);

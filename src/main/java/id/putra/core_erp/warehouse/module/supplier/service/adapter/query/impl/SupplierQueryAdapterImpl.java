@@ -1,6 +1,6 @@
 package id.putra.core_erp.warehouse.module.supplier.service.adapter.query.impl;
 
-import id.putra.core_erp.warehouse.module.supplier.dto.SupplierDto;
+import id.putra.core_erp.shared.entity.Supplier;
 import id.putra.core_erp.warehouse.module.supplier.model.repository.SupplierRepository;
 import id.putra.core_erp.warehouse.module.supplier.service.adapter.query.SupplierQueryAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,7 +12,7 @@ public class SupplierQueryAdapterImpl implements SupplierQueryAdapter {
     private SupplierRepository repository;
 
     @Override
-    public SupplierDto getById(Long id) {
-        return null;
+    public Supplier getById(Long id) {
+        return repository.findById(id);
     }
 }

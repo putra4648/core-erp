@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,19 +25,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
-import id.putra.core_erp.purchase_requisition.dto.SupplierAddressDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierContactDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
 import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.purchase_requisition.repository.SupplierRepo;
 import id.putra.core_erp.purchase_requisition.service.SupplierService;
 import id.putra.core_erp.shared.entity.Supplier;
-import id.putra.core_erp.shared.entity.SupplierAddress;
-import id.putra.core_erp.shared.entity.SupplierContact;
-import id.putra.core_erp.shared.entity.SupplierPOAddress;
 import id.putra.core_erp.shared.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Sort;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -49,11 +41,23 @@ public class SupplierServiceImpl implements SupplierService {
     private SupplierRepo supplierRepo;
 
     @Override
-    public void addSupplier(SupplierDto body, FileUpload logoFile)
+    public void addSupplier(Supplier body, FileUpload logoFile)
             throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAcc_no());
+        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
         if (!supplier.isPresent()) {
-            Supplier entity = dtoToEntity(new Supplier(), body);
+            Supplier entity = new Supplier();
+            entity.setAccNo(body.getAccNo());
+            entity.setName(body.getName());
+            entity.setWebsite(body.getWebsite());
+            entity.setStatus(body.getStatus());
+            entity.setPhone(body.getPhone());
+            entity.setFax(body.getFax());
+            entity.setCurrency(body.getCurrency());
+            entity.setNpwp(body.getNpwp());
+            entity.setAccBank(body.getAccBank());
+            entity.setNotes(body.getNotes());
+            entity.setType(body.getType());
+
             if (logoFile != null) {
                 Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
                         logoFile);
@@ -61,190 +65,39 @@ public class SupplierServiceImpl implements SupplierService {
             }
             supplierRepo.persist(entity);
         } else {
-            String message = MessageFormat.format(MessageConstant.EXIST, "Supplier ", body.getAcc_no());
+            String message = MessageFormat.format(MessageConstant.EXIST, "Supplier ", body.getAccNo());
             throw new IllegalArgumentException(message);
         }
     }
 
     @Override
-    public List<SupplierDto> getSupplier(
-            String search,
-            String status,
-            Integer page,
-            Integer perPage,
-            String sortBy,
-            String order) {
-
-        if (page == null || page < 1) {
-            page = 1;
-        }
-
-        if (perPage == null || perPage < 1) {
-            perPage = 100;
-        }
-
-        if (search == null) {
-            search = "";
-        }
-
-        if (sortBy == null || sortBy.isBlank()) {
-            sortBy = "name";
-        }
-
-        Sort sort = Sort.empty();
-        if (order != null && !order.isBlank()) {
-            sort = order.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        }
+    public List<Supplier> getSupplier(String search, String status, Page page) {
 
         if (status == null || status.isBlank()) {
             status = "";
         }
 
-        var result = supplierRepo.findAll().page(Page.ofSize(20));
+        var result = supplierRepo.findAll().page(page);
 
-        return result.list().stream().map(this::entityToDto).toList();
+        return result.list();
     }
 
     @Override
-    public SupplierDto getSupplier(Long id) {
+    public Supplier getSupplier(Long id) {
         Optional<Supplier> supplierOptional = supplierRepo.findByIdOptional(id);
 
         if (supplierOptional.isPresent()) {
-            return entityToDto(supplierOptional.get());
+            return supplierOptional.get();
         } else {
             String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + id);
             throw new IllegalArgumentException(message);
         }
     }
 
-    private Supplier dtoToEntity(Supplier entity, SupplierDto data) {
-        entity.setName(data.getName());
-        entity.setAccNo(data.getAcc_no());
-        entity.setWebsite(data.getWebsite());
-        if (data.getStatus() != null) {
-            entity.setStatus(data.getStatus().getValue());
-        }
-        entity.setPhone(data.getPhone());
-        entity.setFax(data.getFax());
-        entity.setCurrency(data.getCurrency());
-        entity.setNpwp(data.getNpwp());
-        entity.setAccBank(data.getAcc_bank());
-        entity.setNotes(data.getNotes());
-        entity.setType(data.getType());
-
-        if (data.getPo_address() != null) {
-            SupplierPOAddress poAddress = entity.getSupplierPOAddress() != null ? entity.getSupplierPOAddress()
-                    : new SupplierPOAddress();
-            poAddress.setAddress(data.getPo_address().getAddress());
-            poAddress.setCity(data.getPo_address().getCity());
-            poAddress.setProvince(data.getPo_address().getProvince());
-            poAddress.setZip(data.getPo_address().getZip());
-            poAddress.setCountry(data.getPo_address().getCountry());
-            entity.setSupplierPOAddress(poAddress);
-        }
-
-        if (data.getAddress() != null) {
-            SupplierAddress address = entity.getSupplierAddress() != null ? entity.getSupplierAddress()
-                    : new SupplierAddress();
-            address.setAddress(data.getAddress().getAddress());
-            address.setCity(data.getAddress().getCity());
-            address.setProvince(data.getAddress().getProvince());
-            address.setZip(data.getAddress().getZip());
-            address.setCountry(data.getAddress().getCountry());
-            entity.setSupplierAddress(address);
-        }
-
-        if (data.getContacts() != null && !data.getContacts().isEmpty()) {
-            List<SupplierContact> contacts = new ArrayList<>();
-            for (SupplierContactDto dto : data.getContacts()) {
-                SupplierContact supContact = new SupplierContact();
-                supContact.setName(dto.getName());
-                supContact.setPhone(dto.getPhone());
-                supContact.setEmail(dto.getEmail());
-                supContact.setBranch(dto.getBranch());
-                supContact.setSupplier(entity);
-                contacts.add(supContact);
-            }
-            entity.setContacts(contacts);
-        }
-
-        return entity;
-    }
-
-    private SupplierDto entityToDto(Supplier data) {
-        SupplierDto dto = new SupplierDto();
-        dto.setId(data.getId());
-        dto.setName(data.getName());
-        dto.setAcc_no(data.getAccNo());
-        dto.setWebsite(data.getWebsite());
-        if (data.getStatus() != null) {
-            try {
-                dto.setStatus(StatusEnum.valueOf(data.getStatus()));
-            } catch (Exception ignored) {
-                dto.setStatus(StatusEnum.ACTIVE);
-            }
-        }
-        dto.setPhone(data.getPhone());
-        dto.setFax(data.getFax());
-        dto.setCurrency(data.getCurrency());
-        dto.setNpwp(data.getNpwp());
-        dto.setAcc_bank(data.getAccBank());
-        if (data.getUpdatedDate() != null) {
-            dto.setModified_date(Date.from(data.getUpdatedDate()));
-        }
-
-        if (data.getSupplierLogoPath() != null) {
-            try {
-                dto.setLogo_image(AppFileUtil.readFileToBase64(data.getSupplierLogoPath()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        dto.setType(data.getType());
-        dto.setNotes(data.getNotes());
-
-        if (data.getSupplierPOAddress() != null) {
-            SupplierAddressDto poAddress = new SupplierAddressDto();
-            poAddress.setId(data.getSupplierPOAddress().getId());
-            poAddress.setAddress(data.getSupplierPOAddress().getAddress());
-            poAddress.setCity(data.getSupplierPOAddress().getCity());
-            poAddress.setProvince(data.getSupplierPOAddress().getProvince());
-            poAddress.setZip(data.getSupplierPOAddress().getZip());
-            poAddress.setCountry(data.getSupplierPOAddress().getCountry());
-            dto.setPo_address(poAddress);
-        }
-
-        if (data.getSupplierAddress() != null) {
-            SupplierAddressDto address = new SupplierAddressDto();
-            address.setId(data.getSupplierAddress().getId());
-            address.setAddress(data.getSupplierAddress().getAddress());
-            address.setCity(data.getSupplierAddress().getCity());
-            address.setProvince(data.getSupplierAddress().getProvince());
-            address.setZip(data.getSupplierAddress().getZip());
-            address.setCountry(data.getSupplierAddress().getCountry());
-            dto.setAddress(address);
-        }
-
-        if (data.getContacts() != null) {
-            List<SupplierContactDto> contactDtos = new ArrayList<>();
-            data.getContacts().forEach(cnt -> {
-                SupplierContactDto suppContactDto = new SupplierContactDto();
-                suppContactDto.setId(cnt.getId());
-                suppContactDto.setName(cnt.getName());
-                suppContactDto.setEmail(cnt.getEmail());
-                suppContactDto.setPhone(cnt.getPhone());
-                suppContactDto.setBranch(cnt.getBranch());
-                contactDtos.add(suppContactDto);
-            });
-            dto.setContacts(contactDtos);
-        }
-        return dto;
-    }
-
     @Override
-    public void updateSupplier(SupplierDto body, FileUpload logoFile)
+    public void updateSupplier(Supplier body, FileUpload logoFile)
             throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAcc_no());
+        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
         if (supplier.isPresent()) {
             Supplier entity = supplier.get();
 
@@ -260,10 +113,23 @@ public class SupplierServiceImpl implements SupplierService {
                     entity.setSupplierLogoPath(path.toString());
                 }
             }
-            Supplier updatedEntity = dtoToEntity(entity, body);
+
+            entity.setName(body.getName());
+            entity.setAccNo(body.getAccNo());
+            entity.setWebsite(body.getWebsite());
+            entity.setStatus(body.getStatus());
+            entity.setPhone(body.getPhone());
+            entity.setFax(body.getFax());
+            entity.setCurrency(body.getCurrency());
+            entity.setNpwp(body.getNpwp());
+            entity.setAccBank(body.getAccBank());
+            entity.setNotes(body.getNotes());
+            entity.setType(body.getType());
+
+            Supplier updatedEntity = entity;
             supplierRepo.persist(updatedEntity);
         } else {
-            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + body.getAcc_no());
+            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + body.getAccNo());
             throw new IllegalArgumentException(message);
         }
     }
@@ -274,8 +140,8 @@ public class SupplierServiceImpl implements SupplierService {
         Optional<Supplier> supplier = supplierRepo.findByIdOptional(id);
         if (supplier.isPresent()) {
             Supplier entity = supplier.get();
-            entity.setStatus(entity.getStatus().equalsIgnoreCase("ACTIVE") ? StatusEnum.INACTIVE.getValue()
-                    : StatusEnum.ACTIVE.getValue());
+            entity.setStatus(entity.getStatus().equals(StatusEnum.ACTIVE) ? StatusEnum.INACTIVE
+                    : StatusEnum.ACTIVE);
             supplierRepo.persist(entity);
         } else {
             String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier ", id);
@@ -284,10 +150,8 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public List<SupplierDto> getSupplierDropdown() {
-        List<SupplierDto> dtos = new ArrayList<>();
-        supplierRepo.findAllByStatus(StatusEnum.ACTIVE.getValue()).forEach(data -> dtos.add(entityToDto(data)));
-        return dtos;
+    public List<Supplier> getSupplierDropdown() {
+        return supplierRepo.findByStatus(StatusEnum.ACTIVE);
     }
 
     @Override
@@ -333,7 +197,7 @@ public class SupplierServiceImpl implements SupplierService {
             supplier.setAccNo(getCellValueAsString(row.getCell(0)));
             supplier.setName(getCellValueAsString(row.getCell(1)));
             supplier.setWebsite(getCellValueAsString(row.getCell(2)));
-            supplier.setStatus(getCellValueAsString(row.getCell(3)).toUpperCase());
+            supplier.setStatus(StatusEnum.valueOf(getCellValueAsString(row.getCell(3))));
             supplier.setPhone(getCellValueAsString(row.getCell(4)));
             supplier.setFax(getCellValueAsString(row.getCell(5)));
             supplier.setCurrency(getCellValueAsString(row.getCell(6)));

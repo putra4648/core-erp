@@ -2,7 +2,7 @@ package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.QualityInspectionDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.QualityInspection;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.InspectionCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.InspectionQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.InspectionService;
@@ -19,12 +19,12 @@ public class InspectionServiceImpl implements InspectionService {
     private InspectionQueryAdapter inspectionQueryAdapter;
 
     @Override
-    public QualityInspectionDto create(QualityInspectionDto dto) {
+    public QualityInspection create(QualityInspection dto) {
         return inspectionCommandAdapter.add(dto);
     }
 
     @Override
-    public QualityInspectionDto update(QualityInspectionDto dto) {
+    public QualityInspection update(QualityInspection dto) {
         return inspectionCommandAdapter.update(dto);
     }
 
@@ -34,12 +34,12 @@ public class InspectionServiceImpl implements InspectionService {
     }
 
     @Override
-    public QualityInspectionDto getById(Long id) {
+    public QualityInspection getById(Long id) {
         return inspectionQueryAdapter.getById(id);
     }
 
     @Override
-    public List<QualityInspectionDto> getAll(QualityInspectionDto filter) {
+    public List<QualityInspection> getAll(QualityInspection filter) {
         return inspectionQueryAdapter.getAll(filter);
     }
 }

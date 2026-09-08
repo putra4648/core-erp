@@ -1,13 +1,17 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core;
 
 import java.util.List;
-import id.putra.core_erp.warehouse.module.outbound.dto.CarrierDto;
+
+import id.putra.core_erp.warehouse.module.outbound.model.entity.Carrier;
 
 public interface CarrierService {
-    CarrierDto create(CarrierDto dto);
-    CarrierDto update(CarrierDto dto);
-    Boolean delete(Long id);
-    CarrierDto getById(Long id);
-    List<CarrierDto> getAll(CarrierDto filter);
-}
+    Carrier create(Carrier dto);
 
+    Carrier update(Carrier dto);
+
+    Boolean delete(Long id);
+
+    Carrier getById(Long id);
+
+    List<Carrier> getAll(Carrier filter);
+}

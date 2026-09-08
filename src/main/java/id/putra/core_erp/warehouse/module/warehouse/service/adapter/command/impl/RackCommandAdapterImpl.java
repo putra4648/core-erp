@@ -2,7 +2,7 @@ package id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.imp
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.RackDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Rack;
 import id.putra.core_erp.warehouse.module.warehouse.model.repository.RackRepository;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.RackCommandAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,15 +15,15 @@ public class RackCommandAdapterImpl implements RackCommandAdapter {
     private RackRepository rackRepository;
 
     @Override
-    public void add(List<RackDto> dtos) {
+    public void add(List<Rack> dtos) {
     }
 
     @Override
-    public void update(List<RackDto> dtos) {
+    public void update(List<Rack> dtos) {
     }
 
     @Override
-    public void delete(List<RackDto> dtos) {
+    public void delete(List<Rack> dtos) {
     }
 
 }

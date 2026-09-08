@@ -1,34 +1,24 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
-import id.putra.core_erp.purchase_requisition.dto.AppDto;
-import id.putra.core_erp.purchase_requisition.dto.AppFileDto;
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
-import id.putra.core_erp.purchase_requisition.dto.RFQDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.exception.RFQException;
 import id.putra.core_erp.purchase_requisition.exception.RequisitionException;
+import id.putra.core_erp.purchase_requisition.model.Approval;
 import id.putra.core_erp.purchase_requisition.model.RFQ;
 import id.putra.core_erp.purchase_requisition.repository.RFQRepo;
 import id.putra.core_erp.purchase_requisition.service.RFQService;
-import id.putra.core_erp.shared.util.AppFileUtil;
+import id.putra.core_erp.shared.entity.Supplier;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class RFQServiceImpl implements RFQService {
@@ -43,139 +33,50 @@ public class RFQServiceImpl implements RFQService {
     private EntityManager entityManager;
 
     @Override
-    public String handleData(AppDto<RFQDto> dto) {
-        RFQDto params = dto.getParams();
-
-        if (params.getId() == null) {
-            Long count = rfqRepository.count();
-            Long id = null;
-            RFQ entity = dtoToEntityAdd(params, id, new RFQ());
-            rfqRepository.persist(entity);
-            return MessageConstant.SUCCESS;
-        } else {
-            Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(params.getId());
-
-            if (rfqOpt.isPresent()) {
-                // Optional<Users> userOpt = userRepo
-                // .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
-                // "");
-                // RFQ entity = dtoToEntityUpdate(userOpt.map(u -> u.getNrp()).orElse(null),
-                // params,
-                // rfqOpt.get());
-                // rfqRepository.persist(entity);
-            } else {
-                throw new RFQException("RFQ is not found");
-            }
-            return MessageConstant.UPDATE;
-        }
+    public void add(RFQ dto) {
+        rfqRepository.persist(dto);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<RFQDto> getAll(AppDto<RFQDto> dto) {
-        RFQDto params = dto != null ? dto.getParams() : null;
-        List<RFQDto> dtos = new ArrayList<>();
-
-        if (params == null) {
-            rfqRepository.findAll().list().forEach(r -> dtos.add(entityToDto(r)));
-            return dtos;
-        }
-
-        StringBuilder builder = new StringBuilder("select " +
-                "r.* " +
-                "from " +
-                "rfq r " +
-                "cross join lateral jsonb_array_elements(r.details) as element where 1=1 \n");
-
-        if (params.getStatus() != null && !params.getStatus().isBlank()) {
-            builder.append("and r.status like '%' || :status || '%' \n");
-        }
-
-        if (params.getSearch() != null && !params.getSearch().isBlank()) {
-            builder.append("and r.id like '%' || :search || '%' \n");
-        }
-
-        if (params.getMin_budget() != null && params.getMax_budget() != null) {
-            builder.append("and (element->>'subtotal')::numeric between :min_budget and :max_budget \n");
-        }
-
-        if (params.getStart_date() != null && !params.getStart_date().isBlank() && params.getEnd_date() != null
-                && !params.getEnd_date().isBlank()) {
-            builder.append(
-                    "and r.created_date between to_date(:from_date,'YYYY-MM-DD') and to_date(:to_date,'YYYY-MM-DD') \n");
-        }
-
-        builder.append("order by r.id asc \n");
-
-        Query query = entityManager.createNativeQuery(builder.toString(), RFQ.class);
-
-        if (params.getStatus() != null && !params.getStatus().isBlank()) {
-            query.setParameter("status", params.getStatus());
-        }
-
-        if (params.getSearch() != null && !params.getSearch().isBlank()) {
-            query.setParameter("search", params.getSearch());
-        }
-
-        if (params.getMin_budget() != null && params.getMax_budget() != null) {
-            query.setParameter("min_budget", params.getMin_budget());
-            query.setParameter("max_budget", params.getMax_budget());
-        }
-
-        if (params.getStart_date() != null && !params.getStart_date().isBlank() && params.getEnd_date() != null
-                && !params.getEnd_date().isBlank()) {
-            query.setParameter("from_date", params.getStart_date());
-            query.setParameter("to_date", params.getEnd_date());
-        }
-
-        List<RFQ> resultList = query.getResultList();
-        resultList.forEach((data) -> dtos.add(entityToDto(data)));
-
-        return dtos;
+    public List<RFQ> findAll() {
+        return rfqRepository.listAll();
     }
 
     @Override
-    public RFQDto getSingleData(AppDto<RFQDto> dto) {
-        Optional<RFQ> rfq = rfqRepository.findByIdOptional(dto.getParams().getId());
-        return rfq.map(this::entityToDto).orElse(null);
+    public RFQ getById(Long id) {
+        return rfqRepository.findByIdOptional(id).get();
     }
 
     @Override
-    public Long countAll(AppDto<RFQDto> dto) {
-        return rfqRepository.count();
-    }
-
-    @Override
-    public Boolean checkApprovalFlow(AppDto<RFQDto> dto) {
-        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(dto.getParams().getId());
+    public Boolean checkApprovalFlow(RFQ dto) {
+        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
             // Optional<Users> userOpt = userRepo
             // .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
             // "");
             // String userNrp = userOpt.map(u -> u.getNrp()).orElse("");
-            // if (rfqOpt.get().getTemApprovalDtos() != null) {
-            // return rfqOpt.get().getTemApprovalDtos().stream()
+            // if (rfqOpt.get().getTemApprovals() != null) {
+            // return rfqOpt.get().getTemApprovals().stream()
             // .anyMatch(aprv -> aprv.getUsers() != null && aprv.getUsers().getNrp() != null
             // && aprv.getUsers().getNrp().equalsIgnoreCase(userNrp));
             // }
             return false;
         } else {
-            throw new RFQException("RFQ " + dto.getParams().getId() + " not found");
+            throw new RFQException("RFQ " + dto.getId() + " not found");
         }
     }
 
     @Override
-    public ApprovalEnum checkStatusApprovalIsPermanent(AppDto<RFQDto> dto) {
-        RFQDto params = dto.getParams();
+    public ApprovalEnum checkStatusApprovalIsPermanent(RFQ dto) {
         String nrp = principal.getSubject();
 
-        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(params.getId());
+        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
             ApprovalEnum result = ApprovalEnum.NON_APPROVAL;
-            List<ApprovalDto> approvals = new ArrayList<>();
+            List<Approval> approvals = new ArrayList<>();
             rfqOpt.ifPresent(data -> {
-                if (data.getTemApprovalDtos() != null) {
-                    approvals.addAll(data.getTemApprovalDtos());
+                if (data.getTemApprovals() != null) {
+                    approvals.addAll(data.getTemApprovals());
                 }
             });
             if (nrp != null) {
@@ -211,191 +112,45 @@ public class RFQServiceImpl implements RFQService {
 
             return result;
         } else {
-            throw new RequisitionException("RFQ " + params.getId() + " not found");
+            throw new RequisitionException("RFQ " + dto.getId() + " not found");
         }
     }
 
     @Override
-    public AsyncFile download(AppDto<RFQDto> dto) {
-        RFQDto params = dto.getParams();
-        String supplierId = params.getSupplierId();
+    public AsyncFile download(RFQ dto) {
 
-        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(params.getId());
+        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
             try {
-                SupplierDto supplierDto = rfqOpt.get().getSuppliers().stream()
-                        .filter(data -> data.getAcc_no() != null && data.getAcc_no().equalsIgnoreCase(supplierId))
+                Supplier supplier = rfqOpt.get().getSuppliers().stream()
+                        .filter(data -> data.getAccNo() != null)
                         .findFirst().orElse(null);
-                if (supplierDto != null && supplierDto.getFile() != null && supplierDto.getFile().getName() != null) {
-                    Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq",
-                            supplierDto.getFile().getName());
-                    return null;
-                }
+                // if (supplier != null && supplier.getFile() != null &&
+                // supplier.getFile().getName() != null) {
+                // Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq",
+                // supplier.getFile().getName());
+                // return null;
+                // }
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException("Error reading file", e);
             }
         } else {
-            throw new RFQException("File ID " + params.getId() + " not found");
+            throw new RFQException("File ID " + dto.getId() + " not found");
         }
     }
 
-    private RFQ dtoToEntityAdd(RFQDto dto, Long id, RFQ entity) {
-        entity.setId(id);
-        entity.setStatus(dto.getStatus());
-        entity.setDueDate(dto.getDue_date());
-        entity.setNote(dto.getNote());
-        entity.setDetails(dto.getDetails());
-        entity.setRejectNote(dto.getReject_note());
-
-        List<SupplierDto> suppliers = new ArrayList<>();
-        if (dto.getSuppliers() != null) {
-            dto.getSuppliers().forEach(suppliers::add);
-        }
-        entity.setSuppliers(suppliers);
-
-        return entity;
+    @Override
+    public void update(RFQ entity) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
-    private RFQ dtoToEntityUpdate(String nrp, RFQDto dto, RFQ entity) {
-        entity.setStatus(dto.getStatus());
-        entity.setDueDate(dto.getDue_date());
-        entity.setNote(dto.getNote());
-        entity.setDetails(dto.getDetails());
-        entity.setRejectNote(dto.getReject_note());
-
-        List<ApprovalDto> approvalDtos = entity.getTemApprovalDtos();
-
-        if (approvalDtos != null) {
-            Optional<ApprovalDto> approvalOpt = approvalDtos.stream()
-                    .filter(aprv -> aprv.getUsers() != null && aprv.getUsers().getNrp() != null
-                            && aprv.getUsers().getNrp().equalsIgnoreCase(nrp))
-                    .findFirst();
-            if (approvalOpt.isPresent()) {
-                List<ApprovalDto> entityApproval = approvalDtos.stream().map(data -> {
-                    if (data.getUsers() != null && data.getUsers().getNrp() != null
-                            && data.getUsers().getNrp().equalsIgnoreCase(nrp)) {
-                        ApprovalDto newData = data;
-                        if (Boolean.TRUE.equals(data.getIsApprovalChecked())) {
-                            newData.setIsApprovalPermanent(true);
-                            int nextStage = (entity.getCurrentApprovalStage() != null ? entity.getCurrentApprovalStage()
-                                    : 0) + 1;
-                            entity.setCurrentApprovalStage(nextStage);
-
-                            if ("REJECT".equalsIgnoreCase(dto.getStatus())) {
-                                entity.setRejectNote(dto.getReject_note());
-                                entity.setCurrentApprovalStage(0);
-                                entity.setLastApproved(null);
-                                entity.setStatus("REJECT");
-                            } else if ("DRAFT".equalsIgnoreCase(dto.getStatus())) {
-                                entity.setStatus("DRAFT");
-                                entity.setCurrentApprovalStage(0);
-                                entity.setLastApproved(null);
-                                List<ApprovalDto> updateApprovalDtos = approvalDtos.stream().map(aprv -> {
-                                    aprv.setIsApprovalPermanent(false);
-                                    return aprv;
-                                }).toList();
-                                entity.setTemApprovalDtos(updateApprovalDtos);
-                            } else {
-                                entity.setStatus(dto.getStatus());
-                                if (entity.getCurrentApprovalStage() != null
-                                        && entity.getCurrentApprovalStage().equals(entity.getTotalApprovalStage())) {
-                                    entity.setStatus("APPROVED");
-                                }
-                                entity.setLastApproved(approvalOpt.get().getUsers().getFullname());
-                            }
-                        }
-                        return newData;
-                    }
-                    return data;
-                }).toList();
-                entity.setTemApprovalDtos(entityApproval);
-            }
-        } else {
-            if (dto.getApprovals() != null) {
-                entity.setCurrentApprovalStage(0);
-                entity.setTotalApprovalStage(dto.getApprovals().size());
-                entity.setTemApprovalDtos(dto.getApprovals());
-            } else {
-                throw new RFQException("Approval cannot be null");
-            }
-        }
-
-        List<SupplierDto> suppliers = new ArrayList<>();
-        if (dto.getSuppliers() != null) {
-            dto.getSuppliers().forEach(data -> {
-                SupplierDto supplierDto = data;
-                if (data.getFile() != null) {
-                    try {
-                        AppFileDto file = supplierDto.getFile();
-                        AppFileUtil.createFileFromBase64(data.getFile().getName(), "rfq", file);
-                        file.setContent(null);
-                        supplierDto.setFile(file);
-
-                        suppliers.add(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-        if (dto.getSuppliers() != null) {
-            entity.setSuppliers(dto.getSuppliers().stream().map(data -> {
-                SupplierDto updatedData = data;
-                AppFileDto file = null;
-                if (updatedData.getFile() != null) {
-                    file = updatedData.getFile();
-                    file.setContent(null);
-                    updatedData.setFile(file);
-                } else {
-                    updatedData.setFile(null);
-                }
-                return updatedData;
-            }).toList());
-        }
-
-        return entity;
-    }
-
-    private RFQDto entityToDto(RFQ entity) {
-        RFQDto dto = new RFQDto();
-        dto.setId(entity.getId());
-        dto.setStatus(entity.getStatus());
-        dto.setDetails(entity.getDetails());
-        dto.setDue_date(entity.getDueDate());
-        dto.setNote(entity.getNote());
-
-        dto.setCreated_by(entity.getUserCreateBy());
-        if (entity.getCreatedDate() != null) {
-            dto.setCreated_date(Date.from(entity.getCreatedDate()));
-        }
-        dto.setUpdated_by(entity.getUserUpdateBy());
-        if (entity.getUpdatedDate() != null) {
-            dto.setUpdated_date(Date.from(entity.getUpdatedDate()));
-        }
-
-        List<SupplierDto> supplierDtos = new ArrayList<>();
-
-        if (entity.getSuppliers() != null) {
-            entity.getSuppliers().forEach(supplierDtos::add);
-        }
-        dto.setSuppliers(supplierDtos);
-        dto.setLast_approved(entity.getLastApproved());
-
-        List<String> nextApprovals = new ArrayList<>();
-
-        if (entity.getTemApprovalDtos() != null) {
-            dto.setApprovals(entity.getTemApprovalDtos());
-            nextApprovals.addAll(entity.getTemApprovalDtos().stream()
-                    .filter(data -> !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
-                    .filter(data -> data.getUsers() != null && data.getUsers().getFullname() != null)
-                    .map(data -> data.getUsers().getFullname()).toList());
-        }
-
-        dto.setNext_approvals(nextApprovals);
-
-        return dto;
+    @Override
+    public void delete(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
 }

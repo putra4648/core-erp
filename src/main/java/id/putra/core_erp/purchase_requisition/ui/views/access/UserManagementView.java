@@ -25,8 +25,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
-import id.putra.core_erp.purchase_requisition.dto.UsersDto;
 import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.model.Group;
@@ -55,8 +53,8 @@ public class UserManagementView extends VerticalLayout {
 
     // Users components
     private final TextField userSearchField = new TextField();
-    private final Grid<UsersDto> usersGrid = new Grid<>();
-    private final List<UsersDto> usersList = new ArrayList<>();
+    private final Grid<Users> usersGrid = new Grid<>();
+    private final List<Users> usersList = new ArrayList<>();
 
     // Department components
     private final Grid<Department> deptGrid = new Grid<>();
@@ -139,7 +137,7 @@ public class UserManagementView extends VerticalLayout {
                 .setFlexGrow(2);
         usersGrid.addColumn(u -> u.getUsername() != null ? u.getUsername() : "-").setHeader("Username").setFlexGrow(1);
         usersGrid.addColumn(u -> u.getRole() != null ? u.getRole() : "-").setHeader("Role").setFlexGrow(1);
-        usersGrid.addColumn(u -> u.getGroups() != null ? u.getGroups().getName() : "-").setHeader("Group")
+        usersGrid.addColumn(u -> u.getCompanyGroup() != null ? u.getCompanyGroup().getName() : "-").setHeader("Group")
                 .setFlexGrow(1);
 
         usersGrid.addComponentColumn(u -> {
@@ -163,7 +161,7 @@ public class UserManagementView extends VerticalLayout {
     private void refreshUsers() {
         try {
             String search = userSearchField.getValue() != null ? userSearchField.getValue() : "";
-            // List<UsersDto> users = userService.getUsers(search, "ACTIVE", 1, 100,
+            // List<Users> users = userService.getUsers(search, "ACTIVE", 1, 100,
             // "fullname", "asc");
             // usersList.clear();
             // if (users != null) {
@@ -175,7 +173,7 @@ public class UserManagementView extends VerticalLayout {
         }
     }
 
-    private void toggleUserStatus(UsersDto u) {
+    private void toggleUserStatus(Users u) {
         try {
             // userService.updateCompanyUsersStatus(u.getNrp());
             Notification.show("User status updated", 2000, Notification.Position.TOP_CENTER);
@@ -301,22 +299,22 @@ public class UserManagementView extends VerticalLayout {
                 return;
             }
 
-            DepartmentDto dto = new DepartmentDto();
-            dto.setDept_number(codeField.getValue());
-            dto.setDept_name(nameField.getValue());
+            Department dto = new Department();
+            dto.setDeptNumber(codeField.getValue());
+            dto.setDeptName(nameField.getValue());
 
             if (managerCombo.getValue() != null) {
-                UsersDto mDto = new UsersDto();
+                Users mDto = new Users();
                 mDto.setNrp(managerCombo.getValue().getNrp());
                 mDto.setFullname(managerCombo.getValue().getFullname());
-                dto.setDept_manager(mDto);
+                dto.setDeptManager(mDto);
             }
 
             if (purchaserCombo.getValue() != null) {
-                UsersDto pDto = new UsersDto();
+                Users pDto = new Users();
                 pDto.setNrp(purchaserCombo.getValue().getNrp());
                 pDto.setFullname(purchaserCombo.getValue().getFullname());
-                dto.setDept_purchaser(pDto);
+                dto.setDeptPurchaser(pDto);
             }
 
             try {
@@ -424,16 +422,16 @@ public class UserManagementView extends VerticalLayout {
                 return;
             }
 
-            UsersDto dto = new UsersDto();
+            Users dto = new Users();
             dto.setNrp(nrpField.getValue());
             dto.setFullname(fullnameField.getValue());
             dto.setUsername(usernameField.getValue());
             dto.setEmail(emailField.getValue());
             if (deptCombo.getValue() != null) {
-                dto.setDept_id(deptCombo.getValue().getDeptNumber());
+                dto.setDepartment(deptCombo.getValue());
             }
             if (groupCombo.getValue() != null) {
-                dto.setGroup_code(groupCombo.getValue().getCode());
+                dto.setCompanyGroup(groupCombo.getValue());
             }
             dto.setStatus(StatusEnum.ACTIVE);
 

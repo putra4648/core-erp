@@ -7,7 +7,6 @@ import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,11 +63,16 @@ public class Requisition extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_approvals", columnDefinition = "jsonb")
-    private List<ApprovalDto> temApprovalDtos;
+    private List<Approval> approvals;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
-    private ApprovalDto tempPurchaserApprovalDto;
+    private Approval approval;
+
+    private Approval purchaser;
+
+    @Column(name = "next_approvals")
+    private List<String> nextApprovals;
 
     @ManyToOne
     @JoinColumn(name = "budget_id", referencedColumnName = "id")
@@ -193,20 +197,20 @@ public class Requisition extends BaseModel {
         this.lastApproved = lastApproved;
     }
 
-    public List<ApprovalDto> getTemApprovalDtos() {
-        return temApprovalDtos;
+    public List<Approval> getApprovals() {
+        return approvals;
     }
 
-    public void setTemApprovalDtos(List<ApprovalDto> temApprovalDtos) {
-        this.temApprovalDtos = temApprovalDtos;
+    public void setApprovals(List<Approval> temApprovalDtos) {
+        this.approvals = temApprovalDtos;
     }
 
-    public ApprovalDto getTempPurchaserApprovalDto() {
-        return tempPurchaserApprovalDto;
+    public Approval getApproval() {
+        return approval;
     }
 
-    public void setTempPurchaserApprovalDto(ApprovalDto tempPurchaserApprovalDto) {
-        this.tempPurchaserApprovalDto = tempPurchaserApprovalDto;
+    public void setApproval(Approval tempPurchaserApprovalDto) {
+        this.approval = tempPurchaserApprovalDto;
     }
 
     public Budget getBudget() {
@@ -232,4 +236,21 @@ public class Requisition extends BaseModel {
     public void setDetails(List<RequisitionDetail> details) {
         this.details = details;
     }
+
+    public List<String> getNextApprovals() {
+        return nextApprovals;
+    }
+
+    public void setNextApprovals(List<String> nextApprovals) {
+        this.nextApprovals = nextApprovals;
+    }
+
+    public Approval getPurchaser() {
+        return purchaser;
+    }
+
+    public void setPurchaser(Approval purchaser) {
+        this.purchaser = purchaser;
+    }
+
 }

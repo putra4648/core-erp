@@ -1,13 +1,17 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core;
 
 import java.util.List;
-import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
+
+import id.putra.core_erp.warehouse.module.outbound.model.entity.SalesOrder;
 
 public interface ReturnOutboundService {
-    SalesOrderDto create(SalesOrderDto dto);
-    SalesOrderDto update(SalesOrderDto dto);
-    Boolean delete(Long id);
-    SalesOrderDto getById(Long id);
-    List<SalesOrderDto> getAll(SalesOrderDto filter);
-}
+    SalesOrder create(SalesOrder dto);
 
+    SalesOrder update(SalesOrder dto);
+
+    Boolean delete(Long id);
+
+    SalesOrder getById(Long id);
+
+    List<SalesOrder> getAll(SalesOrder filter);
+}

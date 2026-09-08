@@ -1,5 +1,6 @@
 package id.putra.core_erp.purchase_requisition.model;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -44,10 +45,12 @@ public class RequisitionDetail extends BaseModel {
     private BigInteger qty;
 
     @Column(name = "unit_price")
-    private BigInteger unitPrice;
+    private BigDecimal unitPrice;
 
     @Column(name = "supplier")
     private String supplier;
+
+    private BigDecimal subtotal;
 
     // @ManyToOne
     // @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
@@ -129,11 +132,11 @@ public class RequisitionDetail extends BaseModel {
         this.qty = qty;
     }
 
-    public BigInteger getUnitPrice() {
+    public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(BigInteger unitPrice) {
+    public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
 
@@ -167,6 +170,14 @@ public class RequisitionDetail extends BaseModel {
 
     public void setRfq(RFQ rfq) {
         this.rfq = rfq;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
     }
 
 }

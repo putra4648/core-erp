@@ -2,15 +2,20 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.LocationDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Location;
+import io.quarkus.panache.common.Page;
 
 public interface LocationCoreService {
 
-    LocationDto getLocation(LocationDto dto);
+    Location getLocation(Location dto);
 
-    void add(List<LocationDto> dtos);
+    void add(List<Location> dtos);
 
-    void update(List<LocationDto> dtos);
+    void update(List<Location> dtos);
 
-    void delete(List<LocationDto> dtos);
+    void delete(List<Location> dtos);
+
+    DataProvider<Location, Void> getLocations(Location param, Page ofSize);
 }

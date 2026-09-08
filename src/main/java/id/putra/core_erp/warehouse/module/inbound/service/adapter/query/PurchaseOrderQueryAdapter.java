@@ -1,8 +1,12 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.query;
 
-public interface PurchaseOrderQueryAdapter {
-    // PurchaseOrderDto getById(@NonNull Long id, @NonNull Pageable pageable);
+import java.util.List;
 
-    //
-    // pageable);
+import id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrder;
+import io.quarkus.panache.common.Page;
+
+public interface PurchaseOrderQueryAdapter {
+
+    List<PurchaseOrder> list(PurchaseOrder dto, Page page);
+
 }

@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
-import id.putra.core_erp.purchase_requisition.dto.UsersDto;
 import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.purchase_requisition.model.Approval;
 import id.putra.core_erp.purchase_requisition.model.Department;
@@ -28,8 +25,8 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     private DepartmentRepo departmentRepo;
 
     @Override
-    public List<DepartmentDto> getDepartmentDropdown() {
-        List<DepartmentDto> dtos = new ArrayList<>();
+    public List<Department> getDepartmentDropdown() {
+        List<Department> dtos = new ArrayList<>();
         departmentRepo.findAll().list().forEach(data -> dtos.add(entityToDto(data)));
         return dtos;
     }
@@ -45,7 +42,7 @@ public class DepartmentsServiceImpl implements DepartmentsService {
             for (StatusEnum status : StatusEnum.values()) {
                 Map<String, Object> detailResult = new HashMap<>();
                 detailResult.put("count", departmentRepo.countByDeptNameContainingIgnoreCaseAndStatus(name, status));
-                List<DepartmentDto> depts = new ArrayList<>();
+                List<Department> depts = new ArrayList<>();
                 departmentRepo
                         .findAllByDeptNameContainingIgnoreCaseAndStatus(name, status, Sort.by("deptName").ascending())
                         .iterator()
@@ -60,10 +57,10 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public void addDepartment(DepartmentDto body) {
+    public void addDepartment(Department body) {
         Optional<Department> dept = departmentRepo.findByIdOptional(body.getId());
         if (dept.isPresent()) {
-            String message = MessageFormat.format(MessageConstant.EXIST, "Department ", body.getDept_number());
+            String message = MessageFormat.format(MessageConstant.EXIST, "Department ", body.getDeptNumber());
             throw new IllegalArgumentException(message);
         } else {
             Department entity = new Department();
@@ -72,7 +69,7 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public DepartmentDto getDetailDepartment(Long id) {
+    public Department getDetailDepartment(Long id) {
         Optional<Department> deptOptional = departmentRepo.findByIdOptional(id);
         if (deptOptional.isPresent()) {
             Department dept = deptOptional.get();
@@ -84,13 +81,13 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public void updateDepartment(DepartmentDto body) {
-        Optional<Department> dept = departmentRepo.findByDeptNumber(body.getDept_number());
+    public void updateDepartment(Department body) {
+        Optional<Department> dept = departmentRepo.findByDeptNumber(body.getDeptNumber());
         if (dept.isPresent()) {
             Department updatedEntity = dtoToEntity(dept.get(), body);
             departmentRepo.persist(updatedEntity);
         } else {
-            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Department " + body.getDept_number());
+            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Department " + body.getDeptNumber());
             throw new IllegalArgumentException(message);
         }
     }
@@ -108,65 +105,65 @@ public class DepartmentsServiceImpl implements DepartmentsService {
         }
     }
 
-    private DepartmentDto entityToDto(Department data) {
-        DepartmentDto dto = new DepartmentDto();
-        dto.setDept_name(data.getDeptName());
-        dto.setDept_number(data.getDeptNumber());
+    private Department entityToDto(Department data) {
+        Department dto = new Department();
+        dto.setDeptName(data.getDeptName());
+        dto.setDeptNumber(data.getDeptNumber());
         dto.setStatus(data.getStatus());
 
-        UsersDto user = new UsersDto();
+        Users user = new Users();
 
         if (data.getDeptManager() != null) {
             user.setNrp(data.getDeptManager().getNrp());
             user.setFullname(data.getDeptManager().getFullname());
             user.setStatus(data.getDeptManager().getStatus());
             user.setUsername(data.getDeptManager().getUsername());
-            dto.setDept_manager(user);
+            dto.setDeptManager(user);
         }
 
-        List<ApprovalDto> approvals = new ArrayList<>();
+        List<Approval> approvals = new ArrayList<>();
         if (data.getApprovals() != null) {
             data.getApprovals().forEach(aprv -> {
-                ApprovalDto approvalDto = new ApprovalDto();
-                approvalDto.setId(aprv.getId());
+                Approval Approval = new Approval();
+                Approval.setId(aprv.getId());
 
                 if (aprv.getUsers() != null) {
-                    UsersDto user1 = new UsersDto();
+                    Users user1 = new Users();
                     user1.setNrp(aprv.getUsers().getNrp());
                     user1.setFullname(aprv.getUsers().getFullname());
                     user1.setStatus(aprv.getUsers().getStatus());
                     user1.setUsername(aprv.getUsers().getUsername());
-                    approvalDto.setUsers(user1);
+                    Approval.setUsers(user1);
                 }
-                approvals.add(approvalDto);
+                approvals.add(Approval);
             });
         }
         dto.setApprovals(approvals);
 
         if (data.getDeptPurchaser() != null) {
-            user = new UsersDto();
+            user = new Users();
             user.setNrp(data.getDeptPurchaser().getNrp());
             user.setFullname(data.getDeptPurchaser().getFullname());
             user.setStatus(data.getDeptPurchaser().getStatus());
             user.setUsername(data.getDeptPurchaser().getUsername());
-            dto.setDept_purchaser(user);
+            dto.setDeptPurchaser(user);
         }
 
         if (data.getApprovalPresident() != null) {
-            user = new UsersDto();
+            user = new Users();
             user.setNrp(data.getApprovalPresident().getNrp());
             user.setFullname(data.getApprovalPresident().getFullname());
             user.setStatus(data.getApprovalPresident().getStatus());
             user.setUsername(data.getApprovalPresident().getUsername());
-            dto.setApproval_president(user);
+            dto.setApprovalPresident(user);
         }
 
         return dto;
     }
 
-    private Department dtoToEntity(Department entity, DepartmentDto data) {
-        entity.setDeptName(data.getDept_name());
-        entity.setDeptNumber(data.getDept_number());
+    private Department dtoToEntity(Department entity, Department data) {
+        entity.setDeptName(data.getDeptName());
+        entity.setDeptNumber(data.getDeptNumber());
         entity.setStatus(data.getStatus());
 
         // if (data.getDept_manager() != null && data.getDept_manager().getNrp() !=
@@ -196,10 +193,10 @@ public class DepartmentsServiceImpl implements DepartmentsService {
         }
 
         if (data.getApprovals() != null) {
-            for (ApprovalDto approvalDto : data.getApprovals()) {
-                if (approvalDto.getUsers() != null && approvalDto.getUsers().getNrp() != null) {
+            for (Approval Approval : data.getApprovals()) {
+                if (Approval.getUsers() != null && Approval.getUsers().getNrp() != null) {
                     Approval approval = new Approval();
-                    // Optional<Users> user1 = userRepo.findById(approvalDto.getUsers().getNrp());
+                    // Optional<Users> user1 = userRepo.findById(Approval.getUsers().getNrp());
                     // if (user1.isPresent()) {
                     // approval.setDepartment(entity);
                     // approval.setUsers(user1.get());
@@ -213,20 +210,20 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public List<ApprovalDto> getDeptApprovals(Long deptId) {
-        List<ApprovalDto> dtos = new ArrayList<>();
+    public List<Approval> getDeptApprovals(Long deptId) {
+        List<Approval> dtos = new ArrayList<>();
 
         departmentRepo.findByIdOptional(deptId).ifPresent(value -> {
             if (value.getApprovals() != null) {
                 dtos.addAll(value.getApprovals().stream().map(apr -> {
-                    ApprovalDto dto = new ApprovalDto();
-                    dto.setUsers(entityToUsersDto(apr.getUsers()));
+                    Approval dto = new Approval();
+                    dto.setUsers(apr.getUsers());
 
                     /// Set default setting
-                    dto.setIsApprovalChecked(true);
-                    dto.setIsApprovalPermanent(false);
-                    dto.setIsBypassChecked(false);
-                    dto.setIsBypassPermanent(false);
+                    // dto.setIsApprovalChecked(true);
+                    // dto.setIsApprovalPermanent(false);
+                    // dto.setIsBypassChecked(false);
+                    // dto.setIsBypassPermanent(false);
                     return dto;
                 }).toList());
             }
@@ -236,33 +233,24 @@ public class DepartmentsServiceImpl implements DepartmentsService {
     }
 
     @Override
-    public ApprovalDto getDeptApprovalPurchaser(Long deptId) {
-        ApprovalDto dto = null;
+    public Approval getDeptApprovalPurchaser(Long deptId) {
+        Approval dto = null;
         Optional<Department> deptOpt = departmentRepo.findByIdOptional(deptId);
         if (deptOpt.isPresent()) {
-            dto = new ApprovalDto();
+            dto = new Approval();
             Department dept = deptOpt.get();
 
             Users deptPurchaserUser = dept.getDeptPurchaser();
             if (deptPurchaserUser != null) {
-                dto.setUsers(entityToUsersDto(deptPurchaserUser));
+                dto.setUsers(deptPurchaserUser);
             }
 
             /// Set default setting
-            dto.setIsApprovalChecked(true);
-            dto.setIsApprovalPermanent(false);
-            dto.setIsBypassChecked(false);
-            dto.setIsBypassPermanent(false);
+            // dto.setIsApprovalChecked(true);
+            // dto.setIsApprovalPermanent(false);
+            // dto.setIsBypassChecked(false);
+            // dto.setIsBypassPermanent(false);
         }
-        return dto;
-    }
-
-    private UsersDto entityToUsersDto(Users users) {
-        if (users == null)
-            return null;
-        UsersDto dto = new UsersDto();
-        dto.setNrp(users.getNrp());
-        dto.setFullname(users.getFullname());
         return dto;
     }
 

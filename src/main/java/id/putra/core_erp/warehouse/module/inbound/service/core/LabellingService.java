@@ -2,17 +2,16 @@ package id.putra.core_erp.warehouse.module.inbound.service.core;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.LabellingDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Labelling;
 
 public interface LabellingService {
-    LabellingDto create(LabellingDto dto);
+    Labelling create(Labelling dto);
 
-    LabellingDto update(LabellingDto dto);
+    Labelling update(Labelling dto);
 
     Boolean delete(Long id);
 
-    LabellingDto getById(Long id);
+    Labelling getById(Long id);
 
-    List<LabellingDto> getAll(LabellingDto filter);
+    List<Labelling> getAll(Labelling filter);
 }
-

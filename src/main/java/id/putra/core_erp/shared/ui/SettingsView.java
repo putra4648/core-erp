@@ -25,6 +25,7 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.shared.entity.ParameterLookup;
 import id.putra.core_erp.shared.service.ParameterLookupService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "settings", layout = MainLayout.class)
@@ -61,9 +62,8 @@ public class SettingsView extends DefaultComponent {
         var descriptionField = new TextField("Description");
         descriptionField.setRequired(true);
 
-        this.parameterGrid
-                .setItemsPageable(page -> parameterLookupService
-                        .getAllParameterLookups(this.searchField.getValue(), page).toList());
+        this.parameterGrid.setItems(query -> parameterLookupService
+                .getAllParameterLookups(searchField.getValue(), Page.ofSize(query.getPageSize())).stream());
 
         this.binder.forField(keyField).asRequired("Key is required").bind(ParameterLookup::getKey,
                 ParameterLookup::setKey);

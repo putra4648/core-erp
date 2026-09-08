@@ -27,6 +27,9 @@ public class Approval extends BaseModel {
     @JoinColumn(name = "requisition_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Requisition requisition;
 
+    private Boolean isApprovalPermanent;
+    private Boolean isBypassPermanent;
+
     public Integer getId() {
         return id;
     }
@@ -59,19 +62,20 @@ public class Approval extends BaseModel {
         this.requisition = requisition;
     }
 
-    // @Column(name = "is_approved")
-    // private Boolean isApproved;
+    public Boolean getIsApprovalPermanent() {
+        return isApprovalPermanent;
+    }
 
-    // @Column(name = "keepPermanentApproved")
-    // private Boolean keepPermanent;
+    public void setIsApprovalPermanent(Boolean isApprovalPermanent) {
+        this.isApprovalPermanent = isApprovalPermanent;
+    }
 
-    // @Column(name = "keepPermanentBypass")
-    // private Boolean keepPermanentBypass;
+    public Boolean getIsBypassPermanent() {
+        return isBypassPermanent;
+    }
 
-    // @Column(name = "is_bypass")
-    // private Boolean isBypass;
-
-    // @Column(name = "bypass_reason")
-    // private String bypassReason;
+    public void setIsBypassPermanent(Boolean isBypassPermanent) {
+        this.isBypassPermanent = isBypassPermanent;
+    }
 
 }

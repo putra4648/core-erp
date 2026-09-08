@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.shared.enums.TypeEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,7 +39,8 @@ public class Supplier extends BaseEntity {
     private String website;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
@@ -134,11 +136,11 @@ public class Supplier extends BaseEntity {
         this.website = website;
     }
 
-    public String getStatus() {
+    public StatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusEnum status) {
         this.status = status;
     }
 

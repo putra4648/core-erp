@@ -1,8 +1,8 @@
 package id.putra.core_erp.warehouse.module.customer.service.adapter.query;
 
-import id.putra.core_erp.warehouse.module.customer.dto.CustomerDto;
+import id.putra.core_erp.shared.entity.Customer;
 
 public interface CustomerQueryAdapter {
 
-    CustomerDto getById(Long id);
+    Customer getById(Long id);
 }

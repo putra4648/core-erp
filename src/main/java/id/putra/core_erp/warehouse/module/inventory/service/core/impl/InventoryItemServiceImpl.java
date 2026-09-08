@@ -2,10 +2,13 @@ package id.putra.core_erp.warehouse.module.inventory.service.core.impl;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inventory.dto.InventoryItemDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.inventory.model.entity.InventoryItem;
 import id.putra.core_erp.warehouse.module.inventory.service.adapter.command.InventoryItemCommandAdapter;
 import id.putra.core_erp.warehouse.module.inventory.service.adapter.query.InventoryItemQueryAdapter;
 import id.putra.core_erp.warehouse.module.inventory.service.core.InventoryItemCoreService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -18,23 +21,29 @@ public class InventoryItemServiceImpl implements InventoryItemCoreService {
     private InventoryItemCommandAdapter inventoryItemCommandAdapter;
 
     @Override
-    public InventoryItemDto getInventoryItem(InventoryItemDto dto) {
-        return inventoryItemQueryAdapter.getInventoryItemById(dto);
+    public InventoryItem getInventoryItem(InventoryItem item) {
+        return inventoryItemQueryAdapter.getInventoryItemById(item);
     }
 
     @Override
-    public void save(List<InventoryItemDto> dtos) {
-        inventoryItemCommandAdapter.persist(dtos);
+    public void save(List<InventoryItem> items) {
+        inventoryItemCommandAdapter.save(items);
     }
 
     @Override
-    public void update(List<InventoryItemDto> dtos) {
+    public void update(List<InventoryItem> dtos) {
         inventoryItemCommandAdapter.update(dtos);
     }
 
     @Override
-    public void delete(List<InventoryItemDto> dtos) {
+    public void delete(List<InventoryItem> dtos) {
         inventoryItemCommandAdapter.delete(dtos);
+    }
+
+    @Override
+    public DataProvider<InventoryItem, Void> getInventoryItems(String value, Page ofSize) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getInventoryItems'");
     }
 
 }

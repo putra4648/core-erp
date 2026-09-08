@@ -2,10 +2,13 @@ package id.putra.core_erp.warehouse.module.inbound.service.core.impl;
 
 import org.jspecify.annotations.NonNull;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Receiving;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.ReceivingCommandAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.ReceivingQueryAdapter;
 import id.putra.core_erp.warehouse.module.inbound.service.core.ReceivingOrderService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -19,18 +22,24 @@ public class ReceivingOrderServiceImpl implements ReceivingOrderService {
     private ReceivingQueryAdapter receivingQueryAdapter;
 
     @Override
-    public ReceivingDto create(ReceivingDto dto) {
+    public Receiving create(Receiving dto) {
         return receivingCommandAdapter.add(dto);
     }
 
     @Override
-    public ReceivingDto update(ReceivingDto dto) {
+    public Receiving update(Receiving dto) {
         return receivingCommandAdapter.update(dto);
     }
 
     @Override
     public Boolean delete(@NonNull Long id) {
         return receivingCommandAdapter.delete(id);
+    }
+
+    @Override
+    public DataProvider<Receiving, Void> getAll(String value, Page ofSize) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
     }
 
 }

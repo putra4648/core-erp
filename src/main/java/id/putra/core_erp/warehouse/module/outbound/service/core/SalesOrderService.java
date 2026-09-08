@@ -1,14 +1,19 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core;
 
-import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.outbound.model.entity.SalesOrder;
+import io.quarkus.panache.common.Page;
 
 public interface SalesOrderService {
-    void create(SalesOrderDto dto);
+    void create(SalesOrder dto);
 
-    void update(SalesOrderDto dto);
+    void update(SalesOrder dto);
 
     void delete(Long id);
 
-    SalesOrderDto getById(Long id);
+    SalesOrder getById(Long id);
+
+    DataProvider<SalesOrder, Void> getAll(String value, Page ofSize);
 
 }

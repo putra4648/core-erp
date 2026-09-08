@@ -1,6 +1,5 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command.impl;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.QualityInspectionDto;
 import id.putra.core_erp.warehouse.module.inbound.model.entity.QualityInspection;
 import id.putra.core_erp.warehouse.module.inbound.model.repository.QualityInspectionRepository;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.InspectionCommandAdapter;
@@ -14,7 +13,7 @@ public class InspectionCommandAdapterImpl implements InspectionCommandAdapter {
     private QualityInspectionRepository qualityInspectionRepository;
 
     @Override
-    public QualityInspectionDto add(QualityInspectionDto dto) {
+    public QualityInspection add(QualityInspection dto) {
         QualityInspection inspection = new QualityInspection();
         inspection.setId(dto.getId());
         // inspection.setResult(dto.getResult());
@@ -25,7 +24,7 @@ public class InspectionCommandAdapterImpl implements InspectionCommandAdapter {
     }
 
     @Override
-    public QualityInspectionDto update(QualityInspectionDto dto) {
+    public QualityInspection update(QualityInspection dto) {
         return null;
     }
 

@@ -37,8 +37,10 @@ public class Item extends BaseModel {
     @Column(name = "updated_date")
     private Instant updatedDate;
 
+    private String unit;
+
     @Override
-    public Instant getUpdatedDate() {
+    public Instant getUpdateDate() {
         return this.updatedDate;
     }
 
@@ -114,7 +116,7 @@ public class Item extends BaseModel {
         this.status = status;
     }
 
-    public void setUpdatedDate(Instant updatedDate) {
+    public void setUpdateDate(Instant updatedDate) {
         this.updatedDate = updatedDate;
     }
 
@@ -168,5 +170,21 @@ public class Item extends BaseModel {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Instant getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Instant updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

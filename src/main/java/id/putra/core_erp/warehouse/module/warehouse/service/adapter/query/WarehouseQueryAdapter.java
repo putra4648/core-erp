@@ -1,9 +1,9 @@
 package id.putra.core_erp.warehouse.module.warehouse.service.adapter.query;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Warehouse;
 
 public interface WarehouseQueryAdapter {
 
-    WarehouseDto getWarehouseById(WarehouseDto dto);
+    Warehouse getWarehouseById(Warehouse dto);
 
 }

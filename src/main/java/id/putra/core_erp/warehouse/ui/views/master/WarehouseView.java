@@ -24,14 +24,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.warehouse.dto.LocationDto;
-import id.putra.core_erp.warehouse.module.warehouse.dto.RackDto;
-import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
-import id.putra.core_erp.warehouse.module.warehouse.dto.ZoneDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Location;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Rack;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Warehouse;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Zone;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.LocationCoreService;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.RackCoreService;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.WarehouseCoreService;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.ZoneCoreService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/warehouses", layout = MainLayout.class)
@@ -99,22 +100,21 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Warehouses Panel ---
     private void showWarehousesPanel() {
-        Grid<WarehouseDto> grid = new Grid<>();
+        Grid<Warehouse> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search warehouses...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
         search.setClearButtonVisible(true);
 
         Runnable refresh = () -> {
-            WarehouseDto param = new WarehouseDto();
+            Warehouse param = new Warehouse();
             param.setName(search.getValue());
-            var page = warehouseService.getWarehouses(param, PageRequest.of(0, 100));
-            grid.setItems(page.getContent());
+            grid.setItems(warehouseService.getWarehouses(param, Page.ofSize(100)));
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Warehouse", VaadinIcon.PLUS.create(),
-                e -> openWarehouseDialog(new WarehouseDto(), refresh));
+                e -> openWarehouseDialog(new Warehouse(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -140,7 +140,7 @@ public class WarehouseView extends VerticalLayout {
             edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 try {
-                    warehouseService.delete(List.of(wh));
+                    warehouseService.delete(List.of(wh.getId()));
                     Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     refresh.run();
@@ -157,7 +157,7 @@ public class WarehouseView extends VerticalLayout {
         refresh.run();
     }
 
-    private void openWarehouseDialog(WarehouseDto warehouse, Runnable onSave) {
+    private void openWarehouseDialog(Warehouse warehouse, Runnable onSave) {
         boolean isEdit = warehouse.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Warehouse" : "Add Warehouse");
 
@@ -175,7 +175,7 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(form);
 
         Button save = new Button("Save", e -> {
-            WarehouseDto dto = new WarehouseDto();
+            Warehouse dto = new Warehouse();
             dto.setId(warehouse.getId());
             dto.setName(nameField.getValue());
             dto.setLocation(locationField.getValue());
@@ -204,21 +204,20 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Zones Panel ---
     private void showZonesPanel() {
-        Grid<ZoneDto> grid = new Grid<>();
+        Grid<Zone> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search zones...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
         Runnable refresh = () -> {
-            ZoneDto param = new ZoneDto();
+            Zone param = new Zone();
             param.setName(search.getValue());
-            var page = zoneService.getZones(param, PageRequest.of(0, 100));
-            grid.setItems(page.getContent());
+            grid.setItems(zoneService.getZones(param, Page.ofSize(100)));
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Zone", VaadinIcon.PLUS.create(),
-                e -> openZoneDialog(new ZoneDto(), refresh));
+                e -> openZoneDialog(new Zone(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -243,7 +242,7 @@ public class WarehouseView extends VerticalLayout {
         refresh.run();
     }
 
-    private void openZoneDialog(ZoneDto zone, Runnable onSave) {
+    private void openZoneDialog(Zone zone, Runnable onSave) {
         Dialog dialog = new Dialog("Add Zone");
         TextField code = new TextField("Zone Code");
         TextField name = new TextField("Zone Name");
@@ -251,7 +250,7 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(code, name, type));
 
         Button save = new Button("Save", e -> {
-            ZoneDto dto = new ZoneDto();
+            Zone dto = new Zone();
             dto.setCode(code.getValue());
             dto.setName(name.getValue());
             dto.setType(type.getValue());
@@ -267,21 +266,20 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Racks Panel ---
     private void showRacksPanel() {
-        Grid<RackDto> grid = new Grid<>();
+        Grid<Rack> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search racks...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
         Runnable refresh = () -> {
-            RackDto param = new RackDto();
+            Rack param = new Rack();
             param.setName(search.getValue());
-            var page = rackService.getRacks(param, PageRequest.of(0, 100));
-            grid.setItems(page.getContent());
+            grid.setItems(rackService.getRacks(param, Page.ofSize(100)));
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Rack", VaadinIcon.PLUS.create(),
-                e -> openRackDialog(new RackDto(), refresh));
+                e -> openRackDialog(new Rack(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -297,7 +295,7 @@ public class WarehouseView extends VerticalLayout {
         refresh.run();
     }
 
-    private void openRackDialog(RackDto rack, Runnable onSave) {
+    private void openRackDialog(Rack rack, Runnable onSave) {
         Dialog dialog = new Dialog("Add Rack");
         TextField name = new TextField("Rack Name");
         NumberField rows = new NumberField("Rows");
@@ -305,7 +303,7 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(name, rows, cols));
 
         Button save = new Button("Save", e -> {
-            RackDto dto = new RackDto();
+            Rack dto = new Rack();
             dto.setName(name.getValue());
             dto.setRows(rows.getValue() != null ? rows.getValue().longValue() : 1L);
             dto.setCols(cols.getValue() != null ? cols.getValue().longValue() : 1L);
@@ -321,21 +319,20 @@ public class WarehouseView extends VerticalLayout {
 
     // --- Locations Panel ---
     private void showLocationsPanel() {
-        Grid<LocationDto> grid = new Grid<>();
+        Grid<Location> grid = new Grid<>();
         TextField search = new TextField();
         search.setPlaceholder("Search locations / bin numbers...");
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
         Runnable refresh = () -> {
-            LocationDto param = new LocationDto();
+            Location param = new Location();
             param.setName(search.getValue());
-            var page = locationService.getLocations(param, PageRequest.of(0, 100));
-            grid.setItems(page.getContent());
+            grid.setItems(locationService.getLocations(param, Page.ofSize(100)));
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Location", VaadinIcon.PLUS.create(),
-                e -> openLocationDialog(new LocationDto(), refresh));
+                e -> openLocationDialog(new Location(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -352,7 +349,7 @@ public class WarehouseView extends VerticalLayout {
         refresh.run();
     }
 
-    private void openLocationDialog(LocationDto location, Runnable onSave) {
+    private void openLocationDialog(Location location, Runnable onSave) {
         Dialog dialog = new Dialog("Add Location");
         TextField name = new TextField("Location Name");
         TextField bin = new TextField("Bin Number");
@@ -360,7 +357,7 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(name, bin, type));
 
         Button save = new Button("Save", e -> {
-            LocationDto dto = new LocationDto();
+            Location dto = new Location();
             dto.setName(name.getValue());
             dto.setBinNumber(bin.getValue());
             dto.setType(type.getValue());

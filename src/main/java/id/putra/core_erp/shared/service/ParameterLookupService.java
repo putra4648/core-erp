@@ -3,6 +3,7 @@ package id.putra.core_erp.shared.service;
 import java.util.List;
 
 import id.putra.core_erp.shared.entity.ParameterLookup;
+import io.quarkus.panache.common.Page;
 
 public interface ParameterLookupService {
 
@@ -15,5 +16,7 @@ public interface ParameterLookupService {
     public void deleteParameterLookup(Long id);
 
     public void persist(List<ParameterLookup> parameterLookups) throws Exception;
+
+    public List<ParameterLookup> getAllParameterLookups(String search, Page page);
 
 }

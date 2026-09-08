@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jspecify.annotations.NonNull;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.QualityInspectionDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.QualityInspection;
 import id.putra.core_erp.warehouse.module.inbound.model.repository.QualityInspectionRepository;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.InspectionQueryAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -17,16 +17,16 @@ public class InspectionQueryAdapterImpl implements InspectionQueryAdapter {
     private QualityInspectionRepository qualityInspectionRepository;
 
     @Override
-    public QualityInspectionDto getById(@NonNull Long id) {
+    public QualityInspection getById(@NonNull Long id) {
         // return
-        // qualityInspectionRepository.findById(id).map(QualityInspectionDto::toDto).orElse(null);
+        // qualityInspectionRepository.findById(id).map(QualityInspection::toDto).orElse(null);
         return null;
     }
 
     @Override
-    public List<QualityInspectionDto> getAll(QualityInspectionDto filter) {
+    public List<QualityInspection> getAll(QualityInspection filter) {
         // return
-        // qualityInspectionRepository.findAll().list().stream().map(QualityInspectionDto::toDto).toList();
+        // qualityInspectionRepository.findAll().list().stream().map(QualityInspection::toDto).toList();
         return null;
     }
 }

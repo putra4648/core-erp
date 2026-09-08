@@ -1,6 +1,6 @@
 package id.putra.core_erp.warehouse.module.outbound.service.adapter.command.impl;
 
-import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
+import id.putra.core_erp.warehouse.module.outbound.model.entity.SalesOrder;
 import id.putra.core_erp.warehouse.module.outbound.model.repository.SalesOrderRepository;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.SalesOrderCommandAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,11 +12,11 @@ public class SalesOrderCommandAdapterImpl implements SalesOrderCommandAdapter {
     private SalesOrderRepository salesOrderRepository;
 
     @Override
-    public void add(SalesOrderDto dto) {
+    public void add(SalesOrder dto) {
     }
 
     @Override
-    public void update(SalesOrderDto dto) {
+    public void update(SalesOrder dto) {
     }
 
     @Override

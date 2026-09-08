@@ -13,49 +13,49 @@ import jakarta.persistence.MappedSuperclass;
 public abstract class BaseModel {
 
     @Column(name = "created_by")
-    private String userCreateBy;
+    private String createBy;
 
     @Column(name = "created_date")
     @CreationTimestamp(source = SourceType.DB)
-    private Instant createdDate;
+    private Instant createDate;
 
     @Column(name = "updated_by")
-    private String userUpdateBy;
+    private String updateBy;
 
     @Column(name = "updated_date")
     @UpdateTimestamp(source = SourceType.DB)
-    private Instant updatedDate;
+    private Instant updateDate;
 
-    public String getUserCreateBy() {
-        return userCreateBy;
+    public String getCreateBy() {
+        return createBy;
     }
 
-    public void setUserCreateBy(String userCreateBy) {
-        this.userCreateBy = userCreateBy;
+    public void setCreateBy(String userCreateBy) {
+        this.createBy = userCreateBy;
     }
 
-    public Instant getCreatedDate() {
-        return createdDate;
+    public Instant getCreateDate() {
+        return createDate;
     }
 
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
+    public void setCreateDate(Instant createdDate) {
+        this.createDate = createdDate;
     }
 
-    public String getUserUpdateBy() {
-        return userUpdateBy;
+    public String getUpdateBy() {
+        return updateBy;
     }
 
-    public void setUserUpdateBy(String userUpdateBy) {
-        this.userUpdateBy = userUpdateBy;
+    public void setUpdateBy(String userUpdateBy) {
+        this.updateBy = userUpdateBy;
     }
 
-    public Instant getUpdatedDate() {
-        return updatedDate;
+    public Instant getUpdateDate() {
+        return updateDate;
     }
 
-    public void setUpdatedDate(Instant updatedDate) {
-        this.updatedDate = updatedDate;
+    public void setUpdateDate(Instant updatedDate) {
+        this.updateDate = updatedDate;
     }
 
 }

@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import id.putra.core_erp.purchase_requisition.dto.ItemDto;
+import id.putra.core_erp.purchase_requisition.model.Item;
 import io.vertx.mutiny.core.file.AsyncFile;
 
 public interface ItemService {
         void addItem(
-                        ItemDto body,
+                        Item body,
                         FileUpload itemImage,
                         List<FileUpload> itemDocs) throws Exception;
 
-        List<ItemDto> getItems(
+        List<Item> getItems(
                         String search,
                         String status,
                         String supplierId,
@@ -23,11 +23,11 @@ public interface ItemService {
                         String order);
 
         void updateItem(
-                        ItemDto dto,
+                        Item dto,
                         FileUpload itemImage,
                         List<FileUpload> itemDocs) throws Exception;
 
-        ItemDto getItemDetail(Long id);
+        Item getItemDetail(Long id);
 
         Boolean isItemExist(String name);
 

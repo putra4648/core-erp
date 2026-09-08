@@ -2,16 +2,21 @@ package id.putra.core_erp.warehouse.module.inventory.service.core;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inventory.dto.InventoryItemDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.inventory.model.entity.InventoryItem;
+import io.quarkus.panache.common.Page;
 
 public interface InventoryItemCoreService {
 
-    InventoryItemDto getInventoryItem(InventoryItemDto dto);
+    InventoryItem getInventoryItem(InventoryItem item);
 
-    void save(List<InventoryItemDto> dtos);
+    void save(List<InventoryItem> items);
 
-    void update(List<InventoryItemDto> dtos);
+    void update(List<InventoryItem> items);
 
-    void delete(List<InventoryItemDto> dtos);
+    void delete(List<InventoryItem> items);
+
+    DataProvider<InventoryItem, Void> getInventoryItems(String value, Page ofSize);
 
 }

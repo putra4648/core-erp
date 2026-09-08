@@ -2,15 +2,14 @@ package id.putra.core_erp.warehouse.module.warehouse.service.adapter.command;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Warehouse;
 
 public interface WarehouseCommandAdapter {
 
-    void save(List<WarehouseDto> dtos);
+    void save(List<Warehouse> dtos);
 
-    void update(List<WarehouseDto> dtos);
+    void update(List<Warehouse> dtos);
 
-    void delete(List<WarehouseDto> dtos);
+    void delete(List<Long> ids);
 
 }
-

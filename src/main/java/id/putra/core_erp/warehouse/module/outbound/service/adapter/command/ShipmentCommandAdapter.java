@@ -1,11 +1,13 @@
 package id.putra.core_erp.warehouse.module.outbound.service.adapter.command;
 
 import java.util.List;
-import id.putra.core_erp.warehouse.module.outbound.dto.ShipmentDto;
+
+import id.putra.core_erp.warehouse.module.outbound.model.entity.Shipment;
 
 public interface ShipmentCommandAdapter {
-    void add(List<ShipmentDto> dtos);
-    void update(List<ShipmentDto> dtos);
-    void delete(List<ShipmentDto> dtos);
-}
+    void add(List<Shipment> dtos);
 
+    void update(List<Shipment> dtos);
+
+    void delete(List<Long> ids);
+}

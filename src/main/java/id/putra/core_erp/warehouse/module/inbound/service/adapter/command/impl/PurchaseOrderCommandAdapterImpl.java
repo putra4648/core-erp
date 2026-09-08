@@ -1,6 +1,6 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command.impl;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrder;
 import id.putra.core_erp.warehouse.module.inbound.model.repository.PurchaseOrderRepository;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.PurchaseOrderCommandAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -13,12 +13,12 @@ public class PurchaseOrderCommandAdapterImpl implements PurchaseOrderCommandAdap
     private PurchaseOrderRepository purchaseOrderRepository;
 
     @Override
-    public PurchaseOrderDto add(PurchaseOrderDto dto) {
+    public PurchaseOrder add(PurchaseOrder dto) {
         return null;
     }
 
     @Override
-    public PurchaseOrderDto update(PurchaseOrderDto dto) {
+    public PurchaseOrder update(PurchaseOrder dto) {
         return null;
     }
 

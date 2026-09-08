@@ -1,9 +1,9 @@
 package id.putra.core_erp.warehouse.module.supplier.service.adapter.query;
 
-import id.putra.core_erp.warehouse.module.supplier.dto.SupplierDto;
+import id.putra.core_erp.shared.entity.Supplier;
 
 public interface SupplierQueryAdapter {
 
-    SupplierDto getById(Long id);
+    Supplier getById(Long id);
 
 }

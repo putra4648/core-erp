@@ -2,16 +2,21 @@ package id.putra.core_erp.warehouse.module.inventory.service.core;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inventory.dto.CategoryDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.shared.entity.Category;
+import io.quarkus.panache.common.Page;
 
 public interface CategoryCoreService {
 
-    CategoryDto getCategory(CategoryDto dto);
+    Category getCategory(Category category);
 
-    void save(List<CategoryDto> dtos);
+    void save(List<Category> categories);
 
-    void update(List<CategoryDto> dtos);
+    void update(List<Category> categories);
 
-    void delete(List<CategoryDto> dtos);
+    void delete(List<Category> dtos);
+
+    DataProvider<Category, Void> getCategories(String value, Page ofSize);
 
 }

@@ -2,7 +2,7 @@ package id.putra.core_erp.warehouse.module.inventory.service.adapter.command.imp
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inventory.dto.CategoryDto;
+import id.putra.core_erp.shared.entity.Category;
 import id.putra.core_erp.warehouse.module.inventory.model.repository.CategoryRepository;
 import id.putra.core_erp.warehouse.module.inventory.service.adapter.command.CategoryCommandAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,16 +15,16 @@ public class CategoryCommandAdapterImpl implements CategoryCommandAdapter {
     private CategoryRepository categoryRepository;
 
     @Override
-    public void save(List<CategoryDto> dtos) {
+    public void save(List<Category> categories) {
 
     }
 
     @Override
-    public void update(List<CategoryDto> dtos) {
+    public void update(List<Category> categories) {
     }
 
     @Override
-    public void delete(List<CategoryDto> dtos) {
+    public void delete(List<Category> categories) {
     }
 
 }

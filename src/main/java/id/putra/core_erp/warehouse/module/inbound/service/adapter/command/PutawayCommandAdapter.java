@@ -1,12 +1,11 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.PutawayDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Putaway;
 
 public interface PutawayCommandAdapter {
-    PutawayDto add(PutawayDto dto);
+    Putaway add(Putaway dto);
 
-    PutawayDto update(PutawayDto dto);
+    Putaway update(Putaway dto);
 
-    Boolean delete(PutawayDto dto);
+    Boolean delete(Putaway dto);
 }
-

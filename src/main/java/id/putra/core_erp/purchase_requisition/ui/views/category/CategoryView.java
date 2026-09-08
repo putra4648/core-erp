@@ -21,8 +21,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.CategoryDto;
 import id.putra.core_erp.purchase_requisition.service.CategoryService;
+import id.putra.core_erp.shared.entity.Category;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
@@ -32,8 +32,8 @@ import jakarta.annotation.security.PermitAll;
 public class CategoryView extends VerticalLayout {
 
     private final CategoryService categoryService;
-    private final Grid<CategoryDto> grid = new Grid<>();
-    private final List<CategoryDto> categoryList = new ArrayList<>();
+    private final Grid<Category> grid = new Grid<>();
+    private final List<Category> categoryList = new ArrayList<>();
 
     public CategoryView(CategoryService categoryService) {
         this.categoryService = categoryService;
@@ -63,7 +63,7 @@ public class CategoryView extends VerticalLayout {
         grid.setSizeFull();
         grid.addColumn(c -> c.getId() != null ? c.getId() : "-").setHeader("Category ID").setAutoWidth(true);
         grid.addColumn(c -> c.getName() != null ? c.getName() : "-").setHeader("Category Name").setFlexGrow(2);
-        grid.addColumn(c -> c.getParent_id() != null ? c.getParent_id() : "-").setHeader("Parent Category ID")
+        grid.addColumn(c -> c.getParentId() != null ? c.getParentId() : "-").setHeader("Parent Category ID")
                 .setFlexGrow(1);
 
         grid.addComponentColumn(cat -> {
@@ -75,7 +75,7 @@ public class CategoryView extends VerticalLayout {
 
     private void refreshGrid() {
         try {
-            List<CategoryDto> res = categoryService.getCategory();
+            List<Category> res = categoryService.getCategory();
             if (res != null) {
                 categoryList.clear();
                 categoryList.addAll(flattenCategories(res));
@@ -87,18 +87,18 @@ public class CategoryView extends VerticalLayout {
         }
     }
 
-    private List<CategoryDto> flattenCategories(List<CategoryDto> source) {
-        List<CategoryDto> flat = new ArrayList<>();
-        for (CategoryDto c : source) {
+    private List<Category> flattenCategories(List<Category> source) {
+        List<Category> flat = new ArrayList<>();
+        for (Category c : source) {
             flat.add(c);
-            if (c.getChildren() != null && !c.getChildren().isEmpty()) {
-                flat.addAll(flattenCategories(c.getChildren()));
-            }
+            // if (c.getChildren() != null && !c.getChildren().isEmpty()) {
+            // flat.addAll(flattenCategories(c.getChildren()));
+            // }
         }
         return flat;
     }
 
-    private void openCategoryDialog(CategoryDto editCategory) {
+    private void openCategoryDialog(Category editCategory) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle(editCategory == null ? "Add Category" : "Edit Category");
         dialog.setWidth("450px");
@@ -107,16 +107,16 @@ public class CategoryView extends VerticalLayout {
         TextField nameField = new TextField("Category Name");
         nameField.setRequired(true);
 
-        ComboBox<CategoryDto> parentCombo = new ComboBox<>("Parent Category");
+        ComboBox<Category> parentCombo = new ComboBox<>("Parent Category");
         parentCombo.setItems(categoryList);
         parentCombo.setItemLabelGenerator(c -> c.getName());
         parentCombo.setClearButtonVisible(true);
 
         if (editCategory != null) {
             nameField.setValue(editCategory.getName() != null ? editCategory.getName() : "");
-            if (editCategory.getParent_id() != null) {
+            if (editCategory.getParentId() != null) {
                 categoryList.stream()
-                        .filter(c -> editCategory.getParent_id().equals(c.getId()))
+                        .filter(c -> editCategory.getParentId().equals(c.getId()))
                         .findFirst()
                         .ifPresent(parentCombo::setValue);
             }
@@ -130,10 +130,10 @@ public class CategoryView extends VerticalLayout {
                 return;
             }
 
-            CategoryDto dto = new CategoryDto();
+            Category dto = new Category();
             dto.setName(nameField.getValue());
             if (parentCombo.getValue() != null) {
-                dto.setParent_id(parentCombo.getValue().getId());
+                dto.setParentId(parentCombo.getValue().getId());
             }
 
             try {

@@ -16,117 +16,117 @@ public class Company extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comp_id", nullable = false)
-    private Long compId;
+    private Long id;
 
     @Column(name = "comp_name", nullable = false, unique = true)
-    private String compName;
+    private String name;
 
     @Column(name = "comp_telp")
-    private String compTelp;
+    private String telp;
 
     @Column(name = "comp_npwp")
-    private String compNPWP;
+    private String npwp;
 
     @Column(name = "comp_logoname")
-    private String compLogopath;
+    private String logoPath;
 
     // @Lob
     // @Column(name = "comp_logoblob")
     // private byte[] compLogoblob;
 
     @Column(name = "comp_accbank")
-    private String compAccbank;
+    private String accountBank;
 
     @Column(name = "comp_endyear")
-    private Date compEndyear;
+    private Date financialEndYear;
 
     @Column(name = "comp_currencies")
-    private List<String> compCurrencies;
+    private List<String> curr;
 
     @Column(name = "comp_needRegisterApproval")
-    private Boolean compNeedRegisterApproval;
+    private Boolean needRegisterApproval;
 
     @Column(name = "comp_needAutoCloseOrder")
-    private Boolean compNeedAutoCloseOrder;
+    private Boolean needAutoCloseOrder;
 
     public Long getId() {
-        return compId;
+        return id;
     }
 
     public void setId(Long compId) {
-        this.compId = compId;
+        this.id = compId;
     }
 
-    public String getCompName() {
-        return compName;
+    public String getName() {
+        return name;
     }
 
-    public void setCompName(String compName) {
-        this.compName = compName;
+    public void setName(String compName) {
+        this.name = compName;
     }
 
-    public String getCompTelp() {
-        return compTelp;
+    public String getTelp() {
+        return telp;
     }
 
-    public void setCompTelp(String compTelp) {
-        this.compTelp = compTelp;
+    public void setTelp(String compTelp) {
+        this.telp = compTelp;
     }
 
-    public String getCompNPWP() {
-        return compNPWP;
+    public String getNpwp() {
+        return npwp;
     }
 
-    public void setCompNPWP(String compNPWP) {
-        this.compNPWP = compNPWP;
+    public void setNpwp(String compNPWP) {
+        this.npwp = compNPWP;
     }
 
-    public String getCompLogopath() {
-        return compLogopath;
+    public String getLogoPath() {
+        return logoPath;
     }
 
-    public void setCompLogopath(String compLogopath) {
-        this.compLogopath = compLogopath;
+    public void setLogoPath(String compLogopath) {
+        this.logoPath = compLogopath;
     }
 
-    public String getCompAccbank() {
-        return compAccbank;
+    public String getAccountBank() {
+        return accountBank;
     }
 
-    public void setCompAccbank(String compAccbank) {
-        this.compAccbank = compAccbank;
+    public void setAccountBank(String compAccbank) {
+        this.accountBank = compAccbank;
     }
 
-    public Date getCompEndyear() {
-        return compEndyear;
+    public Date getFinancialEndYear() {
+        return financialEndYear;
     }
 
-    public void setCompEndyear(Date compEndyear) {
-        this.compEndyear = compEndyear;
+    public void setFinancialEndYear(Date compEndyear) {
+        this.financialEndYear = compEndyear;
     }
 
-    public List<String> getCompCurrencies() {
-        return compCurrencies;
+    public List<String> getCurr() {
+        return curr;
     }
 
-    public void setCompCurrencies(List<String> compCurrencies) {
-        this.compCurrencies = compCurrencies;
+    public void setCurr(List<String> compCurrencies) {
+        this.curr = compCurrencies;
     }
 
-    public Boolean getCompNeedRegisterApproval() {
-        return compNeedRegisterApproval;
+    public Boolean getNeedRegisterApproval() {
+        return needRegisterApproval;
     }
 
-    public void setCompNeedRegisterApproval(Boolean compNeedRegisterApproval) {
-        this.compNeedRegisterApproval = compNeedRegisterApproval;
+    public void setNeedRegisterApproval(Boolean compNeedRegisterApproval) {
+        this.needRegisterApproval = compNeedRegisterApproval;
     }
 
-    public Boolean getCompNeedAutoCloseOrder() {
-        return compNeedAutoCloseOrder;
+    public Boolean getNeedAutoCloseOrder() {
+        return needAutoCloseOrder;
     }
 
-    public void setCompNeedAutoCloseOrder(Boolean compNeedAutoCloseOrder) {
-        this.compNeedAutoCloseOrder = compNeedAutoCloseOrder;
+    public void setNeedAutoCloseOrder(Boolean compNeedAutoCloseOrder) {
+        this.needAutoCloseOrder = compNeedAutoCloseOrder;
     }
 
 }

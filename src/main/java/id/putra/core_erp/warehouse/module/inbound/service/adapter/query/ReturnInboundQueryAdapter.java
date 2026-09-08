@@ -2,11 +2,10 @@ package id.putra.core_erp.warehouse.module.inbound.service.adapter.query;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReturnDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Return;
 
 public interface ReturnInboundQueryAdapter {
-    ReturnDto getById(Long id);
+    Return getById(Long id);
 
-    List<ReturnDto> getAll(ReturnDto filter);
+    List<Return> getAll(Return filter);
 }
-

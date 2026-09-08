@@ -1,11 +1,11 @@
-package id.putra.core_erp.purchase_requisition.dto;
+package id.putra.core_erp.purchase_requisition.model;
 
 import java.math.BigInteger;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BudgetTypeDto {
+public class BudgetType {
     @JsonAlias("budget_date")
     @JsonProperty("budget_date")
     private String budgetDateStr;

@@ -2,15 +2,20 @@ package id.putra.core_erp.warehouse.module.supplier.service.core;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.supplier.dto.SupplierDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.shared.entity.Supplier;
+import io.quarkus.panache.common.Page;
 
 public interface SupplierService {
 
-    SupplierDto getById(Long id);
+    Supplier getById(Long id);
 
-    List<SupplierDto> create(List<SupplierDto> dto);
+    List<Supplier> create(List<Supplier> dto);
 
-    void update(Long id, SupplierDto dto);
+    void update(Long id, Supplier dto);
 
     void delete(Long id);
+
+    DataProvider<Supplier, Void> getAll(String value, Page ofSize);
 }

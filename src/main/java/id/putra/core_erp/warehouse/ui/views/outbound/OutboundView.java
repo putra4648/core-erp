@@ -18,8 +18,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.outbound.dto.SalesOrderDto;
+import id.putra.core_erp.warehouse.module.outbound.model.entity.SalesOrder;
 import id.putra.core_erp.warehouse.module.outbound.service.core.SalesOrderService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "outbound", layout = MainLayout.class)
@@ -28,7 +29,7 @@ import jakarta.annotation.security.PermitAll;
 public class OutboundView extends VerticalLayout {
 
     private final SalesOrderService salesOrderService;
-    private final Grid<SalesOrderDto> grid = new Grid<>();
+    private final Grid<SalesOrder> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public OutboundView(SalesOrderService salesOrderService) {
@@ -60,7 +61,7 @@ public class OutboundView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("New Outbound Order", VaadinIcon.PLUS.create(),
-                e -> openOrderDialog(new SalesOrderDto()));
+                e -> openOrderDialog(new SalesOrder()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -77,8 +78,8 @@ public class OutboundView extends VerticalLayout {
                 .setSortable(true);
         grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date")
                 .setAutoWidth(true);
-        grid.addColumn(so -> so.getCustomerId() != null ? "Customer #" + so.getCustomerId() : "-").setHeader("Customer")
-                .setFlexGrow(1);
+        grid.addColumn(so -> so.getCustomer().getId() != null ? "Customer #" + so.getCustomer().getId() : "-")
+                .setHeader("Customer").setFlexGrow(1);
 
         grid.addComponentColumn(so -> {
             String status = so.getStatus() != null ? so.getStatus() : "PENDING";
@@ -99,11 +100,10 @@ public class OutboundView extends VerticalLayout {
     }
 
     private void refreshData() {
-        var page = salesOrderService.getAll(searchField.getValue(), PageRequest.of(0, 100));
-        grid.setItems(page.getContent());
+        grid.setItems(salesOrderService.getAll(searchField.getValue(), Page.ofSize(100)));
     }
 
-    private void openOrderDialog(SalesOrderDto order) {
+    private void openOrderDialog(SalesOrder order) {
         boolean isEdit = order.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Outbound Order" : "New Outbound Order");
 
@@ -136,7 +136,7 @@ public class OutboundView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(SalesOrderDto order) {
+    private void confirmDelete(SalesOrder order) {
         Dialog confirmDialog = new Dialog("Delete Outbound Order");
         confirmDialog.add(new Paragraph("Are you sure you want to delete sales order '" + order.getSoNumber() + "'?"));
 

@@ -2,10 +2,13 @@ package id.putra.core_erp.warehouse.module.warehouse.service.core.impl;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.ZoneDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Zone;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.ZoneCommandAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.ZoneQueryAdapter;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.ZoneCoreService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -19,23 +22,29 @@ public class ZoneServiceImpl implements ZoneCoreService {
     private ZoneCommandAdapter zoneCommandAdapter;
 
     @Override
-    public ZoneDto getZone(ZoneDto zoneDto) {
+    public Zone getZone(Zone zoneDto) {
         return zoneQueryAdapter.getZone(zoneDto);
     }
 
     @Override
-    public void add(List<ZoneDto> dtos) {
+    public void add(List<Zone> dtos) {
         zoneCommandAdapter.add(dtos);
     }
 
     @Override
-    public void update(List<ZoneDto> dtos) {
+    public void update(List<Zone> dtos) {
         zoneCommandAdapter.update(dtos);
     }
 
     @Override
-    public void delete(List<ZoneDto> dtos) {
+    public void delete(List<Zone> dtos) {
         zoneCommandAdapter.delete(dtos);
+    }
+
+    @Override
+    public DataProvider<Zone, Void> getZones(Zone param, Page ofSize) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getZones'");
     }
 
 }

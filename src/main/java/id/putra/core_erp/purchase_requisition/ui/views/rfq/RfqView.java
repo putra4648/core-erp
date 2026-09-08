@@ -19,8 +19,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.AppDto;
-import id.putra.core_erp.purchase_requisition.dto.RFQDto;
+import id.putra.core_erp.purchase_requisition.model.RFQ;
 import id.putra.core_erp.purchase_requisition.service.RFQService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
@@ -33,8 +32,8 @@ public class RfqView extends VerticalLayout {
     private final RFQService rfqService;
 
     private final TextField searchField = new TextField();
-    private final Grid<RFQDto> grid = new Grid<>();
-    private final List<RFQDto> rfqList = new ArrayList<>();
+    private final Grid<RFQ> grid = new Grid<>();
+    private final List<RFQ> rfqList = new ArrayList<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public RfqView(RFQService rfqService) {
@@ -67,7 +66,7 @@ public class RfqView extends VerticalLayout {
     private void configureGrid() {
         grid.setSizeFull();
         grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("RFQ Number").setAutoWidth(true);
-        grid.addColumn(r -> r.getDue_date() != null ? dateFormat.format(r.getDue_date()) : "-").setHeader("Due Date")
+        grid.addColumn(r -> r.getDueDate() != null ? dateFormat.format(r.getDueDate()) : "-").setHeader("Due Date")
                 .setAutoWidth(true);
         grid.addColumn(r -> r.getNote() != null ? r.getNote() : "-").setHeader("Notes").setFlexGrow(2);
         grid.addColumn(r -> r.getSuppliers() != null ? r.getSuppliers().size() + " suppliers" : "0 suppliers")
@@ -86,12 +85,9 @@ public class RfqView extends VerticalLayout {
 
     private void refreshGrid() {
         try {
-            AppDto<RFQDto> appDto = new AppDto<>();
-            RFQDto params = new RFQDto();
-            params.setSearch(searchField.getValue() != null ? searchField.getValue() : "");
-            appDto.setParams(params);
+            RFQ params = new RFQ();
 
-            List<RFQDto> res = rfqService.getAll(appDto);
+            List<RFQ> res = rfqService.findAll();
             rfqList.clear();
             if (res != null) {
                 rfqList.addAll(res);

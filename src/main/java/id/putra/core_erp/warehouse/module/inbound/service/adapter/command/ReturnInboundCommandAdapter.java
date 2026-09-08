@@ -1,12 +1,11 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReturnDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Return;
 
 public interface ReturnInboundCommandAdapter {
-    ReturnDto add(ReturnDto dto);
+    Return add(Return dto);
 
-    ReturnDto update(ReturnDto dto);
+    Return update(Return dto);
 
-    Boolean delete(ReturnDto dto);
+    Boolean delete(Return dto);
 }
-

@@ -1,5 +1,6 @@
 package id.putra.core_erp.purchase_requisition.ui.views.requisitions;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -33,16 +34,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.AppDto;
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
-import id.putra.core_erp.purchase_requisition.dto.RequisitionDetailDto;
-import id.putra.core_erp.purchase_requisition.dto.RequisitionDto;
-import id.putra.core_erp.purchase_requisition.dto.UsersDto;
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.enums.RequisitionEnum;
 import id.putra.core_erp.purchase_requisition.model.Approval;
 import id.putra.core_erp.purchase_requisition.model.Department;
+import id.putra.core_erp.purchase_requisition.model.Requisition;
+import id.putra.core_erp.purchase_requisition.model.RequisitionDetail;
+import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.BudgetDetailRepo;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.ItemRepo;
@@ -70,8 +68,8 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
     private final TextField budgetDetailIdField = new TextField("Budget Detail Reference ID");
     private final TextArea noteField = new TextArea("Requisition Notes / Justification");
 
-    private final Grid<RequisitionDetailDto> itemsGrid = new Grid<>();
-    private final List<RequisitionDetailDto> lineItems = new ArrayList<>();
+    private final Grid<RequisitionDetail> itemsGrid = new Grid<>();
+    private final List<RequisitionDetail> lineItems = new ArrayList<>();
     private final List<Department> departmentList = new ArrayList<>();
     private final Span grandTotalSpan = new Span("Total: IDR 0");
 
@@ -169,11 +167,11 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
 
         itemsGrid.setHeight("250px");
         itemsGrid.addColumn(d -> d.getName() != null ? d.getName() : "-").setHeader("Item Name").setFlexGrow(2);
-        itemsGrid.addColumn(d -> d.getItem_number() != null ? d.getItem_number() : "-").setHeader("Item Code")
+        itemsGrid.addColumn(d -> d.getItemNumber() != null ? d.getItemNumber() : "-").setHeader("Item Code")
                 .setAutoWidth(true);
         itemsGrid.addColumn(d -> d.getUom() != null ? d.getUom() : "PCS").setHeader("UOM").setAutoWidth(true);
         itemsGrid.addColumn(d -> d.getQty() != null ? d.getQty().toString() : "1").setHeader("Qty").setAutoWidth(true);
-        itemsGrid.addColumn(d -> d.getUnit_price() != null ? String.format("%,d", d.getUnit_price()) : "0")
+        itemsGrid.addColumn(d -> d.getUnitPrice() != null ? String.format("%,d", d.getUnitPrice()) : "0")
                 .setHeader("Unit Price").setFlexGrow(1);
         itemsGrid.addColumn(d -> d.getSubtotal() != null ? String.format("%,d", d.getSubtotal()) : "0")
                 .setHeader("Subtotal").setFlexGrow(1);
@@ -247,13 +245,13 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
                 return;
             }
 
-            RequisitionDetailDto item = new RequisitionDetailDto();
+            RequisitionDetail item = new RequisitionDetail();
             item.setId(String.valueOf(lineItems.size() + 1));
             item.setName(nameField.getValue());
-            item.setItem_number(itemNumberField.getValue());
+            item.setItemNumber(itemNumberField.getValue());
             item.setUom(uomField.getValue());
             item.setDescription(descField.getValue());
-            item.setSpec_files(new ArrayList<>());
+            item.setSpecFiles(new ArrayList<>());
 
             try {
                 item.setQty(new BigInteger(qtyField.getValue().replaceAll("[^0-9]", "")));
@@ -262,12 +260,12 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
             }
 
             try {
-                BigInteger price = new BigInteger(unitPriceField.getValue().replaceAll("[^0-9]", ""));
-                item.setUnit_price(price);
-                item.setSubtotal(price.multiply(item.getQty()));
+                BigDecimal price = new BigDecimal(unitPriceField.getValue().replaceAll("[^0-9]", ""));
+                item.setUnitPrice(price);
+                item.setSubtotal(price.multiply(new BigDecimal(item.getQty())));
             } catch (Exception ex) {
-                item.setUnit_price(BigInteger.ZERO);
-                item.setSubtotal(BigInteger.ZERO);
+                item.setUnitPrice(BigDecimal.ZERO);
+                item.setSubtotal(BigDecimal.ZERO);
             }
 
             lineItems.add(item);
@@ -285,33 +283,30 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
     }
 
     private void recalculateTotal() {
-        BigInteger total = lineItems.stream()
-                .map(d -> d.getSubtotal() != null ? d.getSubtotal() : BigInteger.ZERO)
-                .reduce(BigInteger::add).orElse(BigInteger.ZERO);
+        BigDecimal total = lineItems.stream()
+                .map(d -> d.getSubtotal() != null ? d.getSubtotal() : BigDecimal.ZERO)
+                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
         grandTotalSpan.setText("Total: IDR " + String.format("%,d", total));
     }
 
     private void loadRequisition(Long id) {
-        AppDto<RequisitionDto> dto = new AppDto<>();
-        RequisitionDto params = new RequisitionDto();
-        params.setId(id);
-        dto.setParams(params);
 
         try {
-            RequisitionDto r = requisitionService.getSingleData(dto);
+            Requisition r = requisitionService.findById(id);
             if (r != null && r.getId() != null) {
                 this.currentStatus = r.getStatus() != null ? r.getStatus() : "DRAFT";
                 titleField.setValue(r.getTitle() != null ? r.getTitle() : "");
                 noteField.setValue(r.getNote() != null ? r.getNote() : "");
-                if (r.getBudget_detail_id() != null) {
-                    budgetDetailIdField.setValue(String.valueOf(r.getBudget_detail_id()));
+                if (r.getBudget() != null) {
+                    budgetDetailIdField.setValue(String.valueOf(r.getBudget().getId()));
                 }
-                if (r.getDue_date() != null) {
-                    dueDatePicker.setValue(r.getDue_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                }
-                if (r.getDepartment() != null && r.getDepartment().getDept_number() != null) {
-                    departmentRepo.findByDeptNumber(r.getDepartment().getDept_number()).ifPresent(deptCombo::setValue);
-                }
+                // if (r.getDueDate() != null) {
+                // dueDatePicker.setValue(r.getDueDate());
+                // }
+                // if (r.getDepartment() != null && r.getDepartment().getDept_number() != null)
+                // {
+                // departmentRepo.findByDeptNumber(r.getDepartment().getDept_number()).ifPresent(deptCombo::setValue);
+                // }
 
                 lineItems.clear();
                 if (r.getDetails() != null) {
@@ -322,7 +317,7 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
 
                 // Check approval status
                 try {
-                    ApprovalEnum approvalStatus = requisitionService.checkStatusApprovalIsPermanent(dto);
+                    ApprovalEnum approvalStatus = requisitionService.checkStatusApprovalIsPermanent(r);
                     if (approvalStatus == ApprovalEnum.NEED_APPROVAL) {
                         approveBtn.setVisible(true);
                         rejectBtn.setVisible(true);
@@ -349,36 +344,36 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
             return;
         }
 
-        RequisitionDto params = new RequisitionDto();
+        Requisition params = new Requisition();
         params.setId(requisitionId != null ? requisitionId : null);
         params.setTitle(titleField.getValue());
         params.setNote(noteField.getValue());
         params.setStatus(status);
 
-        DepartmentDto deptDto = new DepartmentDto();
-        deptDto.setDept_number(deptCombo.getValue().getDeptNumber());
-        deptDto.setDept_name(deptCombo.getValue().getDeptName());
+        Department deptDto = new Department();
+        deptDto.setDeptNumber(deptCombo.getValue().getDeptNumber());
+        deptDto.setDeptName(deptCombo.getValue().getDeptName());
         params.setDepartment(deptDto);
 
         if (dueDatePicker.getValue() != null) {
-            params.setDue_date(Date.from(dueDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            params.setDueDate(Date.from(dueDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         } else {
-            params.setDue_date(new Date());
+            params.setDueDate(new Date());
         }
 
-        params.setBudget_detail_id(budgetDetailIdField.getValue() != null && !budgetDetailIdField.getValue().isBlank()
+        params.setBudgetDetailId(budgetDetailIdField.getValue() != null && !budgetDetailIdField.getValue().isBlank()
                 ? Long.parseLong(budgetDetailIdField.getValue())
                 : 1);
 
         params.setDetails(lineItems);
 
         // build default approval list
-        List<ApprovalDto> approvals = new ArrayList<>();
+        List<Approval> approvals = new ArrayList<>();
         if (deptCombo.getValue().getApprovals() != null) {
             for (Approval app : deptCombo.getValue().getApprovals()) {
                 if (app.getUsers() != null) {
-                    ApprovalDto appDto = new ApprovalDto();
-                    UsersDto uDto = new UsersDto();
+                    Approval appDto = new Approval();
+                    Users uDto = new Users();
                     uDto.setNrp(app.getUsers().getNrp());
                     uDto.setFullname(app.getUsers().getFullname());
                     appDto.setUsers(uDto);
@@ -391,8 +386,8 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         params.setApprovals(approvals);
 
         if (deptCombo.getValue().getDeptPurchaser() != null) {
-            ApprovalDto purchaserDto = new ApprovalDto();
-            UsersDto uDto = new UsersDto();
+            Approval purchaserDto = new Approval();
+            Users uDto = new Users();
             uDto.setNrp(deptCombo.getValue().getDeptPurchaser().getNrp());
             uDto.setFullname(deptCombo.getValue().getDeptPurchaser().getFullname());
             purchaserDto.setUsers(uDto);
@@ -400,11 +395,8 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
             params.setPurchaser(purchaserDto);
         }
 
-        AppDto<RequisitionDto> appDto = new AppDto<>();
-        appDto.setParams(params);
-
         try {
-            requisitionService.handleData(appDto);
+            requisitionService.add(params);
             Notification.show("Requisition saved successfully", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(RequisitionListView.class);

@@ -1,13 +1,17 @@
 package id.putra.core_erp.warehouse.module.outbound.service.core;
 
 import java.util.List;
-import id.putra.core_erp.warehouse.module.outbound.dto.PackingDto;
+
+import id.putra.core_erp.warehouse.module.outbound.model.entity.Packing;
 
 public interface PackingService {
-    PackingDto create(PackingDto dto);
-    PackingDto update(PackingDto dto);
-    Boolean delete(Long id);
-    PackingDto getById(Long id);
-    List<PackingDto> getAll(PackingDto filter);
-}
+    void create(Packing dto);
 
+    void update(Packing dto);
+
+    void delete(Long id);
+
+    Packing getById(Long id);
+
+    List<Packing> getAll(Packing filter);
+}

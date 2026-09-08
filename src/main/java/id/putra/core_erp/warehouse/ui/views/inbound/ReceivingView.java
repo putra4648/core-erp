@@ -17,9 +17,11 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.enums.OrderStatus;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Receiving;
 import id.putra.core_erp.warehouse.module.inbound.service.core.ReceivingOrderService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "inbound/receiving", layout = MainLayout.class)
@@ -28,7 +30,7 @@ import jakarta.annotation.security.PermitAll;
 public class ReceivingView extends VerticalLayout {
 
     private final ReceivingOrderService receivingOrderService;
-    private final Grid<ReceivingDto> grid = new Grid<>();
+    private final Grid<Receiving> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public ReceivingView(ReceivingOrderService receivingOrderService) {
@@ -60,7 +62,7 @@ public class ReceivingView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("New Goods Receipt", VaadinIcon.PLUS.create(),
-                e -> openReceivingDialog(new ReceivingDto()));
+                e -> openReceivingDialog(new Receiving()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -81,7 +83,7 @@ public class ReceivingView extends VerticalLayout {
                 .setHeader("PO Number").setFlexGrow(1);
 
         grid.addComponentColumn(receiving -> {
-            String status = receiving.getStatus() != null ? receiving.getStatus() : "COMPLETED";
+            String status = receiving.getStatus() != null ? receiving.getStatus().name() : OrderStatus.COMPLETED.name();
             Span badge = new Span(status);
             badge.getElement().getThemeList().add("badge success");
             return badge;
@@ -99,11 +101,10 @@ public class ReceivingView extends VerticalLayout {
     }
 
     private void refreshData() {
-        var page = receivingOrderService.getAll(searchField.getValue(), PageRequest.of(0, 100));
-        grid.setItems(page.getContent());
+        grid.setItems(receivingOrderService.getAll(searchField.getValue(), Page.ofSize(100)));
     }
 
-    private void openReceivingDialog(ReceivingDto receiving) {
+    private void openReceivingDialog(Receiving receiving) {
         boolean isEdit = receiving.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Goods Receipt" : "New Goods Receipt");
 
@@ -136,7 +137,7 @@ public class ReceivingView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(ReceivingDto receiving) {
+    private void confirmDelete(Receiving receiving) {
         Dialog confirmDialog = new Dialog("Delete Receiving");
         confirmDialog.add(new Paragraph(
                 "Are you sure you want to delete receiving record '" + receiving.getReceivingNumber() + "'?"));

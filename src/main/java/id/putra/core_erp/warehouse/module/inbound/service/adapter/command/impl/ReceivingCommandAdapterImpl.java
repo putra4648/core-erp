@@ -1,6 +1,6 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command.impl;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Receiving;
 import id.putra.core_erp.warehouse.module.inbound.model.repository.PurchaseOrderRepository;
 import id.putra.core_erp.warehouse.module.inbound.model.repository.ReceivingRepository;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.command.ReceivingCommandAdapter;
@@ -17,12 +17,12 @@ public class ReceivingCommandAdapterImpl implements ReceivingCommandAdapter {
     private PurchaseOrderRepository purchaseOrderRepository;
 
     @Override
-    public ReceivingDto add(ReceivingDto dto) {
+    public Receiving add(Receiving dto) {
         return null;
     }
 
     @Override
-    public ReceivingDto update(ReceivingDto dto) {
+    public Receiving update(Receiving dto) {
         return null;
     }
 

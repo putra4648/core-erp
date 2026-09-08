@@ -1,6 +1,6 @@
-package id.putra.core_erp.purchase_requisition.dto;
+package id.putra.core_erp.purchase_requisition.model;
 
-public class AppFileDto {
+public class AppFile {
     private String name;
     private String content;
 

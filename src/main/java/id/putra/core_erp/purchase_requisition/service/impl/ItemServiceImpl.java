@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,17 +26,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
-import id.putra.core_erp.purchase_requisition.dto.ItemDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
 import id.putra.core_erp.purchase_requisition.model.Item;
-import id.putra.core_erp.purchase_requisition.model.ItemMeasurement;
 import id.putra.core_erp.purchase_requisition.repository.ItemRepo;
 import id.putra.core_erp.purchase_requisition.repository.SupplierRepo;
 import id.putra.core_erp.purchase_requisition.service.ItemService;
 import id.putra.core_erp.shared.entity.Supplier;
 import id.putra.core_erp.shared.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Sort;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -56,21 +51,21 @@ public class ItemServiceImpl implements ItemService {
     private EntityManager entityManager;
 
     @Override
-    public void addItem(ItemDto body, FileUpload itemImage,
+    public void addItem(Item body, FileUpload itemImage,
             List<FileUpload> docs) throws Exception {
-        Optional<Item> itemOptional = itemRepo.findByNameEqualsIgnoreCase(body.getItem_number());
+        Optional<Item> itemOptional = itemRepo.findByNameEqualsIgnoreCase(body.getItemNumber());
         if (!itemOptional.isPresent()) {
-            Item entity = dtoToEntity(new Item(), body);
+            Item entity = body;
             handleImage(false, entity, itemImage, docs);
             itemRepo.persist(entity);
         } else {
-            String message = MessageFormat.format(MessageConstant.EXIST, body.getItem_number());
+            String message = MessageFormat.format(MessageConstant.EXIST, body.getItemNumber());
             throw new IllegalArgumentException(message);
         }
     }
 
     @Override
-    public List<ItemDto> getItems(String search, String status,
+    public List<Item> getItems(String search, String status,
             String supplierId, Integer page, Integer perPage, String sortBy, String order) {
         if (search == null) {
             search = "";
@@ -88,38 +83,34 @@ public class ItemServiceImpl implements ItemService {
             supplierId = "";
         }
 
-        Sort sort = null;
-
-        if (order != null && !order.isBlank()) {
-            if (order.equalsIgnoreCase("asc")) {
-                sort = Sort.by(sortBy).ascending();
-            } else {
-                sort = Sort.by(sortBy).descending();
-            }
-        }
-
         var result = itemRepo.find("status like ?1 or name like ?2 or ", status).page(Page.ofSize(20));
 
-        return result.list().stream().map(this::entityItemToDto).toList();
+        return result.list().stream().toList();
     }
 
     @Override
-    public void updateItem(ItemDto dto, FileUpload itemImage,
+    public void updateItem(Item dto, FileUpload itemImage,
             List<FileUpload> itemDocs) throws Exception {
-        if (dto.getItem_number() != null) {
-            Optional<Item> itemOptional = itemRepo.findByItemNumber(dto.getItem_number());
+        if (dto.getItemNumber() != null) {
+            Optional<Item> itemOptional = itemRepo.findByItemNumber(dto.getItemNumber());
             if (itemOptional.isPresent()) {
-                Item updatedEntity = dtoToEntity(itemOptional.get(), dto);
+                Item updatedEntity = itemOptional.get();
+                updatedEntity.setName(dto.getName());
+                updatedEntity.setPrice(dto.getPrice());
+                updatedEntity.setDescription(dto.getDescription());
+                updatedEntity.setStatus(dto.getStatus());
+                updatedEntity.setSupplier(dto.getSupplier());
+                updatedEntity.setGlAcc(dto.getGlAcc());
                 handleImage(true, updatedEntity, itemImage, itemDocs);
                 itemRepo.persist(updatedEntity);
             } else {
-                String message = MessageFormat.format(MessageConstant.NOT_FOUND, dto.getItem_number());
+                String message = MessageFormat.format(MessageConstant.NOT_FOUND, dto.getItemNumber());
                 throw new IllegalArgumentException(message);
             }
         } else {
             Optional<Item> item = itemRepo.findByNameEqualsIgnoreCase(dto.getName());
             if (item.isPresent()) {
-                Item updatedEntity = dtoToEntity(item.get(), dto);
+                Item updatedEntity = dto;
                 handleImage(true, updatedEntity, itemImage, itemDocs);
                 itemRepo.persist(updatedEntity);
             } else {
@@ -127,68 +118,6 @@ public class ItemServiceImpl implements ItemService {
                 throw new IllegalArgumentException(message);
             }
         }
-    }
-
-    private SupplierDto entitySupperToDto(Supplier entity) {
-        if (entity == null)
-            return null;
-        SupplierDto dto = new SupplierDto();
-        dto.setAcc_no(entity.getAccNo());
-        dto.setName(entity.getName());
-        return dto;
-    }
-
-    private ItemDto entityItemToDto(Item entity) {
-        ItemDto dto = new ItemDto();
-        dto.setName(entity.getName());
-        dto.setItem_number(entity.getItemNumber());
-        dto.setPrice(entity.getPrice());
-        dto.setDescription(entity.getDescription());
-        dto.setStatus(entity.getStatus());
-        dto.setSupplier(entitySupperToDto(entity.getSupplier()));
-        dto.setGl_acc(entity.getGlAcc());
-        if (entity.getUpdatedDate() != null) {
-            dto.setUpdated_date(Date.from(entity.getUpdatedDate()));
-        }
-        if (entity.getCategory() != null && entity.getCategory().getId() != null) {
-            dto.setCategory(entity.getCategory().getId().toString());
-        }
-        if (entity.getMeasurement() != null) {
-            dto.setUnit(entity.getMeasurement().getUnit());
-            dto.setNote(entity.getMeasurement().getNotes());
-            dto.setAmount(entity.getMeasurement().getAmount());
-            dto.setLabel(entity.getMeasurement().getUnit());
-        }
-
-        return dto;
-    }
-
-    private Item dtoToEntity(Item entity, ItemDto body) {
-        entity.setName(body.getName());
-        if (body.getItem_number() != null) {
-            entity.setItemNumber(body.getItem_number());
-        }
-        entity.setPrice(body.getPrice());
-        entity.setDescription(body.getDescription());
-        if (body.getStatus() != null) {
-            entity.setStatus(body.getStatus().toUpperCase());
-        }
-
-        if (body.getSupplier_id() != null) {
-            Optional<Supplier> supplierOpt = supplierRepo.findByIdOptional(body.getSupplier_id());
-            supplierOpt.ifPresent(entity::setSupplier);
-        }
-        entity.setGlAcc(body.getGl_acc());
-
-        ItemMeasurement measurement = entity.getMeasurement() != null ? entity.getMeasurement() : new ItemMeasurement();
-        measurement.setUnit(body.getUnit());
-        measurement.setAmount(body.getAmount());
-        measurement.setNotes(body.getNote());
-        measurement.setItem(entity);
-
-        entity.setMeasurement(measurement);
-
-        return entity;
     }
 
     private void handleImage(boolean isUpdate, Item entity, FileUpload itemImage,
@@ -240,12 +169,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItemDetail(Long id) {
+    public Item getItemDetail(Long id) {
         Optional<Item> itemOptional = itemRepo.findByIdOptional(id);
 
         if (itemOptional.isPresent()) {
             Item entity = itemOptional.get();
-            return entityItemToDto(entity);
+            return entity;
         } else {
             String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Item " + id);
             throw new IllegalArgumentException(message);
@@ -354,7 +283,7 @@ public class ItemServiceImpl implements ItemService {
                 cell3.setCellStyle(cellStyle);
 
                 Cell cell4 = row.createCell(4);
-                cell4.setCellValue(item.getUpdatedDate() != null ? item.getUpdatedDate().toString() : "");
+                cell4.setCellValue(item.getUpdateDate() != null ? item.getUpdateDate().toString() : "");
                 cell4.setCellStyle(cellStyle);
             }
 

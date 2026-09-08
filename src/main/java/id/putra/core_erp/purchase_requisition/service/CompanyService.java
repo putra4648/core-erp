@@ -5,11 +5,11 @@ import java.text.ParseException;
 
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import id.putra.core_erp.purchase_requisition.dto.CompanyDto;
+import id.putra.core_erp.purchase_requisition.model.Company;
 
 public interface CompanyService {
-    void handleCompany(CompanyDto dto, FileUpload logoPath)
+    void handleCompany(Company dto, FileUpload logoPath)
             throws ParseException, IOException;
 
-    CompanyDto getProfile() throws IOException;
+    Company getProfile() throws IOException;
 }

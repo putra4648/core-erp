@@ -2,7 +2,7 @@ package id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.imp
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Warehouse;
 import id.putra.core_erp.warehouse.module.warehouse.model.repository.WarehouseRepository;
 import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.WarehouseCommandAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,15 +15,15 @@ public class WarehouseCommandAdapterImpl implements WarehouseCommandAdapter {
     private WarehouseRepository warehouseRepository;
 
     @Override
-    public void save(List<WarehouseDto> dtos) {
+    public void save(List<Warehouse> dtos) {
     }
 
     @Override
-    public void update(List<WarehouseDto> dtos) {
+    public void update(List<Warehouse> dtos) {
     }
 
     @Override
-    public void delete(List<WarehouseDto> dtos) {
+    public void delete(List<Long> ids) {
     }
 
 }

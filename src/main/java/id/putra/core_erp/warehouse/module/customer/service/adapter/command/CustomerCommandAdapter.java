@@ -1,12 +1,11 @@
 package id.putra.core_erp.warehouse.module.customer.service.adapter.command;
 
-import id.putra.core_erp.warehouse.module.customer.dto.CustomerDto;
+import id.putra.core_erp.shared.entity.Customer;
 
 public interface CustomerCommandAdapter {
-    CustomerDto create(CustomerDto dto);
+    Customer create(Customer dto);
 
-    CustomerDto update(Long id, CustomerDto dto);
+    Customer update(Long id, Customer dto);
 
     void delete(Long id);
 }
-

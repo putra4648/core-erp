@@ -1,9 +1,9 @@
-package id.putra.core_erp.purchase_requisition.dto;
+package id.putra.core_erp.purchase_requisition.model;
 
 import java.math.BigInteger;
 import java.util.List;
 
-public class TransferDetailDto {
+public class TransferDetail {
     private String id;
     private String item_name;
     private String item_number;
@@ -14,7 +14,7 @@ public class TransferDetailDto {
     private String item_req_no;
     private String status;
     private Long item_pr_no;
-    private List<AppFileDto> spec_files;
+    private List<AppFile> spec_files;
 
     private BigInteger item_qty;
     private BigInteger item_price;
@@ -100,11 +100,11 @@ public class TransferDetailDto {
         this.item_pr_no = item_pr_no;
     }
 
-    public List<AppFileDto> getSpec_files() {
+    public List<AppFile> getSpec_files() {
         return spec_files;
     }
 
-    public void setSpec_files(List<AppFileDto> spec_files) {
+    public void setSpec_files(List<AppFile> spec_files) {
         this.spec_files = spec_files;
     }
 

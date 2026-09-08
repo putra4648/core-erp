@@ -2,7 +2,7 @@ package id.putra.core_erp.warehouse.module.outbound.service.core.impl;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.outbound.dto.PickingTaskDto;
+import id.putra.core_erp.warehouse.module.outbound.model.entity.PickingTask;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.PickingTaskCommandAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.PickingTaskQueryAdapter;
 import id.putra.core_erp.warehouse.module.outbound.service.core.PickingService;
@@ -17,32 +17,32 @@ public class PickingServiceImpl implements PickingService {
     private PickingTaskQueryAdapter pickingTaskQueryAdapter;
 
     @Override
-    public PickingTaskDto create(PickingTaskDto dto) {
+    public PickingTask create(PickingTask dto) {
         pickingTaskCommandAdapter.add(List.of(dto));
         return dto;
     }
 
     @Override
-    public PickingTaskDto update(PickingTaskDto dto) {
+    public PickingTask update(PickingTask dto) {
         pickingTaskCommandAdapter.update(List.of(dto));
         return dto;
     }
 
     @Override
     public Boolean delete(Long id) {
-        PickingTaskDto dto = new PickingTaskDto();
+        PickingTask dto = new PickingTask();
         dto.setId(id);
         pickingTaskCommandAdapter.delete(List.of(dto));
         return true;
     }
 
     @Override
-    public PickingTaskDto getById(Long id) {
+    public PickingTask getById(Long id) {
         return pickingTaskQueryAdapter.getById(id);
     }
 
     @Override
-    public List<PickingTaskDto> getAll(PickingTaskDto filter) {
+    public List<PickingTask> getAll(PickingTask filter) {
         return pickingTaskQueryAdapter.getAll(filter);
     }
 }

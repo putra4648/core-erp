@@ -2,10 +2,13 @@ package id.putra.core_erp.warehouse.module.supplier.service.core.impl;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.supplier.dto.SupplierDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.shared.entity.Supplier;
 import id.putra.core_erp.warehouse.module.supplier.service.adapter.command.SupplierCommandAdapter;
 import id.putra.core_erp.warehouse.module.supplier.service.adapter.query.SupplierQueryAdapter;
 import id.putra.core_erp.warehouse.module.supplier.service.core.SupplierService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -18,23 +21,29 @@ public class SupplierServiceImpl implements SupplierService {
     private SupplierQueryAdapter supplierQueryAdapter;
 
     @Override
-    public SupplierDto getById(Long id) {
-        SupplierDto entity = supplierQueryAdapter.getById(id);
+    public Supplier getById(Long id) {
+        Supplier entity = supplierQueryAdapter.getById(id);
         return entity;
     }
 
     @Override
-    public List<SupplierDto> create(List<SupplierDto> dto) {
+    public List<Supplier> create(List<Supplier> dto) {
         return supplierCommandAdapter.create(dto);
     }
 
     @Override
-    public void update(Long id, SupplierDto dto) {
+    public void update(Long id, Supplier dto) {
         supplierCommandAdapter.update(id, dto);
     }
 
     @Override
     public void delete(Long id) {
         supplierCommandAdapter.delete(id);
+    }
+
+    @Override
+    public DataProvider<Supplier, Void> getAll(String value, Page ofSize) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
     }
 }

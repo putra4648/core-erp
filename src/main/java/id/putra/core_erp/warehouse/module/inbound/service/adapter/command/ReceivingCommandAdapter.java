@@ -1,11 +1,11 @@
 package id.putra.core_erp.warehouse.module.inbound.service.adapter.command;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Receiving;
 
 public interface ReceivingCommandAdapter {
-    ReceivingDto add(ReceivingDto dto);
+    Receiving add(Receiving dto);
 
-    ReceivingDto update(ReceivingDto dto);
+    Receiving update(Receiving dto);
 
     Boolean delete(Long id);
 

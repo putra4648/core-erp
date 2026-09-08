@@ -2,16 +2,21 @@ package id.putra.core_erp.warehouse.module.inbound.service.core;
 
 import org.jspecify.annotations.NonNull;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReceivingDto;
+import com.vaadin.flow.data.provider.DataProvider;
+
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Receiving;
+import io.quarkus.panache.common.Page;
 
 public interface ReceivingOrderService {
-    ReceivingDto create(ReceivingDto dto);
+    Receiving create(Receiving dto);
 
-    ReceivingDto update(ReceivingDto dto);
+    Receiving update(Receiving dto);
 
     Boolean delete(@NonNull Long id);
 
-    // ReceivingDto getById(@NonNull Long id, @NonNull Pageable pageable);
+    DataProvider<Receiving, Void> getAll(String value, Page ofSize);
+
+    // Receiving getById(@NonNull Long id, @NonNull Pageable pageable);
 
     //
 

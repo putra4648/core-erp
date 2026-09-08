@@ -16,11 +16,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-import id.putra.core_erp.shared.dto.ProductDto;
+import id.putra.core_erp.shared.entity.Product;
 import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inventory.service.core.ProductCoreService;
-import id.putra.core_erp.warehouse.module.warehouse.dto.WarehouseDto;
+import id.putra.core_erp.warehouse.module.warehouse.model.entity.Warehouse;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.WarehouseCoreService;
+import io.quarkus.panache.common.Page;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Dashboard | WMS Pro")
@@ -54,14 +55,12 @@ public class DashboardView extends VerticalLayout {
         long totalWarehouses = 0;
 
         try {
-            totalProducts = productService.getProducts(new ProductDto(), PageRequest.of(0, 1))
-                    .getTotalElements();
+            totalProducts = productService.countGetProducts(new Product(), Page.ofSize(0));
         } catch (Exception ignored) {
         }
 
         try {
-            totalWarehouses = warehouseService.getWarehouses(new WarehouseDto(), PageRequest.of(0, 1))
-                    .getTotalElements();
+            totalWarehouses = warehouseService.countGetWarehouses(new Warehouse(), Page.ofSize(1));
         } catch (Exception ignored) {
         }
 

@@ -9,7 +9,7 @@ import java.util.Base64;
 
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import id.putra.core_erp.purchase_requisition.dto.AppFileDto;
+import id.putra.core_erp.purchase_requisition.model.AppFile;
 
 public class AppFileUtil {
 
@@ -31,7 +31,6 @@ public class AppFileUtil {
         Path path = Paths.get(serverPath, "data", folder);
         path.toFile().mkdirs();
 
-
         String newFilename = file.fileName().concat("_" + fileId).concat(".")
                 .concat(file.fileName().substring(file.fileName().lastIndexOf(".") + 1));
         path = Paths.get(path.toString(), newFilename);
@@ -42,7 +41,7 @@ public class AppFileUtil {
         return path;
     }
 
-    public static Path createFileFromBase64(String fileId, String folder, AppFileDto file)
+    public static Path createFileFromBase64(String fileId, String folder, AppFile file)
             throws IOException {
         Path path = Paths.get(serverPath, "data", folder);
         if (!path.toFile().exists()) {
@@ -71,7 +70,7 @@ public class AppFileUtil {
         return path;
     }
 
-    public static Path recreateFileFromBase64(String fileId, AppFileDto file, String destinationFolder,
+    public static Path recreateFileFromBase64(String fileId, AppFile file, String destinationFolder,
             String currentPathToDelete)
             throws IOException {
         Path path = null;

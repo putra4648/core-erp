@@ -1,6 +1,6 @@
 package id.putra.core_erp.warehouse.module.customer.service.adapter.query.impl;
 
-import id.putra.core_erp.warehouse.module.customer.dto.ContactPersonCustomerDto;
+import id.putra.core_erp.shared.entity.ContactPersonCustomer;
 import id.putra.core_erp.warehouse.module.customer.model.repository.ContactPersonCustomerRepository;
 import id.putra.core_erp.warehouse.module.customer.service.adapter.query.ContactPersonCustomerQueryAdapter;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,7 +12,7 @@ public class ContactPersonCustomerQueryAdapterImpl implements ContactPersonCusto
     private ContactPersonCustomerRepository repository;
 
     @Override
-    public ContactPersonCustomerDto getById(Long id) {
+    public ContactPersonCustomer getById(Long id) {
         return null;
     }
 }

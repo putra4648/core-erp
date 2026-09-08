@@ -1,11 +1,11 @@
 package id.putra.core_erp.purchase_requisition.model;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import id.putra.core_erp.purchase_requisition.dto.BudgetTypeDto;
 import id.putra.core_erp.purchase_requisition.enums.BudgetEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +29,7 @@ public class BudgetDetail extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "budgets")
-    private List<BudgetTypeDto> details;
+    private List<BudgetType> details;
 
     @Column(name = "note")
     private String note;
@@ -37,6 +37,16 @@ public class BudgetDetail extends BaseModel {
     @ManyToOne(optional = false)
     @JoinColumn(name = "budget_id", referencedColumnName = "id")
     private Budget budget;
+
+    BigInteger totalBudget;
+
+    public BigInteger getTotalBudget() {
+        return totalBudget;
+    }
+
+    public void setTotalBudget(BigInteger totalBudget) {
+        this.totalBudget = totalBudget;
+    }
 
     public Long getId() {
         return id;
@@ -62,11 +72,11 @@ public class BudgetDetail extends BaseModel {
         this.type = type;
     }
 
-    public List<BudgetTypeDto> getDetails() {
+    public List<BudgetType> getDetails() {
         return details;
     }
 
-    public void setDetails(List<BudgetTypeDto> details) {
+    public void setDetails(List<BudgetType> details) {
         this.details = details;
     }
 

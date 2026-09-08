@@ -1,19 +1,19 @@
 package id.putra.core_erp.warehouse.module.inbound.service.core;
 
+import java.util.List;
+
 import org.jspecify.annotations.NonNull;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.PurchaseOrderDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrder;
+import io.quarkus.panache.common.Page;
 
 public interface PurchaseOrderService {
-    PurchaseOrderDto create(PurchaseOrderDto dto);
+    PurchaseOrder create(PurchaseOrder dto);
 
-    PurchaseOrderDto update(PurchaseOrderDto dto);
+    PurchaseOrder update(PurchaseOrder dto);
 
     Boolean delete(@NonNull Long id);
 
-    // PurchaseOrderDto getById(@NonNull Long id, @NonNull Pageable pageable);
-
-    //
-    // pageable);
+    List<PurchaseOrder> getAll(PurchaseOrder dto, Page page);
 
 }

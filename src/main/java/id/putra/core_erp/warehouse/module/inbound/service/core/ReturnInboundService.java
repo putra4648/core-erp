@@ -2,17 +2,16 @@ package id.putra.core_erp.warehouse.module.inbound.service.core;
 
 import java.util.List;
 
-import id.putra.core_erp.warehouse.module.inbound.dto.ReturnDto;
+import id.putra.core_erp.warehouse.module.inbound.model.entity.Return;
 
 public interface ReturnInboundService {
-    ReturnDto create(ReturnDto dto);
+    Return create(Return dto);
 
-    ReturnDto update(ReturnDto dto);
+    Return update(Return dto);
 
     Boolean delete(Long id);
 
-    ReturnDto getById(Long id);
+    Return getById(Long id);
 
-    List<ReturnDto> getAll(ReturnDto filter);
+    List<Return> getAll(Return filter);
 }
-

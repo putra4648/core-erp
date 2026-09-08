@@ -6,27 +6,24 @@ import java.util.Map;
 
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
+import id.putra.core_erp.shared.entity.Supplier;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.Resource;
 
 public interface SupplierService {
-    void addSupplier(SupplierDto body, FileUpload logoFile) throws Exception;
+    void addSupplier(Supplier body, FileUpload logoFile) throws Exception;
 
-    void updateSupplier(SupplierDto dto, FileUpload logoFile) throws Exception;
+    void updateSupplier(Supplier dto, FileUpload logoFile) throws Exception;
 
-    List<SupplierDto> getSupplier(
+    List<Supplier> getSupplier(
             String search,
-            String status,
-            Integer page,
-            Integer perPage,
-            String sortBy,
-            String order) throws IOException;
+            String status, Page page) throws IOException;
 
-    SupplierDto getSupplier(Long id);
+    Supplier getSupplier(Long id);
 
     void updateSupplierStatus(Map<String, Object> body);
 
-    List<SupplierDto> getSupplierDropdown();
+    List<Supplier> getSupplierDropdown();
 
     void importSuppliers(FileUpload file) throws Exception;
 
