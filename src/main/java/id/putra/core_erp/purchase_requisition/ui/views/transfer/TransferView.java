@@ -29,11 +29,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "transfers", layout = MainLayout.class)
 @PageTitle("Transfers | Purchase Requisition System")
 @PermitAll
-        TransferDto.class,
-        AppDto.class,
-        DepartmentDto.class,
-        Department.class
-})
 public class TransferView extends VerticalLayout {
 
     private final TransferService transferService;

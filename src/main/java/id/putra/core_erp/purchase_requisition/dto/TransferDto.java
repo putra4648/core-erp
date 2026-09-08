@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class TransferDto extends BaseModelDto {
     private String nrp;
 
-    private String id;
+    private Long id;
     private DepartmentDto department;
     private String title;
     private String note;
@@ -48,11 +48,11 @@ public class TransferDto extends BaseModelDto {
         this.nrp = nrp;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

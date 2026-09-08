@@ -52,6 +52,10 @@ public class RequisitionRepo implements PanacheRepository<Requisition> {
                                 .list();
         }
 
+        public List<Requisition> getAllSpender(String deptNumber) {
+                return find("deptNumber = ?1", deptNumber).list();
+        }
+
         public Long countByTitleContainingIgnoreCaseOrStatusAndPurchaserNrp(String title,
                         String status,
                         String purchaserNrp) {

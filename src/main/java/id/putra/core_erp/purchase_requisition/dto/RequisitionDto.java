@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class RequisitionDto {
     private String nrp;
 
-    private String id;
+    private Long id;
     private DepartmentDto department;
     private String title;
     private String note;
@@ -18,8 +18,8 @@ public class RequisitionDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date due_date;
     private String investment_id;
-    private String budget_id;
-    private String budget_detail_id;
+    private Long budget_id;
+    private Long budget_detail_id;
     private List<RequisitionDetailDto> details;
     private List<ApprovalDto> approvals;
     private ApprovalDto purchaser;
@@ -51,11 +51,11 @@ public class RequisitionDto {
         this.nrp = nrp;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -115,19 +115,19 @@ public class RequisitionDto {
         this.investment_id = investment_id;
     }
 
-    public String getBudget_id() {
+    public Long getBudget_id() {
         return budget_id;
     }
 
-    public void setBudget_id(String budget_id) {
+    public void setBudget_id(Long budget_id) {
         this.budget_id = budget_id;
     }
 
-    public String getBudget_detail_id() {
+    public Long getBudget_detail_id() {
         return budget_detail_id;
     }
 
-    public void setBudget_detail_id(String budget_detail_id) {
+    public void setBudget_detail_id(Long budget_detail_id) {
         this.budget_detail_id = budget_detail_id;
     }
 

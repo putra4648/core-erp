@@ -27,7 +27,6 @@ import id.putra.core_erp.purchase_requisition.dto.RequisitionDto;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
-import id.putra.core_erp.shared.security.SecurityService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
@@ -38,7 +37,6 @@ public class RequisitionListView extends VerticalLayout {
 
     private final RequisitionService requisitionService;
     private final RequisitionRepo requisitionRepo;
-    private final SecurityService securityService;
     private final DepartmentRepo departmentRepo;
 
     private final TextField searchField = new TextField();
@@ -49,11 +47,9 @@ public class RequisitionListView extends VerticalLayout {
 
     public RequisitionListView(RequisitionService requisitionService,
             RequisitionRepo requisitionRepo,
-            SecurityService securityService,
             DepartmentRepo departmentRepo) {
         this.requisitionService = requisitionService;
         this.requisitionRepo = requisitionRepo;
-        this.securityService = securityService;
         this.departmentRepo = departmentRepo;
 
         setSizeFull();
@@ -122,7 +118,7 @@ public class RequisitionListView extends VerticalLayout {
 
         grid.addComponentColumn(r -> {
             Button viewBtn = new Button("View / Edit", VaadinIcon.EYE.create(),
-                    e -> UI.getCurrent().navigate(RequisitionFormView.class, r.getId()));
+                    e -> UI.getCurrent().navigate(RequisitionFormView.class, r.getId().toString()));
             viewBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
             Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> {

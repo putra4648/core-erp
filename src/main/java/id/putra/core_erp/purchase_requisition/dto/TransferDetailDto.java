@@ -13,7 +13,7 @@ public class TransferDetailDto {
     private String supplier;
     private String item_req_no;
     private String status;
-    private String item_pr_no;
+    private Long item_pr_no;
     private List<AppFileDto> spec_files;
 
     private BigInteger item_qty;
@@ -92,11 +92,11 @@ public class TransferDetailDto {
         this.status = status;
     }
 
-    public String getItem_pr_no() {
+    public Long getItem_pr_no() {
         return item_pr_no;
     }
 
-    public void setItem_pr_no(String item_pr_no) {
+    public void setItem_pr_no(Long item_pr_no) {
         this.item_pr_no = item_pr_no;
     }
 

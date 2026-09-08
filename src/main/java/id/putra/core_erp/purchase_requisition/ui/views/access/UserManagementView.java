@@ -69,12 +69,10 @@ public class UserManagementView extends VerticalLayout {
     public UserManagementView(
             DepartmentsService departmentsService,
             DepartmentRepo departmentRepo,
-            GroupRepo groupRepo,
-            UserRepo userRepo) {
+            GroupRepo groupRepo) {
         this.departmentsService = departmentsService;
         this.departmentRepo = departmentRepo;
         this.groupRepo = groupRepo;
-        this.userRepo = userRepo;
 
         setSizeFull();
         setPadding(true);
@@ -271,7 +269,7 @@ public class UserManagementView extends VerticalLayout {
         nameField.setRequired(true);
 
         List<Users> allUsers = new ArrayList<>();
-        userRepo.findAll().list().forEach(allUsers::add);
+        // userRepo.findAll().list().forEach(allUsers::add);
 
         ComboBox<Users> managerCombo = new ComboBox<>("Department Manager");
         managerCombo.setItemLabelGenerator(u -> u.getFullname() != null ? u.getFullname() : "-");

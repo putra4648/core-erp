@@ -22,16 +22,12 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.shared.security.SecurityService;
 import jakarta.annotation.security.PermitAll;
 
 @PermitAll
 public class MainLayout extends AppLayout {
 
-    private final SecurityService securityService;
-
-    public MainLayout(SecurityService securityService) {
-        this.securityService = securityService;
+    public MainLayout() {
         setPrimarySection(Section.DRAWER);
         createHeader();
         createDrawer();
@@ -58,9 +54,9 @@ public class MainLayout extends AppLayout {
         themeToggle.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         themeToggle.setAriaLabel("Toggle dark mode");
 
-        var userOpt = securityService.getAuthenticatedUser();
-        String username = userOpt.map(SecurityService.AuthenticatedUser::name).orElse("User");
-        String pictureUrl = userOpt.map(SecurityService.AuthenticatedUser::pictureUrl).orElse("");
+        var userOpt = "";
+        String username = "";
+        String pictureUrl = "";
 
         Avatar avatar = new Avatar(username);
         if (pictureUrl != null && !pictureUrl.isBlank()) {
@@ -73,7 +69,7 @@ public class MainLayout extends AppLayout {
         MenuItem userMenuItem = userMenu.addItem(avatar);
         SubMenu subMenu = userMenuItem.getSubMenu();
         subMenu.addItem("Settings", e -> UI.getCurrent().navigate("settings"));
-        subMenu.addItem("Logout", e -> securityService.logout());
+        // subMenu.addItem("Logout", e -> securityService.logout());
 
         HorizontalLayout header = new HorizontalLayout(toggle, title, themeToggle, userMenu);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);

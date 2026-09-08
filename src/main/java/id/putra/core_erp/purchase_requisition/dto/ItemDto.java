@@ -12,7 +12,7 @@ public class ItemDto {
     private String status;
     private String category;
     private SupplierDto supplier;
-    private String supplier_id;
+    private Long supplier_id;
     private String gl_acc;
     private String item_image;
     private List<String> item_docs;
@@ -78,11 +78,11 @@ public class ItemDto {
         this.supplier = supplier;
     }
 
-    public String getSupplier_id() {
+    public Long getSupplier_id() {
         return supplier_id;
     }
 
-    public void setSupplier_id(String supplier_id) {
+    public void setSupplier_id(Long supplier_id) {
         this.supplier_id = supplier_id;
     }
 

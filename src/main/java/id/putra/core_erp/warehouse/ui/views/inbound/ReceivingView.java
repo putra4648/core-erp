@@ -25,10 +25,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "inbound/receiving", layout = MainLayout.class)
 @PageTitle("Receiving | WMS Pro")
 @PermitAll
-        ReceivingDto.class,
-        ReceivingLineDto.class,
-        PurchaseOrderDto.class
-})
 public class ReceivingView extends VerticalLayout {
 
     private final ReceivingOrderService receivingOrderService;

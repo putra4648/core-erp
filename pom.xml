@@ -3,19 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.5</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
 	<groupId>id.putra</groupId>
 	<artifactId>core-erp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>core-erp</name>
-	<description />
-	<url />
 	<licenses>
 		<license />
 	</licenses>
@@ -23,218 +15,125 @@
 		<developer />
 	</developers>
 	<scm>
-		<connection />
-		<developerConnection />
-		<tag />
-		<url />
 	</scm>
 	<properties>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
 		<java.version>25</java.version>
-		<spring-modulith.version>2.0.7</spring-modulith.version>
-		<vaadin.version>25.1.11</vaadin.version>
+		<vaadin.version>25.2.7</vaadin.version>
+		<quarkus.version>3.33.3</quarkus.version>
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-oidc-client</artifactId>
 		</dependency>
+		<!-- The Vaadin Quarkus extension -->
 		<dependency>
 			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-dev</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-starter-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-starter-jpa</artifactId>
+			<artifactId>vaadin-quarkus-extension</artifactId>
+			<version>${vaadin.version}</version>
 		</dependency>
 
+		<!-- The jandex.idx for Vaadin-core annotation indexes
+         automatically included via vaadin-quarkus-extension
+         and is used as an offline reflection library.
+
+         If you want to work with Pro components such GridPro,
+         you can uncomment the following dependency to include the
+         officially provided jandex.idx for them as well: -->
+		<!--
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-jandex</artifactId>
+    </dependency>
+    -->
+
+		<!-- Quarkus always pulls in slf4j-jboss-logmanager
+         into target/lib; don't use slf4j-simple -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<groupId>org.jboss.slf4j</groupId>
+			<artifactId>slf4j-jboss-logmanager</artifactId>
+			<version>1.1.0.Final</version>
 		</dependency>
+		<!-- Hibernate ORM specific dependencies -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>5.2.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.5</version>
-		</dependency>
-		<!-- <dependency>
-			<groupId>io.hypersistence</groupId>
-			<artifactId>hypersistence-utils-hibernate-63</artifactId>
-			<version>3.7.5</version>
-		</dependency> -->
-		<dependency>
-			<groupId>com.google.zxing</groupId>
-			<artifactId>core</artifactId>
-			<version>3.5.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-core</artifactId>
-			<version>2.9.0</version>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-orm-panache</artifactId>
 		</dependency>
 
+		<!-- JDBC driver dependencies -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jdbc-postgresql</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-docker-compose</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-rest</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-oidc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-rest-client-oidc-filter</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-rest-client-oidc-token-propagation</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
-			<scope>test</scope>
+			<groupId>io.quarkiverse.poi</groupId>
+			<artifactId>quarkus-poi</artifactId>
+			<version>2.2.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
+			<!-- Quarkus Platform BOM to keep the project
+             artifacts in synch with the quarkus.version -->
 			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-bom</artifactId>
-				<version>${vaadin.version}</version>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-bom</artifactId>
+				<version>${quarkus.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<!-- Vaadin BOM -->
 			<dependency>
-				<groupId>org.springframework.modulith</groupId>
-				<artifactId>spring-modulith-bom</artifactId>
-				<version>${spring-modulith.version}</version>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-bom</artifactId>
 				<type>pom</type>
 				<scope>import</scope>
+				<version>${vaadin.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<build>
 		<plugins>
+			<!-- For in-depth information on quarkus-maven-plugin
+             see https://quarkus.io/guides/maven-tooling#build-tool-maven -->
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<image>
-						<builder>paketobuildpacks/builder-jammy-tiny</builder>
-						<env>
-							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-						</env>
-					</image>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</path>
-					</annotationProcessorPaths>
-				</configuration>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-maven-plugin</artifactId>
+				<version>${quarkus.version}</version>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<goals>
+							<!-- Builds the Quarkus application -->
+							<goal>build</goal>
+							<!-- in these goals the Quarkus application bootstrap
+                             is initialized and re-used in the build goal -->
+							<goal>generate-code</goal>
+							<goal>generate-code-tests</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<profile>
-			<id>production</id>
-			<properties>
-				<vaadin.productionMode>true</vaadin.productionMode>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.vaadin</groupId>
-						<artifactId>vaadin-maven-plugin</artifactId>
-						<version>${vaadin.version}</version>
-						<executions>
-							<execution>
-								<id>frontend</id>
-								<phase>compile</phase>
-								<goals>
-									<goal>prepare-frontend</goal>
-									<goal>build-frontend</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>native</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.graalvm.buildtools</groupId>
-						<artifactId>native-maven-plugin</artifactId>
-						<extensions>true</extensions>
-						<executions>
-							<execution>
-								<id>build-native</id>
-								<goals>
-									<goal>compile-no-fork</goal>
-								</goals>
-								<phase>package</phase>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 </project>

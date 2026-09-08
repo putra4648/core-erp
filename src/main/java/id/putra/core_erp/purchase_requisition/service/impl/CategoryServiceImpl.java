@@ -20,7 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void addCategory(CategoryDto dto) {
-        List<Map<String, Object>> categories = categoryRepo.getAllCategories(dto.getName());
+        List<Category> categories = categoryRepo.findAll().list();
 
         if (categories.isEmpty()) {
             Category entity = new Category();
@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> getCategory() {
         List<CategoryDto> categories = new ArrayList<>();
 
-        categoryRepo.getAllCategories("").forEach(data -> {
+        categoryRepo.findAll().list().forEach(data -> {
             categories.add(entityToDto(data));
         });
 
@@ -65,15 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
         return dto;
     }
 
-    private CategoryDto entityToDto(Map<String, Object> entity) {
-        CategoryDto dto = new CategoryDto();
-
-        dto.setId(String.valueOf(entity.get("id")));
-        dto.setName((String) entity.get("name"));
-        dto.setParent_id(String.valueOf(entity.get("parent_id")));
-
-        return dto;
-    }
+    
 
     public List<CategoryDto> buildHierarchy(List<CategoryDto> categories, Map<Integer, CategoryDto> categoryMap) {
         List<CategoryDto> rootCategories = new ArrayList<>();

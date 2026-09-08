@@ -16,7 +16,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.spring.security.AuthenticationContext;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @AnonymousAllowed
@@ -25,10 +24,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     public static final String AUTH0_URL = "/oauth2/authorization/auth0";
-    private final AuthenticationContext authContext;
 
-    public LoginView(AuthenticationContext authContext) {
-        this.authContext = authContext;
+    public LoginView() {
         addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Flex.GROW);
         setSizeFull();
         setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
@@ -88,10 +85,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        if (authContext.isAuthenticated()) {
-            event.forwardTo("");
-            return;
-        }
+        // if (authContext.isAuthenticated()) {
+        // event.forwardTo("");
+        // return;
+        // }
 
         if (event.getLocation().getQueryParameters().getParameters().containsKey("error")) {
             Notification notification = Notification.show(

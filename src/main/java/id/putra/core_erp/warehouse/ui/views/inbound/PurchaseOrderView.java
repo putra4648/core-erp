@@ -25,10 +25,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "inbound/purchase-order", layout = MainLayout.class)
 @PageTitle("Purchase Orders | WMS Pro")
 @PermitAll
-        PurchaseOrderDto.class,
-        PurchaseOrderLineDto.class,
-        ItemDto.class
-})
 public class PurchaseOrderView extends VerticalLayout {
 
     private final PurchaseOrderService purchaseOrderService;

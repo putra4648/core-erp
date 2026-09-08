@@ -1,6 +1,5 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
@@ -19,18 +20,24 @@ import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.exception.RFQException;
 import id.putra.core_erp.purchase_requisition.exception.RequisitionException;
 import id.putra.core_erp.purchase_requisition.model.RFQ;
-import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.RFQRepo;
 import id.putra.core_erp.purchase_requisition.service.RFQService;
-import io.quarkus.oidc.OidcTenantConfig.Authentication;
-import jakarta.annotation.Resource;
+import id.putra.core_erp.shared.util.AppFileUtil;
+import io.vertx.mutiny.core.file.AsyncFile;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 
+@ApplicationScoped
 public class RFQServiceImpl implements RFQService {
 
-    private final RFQRepo rfqRepository;
+    @Inject
+    private RFQRepo rfqRepository;
+
+    @Inject
+    private JsonWebToken principal;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -39,23 +46,23 @@ public class RFQServiceImpl implements RFQService {
     public String handleData(AppDto<RFQDto> dto) {
         RFQDto params = dto.getParams();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (params.getId() == null || params.getId().isBlank()) {
+        if (params.getId() == null) {
             Long count = rfqRepository.count();
-            String id = AppUtil.generatedIdFromZeros("RFQ", count);
+            Long id = null;
             RFQ entity = dtoToEntityAdd(params, id, new RFQ());
             rfqRepository.persist(entity);
             return MessageConstant.SUCCESS;
         } else {
-            Optional<RFQ> rfqOpt = rfqRepository.findById(params.getId());
+            Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(params.getId());
 
             if (rfqOpt.isPresent()) {
-                Optional<Users> userOpt = userRepo
-                        .findByUsernameIgnoreCase(authentication != null ? authentication.getName() : "");
-                RFQ entity = dtoToEntityUpdate(userOpt.map(u -> u.getNrp()).orElse(null), params,
-                        rfqOpt.get());
-                rfqRepository.persist(entity);
+                // Optional<Users> userOpt = userRepo
+                // .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
+                // "");
+                // RFQ entity = dtoToEntityUpdate(userOpt.map(u -> u.getNrp()).orElse(null),
+                // params,
+                // rfqOpt.get());
+                // rfqRepository.persist(entity);
             } else {
                 throw new RFQException("RFQ is not found");
             }
@@ -129,8 +136,7 @@ public class RFQServiceImpl implements RFQService {
 
     @Override
     public RFQDto getSingleData(AppDto<RFQDto> dto) {
-        String id = dto.getParams().getId();
-        Optional<RFQ> rfq = rfqRepository.findById(id);
+        Optional<RFQ> rfq = rfqRepository.findByIdOptional(dto.getParams().getId());
         return rfq.map(this::entityToDto).orElse(null);
     }
 
@@ -141,36 +147,29 @@ public class RFQServiceImpl implements RFQService {
 
     @Override
     public Boolean checkApprovalFlow(AppDto<RFQDto> dto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        String id = dto.getParams().getId();
-        Optional<RFQ> rfqOpt = rfqRepository.findById(id);
+        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(dto.getParams().getId());
         if (rfqOpt.isPresent()) {
-            Optional<Users> userOpt = userRepo
-                    .findByUsernameIgnoreCase(authentication != null ? authentication.getName() : "");
-            String userNrp = userOpt.map(u -> u.getNrp()).orElse("");
-            if (rfqOpt.get().getTemApprovalDtos() != null) {
-                return rfqOpt.get().getTemApprovalDtos().stream()
-                        .anyMatch(aprv -> aprv.getUsers() != null && aprv.getUsers().getNrp() != null
-                                && aprv.getUsers().getNrp().equalsIgnoreCase(userNrp));
-            }
+            // Optional<Users> userOpt = userRepo
+            // .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
+            // "");
+            // String userNrp = userOpt.map(u -> u.getNrp()).orElse("");
+            // if (rfqOpt.get().getTemApprovalDtos() != null) {
+            // return rfqOpt.get().getTemApprovalDtos().stream()
+            // .anyMatch(aprv -> aprv.getUsers() != null && aprv.getUsers().getNrp() != null
+            // && aprv.getUsers().getNrp().equalsIgnoreCase(userNrp));
+            // }
             return false;
         } else {
-            throw new RFQException("RFQ " + id + " not found");
+            throw new RFQException("RFQ " + dto.getParams().getId() + " not found");
         }
     }
 
     @Override
     public ApprovalEnum checkStatusApprovalIsPermanent(AppDto<RFQDto> dto) {
         RFQDto params = dto.getParams();
+        String nrp = principal.getSubject();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Users> user = userRepo
-                .findByUsernameIgnoreCase(authentication != null ? authentication.getName() : "");
-        String nrp = user.map(u -> u.getNrp()).orElse(null);
-
-        String id = params.getId();
-        Optional<RFQ> rfqOpt = rfqRepository.findById(id);
+        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(params.getId());
         if (rfqOpt.isPresent()) {
             ApprovalEnum result = ApprovalEnum.NON_APPROVAL;
             List<ApprovalDto> approvals = new ArrayList<>();
@@ -212,18 +211,16 @@ public class RFQServiceImpl implements RFQService {
 
             return result;
         } else {
-            throw new RequisitionException("RFQ " + id + " not found");
+            throw new RequisitionException("RFQ " + params.getId() + " not found");
         }
     }
 
     @Override
-    public Resource download(AppDto<RFQDto> dto) {
+    public AsyncFile download(AppDto<RFQDto> dto) {
         RFQDto params = dto.getParams();
-
-        String id = params.getId();
         String supplierId = params.getSupplierId();
 
-        Optional<RFQ> rfqOpt = rfqRepository.findById(id);
+        Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(params.getId());
         if (rfqOpt.isPresent()) {
             try {
                 SupplierDto supplierDto = rfqOpt.get().getSuppliers().stream()
@@ -232,22 +229,20 @@ public class RFQServiceImpl implements RFQService {
                 if (supplierDto != null && supplierDto.getFile() != null && supplierDto.getFile().getName() != null) {
                     Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq",
                             supplierDto.getFile().getName());
-                    return new InputStreamResource(new FileInputStream(path.toFile()));
+                    return null;
                 }
                 return null;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException("Error reading file", e);
             }
         } else {
-            throw new RFQException("File ID " + id + " not found");
+            throw new RFQException("File ID " + params.getId() + " not found");
         }
     }
 
-    private RFQ dtoToEntityAdd(RFQDto dto, String id, RFQ entity) {
-        if (id != null) {
-            entity.setId(id);
-        }
+    private RFQ dtoToEntityAdd(RFQDto dto, Long id, RFQ entity) {
+        entity.setId(id);
         entity.setStatus(dto.getStatus());
         entity.setDueDate(dto.getDue_date());
         entity.setNote(dto.getNote());

@@ -87,7 +87,7 @@ public class BudgetView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(b -> b.getBudget_no() != null ? b.getBudget_no() : "-").setHeader("Budget No")
+        grid.addColumn(b -> b.getId() != null ? b.getId() : "-").setHeader("Budget No")
                 .setAutoWidth(true);
         grid.addColumn(b -> b.getName() != null ? b.getName() : "-").setHeader("Budget Title / Description")
                 .setFlexGrow(2);
@@ -156,7 +156,7 @@ public class BudgetView extends VerticalLayout {
             dto.setFy(yearCombo.getValue());
 
             BudgetDetailDto dtl = new BudgetDetailDto();
-            dtl.setBudget_no(budgetNoField.getValue());
+            dtl.setId(Long.parseLong(budgetNoField.getValue()));
             dtl.setName(nameField.getValue());
             dtl.setType(typeCombo.getValue());
             dtl.setTotal_budget(amountField.getValue());

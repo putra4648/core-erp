@@ -1,6 +1,5 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -11,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
@@ -29,37 +30,45 @@ import id.putra.core_erp.purchase_requisition.model.BudgetDetail;
 import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.model.Requisition;
 import id.putra.core_erp.purchase_requisition.model.RequisitionDetail;
-import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.BudgetDetailRepo;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
-import io.quarkus.oidc.OidcTenantConfig.Authentication;
-import jakarta.annotation.Resource;
+import id.putra.core_erp.shared.util.AppFileUtil;
+import io.vertx.core.file.OpenOptions;
+import io.vertx.mutiny.core.Vertx;
+import io.vertx.mutiny.core.file.AsyncFile;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+@ApplicationScoped
 @Transactional(rollbackOn = { Exception.class })
-
 public class RequisitionServiceImpl implements RequisitionService {
-
-    private final TransferRequestRepo transferRequestRepo;
-    private final RequisitionRepo requisitionRepo;
-    private final DepartmentRepo departmentRepo;
-    private final BudgetDetailRepo budgetDetailRepo;
+    @Inject
+    private TransferRequestRepo transferRequestRepo;
+    @Inject
+    private RequisitionRepo requisitionRepo;
+    @Inject
+    private DepartmentRepo departmentRepo;
+    @Inject
+    private BudgetDetailRepo budgetDetailRepo;
+    @Inject
+    private Vertx vertx;
+    @Inject
+    private JsonWebToken principal;
 
     @Override
     public String handleData(AppDto<RequisitionDto> dto) {
         RequisitionDto params = dto.getParams();
-        String id = params.getId();
+        Long id = params.getId();
 
-        Optional<Requisition> reqOpt = (id != null && !id.isBlank()) ? requisitionRepo.findById(id) : Optional.empty();
+        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(id);
 
         if (reqOpt.isEmpty()) {
-            Long count = requisitionRepo.count();
             Requisition entity = new Requisition();
-            String generatedID = AppUtil.generatedIdFromZeros("FTS", count);
-            dtoToEntityAdd(generatedID, params, entity);
+            dtoToEntityAdd(1L, params, entity);
             requisitionRepo.persist(entity);
             return MessageConstant.SUCCESS;
         } else {
@@ -81,9 +90,8 @@ public class RequisitionServiceImpl implements RequisitionService {
     public RequisitionDto getSingleData(AppDto<RequisitionDto> dto) {
         RequisitionDto result = null;
         RequisitionDto params = dto.getParams();
-        String id = params.getId();
 
-        Optional<Requisition> reqOpt = requisitionRepo.findById(id);
+        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(params.getId());
 
         if (reqOpt.isPresent()) {
             result = new RequisitionDto();
@@ -156,7 +164,7 @@ public class RequisitionServiceImpl implements RequisitionService {
         String status = params.getStatus() != null ? params.getStatus() : "";
         String search = params.getSearch() != null ? params.getSearch() : "";
 
-        String nrp = getNrp();
+        String nrp = principal.getSubject();
 
         if (deptIds.contains("SUP03")) {
             if (status.isBlank() || status.isEmpty()) {
@@ -206,7 +214,7 @@ public class RequisitionServiceImpl implements RequisitionService {
         List<String> deptIds = params.getDeptIds() != null ? params.getDeptIds() : new ArrayList<>();
         String status = params.getStatus() != null ? params.getStatus() : "";
         String search = params.getSearch() != null ? params.getSearch() : "";
-        String nrp = getNrp();
+        String nrp = principal.getSubject();
 
         if (status.isBlank() || status.isEmpty()) {
             requisitionEnum = RequisitionEnum.ALL;
@@ -229,9 +237,8 @@ public class RequisitionServiceImpl implements RequisitionService {
 
     @Override
     public Boolean checkApprovalFlow(AppDto<RequisitionDto> dto) {
-        String id = dto.getParams().getId();
-        Optional<Requisition> reqOpt = requisitionRepo.findById(id);
-        String nrp = getNrp();
+        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getParams().getId());
+        String nrp = principal.getSubject();
 
         if (reqOpt.isPresent()) {
             boolean result = false;
@@ -254,10 +261,9 @@ public class RequisitionServiceImpl implements RequisitionService {
     @Override
     public ApprovalEnum checkStatusApprovalIsPermanent(AppDto<RequisitionDto> dto) {
         RequisitionDto params = dto.getParams();
-        String id = params.getId();
-        String nrp = getNrp();
+        String nrp = principal.getSubject();
 
-        Optional<Requisition> reqOpt = requisitionRepo.findById(id);
+        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(params.getId());
         if (reqOpt.isPresent()) {
             ApprovalEnum result = ApprovalEnum.NON_APPROVAL;
             List<ApprovalDto> approvals = new ArrayList<>();
@@ -299,21 +305,18 @@ public class RequisitionServiceImpl implements RequisitionService {
             }
             return result;
         } else {
-            throw new RequisitionException("Requisition ID " + id + " not found");
+            throw new RequisitionException("Requisition ID " + params.getId() + " not found");
         }
     }
 
     @Override
-    public Resource download(AppDto<RequisitionDto> dto) {
+    public AsyncFile download(AppDto<RequisitionDto> dto) {
         String filename = dto.getParams().getFilename();
 
-        try {
-            Path path = Paths.get(AppFileUtil.getServerPath(), "data", "requisitions", filename);
-            return new InputStreamResource(new FileInputStream(path.toFile()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error reading file " + filename, e);
-        }
+        OpenOptions options = new OpenOptions().setCreate(false).setWrite(false);
+        Path path = Paths.get(AppFileUtil.getServerPath(), "data", "requisitions", filename);
+        return vertx.fileSystem().openAndAwait(path.getFileName().toString(), options);
+
     }
 
     private RequisitionDto entityToDto(Requisition req) {
@@ -387,14 +390,14 @@ public class RequisitionServiceImpl implements RequisitionService {
         return dto;
     }
 
-    private void dtoToEntityAdd(String id, RequisitionDto dto, Requisition entity) {
-        if (getNrp() == null) {
+    private void dtoToEntityAdd(Long id, RequisitionDto dto, Requisition entity) {
+        if (principal.getSubject() == null) {
             throw new RequisitionException("NRP login is not exist");
         }
 
         entity.setId(id);
         if (dto.getDepartment() != null && dto.getDepartment().getDept_number() != null) {
-            Optional<Department> deptOpt = departmentRepo.findById(dto.getDepartment().getDept_number());
+            Optional<Department> deptOpt = departmentRepo.findByDeptNumber(dto.getDepartment().getDept_number());
             deptOpt.ifPresent(entity::setDepartment);
         }
         entity.setTitle(dto.getTitle());
@@ -428,7 +431,7 @@ public class RequisitionServiceImpl implements RequisitionService {
 
         List<RequisitionDetail> details = new ArrayList<>();
         if (dto.getBudget_detail_id() != null) {
-            Optional<BudgetDetail> budgetDetailOpt = budgetDetailRepo.findById(dto.getBudget_detail_id());
+            Optional<BudgetDetail> budgetDetailOpt = budgetDetailRepo.findByIdOptional(dto.getBudget_detail_id());
             if (budgetDetailOpt.isPresent()) {
                 BudgetDetail budgetDetail = budgetDetailOpt.get();
                 String month = new SimpleDateFormat("MMM").format(new Date());
@@ -455,13 +458,13 @@ public class RequisitionServiceImpl implements RequisitionService {
                     }
                 }
                 budgetDetail.setDetails(budgetTypes);
-                budgetDetailRepopersist(budgetDetail);
+                budgetDetailRepo.persist(budgetDetail);
             }
         }
 
         if (dto.getRequest_no() != null) {
             for (String reqNo : dto.getRequest_no()) {
-                transferRequestRepo.findById(reqNo).ifPresent(transfer -> {
+                transferRequestRepo.findByRequestNo(reqNo).ifPresent(transfer -> {
                     List<TransferDetailDto> trfDetails = transfer.getDetails();
                     if (trfDetails != null) {
                         trfDetails.forEach(trf -> {
@@ -519,7 +522,7 @@ public class RequisitionServiceImpl implements RequisitionService {
 
     private void dtoToEntityUpdate(RequisitionDto dto, Requisition entity) {
         if (dto.getDepartment() != null && dto.getDepartment().getDept_number() != null) {
-            Optional<Department> deptOpt = departmentRepo.findById(dto.getDepartment().getDept_number());
+            Optional<Department> deptOpt = departmentRepo.findByDeptNumber(dto.getDepartment().getDept_number());
             deptOpt.ifPresent(entity::setDepartment);
         }
         entity.setTitle(dto.getTitle());
@@ -581,20 +584,19 @@ public class RequisitionServiceImpl implements RequisitionService {
         }
         entity.setDetails(details);
 
-        String currentNrp = getNrp();
-        Optional<Users> userOpt = (currentNrp != null) ? userRepo.findById(currentNrp) : Optional.empty();
+        String currentNrp = principal.getSubject();
 
         if (entity.getDepartment() != null && entity.getDepartment().getApprovals() != null) {
             entity.setTotalApprovalStage(entity.getDepartment().getApprovals().size() + 1);
         }
 
-        if (userOpt.isPresent()) {
-            Users users = userOpt.get();
+        String nrp = principal.getSubject();
+        if (nrp != null) {
 
             if (entity.getTemApprovalDtos() != null) {
                 Optional<ApprovalDto> currentApproval = entity.getTemApprovalDtos().stream()
                         .filter(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                                && data.getUsers().getNrp().equalsIgnoreCase(users.getNrp()))
+                                && data.getUsers().getNrp().equalsIgnoreCase(nrp))
                         .findFirst();
                 if (currentApproval.isPresent()) {
                     if (entity.getCurrentApprovalStage() == null) {
@@ -605,7 +607,7 @@ public class RequisitionServiceImpl implements RequisitionService {
 
                     List<ApprovalDto> entityApproval = entity.getTemApprovalDtos().stream().map(data -> {
                         if (data.getUsers() != null && data.getUsers().getNrp() != null
-                                && data.getUsers().getNrp().equalsIgnoreCase(getNrp())) {
+                                && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject())) {
                             ApprovalDto newData = data;
                             if (Boolean.TRUE.equals(data.getIsApprovalChecked())) {
                                 newData.setIsApprovalPermanent(true);
@@ -631,12 +633,12 @@ public class RequisitionServiceImpl implements RequisitionService {
                         status = dto.getStatus();
                     }
                     entity.setStatus(status);
-                    entity.setLastApproved(userOpt.get().getFullname());
+                    entity.setLastApproved(nrp);
                 }
             }
 
             if (entity.getDepartment() != null && entity.getDepartment().getDeptPurchaser() != null
-                    && entity.getDepartment().getDeptPurchaser().getNrp().equalsIgnoreCase(users.getNrp())) {
+                    && entity.getDepartment().getDeptPurchaser().getNrp().equalsIgnoreCase(nrp)) {
                 if (entity.getCurrentApprovalStage() == null) {
                     entity.setCurrentApprovalStage(1);
                 } else {
@@ -657,11 +659,11 @@ public class RequisitionServiceImpl implements RequisitionService {
                 String status = null;
                 if (dto.getStatus() != null && "APPROVED".equalsIgnoreCase(dto.getStatus())) {
                     status = RequisitionEnum.PO_CREATED.getValue();
-                    entity.setLastApproved(userOpt.get().getFullname());
+                    entity.setLastApproved(nrp);
                 } else if (dto.getStatus() != null && "REJECT".equalsIgnoreCase(dto.getStatus())) {
                     entity.setRejectNote(dto.getReject_note());
                     status = RequisitionEnum.REJECT.getValue();
-                    entity.setLastApproved(userOpt.get().getFullname());
+                    entity.setLastApproved(nrp);
                 } else {
                     status = dto.getStatus();
                 }
@@ -671,13 +673,4 @@ public class RequisitionServiceImpl implements RequisitionService {
             entity.setStatus(dto.getStatus());
         }
     }
-
-    private String getNrp() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null)
-            return null;
-        Optional<Users> user = userRepo.findByUsernameIgnoreCase(authentication.getName());
-        return user.map(u -> u.getNrp()).orElse(null);
-    }
-
 }

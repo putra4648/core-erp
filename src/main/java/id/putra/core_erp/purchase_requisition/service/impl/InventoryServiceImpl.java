@@ -10,6 +10,8 @@ import id.putra.core_erp.purchase_requisition.dto.InventoryDto;
 import id.putra.core_erp.purchase_requisition.model.Inventory;
 import id.putra.core_erp.purchase_requisition.repository.InventoryRepo;
 import id.putra.core_erp.purchase_requisition.service.InventoryService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -17,9 +19,11 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+@ApplicationScoped
 public class InventoryServiceImpl implements InventoryService {
 
-    private final InventoryRepo inventoryRepo;
+    @Inject
+    private InventoryRepo inventoryRepo;
 
     @PersistenceContext
     private EntityManager em;
@@ -39,7 +43,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         if (params != null) {
             params.forEach(param -> {
-                Optional<Inventory> invOpt = inventoryRepo.findByIdOptional(param.getPart_number());
+                Optional<Inventory> invOpt = inventoryRepo.findByIdPartNumber(param.getPart_number());
                 Inventory entity;
                 if (invOpt.isPresent()) {
                     entity = invOpt.get();
@@ -93,7 +97,8 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public InventoryDto getSingleData(AppDto<InventoryDto> dto) {
         if (dto != null && dto.getParams() != null && dto.getParams().getPart_number() != null) {
-            return inventoryRepo.findById(dto.getParams().getPart_number()).map(this::entityToDto).orElse(null);
+            return inventoryRepo.findByIdPartNumber(dto.getParams().getPart_number()).map(this::entityToDto)
+                    .orElse(null);
         }
         return null;
     }

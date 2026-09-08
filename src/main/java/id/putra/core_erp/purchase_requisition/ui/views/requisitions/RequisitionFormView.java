@@ -47,29 +47,20 @@ import id.putra.core_erp.purchase_requisition.repository.BudgetDetailRepo;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.ItemRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
-import id.putra.core_erp.shared.security.SecurityService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "requisitions/form", layout = MainLayout.class)
 @PageTitle("Requisition Form | PR System")
 @PermitAll
-        RequisitionDto.class,
-        RequisitionDetailDto.class,
-        ApprovalDto.class,
-        UsersDto.class,
-        DepartmentDto.class,
-        Department.class
-})
 public class RequisitionFormView extends VerticalLayout implements HasUrlParameter<String> {
 
     private final RequisitionService requisitionService;
-    private final SecurityService securityService;
     private final DepartmentRepo departmentRepo;
     private final BudgetDetailRepo budgetDetailRepo;
     private final ItemRepo itemRepo;
 
-    private String requisitionId = null;
+    private Long requisitionId = null;
     private String currentStatus = "DRAFT";
 
     private final H2 titleHeader = new H2("Create Purchase Requisition");
@@ -92,12 +83,10 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
             e -> UI.getCurrent().navigate(RequisitionListView.class));
 
     public RequisitionFormView(RequisitionService requisitionService,
-            SecurityService securityService,
             DepartmentRepo departmentRepo,
             BudgetDetailRepo budgetDetailRepo,
             ItemRepo itemRepo) {
         this.requisitionService = requisitionService;
-        this.securityService = securityService;
         this.departmentRepo = departmentRepo;
         this.budgetDetailRepo = budgetDetailRepo;
         this.itemRepo = itemRepo;
@@ -117,9 +106,9 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
         if (parameter != null && !parameter.isBlank()) {
-            this.requisitionId = parameter;
+            this.requisitionId = Long.parseLong(parameter);
             this.titleHeader.setText("Purchase Requisition: " + parameter);
-            loadRequisition(parameter);
+            loadRequisition(Long.parseLong(parameter));
         } else {
             this.requisitionId = null;
             this.titleHeader.setText("Create Purchase Requisition");
@@ -302,7 +291,7 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         grandTotalSpan.setText("Total: IDR " + String.format("%,d", total));
     }
 
-    private void loadRequisition(String id) {
+    private void loadRequisition(Long id) {
         AppDto<RequisitionDto> dto = new AppDto<>();
         RequisitionDto params = new RequisitionDto();
         params.setId(id);
@@ -321,7 +310,7 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
                     dueDatePicker.setValue(r.getDue_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                 }
                 if (r.getDepartment() != null && r.getDepartment().getDept_number() != null) {
-                    departmentRepo.findById(r.getDepartment().getDept_number()).ifPresent(deptCombo::setValue);
+                    departmentRepo.findByDeptNumber(r.getDepartment().getDept_number()).ifPresent(deptCombo::setValue);
                 }
 
                 lineItems.clear();
@@ -361,7 +350,7 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         }
 
         RequisitionDto params = new RequisitionDto();
-        params.setId(requisitionId != null ? requisitionId : "");
+        params.setId(requisitionId != null ? requisitionId : null);
         params.setTitle(titleField.getValue());
         params.setNote(noteField.getValue());
         params.setStatus(status);
@@ -378,8 +367,8 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         }
 
         params.setBudget_detail_id(budgetDetailIdField.getValue() != null && !budgetDetailIdField.getValue().isBlank()
-                ? budgetDetailIdField.getValue()
-                : "1");
+                ? Long.parseLong(budgetDetailIdField.getValue())
+                : 1);
 
         params.setDetails(lineItems);
 

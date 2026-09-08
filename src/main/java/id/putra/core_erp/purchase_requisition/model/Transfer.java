@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 public class Transfer extends BaseModel {
 
     @Id
-    private String id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -68,11 +68,11 @@ public class Transfer extends BaseModel {
     @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
     private ApprovalDto tempPurchaserApprovalDto;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

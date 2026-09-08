@@ -5,7 +5,7 @@ import java.util.List;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.dto.ItemDto;
-import jakarta.annotation.Resource;
+import io.vertx.mutiny.core.file.AsyncFile;
 
 public interface ItemService {
         void addItem(
@@ -27,11 +27,11 @@ public interface ItemService {
                         FileUpload itemImage,
                         List<FileUpload> itemDocs) throws Exception;
 
-        ItemDto getItemDetail(String id);
+        ItemDto getItemDetail(Long id);
 
-        Boolean isItemExist(String id);
+        Boolean isItemExist(String name);
 
         void importItems(FileUpload file) throws Exception;
 
-        Resource exportItems() throws Exception;
+        AsyncFile exportItems() throws Exception;
 }

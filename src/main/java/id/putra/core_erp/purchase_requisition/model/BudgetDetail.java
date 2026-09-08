@@ -19,8 +19,7 @@ import jakarta.persistence.Table;
 public class BudgetDetail extends BaseModel {
 
     @Id
-    @Column(name = "budget_no", nullable = false, unique = true)
-    private String budgetNo;
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -39,12 +38,12 @@ public class BudgetDetail extends BaseModel {
     @JoinColumn(name = "budget_id", referencedColumnName = "id")
     private Budget budget;
 
-    public String getBudgetNo() {
-        return budgetNo;
+    public Long getId() {
+        return id;
     }
 
-    public void setBudgetNo(String budgetNo) {
-        this.budgetNo = budgetNo;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

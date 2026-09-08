@@ -21,8 +21,7 @@ import jakarta.persistence.Table;
 @Table(name = "requisition")
 public class Requisition extends BaseModel {
     @Id
-    @Column(name = "id", nullable = false, unique = true)
-    private String id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -49,7 +48,7 @@ public class Requisition extends BaseModel {
     private String status;
 
     @Column(name = "budget_detail_id")
-    private String budgetDetailId;
+    private Long budgetDetailId;
 
     @Column(name = "budget_date")
     private Date budgetDate;
@@ -82,11 +81,11 @@ public class Requisition extends BaseModel {
     @OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequisitionDetail> details;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -154,11 +153,11 @@ public class Requisition extends BaseModel {
         this.status = status;
     }
 
-    public String getBudgetDetailId() {
+    public Long getBudgetDetailId() {
         return budgetDetailId;
     }
 
-    public void setBudgetDetailId(String budgetDetailId) {
+    public void setBudgetDetailId(Long budgetDetailId) {
         this.budgetDetailId = budgetDetailId;
     }
 

@@ -14,6 +14,7 @@ import id.putra.core_erp.purchase_requisition.dto.CompanyDto;
 import id.putra.core_erp.purchase_requisition.model.Company;
 import id.putra.core_erp.purchase_requisition.repository.CompanyRepo;
 import id.putra.core_erp.purchase_requisition.service.CompanyService;
+import id.putra.core_erp.shared.util.AppFileUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -60,9 +61,9 @@ public class CompanyServiceImpl implements CompanyService {
         company.setCompCurrencies(currs);
         company.setCompNeedAutoCloseOrder(dto.getIsAutoCloseOrder());
         company.setCompNeedRegisterApproval(dto.getIsRegisterApproval());
-        if (logo != null && !logo.isEmpty()) {
+        if (logo != null) {
             try {
-                Path logoPath = AppFileUtil.recreateFileFromFileUpload(logo.getOriginalFilename(), logo, "data",
+                Path logoPath = AppFileUtil.recreateFileFromFileUpload(logo.fileName(), logo, "data",
                         company.getCompLogopath());
                 company.setCompLogopath(logoPath.toString());
             } catch (IOException e) {
@@ -73,7 +74,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     private CompanyDto getCompanyDto() throws IOException {
-        Optional<Company> companyOpt = companyRepo.findById(1);
+        Optional<Company> companyOpt = companyRepo.findByIdOptional(1L);
         if (companyOpt.isEmpty()) {
             return new CompanyDto();
         }

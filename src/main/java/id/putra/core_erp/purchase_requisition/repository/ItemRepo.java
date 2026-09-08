@@ -33,4 +33,8 @@ public class ItemRepo implements PanacheRepository<Item> {
         return find("name ilike ?1", name).firstResultOptional();
     }
 
+    public Optional<Item> findByItemNumber(String name) {
+        return find("itemNumber ilike ?1", name).firstResultOptional();
+    }
+
 }

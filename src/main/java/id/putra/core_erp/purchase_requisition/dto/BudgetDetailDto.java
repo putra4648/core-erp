@@ -6,7 +6,7 @@ import id.putra.core_erp.purchase_requisition.enums.BudgetEnum;
 
 public class BudgetDetailDto {
     private String name;
-    private String budget_no;
+    private Long id;
     private String note;
     private BudgetEnum type;
     private List<BudgetTypeDto> plans;
@@ -18,14 +18,6 @@ public class BudgetDetailDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getBudget_no() {
-        return budget_no;
-    }
-
-    public void setBudget_no(String budget_no) {
-        this.budget_no = budget_no;
     }
 
     public String getNote() {
@@ -58,5 +50,13 @@ public class BudgetDetailDto {
 
     public void setTotal_budget(String total_budget) {
         this.total_budget = total_budget;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

@@ -25,8 +25,6 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "outbound", layout = MainLayout.class)
 @PageTitle("Outbound | WMS Pro")
 @PermitAll
-        SalesOrderDto.class
-})
 public class OutboundView extends VerticalLayout {
 
     private final SalesOrderService salesOrderService;

@@ -8,7 +8,7 @@ import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.shared.enums.TypeEnum;
 
 public class SupplierDto {
-    private String id;
+    private Long id;
     private String name;
     private String acc_no;
     private String website;
@@ -30,11 +30,11 @@ public class SupplierDto {
     private BigInteger price;
     private AppFileDto file;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

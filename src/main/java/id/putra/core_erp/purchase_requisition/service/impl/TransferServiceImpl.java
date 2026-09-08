@@ -1,8 +1,6 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.dto.AppDto;
@@ -21,44 +21,44 @@ import id.putra.core_erp.purchase_requisition.dto.TransferDto;
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.enums.RequisitionEnum;
 import id.putra.core_erp.purchase_requisition.exception.RequisitionException;
-import id.putra.core_erp.purchase_requisition.exception.TransferException;
-import id.putra.core_erp.purchase_requisition.model.Department;
-import id.putra.core_erp.purchase_requisition.model.Inventory;
 import id.putra.core_erp.purchase_requisition.model.Transfer;
-import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.InventoryRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.TransferService;
-import io.quarkus.oidc.OidcTenantConfig.Authentication;
-import jakarta.annotation.Resource;
+import id.putra.core_erp.shared.util.AppFileUtil;
+import io.vertx.mutiny.core.file.AsyncFile;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+@ApplicationScoped
 public class TransferServiceImpl implements TransferService {
+    @Inject
+    private InventoryRepo inventoryRepo;
 
-    private final InventoryRepo inventoryRepo;
-    private final TransferRequestRepo transferRequestRepo;
+    @Inject
+    private TransferRequestRepo transferRequestRepo;
+
+    @Inject
+    JsonWebToken principal;
 
     @Override
     public String handleData(AppDto<TransferDto> dto) {
         TransferDto params = dto.getParams();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         Long count = transferRequestRepo.count();
-        if (params.getId() == null || params.getId().isBlank()) {
-            String id = AppUtil.generatedIdFromZeros("TFQ", count);
+        if (params.getId() == null) {
+            Long id = null;
             Transfer entity = dtoToEntityAdd(params, id, new Transfer());
             transferRequestRepo.persist(entity);
             return MessageConstant.SUCCESS;
         } else {
-            Optional<Transfer> rfqOpt = transferRequestRepo.findById(params.getId());
+            Optional<Transfer> rfqOpt = transferRequestRepo.findByIdOptional(params.getId());
             if (rfqOpt.isPresent()) {
-                Optional<Users> userOpt = userRepo
-                        .findByUsernameIgnoreCase(authentication != null ? authentication.getName() : "");
-                Transfer entity = dtoToEntityUpdate(userOpt.map(u -> u.getNrp()).orElse(null), params, rfqOpt.get());
+                Transfer entity = dtoToEntityUpdate(principal.getSubject(), params, rfqOpt.get());
                 transferRequestRepo.persist(entity);
                 return MessageConstant.UPDATE;
             } else {
-                String id = AppUtil.generatedIdFromZeros("TFQ", count);
+                Long id = null;
                 Transfer entity = dtoToEntityAdd(params, id, new Transfer());
                 transferRequestRepo.persist(entity);
                 return MessageConstant.SUCCESS;
@@ -73,10 +73,9 @@ public class TransferServiceImpl implements TransferService {
                 && !dto.getParams().getStatus().isBlank())
                         ? dto.getParams().getStatus()
                         : "%%";
-        String id = (dto != null && dto.getParams() != null && dto.getParams().getId() != null
-                && !dto.getParams().getId().isBlank())
-                        ? dto.getParams().getId()
-                        : "%%";
+        String id = (dto != null && dto.getParams() != null && dto.getParams().getId() != null)
+                ? dto.getParams().getId().toString()
+                : "%%";
 
         transferRequestRepo.findByStatusLikeAndIdLike(status, id)
                 .forEach(transfer -> dtos.add(entityToDto(transfer)));
@@ -88,9 +87,9 @@ public class TransferServiceImpl implements TransferService {
         TransferDto result = null;
 
         TransferDto params = dto.getParams();
-        String id = params.getId();
+        Long id = params.getId();
 
-        Optional<Transfer> transferOpt = transferRequestRepo.findById(id);
+        Optional<Transfer> transferOpt = transferRequestRepo.findByIdOptional(id);
 
         if (transferOpt.isPresent()) {
             result = new TransferDto();
@@ -163,21 +162,20 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public Boolean checkApprovalFlow(AppDto<TransferDto> dto) {
-        String id = dto.getParams().getId();
-        Optional<Transfer> reqOpt = transferRequestRepo.findById(id);
-        String nrp = getNrp();
+        Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.getParams().getId());
 
         if (reqOpt.isPresent()) {
             boolean result = false;
             if (reqOpt.get().getTemApprovalDtos() != null) {
                 result = reqOpt.get().getTemApprovalDtos().stream()
                         .anyMatch(usr -> usr.getUsers() != null && usr.getUsers().getNrp() != null
-                                && usr.getUsers().getNrp().equalsIgnoreCase(nrp));
+                                && usr.getUsers().getNrp().equalsIgnoreCase(principal.getSubject()));
             }
 
             if (reqOpt.get().getTempPurchaserApprovalDto() != null
                     && reqOpt.get().getTempPurchaserApprovalDto().getUsers() != null) {
-                result = !reqOpt.get().getTempPurchaserApprovalDto().getUsers().getNrp().equalsIgnoreCase(nrp);
+                result = !reqOpt.get().getTempPurchaserApprovalDto().getUsers().getNrp()
+                        .equalsIgnoreCase(principal.getSubject());
             }
             return result;
         } else {
@@ -188,10 +186,8 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public ApprovalEnum checkStatusApprovalIsPermanent(AppDto<TransferDto> dto) {
         TransferDto params = dto.getParams();
-        String id = params.getId();
-        String nrp = getNrp();
 
-        Optional<Transfer> reqOpt = transferRequestRepo.findById(id);
+        Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(params.getId());
         if (reqOpt.isPresent()) {
             ApprovalEnum result = ApprovalEnum.NON_APPROVAL;
             List<ApprovalDto> approvals = new ArrayList<>();
@@ -204,23 +200,23 @@ public class TransferServiceImpl implements TransferService {
             int index = 0;
             for (int i = 0; i < approvals.size(); i++) {
                 if (approvals.get(i).getUsers() != null && approvals.get(i).getUsers().getNrp() != null
-                        && approvals.get(i).getUsers().getNrp().equalsIgnoreCase(nrp)) {
+                        && approvals.get(i).getUsers().getNrp().equalsIgnoreCase(principal.getSubject())) {
                     index = i;
                 }
             }
             if (approvals.stream().anyMatch(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                    && data.getUsers().getNrp().equalsIgnoreCase(nrp))) {
+                    && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject()))) {
                 if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
                     if (approvals.stream()
                             .anyMatch(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                                    && data.getUsers().getNrp().equalsIgnoreCase(nrp)
+                                    && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject())
                                     && Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
                         result = ApprovalEnum.ALREADY_APPROVED;
                     }
 
                     if (approvals.stream()
                             .anyMatch(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                                    && data.getUsers().getNrp().equalsIgnoreCase(nrp)
+                                    && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject())
                                     && !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
                             && index == (reqOpt.get().getCurrentApprovalStage() != null
                                     ? reqOpt.get().getCurrentApprovalStage()
@@ -232,27 +228,22 @@ public class TransferServiceImpl implements TransferService {
             }
             return result;
         } else {
-            throw new RequisitionException("TransferRequest ID " + id + " not found");
+            throw new RequisitionException("TransferRequest ID " + params.getId() + " not found");
         }
     }
 
     @Override
-    public Resource download(AppDto<TransferDto> dto) {
+    public AsyncFile download(AppDto<TransferDto> dto) {
         String from = dto.getParams().getFrom();
         String filename = dto.getParams().getFilename();
 
-        try {
-            Path path = Paths.get(AppFileUtil.getServerPath(), "data", from, filename);
-            return new InputStreamResource(new FileInputStream(path.toFile()));
-        } catch (IOException e) {
-            throw new RuntimeException("Error downloading file", e);
-        }
+        Path path = Paths.get(AppFileUtil.getServerPath(), "data", from, filename);
+        return null;
+
     }
 
-    private Transfer dtoToEntityAdd(TransferDto dto, String id, Transfer entity) {
-        if (id != null) {
-            entity.setId(id);
-        }
+    private Transfer dtoToEntityAdd(TransferDto dto, Long id, Transfer entity) {
+        entity.setId(id);
         entity.setTitle(dto.getTitle());
         entity.setStatus(dto.getStatus());
         entity.setDueDate(dto.getDue_date());
@@ -269,7 +260,7 @@ public class TransferServiceImpl implements TransferService {
         }
         entity.setDetails(details);
         entity.setRejectNote(dto.getReject_note());
-        entity.setDepartment(getDepartment());
+        // entity.setDepartment(getDepartment());
         entity.setCurrentApprovalStage(0);
 
         if (entity.getTemApprovalDtos() == null && dto.getApprovals() != null) {
@@ -361,112 +352,124 @@ public class TransferServiceImpl implements TransferService {
             entity.setTotalApprovalStage(entity.getDepartment().getApprovals().size() + 1);
         }
 
-        Optional<Users> userOpt = (nrp != null) ? userRepo.findById(nrp) : Optional.empty();
-        if (userOpt.isPresent()) {
-            Users users = userOpt.get();
+        // Optional<Users> userOpt = (principal.getSubject() != null) ?
+        // userRepo.findById(principal.getSubject()) :
+        // Optional.empty();
+        // if (userOpt.isPresent()) {
+        // Users users = userOpt.get();
 
-            if (entity.getTemApprovalDtos() != null) {
-                Optional<ApprovalDto> currentApproval = entity.getTemApprovalDtos().stream()
-                        .filter(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                                && data.getUsers().getNrp().equalsIgnoreCase(users.getNrp()))
-                        .findFirst();
-                if (currentApproval.isPresent()) {
-                    if (entity.getCurrentApprovalStage() == null) {
-                        entity.setCurrentApprovalStage(1);
-                    } else {
-                        entity.setCurrentApprovalStage(entity.getCurrentApprovalStage() + 1);
-                    }
+        // if (entity.getTemApprovalDtos() != null) {
+        // Optional<ApprovalDto> currentApproval = entity.getTemApprovalDtos().stream()
+        // .filter(data -> data.getUsers() != null && data.getUsers().getNrp() != null
+        // && data.getUsers().getNrp().equalsIgnoreCase(users.getNrp()))
+        // .findFirst();
+        // if (currentApproval.isPresent()) {
+        // if (entity.getCurrentApprovalStage() == null) {
+        // entity.setCurrentApprovalStage(1);
+        // } else {
+        // entity.setCurrentApprovalStage(entity.getCurrentApprovalStage() + 1);
+        // }
 
-                    List<ApprovalDto> entityApproval = entity.getTemApprovalDtos().stream().map(data -> {
-                        if (data.getUsers() != null && data.getUsers().getNrp() != null
-                                && data.getUsers().getNrp().equalsIgnoreCase(nrp)) {
-                            ApprovalDto newData = data;
-                            if (Boolean.TRUE.equals(data.getIsApprovalChecked())) {
-                                newData.setIsApprovalPermanent(true);
-                            }
+        // List<ApprovalDto> entityApproval =
+        // entity.getTemApprovalDtos().stream().map(data -> {
+        // if (data.getUsers() != null && data.getUsers().getNrp() != null
+        // && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject())) {
+        // ApprovalDto newData = data;
+        // if (Boolean.TRUE.equals(data.getIsApprovalChecked())) {
+        // newData.setIsApprovalPermanent(true);
+        // }
 
-                            if (Boolean.TRUE.equals(data.getIsBypassChecked())) {
-                                newData.setIsBypassPermanent(true);
-                                entity.setCurrentApprovalStage(entity.getCurrentApprovalStage() + 1);
-                            }
-                            return newData;
-                        } else {
-                            return data;
-                        }
-                    }).toList();
-                    entity.setTemApprovalDtos(entityApproval);
-                    String status = null;
-                    if (dto.getStatus() != null && "APPROVED".equalsIgnoreCase(dto.getStatus())) {
-                        status = RequisitionEnum.WAITING_APPROVAL.getValue();
-                    } else if (dto.getStatus() != null && "REJECT".equalsIgnoreCase(dto.getStatus())) {
-                        entity.setRejectNote(dto.getReject_note());
-                        status = RequisitionEnum.REJECT.getValue();
-                    } else {
-                        status = dto.getStatus();
-                    }
-                    entity.setStatus(status);
-                    entity.setLastApproved(userOpt.get().getFullname());
-                }
-            }
+        // if (Boolean.TRUE.equals(data.getIsBypassChecked())) {
+        // newData.setIsBypassPermanent(true);
+        // entity.setCurrentApprovalStage(entity.getCurrentApprovalStage() + 1);
+        // }
+        // return newData;
+        // } else {
+        // return data;
+        // }
+        // }).toList();
+        // entity.setTemApprovalDtos(entityApproval);
+        // String status = null;
+        // if (dto.getStatus() != null && "APPROVED".equalsIgnoreCase(dto.getStatus()))
+        // {
+        // status = RequisitionEnum.WAITING_APPROVAL.getValue();
+        // } else if (dto.getStatus() != null &&
+        // "REJECT".equalsIgnoreCase(dto.getStatus())) {
+        // entity.setRejectNote(dto.getReject_note());
+        // status = RequisitionEnum.REJECT.getValue();
+        // } else {
+        // status = dto.getStatus();
+        // }
+        // entity.setStatus(status);
+        // entity.setLastApproved(userOpt.get().getFullname());
+        // }
+        // }
 
-            if (entity.getDepartment() != null && entity.getDepartment().getDeptPurchaser() != null
-                    && entity.getDepartment().getDeptPurchaser().getNrp().equalsIgnoreCase(users.getNrp())) {
-                if (entity.getCurrentApprovalStage() == null) {
-                    entity.setCurrentApprovalStage(1);
-                } else {
-                    entity.setCurrentApprovalStage(entity.getCurrentApprovalStage() + 1);
-                }
+        // if (entity.getDepartment() != null &&
+        // entity.getDepartment().getDeptPurchaser() != null
+        // &&
+        // entity.getDepartment().getDeptPurchaser().getNrp().equalsIgnoreCase(users.getNrp()))
+        // {
+        // if (entity.getCurrentApprovalStage() == null) {
+        // entity.setCurrentApprovalStage(1);
+        // } else {
+        // entity.setCurrentApprovalStage(entity.getCurrentApprovalStage() + 1);
+        // }
 
-                ApprovalDto purchaser = entity.getTempPurchaserApprovalDto();
-                if (purchaser != null) {
-                    if (Boolean.TRUE.equals(purchaser.getIsApprovalChecked())) {
-                        purchaser.setIsApprovalPermanent(true);
-                    }
+        // ApprovalDto purchaser = entity.getTempPurchaserApprovalDto();
+        // if (purchaser != null) {
+        // if (Boolean.TRUE.equals(purchaser.getIsApprovalChecked())) {
+        // purchaser.setIsApprovalPermanent(true);
+        // }
 
-                    if (Boolean.TRUE.equals(purchaser.getIsBypassChecked())) {
-                        purchaser.setIsBypassPermanent(true);
-                    }
-                    entity.setTempPurchaserApprovalDto(purchaser);
-                }
-                String status = null;
-                if (dto.getStatus() != null && "APPROVED".equalsIgnoreCase(dto.getStatus())) {
-                    status = "CLOSED";
-                    entity.setLastApproved(userOpt.get().getFullname());
+        // if (Boolean.TRUE.equals(purchaser.getIsBypassChecked())) {
+        // purchaser.setIsBypassPermanent(true);
+        // }
+        // entity.setTempPurchaserApprovalDto(purchaser);
+        // }
+        // String status = null;
+        // if (dto.getStatus() != null && "APPROVED".equalsIgnoreCase(dto.getStatus()))
+        // {
+        // status = "CLOSED";
+        // entity.setLastApproved(userOpt.get().getFullname());
 
-                    for (TransferDetailDto dtl : details) {
-                        Optional<Inventory> inventoryOpt = inventoryRepo.findById(dtl.getItem_number());
+        // for (TransferDetailDto dtl : details) {
+        // Optional<Inventory> inventoryOpt =
+        // inventoryRepo.findByItemNumber(dtl.getItem_number());
 
-                        if (inventoryOpt.isPresent()) {
-                            Inventory inv = inventoryOpt.get();
-                            BigInteger qty = inv.getQty() != null ? inv.getQty() : BigInteger.ZERO;
-                            BigInteger dtlQty = dtl.getItem_qty() != null ? dtl.getItem_qty() : BigInteger.ZERO;
-                            inv.setQty(qty.subtract(dtlQty));
-                            inventoryRepo.persist(inv);
+        // if (inventoryOpt.isPresent()) {
+        // Inventory inv = inventoryOpt.get();
+        // BigInteger qty = inv.getQty() != null ? inv.getQty() : BigInteger.ZERO;
+        // BigInteger dtlQty = dtl.getItem_qty() != null ? dtl.getItem_qty() :
+        // BigInteger.ZERO;
+        // inv.setQty(qty.subtract(dtlQty));
+        // inventoryRepo.persist(inv);
 
-                            if (inv.getQty().compareTo(BigInteger.ZERO) == 0) {
-                                inventoryRepo.delete(inv);
-                            }
+        // if (inv.getQty().compareTo(BigInteger.ZERO) == 0) {
+        // inventoryRepo.delete(inv);
+        // }
 
-                            if (inv.getQty().compareTo(BigInteger.ZERO) < 0) {
-                                throw new TransferException(
-                                        "Inconsistent data. This item causes minus qty in the warehouse");
-                            }
-                        } else {
-                            throw new TransferException("Data from Warehouse not found");
-                        }
-                    }
-                } else if (dto.getStatus() != null && "REJECT".equalsIgnoreCase(dto.getStatus())) {
-                    entity.setRejectNote(dto.getReject_note());
-                    status = RequisitionEnum.REJECT.getValue();
-                    entity.setLastApproved(userOpt.get().getFullname());
-                } else {
-                    status = dto.getStatus();
-                }
-                entity.setStatus(status);
-            }
-        } else {
-            entity.setStatus(dto.getStatus());
-        }
+        // if (inv.getQty().compareTo(BigInteger.ZERO) < 0) {
+        // throw new TransferException(
+        // "Inconsistent data. This item causes minus qty in the warehouse");
+        // }
+        // } else {
+        // throw new TransferException("Data from Warehouse not found");
+        // }
+        // }
+        // } else if (dto.getStatus() != null &&
+        // "REJECT".equalsIgnoreCase(dto.getStatus())) {
+        // entity.setRejectNote(dto.getReject_note());
+        // status = RequisitionEnum.REJECT.getValue();
+        // entity.setLastApproved(userOpt.get().getFullname());
+        // } else {
+        // status = dto.getStatus();
+        // }
+        // entity.setStatus(status);
+        // }
+        // } else {
+        // entity.setStatus(dto.getStatus());
+        // }
 
         return entity;
     }
@@ -510,22 +513,6 @@ public class TransferServiceImpl implements TransferService {
         dto.setNext_approvals(nextApprovals);
 
         return dto;
-    }
-
-    private String getNrp() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null)
-            return null;
-        Optional<Users> user = userRepo.findByUsernameIgnoreCase(authentication.getName());
-        return user.map(u -> u.getNrp()).orElse(null);
-    }
-
-    private Department getDepartment() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null)
-            return null;
-        Optional<Users> user = userRepo.findByUsernameIgnoreCase(authentication.getName());
-        return user.map(u -> u.getDepartment()).orElse(null);
     }
 
 }

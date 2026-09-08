@@ -22,7 +22,7 @@ public interface SupplierService {
             String sortBy,
             String order) throws IOException;
 
-    SupplierDto getSupplierInfo(String id);
+    SupplierDto getSupplier(Long id);
 
     void updateSupplierStatus(Map<String, Object> body);
 

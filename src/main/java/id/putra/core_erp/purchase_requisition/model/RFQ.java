@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 public class RFQ extends BaseModel {
 
     @Id
-    private String id;
+    private Long id;
 
     @Column(name = "due_date")
     private Date dueDate;
@@ -54,11 +54,11 @@ public class RFQ extends BaseModel {
     @Column(name = "temp_approvals", columnDefinition = "jsonb")
     private List<ApprovalDto> temApprovalDtos;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

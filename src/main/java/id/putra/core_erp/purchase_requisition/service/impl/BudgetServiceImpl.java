@@ -125,7 +125,7 @@ public class BudgetServiceImpl implements BudgetService {
                 body.getDetails().forEach(b -> {
                     BudgetDetail budgetDetail = new BudgetDetail();
                     budgetDetail.setName(b.getName());
-                    budgetDetail.setBudgetNo(b.getBudget_no());
+                    budgetDetail.setId(b.getId());
                     budgetDetail.setType(b.getType());
                     budgetDetail.setNote(b.getNote());
 
@@ -165,7 +165,7 @@ public class BudgetServiceImpl implements BudgetService {
                 body.getDetails().forEach(b -> {
                     BudgetDetail budgetDetail = new BudgetDetail();
                     budgetDetail.setName(b.getName());
-                    budgetDetail.setBudgetNo(b.getBudget_no());
+                    budgetDetail.setId(b.getId());
                     budgetDetail.setType(b.getType());
                     budgetDetail.setNote(b.getNote());
 
@@ -194,7 +194,7 @@ public class BudgetServiceImpl implements BudgetService {
         List<BudgetDetailDto> dtos = new ArrayList<>();
         budgetDetailRepo.findAllBudgetDetailsByDeptIdAndBudgetIdAndType(deptId, budgetId, filter).forEach(d -> {
             BudgetDetailDto detailDto = new BudgetDetailDto();
-            detailDto.setBudget_no(d.getBudgetNo());
+            detailDto.setId(d.getId());
             detailDto.setName(d.getName());
             detailDto.setType(d.getType());
             detailDto.setNote(d.getNote());
@@ -219,7 +219,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         if (detailOpt.isPresent()) {
             BudgetDetail d = detailOpt.get();
-            dto.setBudget_no(d.getBudgetNo());
+            dto.setId(d.getId());
             dto.setName(d.getName());
             dto.setNote(d.getNote());
             dto.setType(d.getType());
@@ -240,7 +240,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetDetailRepo.findAllBudgetDetailsByDeptIdAndYear(deptId, year)
                 .forEach(d -> {
                     BudgetDetailDto detailDto = new BudgetDetailDto();
-                    detailDto.setBudget_no(d.getBudgetNo());
+                    detailDto.setId(d.getId());
                     detailDto.setName(d.getName());
                     detailDto.setType(d.getType());
                     detailDto.setNote(d.getNote());

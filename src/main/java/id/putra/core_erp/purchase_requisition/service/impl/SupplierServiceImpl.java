@@ -36,6 +36,8 @@ import id.putra.core_erp.shared.entity.Supplier;
 import id.putra.core_erp.shared.entity.SupplierAddress;
 import id.putra.core_erp.shared.entity.SupplierContact;
 import id.putra.core_erp.shared.entity.SupplierPOAddress;
+import id.putra.core_erp.shared.util.AppFileUtil;
+import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -49,10 +51,10 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public void addSupplier(SupplierDto body, FileUpload logoFile)
             throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findById(body.getAcc_no());
+        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAcc_no());
         if (!supplier.isPresent()) {
             Supplier entity = dtoToEntity(new Supplier(), body);
-            if (logoFile != null && !logoFile.isEmpty()) {
+            if (logoFile != null) {
                 Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
                         logoFile);
                 entity.setSupplierLogoPath(path.toString());
@@ -89,7 +91,7 @@ public class SupplierServiceImpl implements SupplierService {
             sortBy = "name";
         }
 
-        Sort sort = Sort.unsorted();
+        Sort sort = Sort.empty();
         if (order != null && !order.isBlank()) {
             sort = order.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         }
@@ -98,12 +100,14 @@ public class SupplierServiceImpl implements SupplierService {
             status = "";
         }
 
-        return pageResult.getContent().stream().map(this::entityToDto).toList();
+        var result = supplierRepo.findAll().page(Page.ofSize(20));
+
+        return result.list().stream().map(this::entityToDto).toList();
     }
 
     @Override
-    public SupplierDto getSupplierInfo(String id) {
-        Optional<Supplier> supplierOptional = supplierRepo.findById(id);
+    public SupplierDto getSupplier(Long id) {
+        Optional<Supplier> supplierOptional = supplierRepo.findByIdOptional(id);
 
         if (supplierOptional.isPresent()) {
             return entityToDto(supplierOptional.get());
@@ -169,7 +173,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     private SupplierDto entityToDto(Supplier data) {
         SupplierDto dto = new SupplierDto();
-        dto.setId(data.getAccNo());
+        dto.setId(data.getId());
         dto.setName(data.getName());
         dto.setAcc_no(data.getAccNo());
         dto.setWebsite(data.getWebsite());
@@ -240,11 +244,11 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public void updateSupplier(SupplierDto body, FileUpload logoFile)
             throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findById(body.getAcc_no());
+        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAcc_no());
         if (supplier.isPresent()) {
             Supplier entity = supplier.get();
 
-            if (logoFile != null && !logoFile.isEmpty()) {
+            if (logoFile != null) {
                 if (entity.getSupplierLogoPath() != null) {
                     Path path = AppFileUtil.recreateFileFromFileUpload(entity.getAccNo(), logoFile,
                             AppFileUtil.SUPPLIER_FOLDER,
@@ -266,15 +270,15 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public void updateSupplierStatus(Map<String, Object> body) {
-        String supplierId = (String) body.get("id");
-        Optional<Supplier> supplier = supplierRepo.findById(supplierId);
+        Long id = (Long) body.get("id");
+        Optional<Supplier> supplier = supplierRepo.findByIdOptional(id);
         if (supplier.isPresent()) {
             Supplier entity = supplier.get();
             entity.setStatus(entity.getStatus().equalsIgnoreCase("ACTIVE") ? StatusEnum.INACTIVE.getValue()
                     : StatusEnum.ACTIVE.getValue());
             supplierRepo.persist(entity);
         } else {
-            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier ", supplierId);
+            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier ", id);
             throw new IllegalArgumentException(message);
         }
     }
@@ -288,18 +292,18 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public void importSuppliers(FileUpload file) throws Exception {
-        if (file == null || file.isEmpty()) {
+        if (file == null) {
             throw new IllegalArgumentException("File is empty");
         }
 
-        String originalFilename = file.getOriginalFilename();
+        String originalFilename = file.fileName();
         if (originalFilename == null || (!originalFilename.endsWith(".xlsx") && !originalFilename.endsWith(".xls"))) {
             throw new IllegalArgumentException("Invalid file type. Please upload an Excel file.");
         }
 
         try (Workbook workbook = originalFilename.endsWith(".xlsx")
-                ? new XSSFWorkbook(file.getInputStream())
-                : new HSSFWorkbook(file.getInputStream())) {
+                ? new XSSFWorkbook()
+                : new HSSFWorkbook()) {
 
             Sheet sheet = workbook.getSheetAt(0);
             List<Supplier> suppliersToSave = new ArrayList<>();
@@ -422,12 +426,8 @@ public class SupplierServiceImpl implements SupplierService {
                 cell2.setCellStyle(cellStyle);
 
                 Cell cell3 = row.createCell(3);
-                cell3.setCellValue(supplier.getCountry() != null ? supplier.getCountry() : "");
+                cell3.setCellValue(supplier.getUpdatedDate() != null ? supplier.getUpdatedDate().toString() : "");
                 cell3.setCellStyle(cellStyle);
-
-                Cell cell4 = row.createCell(4);
-                cell4.setCellValue(supplier.getUpdatedDate() != null ? supplier.getUpdatedDate().toString() : "");
-                cell4.setCellStyle(cellStyle);
             }
 
             for (int i = 0; i < headers.length; i++) {
@@ -436,7 +436,7 @@ public class SupplierServiceImpl implements SupplierService {
 
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 workbook.write(byteArrayOutputStream);
-                return new ByteArrayResource(byteArrayOutputStream.toByteArray());
+                return null;
             }
         }
     }

@@ -7,7 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class RFQDto extends BaseModelDto {
-    private String id;
+    private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date due_date;
     private String note;
@@ -28,11 +28,11 @@ public class RFQDto extends BaseModelDto {
 
     private String supplierId;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

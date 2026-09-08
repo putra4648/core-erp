@@ -30,7 +30,7 @@ public class CompanyView extends VerticalLayout {
 
     private final CompanyService companyService;
 
-    private Integer companyId = 1;
+    private Long companyId = 1L;
     private final TextField nameField = new TextField("Company Name");
     private final TextField telpField = new TextField("Telephone");
     private final TextField npwpField = new TextField("NPWP");
