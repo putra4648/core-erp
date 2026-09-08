@@ -63,7 +63,7 @@ public class InventoryView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("Add Stock Item", VaadinIcon.PLUS.create(),
-                e -> openItemDialog(InventoryItemDto.builder().build()));
+                e -> openItemDialog(new InventoryItemDto()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -109,7 +109,8 @@ public class InventoryView extends VerticalLayout {
     }
 
     private void refreshData() {
-        InventoryItemDto filter = InventoryItemDto.builder().name(searchField.getValue()).build();
+        InventoryItemDto filter = new InventoryItemDto();
+        filter.setName(searchField.getValue());
         var page = inventoryService.getInventoryItems(filter, PageRequest.of(0, 100));
         grid.setItems(page.getContent());
     }
@@ -134,7 +135,7 @@ public class InventoryView extends VerticalLayout {
         dialog.add(form);
 
         Button saveBtn = new Button("Save", e -> {
-            InventoryItemDto dto = item.getId() != null ? item : InventoryItemDto.builder().build();
+            InventoryItemDto dto = item.getId() != null ? item : new InventoryItemDto();
             dto.setName(nameField.getValue());
             dto.setLotNumber(lotField.getValue());
             dto.setSerialNumber(serialField.getValue());

@@ -65,7 +65,7 @@ public class ProductView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("Add Product", VaadinIcon.PLUS.create(),
-                e -> openProductDialog(ProductDto.builder().build()));
+                e -> openProductDialog(new ProductDto()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -104,7 +104,8 @@ public class ProductView extends VerticalLayout {
     }
 
     private void refreshData() {
-        ProductDto searchParam = ProductDto.builder().name(searchField.getValue()).build();
+        ProductDto searchParam = new ProductDto();
+        searchParam.setName(searchField.getValue());
         var page = productService.getProducts(searchParam, PageRequest.of(0, 100));
         grid.setItems(page.getContent());
     }

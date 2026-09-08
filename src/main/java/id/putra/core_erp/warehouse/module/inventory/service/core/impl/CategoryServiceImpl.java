@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryCoreService {
 
     @Override
     public void save(List<CategoryDto> dtos) {
-        categoryCommandAdapterpersist(dtos);
+        categoryCommandAdapter.persist(dtos);
     }
 
     @Override

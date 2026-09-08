@@ -5,9 +5,13 @@ import java.util.List;
 import id.putra.core_erp.warehouse.module.outbound.dto.CarrierDto;
 import id.putra.core_erp.warehouse.module.outbound.model.repository.CarrierRepository;
 import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.CarrierQueryAdapter;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+@ApplicationScoped
 public class CarrierQueryAdapterImpl implements CarrierQueryAdapter {
-    private final CarrierRepository carrierRepository;
+    @Inject
+    private CarrierRepository carrierRepository;
 
     @Override
     public CarrierDto getById(Long id) {

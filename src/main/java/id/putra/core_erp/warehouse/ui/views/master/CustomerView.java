@@ -67,7 +67,7 @@ public class CustomerView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("Add Customer", VaadinIcon.PLUS.create(),
-                e -> openCustomerDialog(CustomerDto.builder().build()));
+                e -> openCustomerDialog(new CustomerDto()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());

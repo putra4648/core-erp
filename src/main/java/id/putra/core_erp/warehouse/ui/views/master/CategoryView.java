@@ -96,7 +96,8 @@ public class CategoryView extends VerticalLayout {
     }
 
     private void refreshData() {
-        CategoryDto searchFilter = CategoryDto.builder().name(searchField.getValue()).build();
+        CategoryDto searchFilter = new CategoryDto();
+        searchFilter.setName(searchField.getValue());
         var page = categoryCoreService.getCategories(searchFilter, PageRequest.of(0, 100));
         grid.setItems(page.getContent());
     }

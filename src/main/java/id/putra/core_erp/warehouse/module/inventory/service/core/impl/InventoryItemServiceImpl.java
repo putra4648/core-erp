@@ -24,7 +24,7 @@ public class InventoryItemServiceImpl implements InventoryItemCoreService {
 
     @Override
     public void save(List<InventoryItemDto> dtos) {
-        inventoryItemCommandAdapterpersist(dtos);
+        inventoryItemCommandAdapter.persist(dtos);
     }
 
     @Override

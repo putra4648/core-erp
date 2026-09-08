@@ -106,14 +106,15 @@ public class WarehouseView extends VerticalLayout {
         search.setClearButtonVisible(true);
 
         Runnable refresh = () -> {
-            WarehouseDto param = WarehouseDto.builder().name(search.getValue()).build();
+            WarehouseDto param = new WarehouseDto();
+            param.setName(search.getValue());
             var page = warehouseService.getWarehouses(param, PageRequest.of(0, 100));
             grid.setItems(page.getContent());
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Warehouse", VaadinIcon.PLUS.create(),
-                e -> openWarehouseDialog(WarehouseDto.builder().build(), refresh));
+                e -> openWarehouseDialog(new WarehouseDto(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -174,18 +175,18 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(form);
 
         Button save = new Button("Save", e -> {
-            WarehouseDto dto = warehouse.toBuilder()
-                    .name(nameField.getValue())
-                    .location(locationField.getValue())
-                    .area(areaField.getValue())
-                    .isActive(activeCheck.getValue())
-                    .build();
+            WarehouseDto dto = new WarehouseDto();
+            dto.setId(warehouse.getId());
+            dto.setName(nameField.getValue());
+            dto.setLocation(locationField.getValue());
+            dto.setArea(areaField.getValue());
+            dto.setIsActive(activeCheck.getValue());
 
             try {
                 if (isEdit) {
                     warehouseService.update(List.of(dto));
                 } else {
-                    warehouseServicepersist(List.of(dto));
+                    warehouseService.save(List.of(dto));
                 }
                 Notification.show("Warehouse saved", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -209,14 +210,15 @@ public class WarehouseView extends VerticalLayout {
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
         Runnable refresh = () -> {
-            ZoneDto param = ZoneDto.builder().name(search.getValue()).build();
+            ZoneDto param = new ZoneDto();
+            param.setName(search.getValue());
             var page = zoneService.getZones(param, PageRequest.of(0, 100));
             grid.setItems(page.getContent());
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Zone", VaadinIcon.PLUS.create(),
-                e -> openZoneDialog(ZoneDto.builder().build(), refresh));
+                e -> openZoneDialog(new ZoneDto(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -249,8 +251,11 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(code, name, type));
 
         Button save = new Button("Save", e -> {
-            ZoneDto dto = zone.toBuilder().code(code.getValue()).name(name.getValue()).type(type.getValue())
-                    .isActive(true).build();
+            ZoneDto dto = new ZoneDto();
+            dto.setCode(code.getValue());
+            dto.setName(name.getValue());
+            dto.setType(type.getValue());
+            dto.setIsActive(true);
             zoneService.add(List.of(dto));
             dialog.close();
             onSave.run();
@@ -268,14 +273,15 @@ public class WarehouseView extends VerticalLayout {
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
         Runnable refresh = () -> {
-            RackDto param = RackDto.builder().name(search.getValue()).build();
+            RackDto param = new RackDto();
+            param.setName(search.getValue());
             var page = rackService.getRacks(param, PageRequest.of(0, 100));
             grid.setItems(page.getContent());
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Rack", VaadinIcon.PLUS.create(),
-                e -> openRackDialog(RackDto.builder().build(), refresh));
+                e -> openRackDialog(new RackDto(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -299,10 +305,11 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(name, rows, cols));
 
         Button save = new Button("Save", e -> {
-            RackDto dto = rack.toBuilder().name(name.getValue())
-                    .rows(rows.getValue() != null ? rows.getValue().longValue() : 1L)
-                    .cols(cols.getValue() != null ? cols.getValue().longValue() : 1L)
-                    .isActive(true).build();
+            RackDto dto = new RackDto();
+            dto.setName(name.getValue());
+            dto.setRows(rows.getValue() != null ? rows.getValue().longValue() : 1L);
+            dto.setCols(cols.getValue() != null ? cols.getValue().longValue() : 1L);
+            dto.setIsActive(true);
             rackService.add(List.of(dto));
             dialog.close();
             onSave.run();
@@ -320,14 +327,15 @@ public class WarehouseView extends VerticalLayout {
         search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
         Runnable refresh = () -> {
-            LocationDto param = LocationDto.builder().name(search.getValue()).build();
+            LocationDto param = new LocationDto();
+            param.setName(search.getValue());
             var page = locationService.getLocations(param, PageRequest.of(0, 100));
             grid.setItems(page.getContent());
         };
         search.addValueChangeListener(e -> refresh.run());
 
         Button addBtn = new Button("Add Location", VaadinIcon.PLUS.create(),
-                e -> openLocationDialog(LocationDto.builder().build(), refresh));
+                e -> openLocationDialog(new LocationDto(), refresh));
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
@@ -352,8 +360,11 @@ public class WarehouseView extends VerticalLayout {
         dialog.add(new FormLayout(name, bin, type));
 
         Button save = new Button("Save", e -> {
-            LocationDto dto = LocationDto.builder().name(name.getValue()).binNumber(bin.getValue())
-                    .type(type.getValue()).isActive(true).build();
+            LocationDto dto = new LocationDto();
+            dto.setName(name.getValue());
+            dto.setBinNumber(bin.getValue());
+            dto.setType(type.getValue());
+            dto.setIsActive(true);
             locationService.add(List.of(dto));
             dialog.close();
             onSave.run();

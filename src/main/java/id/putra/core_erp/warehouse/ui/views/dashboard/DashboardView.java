@@ -54,13 +54,13 @@ public class DashboardView extends VerticalLayout {
         long totalWarehouses = 0;
 
         try {
-            totalProducts = productService.getProducts(ProductDto.builder().build(), PageRequest.of(0, 1))
+            totalProducts = productService.getProducts(new ProductDto(), PageRequest.of(0, 1))
                     .getTotalElements();
         } catch (Exception ignored) {
         }
 
         try {
-            totalWarehouses = warehouseService.getWarehouses(WarehouseDto.builder().build(), PageRequest.of(0, 1))
+            totalWarehouses = warehouseService.getWarehouses(new WarehouseDto(), PageRequest.of(0, 1))
                     .getTotalElements();
         } catch (Exception ignored) {
         }
