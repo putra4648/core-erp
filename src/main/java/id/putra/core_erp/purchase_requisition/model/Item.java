@@ -1,7 +1,6 @@
 package id.putra.core_erp.purchase_requisition.model;
 
 import java.math.BigInteger;
-import java.time.Instant;
 import java.util.List;
 
 import id.putra.core_erp.shared.entity.Category;
@@ -34,15 +33,7 @@ public class Item extends BaseModel {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "updated_date")
-    private Instant updatedDate;
-
     private String unit;
-
-    @Override
-    public Instant getUpdateDate() {
-        return this.updatedDate;
-    }
 
     @ManyToOne
     @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
@@ -116,10 +107,6 @@ public class Item extends BaseModel {
         this.status = status;
     }
 
-    public void setUpdateDate(Instant updatedDate) {
-        this.updatedDate = updatedDate;
-    }
-
     public Supplier getSupplier() {
         return supplier;
     }
@@ -170,14 +157,6 @@ public class Item extends BaseModel {
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public Instant getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(Instant updatedDate) {
-        this.updatedDate = updatedDate;
     }
 
     public String getUnit() {

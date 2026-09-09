@@ -4,7 +4,9 @@ import java.util.List;
 
 import id.putra.core_erp.warehouse.module.inbound.model.entity.Putaway;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.PutawayQueryAdapter;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class PutawayQueryAdapterImpl implements PutawayQueryAdapter {
     @Override
     public Putaway getById(Long id) {

@@ -4,7 +4,9 @@ import java.util.List;
 
 import id.putra.core_erp.warehouse.module.inbound.model.entity.Return;
 import id.putra.core_erp.warehouse.module.inbound.service.adapter.query.ReturnInboundQueryAdapter;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class ReturnInboundQueryAdapterImpl implements ReturnInboundQueryAdapter {
     @Override
     public Return getById(Long id) {

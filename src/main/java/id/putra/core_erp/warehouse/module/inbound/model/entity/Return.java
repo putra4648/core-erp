@@ -1,9 +1,8 @@
 package id.putra.core_erp.warehouse.module.inbound.model.entity;
 
-import com.vaadin.flow.component.template.Id;
-
 import id.putra.core_erp.purchase_requisition.model.BaseModel;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity

@@ -7,15 +7,15 @@ import com.vaadin.flow.data.provider.DataProvider;
 import id.putra.core_erp.shared.entity.Customer;
 import id.putra.core_erp.warehouse.module.customer.model.repository.CustomerRepository;
 import io.quarkus.panache.common.Page;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
+@ApplicationScoped
 @Transactional
 public class CustomerService {
-    private final CustomerRepository repository;
-
-    public CustomerService(CustomerRepository repository) {
-        this.repository = repository;
-    }
+    @Inject
+    private CustomerRepository customerRepository;
 
     public Customer getById(Long id) {
         return null;
@@ -30,7 +30,7 @@ public class CustomerService {
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        customerRepository.deleteById(id);
     }
 
     public DataProvider<Customer, Void> getAll(String value, Page ofSize) {

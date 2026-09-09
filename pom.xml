@@ -76,17 +76,13 @@
 			<artifactId>quarkus-oidc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-rest-client-oidc-filter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-rest-client-oidc-token-propagation</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>io.quarkiverse.poi</groupId>
 			<artifactId>quarkus-poi</artifactId>
 			<version>2.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-devui-deployment-spi</artifactId>
 		</dependency>
 
 	</dependencies>
