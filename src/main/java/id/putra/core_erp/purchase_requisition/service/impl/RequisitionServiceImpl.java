@@ -18,6 +18,7 @@ import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
 import id.putra.core_erp.shared.util.AppFileUtil;
+import io.quarkus.oidc.IdToken;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.file.AsyncFile;
@@ -28,17 +29,25 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional(rollbackOn = { Exception.class })
 public class RequisitionServiceImpl implements RequisitionService {
+
+    private final TransferRequestRepo transferRequestRepo;
+    private final RequisitionRepo requisitionRepo;
+    private final DepartmentRepo departmentRepo;
+    private final BudgetDetailRepo budgetDetailRepo;
+    private final Vertx vertx;
+
+    public RequisitionServiceImpl(TransferRequestRepo transferRequestRepo, RequisitionRepo requisitionRepo,
+            DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo, Vertx vertx, JsonWebToken principal) {
+        this.transferRequestRepo = transferRequestRepo;
+        this.requisitionRepo = requisitionRepo;
+        this.departmentRepo = departmentRepo;
+        this.budgetDetailRepo = budgetDetailRepo;
+        this.vertx = vertx;
+        this.principal = principal;
+    }
+
     @Inject
-    private TransferRequestRepo transferRequestRepo;
-    @Inject
-    private RequisitionRepo requisitionRepo;
-    @Inject
-    private DepartmentRepo departmentRepo;
-    @Inject
-    private BudgetDetailRepo budgetDetailRepo;
-    @Inject
-    private Vertx vertx;
-    @Inject
+    @IdToken
     private JsonWebToken principal;
 
     @Override

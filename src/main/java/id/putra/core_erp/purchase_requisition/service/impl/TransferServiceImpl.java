@@ -16,20 +16,25 @@ import id.putra.core_erp.purchase_requisition.repository.InventoryRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.TransferService;
 import id.putra.core_erp.shared.util.AppFileUtil;
+import io.quarkus.oidc.IdToken;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class TransferServiceImpl implements TransferService {
-    @Inject
-    private InventoryRepo inventoryRepo;
 
     @Inject
-    private TransferRequestRepo transferRequestRepo;
-
-    @Inject
+    @IdToken
     JsonWebToken principal;
+
+    private final InventoryRepo inventoryRepo;
+    private final TransferRequestRepo transferRequestRepo;
+
+    public TransferServiceImpl(InventoryRepo inventoryRepo, TransferRequestRepo transferRequestRepo) {
+        this.inventoryRepo = inventoryRepo;
+        this.transferRequestRepo = transferRequestRepo;
+    }
 
     @Override
     public void add(Transfer dto) {

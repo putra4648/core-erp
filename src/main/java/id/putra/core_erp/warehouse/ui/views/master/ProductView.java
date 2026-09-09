@@ -24,7 +24,7 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.shared.entity.Product;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.inventory.service.core.ProductCoreService;
+import id.putra.core_erp.warehouse.module.inventory.service.ProductCoreService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 

@@ -28,10 +28,10 @@ import id.putra.core_erp.warehouse.module.warehouse.model.entity.Location;
 import id.putra.core_erp.warehouse.module.warehouse.model.entity.Rack;
 import id.putra.core_erp.warehouse.module.warehouse.model.entity.Warehouse;
 import id.putra.core_erp.warehouse.module.warehouse.model.entity.Zone;
-import id.putra.core_erp.warehouse.module.warehouse.service.core.LocationCoreService;
-import id.putra.core_erp.warehouse.module.warehouse.service.core.RackCoreService;
-import id.putra.core_erp.warehouse.module.warehouse.service.core.WarehouseCoreService;
-import id.putra.core_erp.warehouse.module.warehouse.service.core.ZoneCoreService;
+import id.putra.core_erp.warehouse.module.warehouse.service.LocationCoreService;
+import id.putra.core_erp.warehouse.module.warehouse.service.RackCoreService;
+import id.putra.core_erp.warehouse.module.warehouse.service.WarehouseCoreService;
+import id.putra.core_erp.warehouse.module.warehouse.service.ZoneCoreService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 

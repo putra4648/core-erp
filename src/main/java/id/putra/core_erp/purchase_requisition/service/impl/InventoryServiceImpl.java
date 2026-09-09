@@ -6,13 +6,15 @@ import id.putra.core_erp.purchase_requisition.model.Inventory;
 import id.putra.core_erp.purchase_requisition.repository.InventoryRepo;
 import id.putra.core_erp.purchase_requisition.service.InventoryService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class InventoryServiceImpl implements InventoryService {
 
-    @Inject
-    private InventoryRepo inventoryRepo;
+    private final InventoryRepo inventoryRepo;
+
+    public InventoryServiceImpl(InventoryRepo inventoryRepo) {
+        this.inventoryRepo = inventoryRepo;
+    }
 
     @Override
     public void add(Inventory inventory) {

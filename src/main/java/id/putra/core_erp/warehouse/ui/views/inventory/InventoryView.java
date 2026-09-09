@@ -22,7 +22,7 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inventory.model.entity.InventoryItem;
-import id.putra.core_erp.warehouse.module.inventory.service.core.InventoryItemCoreService;
+import id.putra.core_erp.warehouse.module.inventory.service.InventoryItemCoreService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 

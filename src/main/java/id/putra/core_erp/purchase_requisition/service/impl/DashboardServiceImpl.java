@@ -1,27 +1,21 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.service.DashboardService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class DashboardServiceImpl implements DashboardService {
 
-    @Inject
-    private RequisitionRepo requisitionRepo;
+    private final RequisitionRepo requisitionRepo;
 
-    @Inject
-    JsonWebToken principal;
-
-    private final SimpleDateFormat sdf = new SimpleDateFormat("MM");
+    public DashboardServiceImpl(RequisitionRepo requisitionRepo) {
+        this.requisitionRepo = requisitionRepo;
+    }
 
     @Override
     public List<Map<String, Object>> getAllSpender() {

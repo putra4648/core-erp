@@ -16,13 +16,15 @@ import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.DepartmentsService;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class DepartmentsServiceImpl implements DepartmentsService {
 
-    @Inject
-    private DepartmentRepo departmentRepo;
+    private final DepartmentRepo departmentRepo;
+
+    public DepartmentsServiceImpl(DepartmentRepo departmentRepo) {
+        this.departmentRepo = departmentRepo;
+    }
 
     @Override
     public List<Department> getDepartmentDropdown() {

@@ -10,7 +10,7 @@ Load [references/annotation-map.md](../references/annotation-map.md) before star
 - [ ] Migrate repositories (Spring Data → Panache if full Quarkus strategy)
 - [ ] Simplify service layer (remove unnecessary interface+impl)
 - [ ] Migrate controllers/resources (Spring MVC → JAX-RS if full Quarkus strategy)
-- [ ] Migrate DI annotations (`@Autowired` → `@Inject`, `@Component` → `@ApplicationScoped`, etc.)
+- [ ] Migrate DI annotations (`@Autowired` → ``, `@Component` → `@ApplicationScoped`, etc.)
 - [ ] Migrate `Model.addAttribute()` → Qute `Template.data()` or `@CheckedTemplate`
 - [ ] Migrate `return "redirect:..."` → `Response.seeOther()`
 - [ ] Remove `@SpringBootApplication` main class
@@ -91,7 +91,7 @@ public class TodoServiceImpl implements TodoService {
 // AFTER: Quarkus — single class
 @ApplicationScoped
 public class TodoService {
-    @Inject TodoRepository repository;
+     TodoRepository repository;
     public List<Todo> findAll().list() { return repository.listAll(); }
 }
 ```
@@ -99,7 +99,7 @@ public class TodoService {
 **Decision guide:**
 - Service only delegates to repository → eliminate it, inject repository directly in the resource
 - Service has real business logic → keep as `@ApplicationScoped`, remove the interface
-- Interface used for testing/mocking → not needed, `@InjectMock` works on concrete classes
+- Interface used for testing/mocking → not needed, `Mock` works on concrete classes
 
 **Spring compat strategy**: `
 
@@ -126,7 +126,7 @@ public class TodoController {
 @Path("/todos")
 @ApplicationScoped
 public class TodoResource {
-    @Inject TodoService todoService;
+     TodoService todoService;
 
     @CheckedTemplate
     public static class Templates {
@@ -209,7 +209,7 @@ public class MyApp implements CommandLineRunner {
 // AFTER: Quarkus — @QuarkusMain
 @QuarkusMain
 public class MyApp implements QuarkusApplication {
-    @Inject DataLoader dataLoader;
+     DataLoader dataLoader;
 
     @Override
     public int run(String... args) {
@@ -273,7 +273,7 @@ public class MyApp implements ApplicationRunner {
 // AFTER: Quarkus — @QuarkusMain
 @QuarkusMain
 public class MyApp implements QuarkusApplication {
-    @Inject MigrationService migrations;
+     MigrationService migrations;
 
     @Override
     public int run(String... args) {

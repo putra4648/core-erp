@@ -14,6 +14,7 @@ import id.putra.core_erp.purchase_requisition.model.RFQ;
 import id.putra.core_erp.purchase_requisition.repository.RFQRepo;
 import id.putra.core_erp.purchase_requisition.service.RFQService;
 import id.putra.core_erp.shared.entity.Supplier;
+import io.quarkus.oidc.IdToken;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,10 +24,14 @@ import jakarta.persistence.PersistenceContext;
 @ApplicationScoped
 public class RFQServiceImpl implements RFQService {
 
-    @Inject
-    private RFQRepo rfqRepository;
+    private final RFQRepo rfqRepository;
+
+    public RFQServiceImpl(RFQRepo rfqRepository) {
+        this.rfqRepository = rfqRepository;
+    }
 
     @Inject
+    @IdToken
     private JsonWebToken principal;
 
     @PersistenceContext

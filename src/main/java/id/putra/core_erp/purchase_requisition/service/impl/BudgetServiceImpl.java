@@ -21,23 +21,23 @@ import id.putra.core_erp.purchase_requisition.repository.BudgetRepo;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.BudgetService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional(rollbackOn = { ParseException.class })
 public class BudgetServiceImpl implements BudgetService {
 
-    @Inject
-    private BudgetRepo budgetRepo;
+    private final BudgetRepo budgetRepo;
+    private final DepartmentRepo departmentRepo;
+    private final BudgetDetailRepo budgetDetailRepo;
 
-    @Inject
-    private DepartmentRepo departmentRepo;
+    public BudgetServiceImpl(BudgetRepo budgetRepo, DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo) {
+        this.budgetRepo = budgetRepo;
+        this.departmentRepo = departmentRepo;
+        this.budgetDetailRepo = budgetDetailRepo;
+    }
 
-    @Inject
-    private BudgetDetailRepo budgetDetailRepo;
-
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
 
     @Override
     public Map<String, Object> getBudgets(List<String> deptId) throws ParseException {

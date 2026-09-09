@@ -19,7 +19,7 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrder;
-import id.putra.core_erp.warehouse.module.inbound.service.core.PurchaseOrderService;
+import id.putra.core_erp.warehouse.module.inbound.service.PurchaseOrderService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 

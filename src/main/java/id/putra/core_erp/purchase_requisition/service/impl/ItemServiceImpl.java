@@ -35,17 +35,19 @@ import id.putra.core_erp.shared.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class ItemServiceImpl implements ItemService {
 
-    @Inject
-    private ItemRepo itemRepo;
-    @Inject
-    private SupplierRepo supplierRepo;
+    private final ItemRepo itemRepo;
+    private final SupplierRepo supplierRepo;
+
+    public ItemServiceImpl(ItemRepo itemRepo, SupplierRepo supplierRepo) {
+        this.itemRepo = itemRepo;
+        this.supplierRepo = supplierRepo;
+    }
 
     @PersistenceContext
     private EntityManager entityManager;

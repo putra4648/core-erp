@@ -14,18 +14,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import id.putra.core_erp.shared.entity.Product;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.inventory.service.core.ProductCoreService;
+import id.putra.core_erp.warehouse.module.inventory.service.ProductCoreService;
 import id.putra.core_erp.warehouse.module.warehouse.model.entity.Warehouse;
-import id.putra.core_erp.warehouse.module.warehouse.service.core.WarehouseCoreService;
+import id.putra.core_erp.warehouse.module.warehouse.service.WarehouseCoreService;
 import io.quarkus.panache.common.Page;
+import io.quarkus.security.Authenticated;
 
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Dashboard | WMS Pro")
-@AnonymousAllowed
+@Authenticated
 public class DashboardView extends VerticalLayout {
 
     private final ProductCoreService productService;

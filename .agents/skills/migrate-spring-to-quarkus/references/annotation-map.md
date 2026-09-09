@@ -7,7 +7,7 @@
 | `@Component`                | `@ApplicationScoped`                                          | Supported → `@Singleton`         | Compat maps to `@Singleton` by default, not `@ApplicationScoped`      |
 | `                           |
 | `@Repository`               | `@ApplicationScoped`                                          | Supported → `@Singleton`         | Same as `@Component` in compat                                        |
-| `@Autowired`                | `@Inject`                                                     | Supported → `@Inject`            | Field, constructor, and setter injection all supported                |
+| `@Autowired`                | ``                                                     | Supported → ``            | Field, constructor, and setter injection all supported                |
 | `@Qualifier("name")`        | `@jakarta.inject.Named` or custom `@Qualifier`                | Supported → `@Named`             |                                                                       |
 | `@Value("${prop}")`         | `@ConfigProperty(name = "prop")`                              | Supported → `@ConfigProperty`    | **SpEL `#{...}` NOT supported** — only `${...}` property placeholders |
 | `@Value("${prop:default}")` | `@ConfigProperty(name = "prop", defaultValue = "default")`    | Supported                        | Inline defaults work                                                  |
@@ -180,7 +180,7 @@
 | `@SpringBootTest`         | `@QuarkusTest`                               | **Supported directly**              | Works as Quarkus test annotation                                                            |
 | `@WebMvcTest`             | `@QuarkusTest` + RestAssured                 | —                                   |                                                                                             |
 | `@DataJpaTest`            | `@QuarkusTest` with test profile             | —                                   |                                                                                             |
-| `@MockBean`               | `@InjectMock` (`io.quarkus.test.InjectMock`) | —                                   | **Moved in 3.2**: old `io.quarkus.test.junit.mockito.InjectMock` deprecated, removed in 4.0 |
+| `@MockBean`               | `Mock` (`io.quarkus.test.InjectMock`) | —                                   | **Moved in 3.2**: old `io.quarkus.test.junit.mockito.InjectMock` deprecated, removed in 4.0 |
 | `@TestConfiguration`      | `@QuarkusTestResource`                       | —                                   |                                                                                             |
 | `@ActiveProfiles("test")` | `@TestProfile(TestProfile.class)`            | —                                   |                                                                                             |
 | `TestRestTemplate`        | RestAssured (`given().when().get(...)`)      | —                                   |                                                                                             |

@@ -22,18 +22,22 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 
-@PermitAll
+@Authenticated
 public class MainLayout extends AppLayout {
 
-    public MainLayout() {
+    public MainLayout(SecurityIdentity securityIdentity) {
         setPrimarySection(Section.DRAWER);
-        createHeader();
-        createDrawer();
+
+        var principal = (DefaultJWTCallerPrincipal) securityIdentity.getPrincipal();
+        createHeader(principal.getName(), principal.getClaim("picture"));
+        createDrawer(principal.getName(), principal.getClaim("picture"));
     }
 
-    private void createHeader() {
+    private void createHeader(String username, String pictureUrl) {
         DrawerToggle toggle = new DrawerToggle();
         toggle.setAriaLabel("Menu toggle");
 
@@ -54,10 +58,6 @@ public class MainLayout extends AppLayout {
         themeToggle.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         themeToggle.setAriaLabel("Toggle dark mode");
 
-        var userOpt = "";
-        String username = "";
-        String pictureUrl = "";
-
         Avatar avatar = new Avatar(username);
         if (pictureUrl != null && !pictureUrl.isBlank()) {
             avatar.setImage(pictureUrl);
@@ -69,7 +69,7 @@ public class MainLayout extends AppLayout {
         MenuItem userMenuItem = userMenu.addItem(avatar);
         SubMenu subMenu = userMenuItem.getSubMenu();
         subMenu.addItem("Settings", e -> UI.getCurrent().navigate("settings"));
-        // subMenu.addItem("Logout", e -> securityService.logout());
+        subMenu.addItem("Logout", e -> UI.getCurrent().navigate("logout"));
 
         HorizontalLayout header = new HorizontalLayout(toggle, title, themeToggle, userMenu);
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -79,7 +79,7 @@ public class MainLayout extends AppLayout {
         addToNavbar(header);
     }
 
-    private void createDrawer() {
+    private void createDrawer(String username, String pictureUrl) {
         SideNav mainNav = new SideNav();
         mainNav.setLabel("MAIN NAVIGATION");
         mainNav.addItem(new SideNavItem("Dashboard", "", VaadinIcon.DASHBOARD.create()));

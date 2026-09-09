@@ -53,8 +53,8 @@
 ### Task 2: Refactor Customer submodule (Remove converters, use Simple DTOs)
 
 **Files:**
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/customer/dto/CustomerDto.java`
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/customer/dto/ContactPersonCustomerDto.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/customer/dto/Customer.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/customer/dto/ContactPersonCustomer.java`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/customer/service/core/CustomerService.java`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/customer/service/adapter/command/impl/CustomerCommandAdapterImpl.java`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/customer/service/adapter/command/impl/ContactPersonCustomerCommandAdapterImpl.java`
@@ -64,8 +64,8 @@
 - Delete: `src/main/java/id/putra/core_erp/warehouse/module/customer/converter/ContactPersonCustomerConverter.java`
 
 **Details:**
-- Equip `CustomerDto` and `ContactPersonCustomerDto` with `toDto(entity)` and `toEntity()` mapping methods directly on the DTO classes.
-- Update `CustomerService` and query/command adapters to use `CustomerDto::toDto`, `CustomerDto::toEntity`, `ContactPersonCustomerDto::toDto`, `ContactPersonCustomerDto::toEntity`.
+- Equip `Customer` and `ContactPersonCustomer` with `toDto(entity)` and `toEntity()` mapping methods directly on the DTO classes.
+- Update `CustomerService` and query/command adapters to use `Customer::toDto`, `Customer::toEntity`, `ContactPersonCustomer::toDto`, `ContactPersonCustomer::toEntity`.
 - Delete `CustomerConverter.java` and `ContactPersonCustomerConverter.java`.
 
 ---
@@ -93,11 +93,11 @@
 ### Task 4: Refactor Warehouse (Zone, Rack, Location, Warehouse, ContactPerson) submodule
 
 **Files:**
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/WarehouseDto.java`
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/ZoneDto.java`
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/RackDto.java`
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/LocationDto.java`
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/ContactPersonWarehouseDto.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/Warehouse.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/Zone.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/Rack.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/Location.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/dto/ContactPersonWarehouse.java`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/service/adapter/query/impl/*`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/service/adapter/command/impl/*`
 - Delete: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/converter/WarehouseConverter.java`
@@ -107,7 +107,7 @@
 - Delete: `src/main/java/id/putra/core_erp/warehouse/module/warehouse/converter/ContactPersonWarehouseConverter.java`
 
 **Details:**
-- Move mapping logic into simple DTO methods (`WarehouseDto::toDto`, `WarehouseDto::toEntity`, etc.).
+- Move mapping logic into simple DTO methods (`Warehouse::toDto`, `Warehouse::toEntity`, etc.).
 - Update query & command adapters and delete all converter classes.
 
 ---
@@ -132,11 +132,11 @@
 ### Task 6: Refactor Inbound submodule (Receiving, QualityInspection, PurchaseOrder)
 
 **Files:**
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/PurchaseOrderDto.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/PurchaseOrder.java`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/PurchaseOrderLineDto.java`
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/ReceivingDto.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/Receiving.java`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/ReceivingLineDto.java`
-- Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/QualityInspectionDto.java`
+- Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/dto/QualityInspection.java`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/service/adapter/query/impl/*`
 - Modify: `src/main/java/id/putra/core_erp/warehouse/module/inbound/service/adapter/command/impl/*`
 - Delete: `src/main/java/id/putra/core_erp/warehouse/module/inbound/converter/PurchaseOrderConverter.java`

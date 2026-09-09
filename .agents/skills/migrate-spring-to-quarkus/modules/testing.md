@@ -7,7 +7,7 @@ Load [references/annotation-map.md](../references/annotation-map.md) — see the
 ## What to do
 
 - [ ] Replace `@SpringBootTest` with `@QuarkusTest`
-- [ ] Replace `@MockBean` with `@InjectMock` (`io.quarkus.test.InjectMock`)
+- [ ] Replace `@MockBean` with `Mock` (`io.quarkus.test.InjectMock`)
 - [ ] Replace `TestRestTemplate` with REST Assured
 - [ ] Replace `@ActiveProfiles("test")` with `@TestProfile`
 - [ ] Replace `@LocalServerPort` with `@TestHTTPResource`
@@ -35,7 +35,7 @@ public class TodoControllerTest {
 // AFTER: Quarkus Test
 @QuarkusTest
 public class TodoResourceTest {
-    @InjectMock TodoService todoService;
+    Mock TodoService todoService;
 
     @Test
     void shouldListTodos() {
@@ -79,6 +79,6 @@ testImplementation 'io.quarkus:quarkus-junit5-mockito'
 
 ## Watch out
 
-- **`@InjectMock` package**: Use `io.quarkus.test.InjectMock` (since Quarkus 3.2). The old `io.quarkus.test.junit.mockito.InjectMock` is removed in 4.0.
+- **`Mock` package**: Use `io.quarkus.test.InjectMock` (since Quarkus 3.2). The old `io.quarkus.test.junit.mockito.InjectMock` is removed in 4.0.
 - **Test port**: Quarkus tests default to port 8081. If your app uses 8081, set `quarkus.http.test-port=0`.
 - **No `@WebMvcTest` equivalent**: Use `@QuarkusTest` for all test types. For data-only tests, use `@QuarkusTest` with a test profile that disables unneeded extensions.

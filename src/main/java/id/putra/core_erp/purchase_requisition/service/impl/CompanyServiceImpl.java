@@ -12,13 +12,15 @@ import id.putra.core_erp.purchase_requisition.repository.CompanyRepo;
 import id.putra.core_erp.purchase_requisition.service.CompanyService;
 import id.putra.core_erp.shared.util.AppFileUtil;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class CompanyServiceImpl implements CompanyService {
 
-    @Inject
-    private CompanyRepo companyRepo;
+    private final CompanyRepo companyRepo;
+
+    public CompanyServiceImpl(CompanyRepo companyRepo) {
+        this.companyRepo = companyRepo;
+    }
 
     @Override
     public void handleCompany(Company dto, FileUpload logo)

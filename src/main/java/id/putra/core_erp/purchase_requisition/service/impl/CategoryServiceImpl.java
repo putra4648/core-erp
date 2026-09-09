@@ -9,15 +9,17 @@ import id.putra.core_erp.purchase_requisition.repository.CategoryRepo;
 import id.putra.core_erp.purchase_requisition.service.CategoryService;
 import id.putra.core_erp.shared.entity.Category;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional(rollbackOn = { Exception.class })
 public class CategoryServiceImpl implements CategoryService {
 
-    @Inject
-    private CategoryRepo categoryRepo;
+    private final CategoryRepo categoryRepo;
+
+    public CategoryServiceImpl(CategoryRepo categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
 
     @Override
     public void addCategory(Category dto) {

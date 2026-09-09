@@ -33,12 +33,15 @@ import id.putra.core_erp.shared.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class SupplierServiceImpl implements SupplierService {
-    @Inject
-    private SupplierRepo supplierRepo;
+
+    private final SupplierRepo supplierRepo;
+
+    public SupplierServiceImpl(SupplierRepo supplierRepo) {
+        this.supplierRepo = supplierRepo;
+    }
 
     @Override
     public void addSupplier(Supplier body, FileUpload logoFile)
