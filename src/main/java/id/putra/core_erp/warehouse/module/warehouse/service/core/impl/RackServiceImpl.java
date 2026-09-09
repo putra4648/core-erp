@@ -5,46 +5,48 @@ import java.util.List;
 import com.vaadin.flow.data.provider.DataProvider;
 
 import id.putra.core_erp.warehouse.module.warehouse.model.entity.Rack;
-import id.putra.core_erp.warehouse.module.warehouse.service.adapter.command.RackCommandAdapter;
-import id.putra.core_erp.warehouse.module.warehouse.service.adapter.query.RackQueryAdapter;
+import id.putra.core_erp.warehouse.module.warehouse.model.repository.RackRepository;
 import id.putra.core_erp.warehouse.module.warehouse.service.core.RackCoreService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional
 public class RackServiceImpl implements RackCoreService {
 
     @Inject
-    private RackQueryAdapter rackQueryAdapter;
-
-    @Inject
-    private RackCommandAdapter rackCommandAdapter;
+    private RackRepository rackRepository;
 
     @Override
     public Rack getRack(Rack rackDto) {
-        return rackQueryAdapter.getRackById(rackDto);
+        return rackRepository.findById(rackDto.getId());
     }
 
     @Override
     public void add(List<Rack> dtos) {
-        rackCommandAdapter.add(dtos);
+        rackRepository.persist(dtos);
     }
 
     @Override
     public void update(List<Rack> dtos) {
-        rackCommandAdapter.update(dtos);
+        dtos.forEach(dto -> rackRepository.getEntityManager().merge(dto));
     }
 
     @Override
     public void delete(List<Rack> dtos) {
-        rackCommandAdapter.delete(dtos);
+        dtos.forEach(dto -> rackRepository.deleteById(dto.getId()));
     }
 
     @Override
-    public DataProvider<Rack, Void> getRacks(Rack param, Page ofSize) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRacks'");
+    public DataProvider<Rack, Void> getRacks(Rack param, Page page) {
+        String pattern = "%" + (param.getName() == null ? "" : param.getName().trim().toLowerCase()) + "%";
+        return DataProvider.fromCallbacks(
+                query -> rackRepository.find("lower(name) like ?1", pattern)
+                        .page(Page.of(query.getOffset() / query.getLimit(), query.getLimit()))
+                        .list().stream(),
+                query -> Math.toIntExact(rackRepository.count("lower(name) like ?1", pattern)));
     }
 
 }
