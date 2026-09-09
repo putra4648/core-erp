@@ -26,7 +26,7 @@ import com.vaadin.flow.router.Route;
 import id.putra.core_erp.shared.entity.ContactPersonCustomer;
 import id.putra.core_erp.shared.entity.Customer;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.customer.service.core.CustomerService;
+import id.putra.core_erp.warehouse.module.customer.service.CustomerService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 

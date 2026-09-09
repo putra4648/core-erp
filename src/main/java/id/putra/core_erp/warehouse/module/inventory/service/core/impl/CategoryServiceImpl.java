@@ -5,45 +5,47 @@ import java.util.List;
 import com.vaadin.flow.data.provider.DataProvider;
 
 import id.putra.core_erp.shared.entity.Category;
-import id.putra.core_erp.warehouse.module.inventory.service.adapter.command.CategoryCommandAdapter;
-import id.putra.core_erp.warehouse.module.inventory.service.adapter.query.CategoryQueryAdapter;
+import id.putra.core_erp.warehouse.module.inventory.model.repository.CategoryRepository;
 import id.putra.core_erp.warehouse.module.inventory.service.core.CategoryCoreService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional
 public class CategoryServiceImpl implements CategoryCoreService {
     @Inject
-    private CategoryQueryAdapter categoryQueryAdapter;
-
-    @Inject
-    private CategoryCommandAdapter categoryCommandAdapter;
+    private CategoryRepository categoryRepository;
 
     @Override
     public Category getCategory(Category category) {
-        return categoryQueryAdapter.getCategoryById(category);
+        return categoryRepository.findById(category.getId());
     }
 
     @Override
     public void save(List<Category> categories) {
-        categoryCommandAdapter.save(categories);
+        categoryRepository.persist(categories);
     }
 
     @Override
     public void update(List<Category> categories) {
-        categoryCommandAdapter.update(categories);
+        categories.forEach(category -> categoryRepository.getEntityManager().merge(category));
     }
 
     @Override
     public void delete(List<Category> categories) {
-        categoryCommandAdapter.delete(categories);
+        categories.forEach(category -> categoryRepository.deleteById(category.getId()));
     }
 
     @Override
-    public DataProvider<Category, Void> getCategories(String value, Page ofSize) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCategories'");
+    public DataProvider<Category, Void> getCategories(String value, Page page) {
+        String pattern = "%" + (value == null ? "" : value.trim().toLowerCase()) + "%";
+        return DataProvider.fromCallbacks(
+                query -> categoryRepository.find("lower(name) like ?1", pattern)
+                        .page(Page.of(query.getOffset() / query.getLimit(), query.getLimit()))
+                        .list().stream(),
+                query -> Math.toIntExact(categoryRepository.count("lower(name) like ?1", pattern)));
     }
 
 }

@@ -3,41 +3,40 @@ package id.putra.core_erp.warehouse.module.outbound.service.core.impl;
 import java.util.List;
 
 import id.putra.core_erp.warehouse.module.outbound.model.entity.Packing;
-import id.putra.core_erp.warehouse.module.outbound.service.adapter.command.PackingCommandAdapter;
-import id.putra.core_erp.warehouse.module.outbound.service.adapter.query.PackingQueryAdapter;
+import id.putra.core_erp.warehouse.module.outbound.model.repository.PackingRepository;
 import id.putra.core_erp.warehouse.module.outbound.service.core.PackingService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
+@Transactional
 public class PackingServiceImpl implements PackingService {
     @Inject
-    private PackingCommandAdapter packingCommandAdapter;
-    @Inject
-    private PackingQueryAdapter packingQueryAdapter;
+    private PackingRepository packingRepository;
 
     @Override
     public void create(Packing dto) {
-        packingCommandAdapter.add(List.of(dto));
+        packingRepository.persist(dto);
     }
 
     @Override
     public void update(Packing dto) {
-        packingCommandAdapter.update(List.of(dto));
+        packingRepository.getEntityManager().merge(dto);
     }
 
     @Override
     public void delete(Long id) {
-        packingCommandAdapter.delete(List.of(id));
+        packingRepository.deleteById(id);
     }
 
     @Override
     public Packing getById(Long id) {
-        return packingQueryAdapter.getById(id);
+        return packingRepository.findById(id);
     }
 
     @Override
     public List<Packing> getAll(Packing filter) {
-        return packingQueryAdapter.getAll(filter);
+        return packingRepository.findAll().list();
     }
 }
