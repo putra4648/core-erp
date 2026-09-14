@@ -7,7 +7,11 @@ Load [references/annotation-map.md](../references/annotation-map.md) — see the
 ## What to do
 
 - [ ] Replace `@SpringBootTest` with `@QuarkusTest`
+<<<<<<< HEAD
+- [ ] Replace `@MockBean` with `@InjectMock` (`io.quarkus.test.InjectMock`)
+=======
 - [ ] Replace `@MockBean` with `Mock` (`io.quarkus.test.InjectMock`)
+>>>>>>> dev
 - [ ] Replace `TestRestTemplate` with REST Assured
 - [ ] Replace `@ActiveProfiles("test")` with `@TestProfile`
 - [ ] Replace `@LocalServerPort` with `@TestHTTPResource`
@@ -26,7 +30,11 @@ public class TodoControllerTest {
 
     @Test
     void shouldListTodos() {
+<<<<<<< HEAD
+        when(todoService.findAll()).thenReturn(List.of(new Todo("Test")));
+=======
         when(todoService.findAll().list()).thenReturn(List.of(new Todo("Test")));
+>>>>>>> dev
         ResponseEntity<String> response = restTemplate.getForEntity("/todos", String.class);
         assertEquals(200, response.getStatusCode().value());
     }
@@ -35,11 +43,19 @@ public class TodoControllerTest {
 // AFTER: Quarkus Test
 @QuarkusTest
 public class TodoResourceTest {
+<<<<<<< HEAD
+    @InjectMock TodoService todoService;
+
+    @Test
+    void shouldListTodos() {
+        when(todoService.findAll()).thenReturn(List.of(new Todo("Test")));
+=======
     Mock TodoService todoService;
 
     @Test
     void shouldListTodos() {
         when(todoService.findAll().list()).thenReturn(List.of(new Todo("Test")));
+>>>>>>> dev
         given()
             .when().get("/todos")
             .then().statusCode(200);
@@ -79,6 +95,10 @@ testImplementation 'io.quarkus:quarkus-junit5-mockito'
 
 ## Watch out
 
+<<<<<<< HEAD
+- **`@InjectMock` package**: Use `io.quarkus.test.InjectMock` (since Quarkus 3.2). The old `io.quarkus.test.junit.mockito.InjectMock` is removed in 4.0.
+=======
 - **`Mock` package**: Use `io.quarkus.test.InjectMock` (since Quarkus 3.2). The old `io.quarkus.test.junit.mockito.InjectMock` is removed in 4.0.
+>>>>>>> dev
 - **Test port**: Quarkus tests default to port 8081. If your app uses 8081, set `quarkus.http.test-port=0`.
 - **No `@WebMvcTest` equivalent**: Use `@QuarkusTest` for all test types. For data-only tests, use `@QuarkusTest` with a test profile that disables unneeded extensions.
