@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.exception.RFQException;
 import id.putra.core_erp.purchase_requisition.exception.RequisitionException;
@@ -14,10 +12,8 @@ import id.putra.core_erp.purchase_requisition.model.RFQ;
 import id.putra.core_erp.purchase_requisition.repository.RFQRepo;
 import id.putra.core_erp.purchase_requisition.service.RFQService;
 import id.putra.core_erp.shared.entity.Supplier;
-import io.quarkus.oidc.IdToken;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -29,10 +25,6 @@ public class RFQServiceImpl implements RFQService {
     public RFQServiceImpl(RFQRepo rfqRepository) {
         this.rfqRepository = rfqRepository;
     }
-
-    @Inject
-    @IdToken
-    private JsonWebToken principal;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -73,7 +65,7 @@ public class RFQServiceImpl implements RFQService {
 
     @Override
     public ApprovalEnum checkStatusApprovalIsPermanent(RFQ dto) {
-        String nrp = principal.getSubject();
+        String nrp = "";
 
         Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
