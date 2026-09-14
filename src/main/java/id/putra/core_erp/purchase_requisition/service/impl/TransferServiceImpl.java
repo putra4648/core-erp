@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.exception.RequisitionException;
 import id.putra.core_erp.purchase_requisition.model.Approval;
@@ -16,17 +14,11 @@ import id.putra.core_erp.purchase_requisition.repository.InventoryRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.TransferService;
 import id.putra.core_erp.shared.util.AppFileUtil;
-import io.quarkus.oidc.IdToken;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class TransferServiceImpl implements TransferService {
-
-    @Inject
-    @IdToken
-    JsonWebToken principal;
 
     private final InventoryRepo inventoryRepo;
     private final TransferRequestRepo transferRequestRepo;
@@ -62,19 +54,20 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public Boolean checkApprovalFlow(Transfer dto) {
         Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.getId());
+        String nrp = "";
 
         if (reqOpt.isPresent()) {
             boolean result = false;
             if (reqOpt.get().getTemApprovals() != null) {
                 result = reqOpt.get().getTemApprovals().stream()
                         .anyMatch(usr -> usr.getUsers() != null && usr.getUsers().getNrp() != null
-                                && usr.getUsers().getNrp().equalsIgnoreCase(principal.getSubject()));
+                                && usr.getUsers().getNrp().equalsIgnoreCase(nrp));
             }
 
             if (reqOpt.get().getTempPurchaserApproval() != null
                     && reqOpt.get().getTempPurchaserApproval().getUsers() != null) {
                 result = !reqOpt.get().getTempPurchaserApproval().getUsers().getNrp()
-                        .equalsIgnoreCase(principal.getSubject());
+                        .equalsIgnoreCase(nrp);
             }
             return result;
         } else {
@@ -85,6 +78,7 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public ApprovalEnum checkStatusApprovalIsPermanent(Transfer dto) {
         Transfer params = dto;
+        String nrp = "";
 
         Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(params.getId());
         if (reqOpt.isPresent()) {
@@ -99,23 +93,23 @@ public class TransferServiceImpl implements TransferService {
             int index = 0;
             for (int i = 0; i < approvals.size(); i++) {
                 if (approvals.get(i).getUsers() != null && approvals.get(i).getUsers().getNrp() != null
-                        && approvals.get(i).getUsers().getNrp().equalsIgnoreCase(principal.getSubject())) {
+                        && approvals.get(i).getUsers().getNrp().equalsIgnoreCase(nrp)) {
                     index = i;
                 }
             }
             if (approvals.stream().anyMatch(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                    && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject()))) {
+                    && data.getUsers().getNrp().equalsIgnoreCase(nrp))) {
                 if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
                     if (approvals.stream()
                             .anyMatch(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                                    && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject())
+                                    && data.getUsers().getNrp().equalsIgnoreCase(nrp)
                                     && Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
                         result = ApprovalEnum.ALREADY_APPROVED;
                     }
 
                     if (approvals.stream()
                             .anyMatch(data -> data.getUsers() != null && data.getUsers().getNrp() != null
-                                    && data.getUsers().getNrp().equalsIgnoreCase(principal.getSubject())
+                                    && data.getUsers().getNrp().equalsIgnoreCase(nrp)
                                     && !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
                             && index == (reqOpt.get().getCurrentApprovalStage() != null
                                     ? reqOpt.get().getCurrentApprovalStage()

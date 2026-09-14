@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.exception.RequisitionException;
 import id.putra.core_erp.purchase_requisition.model.Approval;
@@ -18,12 +16,10 @@ import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
 import id.putra.core_erp.shared.util.AppFileUtil;
-import io.quarkus.oidc.IdToken;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
@@ -37,23 +33,18 @@ public class RequisitionServiceImpl implements RequisitionService {
     private final Vertx vertx;
 
     public RequisitionServiceImpl(TransferRequestRepo transferRequestRepo, RequisitionRepo requisitionRepo,
-            DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo, Vertx vertx, JsonWebToken principal) {
+            DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo, Vertx vertx) {
         this.transferRequestRepo = transferRequestRepo;
         this.requisitionRepo = requisitionRepo;
         this.departmentRepo = departmentRepo;
         this.budgetDetailRepo = budgetDetailRepo;
         this.vertx = vertx;
-        this.principal = principal;
     }
-
-    @Inject
-    @IdToken
-    private JsonWebToken principal;
 
     @Override
     public Boolean checkApprovalFlow(Requisition dto) {
         Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
-        String nrp = principal.getSubject();
+        String nrp = "";
 
         if (reqOpt.isPresent()) {
             boolean result = false;
@@ -75,7 +66,7 @@ public class RequisitionServiceImpl implements RequisitionService {
 
     @Override
     public ApprovalEnum checkStatusApprovalIsPermanent(Requisition dto) {
-        String nrp = principal.getSubject();
+        String nrp = "";
 
         Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
         if (reqOpt.isPresent()) {
