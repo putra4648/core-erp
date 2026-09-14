@@ -10,7 +10,11 @@ Load [references/annotation-map.md](../references/annotation-map.md) before star
 - [ ] Migrate repositories (Spring Data → Panache if full Quarkus strategy)
 - [ ] Simplify service layer (remove unnecessary interface+impl)
 - [ ] Migrate controllers/resources (Spring MVC → JAX-RS if full Quarkus strategy)
+<<<<<<< HEAD
 - [ ] Migrate DI annotations (`@Autowired` → `@Inject`, `@Component` → `@ApplicationScoped`, etc.)
+=======
+- [ ] Migrate DI annotations (`@Autowired` → ``, `@Component` → `@ApplicationScoped`, etc.)
+>>>>>>> dev
 - [ ] Migrate `Model.addAttribute()` → Qute `Template.data()` or `@CheckedTemplate`
 - [ ] Migrate `return "redirect:..."` → `Response.seeOther()`
 - [ ] Remove `@SpringBootApplication` main class
@@ -64,7 +68,11 @@ public class TodoRepository implements PanacheRepository<Todo> {
 }
 ```
 
+<<<<<<< HEAD
 **Pagination** (replaces Spring's `Page<T>` + `Pageable`):
+=======
+**Pagination** (replaces Spring's `
+>>>>>>> dev
 ```java
 PanacheQuery<Todo> query = find("completed", completed);
 query.page(Page.of(page, size));
@@ -80,28 +88,48 @@ Spring services often use interface + implementation unnecessarily. Simplify:
 
 ```java
 // BEFORE: Spring — interface + impl
+<<<<<<< HEAD
 public interface TodoService { List<Todo> findAll(); }
 
 @Service
 public class TodoServiceImpl implements TodoService {
     @Autowired private TodoRepository repository;
     @Override public List<Todo> findAll() { return repository.findAll(); }
+=======
+public interface TodoService { List<Todo> findAll().list(); }
+
+
+public class TodoServiceImpl implements TodoService {
+    @Autowired private TodoRepository repository;
+    @Override public List<Todo> findAll().list() { return repository.findAll().list(); }
+>>>>>>> dev
 }
 
 // AFTER: Quarkus — single class
 @ApplicationScoped
 public class TodoService {
+<<<<<<< HEAD
     @Inject TodoRepository repository;
     public List<Todo> findAll() { return repository.listAll(); }
+=======
+     TodoRepository repository;
+    public List<Todo> findAll().list() { return repository.listAll(); }
+>>>>>>> dev
 }
 ```
 
 **Decision guide:**
 - Service only delegates to repository → eliminate it, inject repository directly in the resource
 - Service has real business logic → keep as `@ApplicationScoped`, remove the interface
+<<<<<<< HEAD
 - Interface used for testing/mocking → not needed, `@InjectMock` works on concrete classes
 
 **Spring compat strategy**: `@Service` is supported by `quarkus-spring-di` — no changes needed.
+=======
+- Interface used for testing/mocking → not needed, `Mock` works on concrete classes
+
+**Spring compat strategy**: `
+>>>>>>> dev
 
 ## Controller → Resource (Full Quarkus strategy)
 
@@ -111,13 +139,21 @@ public class TodoService {
 public class TodoController {
     @GetMapping("/todos")
     public String list(Model model) {
+<<<<<<< HEAD
         model.addAttribute("todos", todoService.findAll());
+=======
+        model.addAttribute("todos", todoService.findAll().list());
+>>>>>>> dev
         return "todos";
     }
 
     @PostMapping("/todos")
     public String create(@ModelAttribute Todo todo) {
+<<<<<<< HEAD
         todoService.save(todo);
+=======
+        todoServicepersist(todo);
+>>>>>>> dev
         return "redirect:/todos";
     }
 }
@@ -126,7 +162,11 @@ public class TodoController {
 @Path("/todos")
 @ApplicationScoped
 public class TodoResource {
+<<<<<<< HEAD
     @Inject TodoService todoService;
+=======
+     TodoService todoService;
+>>>>>>> dev
 
     @CheckedTemplate
     public static class Templates {
@@ -136,14 +176,22 @@ public class TodoResource {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance list() {
+<<<<<<< HEAD
         return Templates.todos(todoService.findAll());
+=======
+        return Templates.todos(todoService.findAll().list());
+>>>>>>> dev
     }
 
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response create(@BeanParam Todo todo) {
+<<<<<<< HEAD
         todoService.save(todo);
+=======
+        todoServicepersist(todo);
+>>>>>>> dev
         return Response.seeOther(URI.create("/todos")).build();
     }
 }
@@ -209,7 +257,11 @@ public class MyApp implements CommandLineRunner {
 // AFTER: Quarkus — @QuarkusMain
 @QuarkusMain
 public class MyApp implements QuarkusApplication {
+<<<<<<< HEAD
     @Inject DataLoader dataLoader;
+=======
+     DataLoader dataLoader;
+>>>>>>> dev
 
     @Override
     public int run(String... args) {
@@ -273,7 +325,11 @@ public class MyApp implements ApplicationRunner {
 // AFTER: Quarkus — @QuarkusMain
 @QuarkusMain
 public class MyApp implements QuarkusApplication {
+<<<<<<< HEAD
     @Inject MigrationService migrations;
+=======
+     MigrationService migrations;
+>>>>>>> dev
 
     @Override
     public int run(String... args) {
@@ -299,6 +355,7 @@ public class MyApp implements QuarkusApplication {
 
 When using the compatibility strategy (`quarkus-spring-*` extensions), be aware of these **verified limitations from the Quarkus source code**:
 
+<<<<<<< HEAD
 | Extension | What does NOT work |
 |---|---|
 | `quarkus-spring-di` | `@Primary`, `@Conditional*`, `@Profile`, `@Lazy` not processed. SpEL `#{...}` in `@Value` throws error. `@Bean` must be inside `@Configuration` class. |
@@ -307,3 +364,13 @@ When using the compatibility strategy (`quarkus-spring-*` extensions), be aware 
 | `quarkus-spring-data-jpa` | SpEL `#{...}` in `@Query` not supported. No `Distinct` queries. Limited custom repository fragment support. |
 | `quarkus-spring-cache` | Single cache name only (no arrays). `key`, `condition`, `unless`, `keyGenerator`, `cacheManager` parameters NOT supported. No `@Caching` or `@CacheConfig`. |
 | `quarkus-spring-scheduled` | `fixedDelay` NOT supported (only `fixedRate`). Cannot combine `initialDelay` with `cron`. |
+=======
+| Extension                  | What does NOT work                                                                                                                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `quarkus-spring-di`        | `@Primary`, `@Conditional*`, `@Profile`, `@Lazy` not processed. SpEL `#{...}` in `@Value` throws error. `@Bean` must be inside `@Configuration` class.                                                                         |
+| `quarkus-spring-web`       | Only `@RestController` — plain `@Controller` not supported. Only one `@RestControllerAdvice` per app. `@CrossOrigin`, `@InitBinder`, `@ModelAttribute` not supported. No reactive types (`Mono`, `Flux`).                      |
+| `quarkus-spring-security`  | Limited SpEL in `@PreAuthorize`: only `hasRole`, `hasAnyRole`, `permitAll`, `denyAll`, `isAuthenticated`, `@bean.method()`, param comparison. Cannot mix `and`/`or` operators. Cannot combine `@Secured` with `@PreAuthorize`. |
+| `quarkus-spring-data-jpa`  | SpEL `#{...}` in `@Query` not supported. No `Distinct` queries. Limited custom repository fragment support.                                                                                                                    |
+| `quarkus-spring-cache`     | Single cache name only (no arrays). `key`, `condition`, `unless`, `keyGenerator`, `cacheManager` parameters NOT supported. No `@Caching` or `@CacheConfig`.                                                                    |
+| `quarkus-spring-scheduled` | `fixedDelay` NOT supported (only `fixedRate`). Cannot combine `initialDelay` with `cron`.                                                                                                                                      |
+>>>>>>> dev

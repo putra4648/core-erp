@@ -1,5 +1,6 @@
 package id.putra.core_erp.purchase_requisition.ui.views.budget;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,40 +17,34 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.BudgetDetailDto;
-import id.putra.core_erp.purchase_requisition.dto.BudgetDto;
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
 import id.putra.core_erp.purchase_requisition.enums.BudgetEnum;
+import id.putra.core_erp.purchase_requisition.model.Budget;
+import id.putra.core_erp.purchase_requisition.model.BudgetDetail;
 import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.BudgetService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "budgets", layout = MainLayout.class)
 @PageTitle("Budgets | Purchase Requisition System")
 @PermitAll
-@RegisterReflectionForBinding({
-        BudgetDto.class,
-        BudgetDetailDto.class,
-        DepartmentDto.class,
-        Department.class
-})
+
 public class BudgetView extends VerticalLayout {
 
     private final BudgetService budgetService;
 
     private final ComboBox<Department> deptCombo = new ComboBox<>("Select Department");
     private final ComboBox<String> yearCombo = new ComboBox<>("Fiscal Year");
-    private final Grid<BudgetDetailDto> grid = new Grid<>();
-    private final List<BudgetDetailDto> budgetDetails = new ArrayList<>();
+    private final Grid<BudgetDetail> grid = new Grid<>();
+    private final List<BudgetDetail> budgetDetails = new ArrayList<>();
     private final List<Department> departmentList = new ArrayList<>();
 
     public BudgetView(BudgetService budgetService, DepartmentRepo departmentRepo) {
@@ -59,7 +54,7 @@ public class BudgetView extends VerticalLayout {
         setPadding(true);
         setSpacing(true);
 
-        departmentRepo.findAll().forEach(departmentList::add);
+        departmentRepo.findAll().list().forEach(departmentList::add);
 
         H2 header = new H2("Budget Planning & Management");
         header.addClassNames(LumoUtility.FontSize.XLARGE);
@@ -93,14 +88,15 @@ public class BudgetView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(b -> b.getBudget_no() != null ? b.getBudget_no() : "-").setHeader("Budget No")
+        grid.addColumn(b -> b.getId() != null ? b.getId() : "-").setHeader("Budget No")
                 .setAutoWidth(true);
         grid.addColumn(b -> b.getName() != null ? b.getName() : "-").setHeader("Budget Title / Description")
                 .setFlexGrow(2);
         grid.addColumn(b -> b.getType() != null ? b.getType().name() : "OPEX").setHeader("Type").setAutoWidth(true);
-        grid.addColumn(b -> b.getTotal_budget() != null ? b.getTotal_budget() : "0").setHeader("Total Budget")
+        grid.addColumn(b -> b.getTotalBudget() != null ? b.getTotalBudget() : "0").setHeader("Total Budget")
                 .setFlexGrow(1);
-        grid.addColumn(b -> b.getNote() != null ? b.getNote() : "-").setHeader("Notes").setFlexGrow(1);
+        // grid.addColumn(b -> b.getNotes() != null ? b.getNotes() :
+        // "-").setHeader("Notes").setFlexGrow(1);
     }
 
     private void refreshBudgets() {
@@ -111,7 +107,7 @@ public class BudgetView extends VerticalLayout {
             return;
 
         try {
-            List<BudgetDetailDto> res = budgetService.getBudgetsDetail(dept.getDeptNumber(), year);
+            List<BudgetDetail> res = budgetService.getBudgetsDetail(dept.getDeptNumber(), year);
             if (res != null) {
                 budgetDetails.clear();
                 budgetDetails.addAll(res);
@@ -143,7 +139,7 @@ public class BudgetView extends VerticalLayout {
         ComboBox<BudgetEnum> typeCombo = new ComboBox<>("Budget Type");
         typeCombo.setItems(BudgetEnum.values());
         typeCombo.setValue(BudgetEnum.EXPENSE);
-        TextField amountField = new TextField("Annual Allocation (Total)");
+        NumberField amountField = new NumberField("Annual Allocation (Total)");
         TextArea noteField = new TextArea("Notes");
 
         form.add(budgetNoField, nameField, typeCombo, amountField, noteField);
@@ -154,18 +150,18 @@ public class BudgetView extends VerticalLayout {
                 return;
             }
 
-            BudgetDto dto = new BudgetDto();
-            DepartmentDto deptDto = new DepartmentDto();
-            deptDto.setDept_number(dept.getDeptNumber());
-            deptDto.setDept_name(dept.getDeptName());
+            Budget dto = new Budget();
+            Department deptDto = new Department();
+            deptDto.setDeptNumber(dept.getDeptNumber());
+            deptDto.setDeptName(dept.getDeptName());
             dto.setDepartment(deptDto);
-            dto.setFy(yearCombo.getValue());
+            // dto.setFiscalYear(Date.parse(yearCombo.getValue()));
 
-            BudgetDetailDto dtl = new BudgetDetailDto();
-            dtl.setBudget_no(budgetNoField.getValue());
+            BudgetDetail dtl = new BudgetDetail();
+            dtl.setId(Long.parseLong(budgetNoField.getValue()));
             dtl.setName(nameField.getValue());
             dtl.setType(typeCombo.getValue());
-            dtl.setTotal_budget(amountField.getValue());
+            dtl.setTotalBudget(new BigInteger(amountField.getValue().toString()));
             dtl.setNote(noteField.getValue());
             dto.setDetails(List.of(dtl));
 

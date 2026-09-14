@@ -13,22 +13,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Table(name = "warehouse_locations")
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-@SuperBuilder
 public class Location extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,13 +29,67 @@ public class Location extends BaseEntity {
 
     private Boolean isActive;
 
-    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rack_id")
     private Rack rack;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     private List<ReceivingLine> receivingLines;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getBinNumber() {
+        return binNumber;
+    }
+
+    public void setBinNumber(String binNumber) {
+        this.binNumber = binNumber;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Rack getRack() {
+        return rack;
+    }
+
+    public void setRack(Rack rack) {
+        this.rack = rack;
+    }
+
+    public List<ReceivingLine> getReceivingLines() {
+        return receivingLines;
+    }
+
+    public void setReceivingLines(List<ReceivingLine> receivingLines) {
+        this.receivingLines = receivingLines;
+    }
 
 }

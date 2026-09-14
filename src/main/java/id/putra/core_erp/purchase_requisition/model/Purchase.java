@@ -7,13 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "purchase")
 public class Purchase {
@@ -22,6 +16,22 @@ public class Purchase {
     private Integer id;
 
     private Date date;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     // @OneToOne(cascade = CascadeType.ALL)
     // @JoinColumn(name = "status_id", referencedColumnName = "status_id", nullable

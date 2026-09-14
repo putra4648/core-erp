@@ -1,7 +1,17 @@
 package id.putra.core_erp.purchase_requisition.service;
 
-import id.putra.core_erp.purchase_requisition.dto.InventoryDto;
+import java.util.List;
 
-public interface InventoryService extends AppData<InventoryDto> {
+import id.putra.core_erp.purchase_requisition.model.Inventory;
 
+public interface InventoryService {
+    void add(Inventory inventory);
+
+    void update(Inventory inventory);
+
+    void delete(Long id);
+
+    List<Inventory> getAll(Inventory inventory);
+
+    Inventory getInventory(Inventory dto);
 }

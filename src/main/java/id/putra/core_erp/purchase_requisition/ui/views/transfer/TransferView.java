@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -21,10 +19,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.AppDto;
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
-import id.putra.core_erp.purchase_requisition.dto.TransferDto;
-import id.putra.core_erp.purchase_requisition.model.Department;
+import id.putra.core_erp.purchase_requisition.model.Transfer;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.TransferService;
 import id.putra.core_erp.shared.ui.MainLayout;
@@ -33,20 +28,14 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "transfers", layout = MainLayout.class)
 @PageTitle("Transfers | Purchase Requisition System")
 @PermitAll
-@RegisterReflectionForBinding({
-        TransferDto.class,
-        AppDto.class,
-        DepartmentDto.class,
-        Department.class
-})
 public class TransferView extends VerticalLayout {
 
     private final TransferService transferService;
     private final DepartmentRepo departmentRepo;
 
     private final TextField searchField = new TextField();
-    private final Grid<TransferDto> grid = new Grid<>();
-    private final List<TransferDto> transferList = new ArrayList<>();
+    private final Grid<Transfer> grid = new Grid<>();
+    private final List<Transfer> transferList = new ArrayList<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public TransferView(TransferService transferService, DepartmentRepo departmentRepo) {
@@ -81,9 +70,9 @@ public class TransferView extends VerticalLayout {
         grid.setSizeFull();
         grid.addColumn(t -> t.getId() != null ? t.getId() : "-").setHeader("Transfer Number").setAutoWidth(true);
         grid.addColumn(t -> t.getTitle() != null ? t.getTitle() : "-").setHeader("Title").setFlexGrow(2);
-        grid.addColumn(t -> t.getDepartment() != null ? t.getDepartment().getDept_name() : "-").setHeader("Department")
+        grid.addColumn(t -> t.getDepartment() != null ? t.getDepartment().getDeptName() : "-").setHeader("Department")
                 .setFlexGrow(1);
-        grid.addColumn(t -> t.getDue_date() != null ? dateFormat.format(t.getDue_date()) : "-").setHeader("Due Date")
+        grid.addColumn(t -> t.getDueDate() != null ? dateFormat.format(t.getDueDate()) : "-").setHeader("Due Date")
                 .setAutoWidth(true);
 
         grid.addComponentColumn(t -> {
@@ -101,16 +90,12 @@ public class TransferView extends VerticalLayout {
 
     private void refreshGrid() {
         try {
-            AppDto<TransferDto> appDto = new AppDto<>();
-            TransferDto params = new TransferDto();
-            params.setSearch(searchField.getValue() != null ? searchField.getValue() : "");
+            Transfer params = new Transfer();
 
             List<String> deptIds = new ArrayList<>();
-            departmentRepo.findAll().forEach(d -> deptIds.add(d.getDeptNumber()));
-            params.setDeptIds(deptIds);
-            appDto.setParams(params);
+            departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getDeptNumber()));
 
-            List<TransferDto> res = transferService.getAll(appDto);
+            List<Transfer> res = transferService.findAll(params);
             transferList.clear();
             if (res != null) {
                 transferList.addAll(res);

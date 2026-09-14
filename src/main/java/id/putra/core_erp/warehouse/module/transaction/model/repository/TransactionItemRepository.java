@@ -1,9 +1,9 @@
 package id.putra.core_erp.warehouse.module.transaction.model.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import id.putra.core_erp.warehouse.module.transaction.model.entity.TransactionItem;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface TransactionItemRepository extends JpaRepository<TransactionItem, Long> {
+@ApplicationScoped
+public class TransactionItemRepository implements PanacheRepository<TransactionItem> {
 }
-

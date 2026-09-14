@@ -2,14 +2,14 @@ package id.putra.core_erp.purchase_requisition.service;
 
 import java.util.List;
 
-import id.putra.core_erp.purchase_requisition.dto.CategoryDto;
+import id.putra.core_erp.shared.entity.Category;
 
 public interface CategoryService {
-    void addCategory(CategoryDto dto);
+    void addCategory(Category dto);
 
-    List<CategoryDto> getCategory();
+    List<Category> getCategory();
 
-    void updateCategory(CategoryDto dto);
+    void updateCategory(Category dto);
 
-    List<CategoryDto> getCategoryDropdown();
+    List<Category> getCategoryDropdown();
 }

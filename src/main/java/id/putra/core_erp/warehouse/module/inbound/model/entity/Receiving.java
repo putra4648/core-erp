@@ -4,13 +4,9 @@ import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import id.putra.core_erp.warehouse.shared.enums.OrderStatus;
+import id.putra.core_erp.shared.enums.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -20,41 +16,74 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
 
 @Entity
 @Table
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@EntityListeners(AuditingEntityListener.class)
 public class Receiving {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Builder.Default
+
     private String receivingNumber = UUID.randomUUID().toString();
     private Date receivedDate;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "receiving", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceivingLine> receivingLines;
 
-    @CreatedBy
-    private String receivedBy;
+    // @CreatedBy
+    // private String receivedBy;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
-}
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getReceivingNumber() {
+        return receivingNumber;
+    }
+
+    public void setReceivingNumber(String receivingNumber) {
+        this.receivingNumber = receivingNumber;
+    }
+
+    public Date getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(Date receivedDate) {
+        this.receivedDate = receivedDate;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public List<ReceivingLine> getReceivingLines() {
+        return receivingLines;
+    }
+
+    public void setReceivingLines(List<ReceivingLine> receivingLines) {
+        this.receivingLines = receivingLines;
+    }
+
+    public PurchaseOrder getPurchaseOrder() {
+        return purchaseOrder;
+    }
+
+    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
+}

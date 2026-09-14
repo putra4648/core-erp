@@ -1,7 +1,6 @@
 package id.putra.core_erp.purchase_requisition.model;
 
 import java.math.BigInteger;
-import java.time.Instant;
 import java.util.List;
 
 import id.putra.core_erp.shared.entity.Category;
@@ -14,13 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "items")
 public class Item extends BaseModel {
@@ -40,13 +33,7 @@ public class Item extends BaseModel {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "updated_date")
-    private Instant updatedDate;
-
-    @Override
-    public Instant getUpdatedDate() {
-        return this.updatedDate;
-    }
+    private String unit;
 
     @ManyToOne
     @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
@@ -78,5 +65,105 @@ public class Item extends BaseModel {
 
     public List<String> getDocsPath() {
         return this.docsPath;
+    }
+
+    public String getItemNumber() {
+        return itemNumber;
+    }
+
+    public void setItemNumber(String itemNumber) {
+        this.itemNumber = itemNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigInteger getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigInteger price) {
+        this.price = price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
+    }
+
+    public String getOtherSupplier() {
+        return otherSupplier;
+    }
+
+    public void setOtherSupplier(String otherSupplier) {
+        this.otherSupplier = otherSupplier;
+    }
+
+    public String getGlAcc() {
+        return glAcc;
+    }
+
+    public void setGlAcc(String glAcc) {
+        this.glAcc = glAcc;
+    }
+
+    public String getItemImagePath() {
+        return itemImagePath;
+    }
+
+    public void setItemImagePath(String itemImagePath) {
+        this.itemImagePath = itemImagePath;
+    }
+
+    public void setDocsPath(List<String> docsPath) {
+        this.docsPath = docsPath;
+    }
+
+    public ItemMeasurement getMeasurement() {
+        return measurement;
+    }
+
+    public void setMeasurement(ItemMeasurement measurement) {
+        this.measurement = measurement;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

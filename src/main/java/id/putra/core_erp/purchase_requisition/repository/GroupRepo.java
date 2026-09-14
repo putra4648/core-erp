@@ -1,11 +1,15 @@
 package id.putra.core_erp.purchase_requisition.repository;
 
-import java.util.Optional;
-
-import org.springframework.data.repository.CrudRepository;
-
+import jakarta.enterprise.context.ApplicationScoped;
 import id.putra.core_erp.purchase_requisition.model.Group;
+import java.util.Optional;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
 
-public interface GroupRepo extends CrudRepository<Group, String> {
-    Optional<Group> findByNameContainingIgnoreCase(String name);
+@ApplicationScoped
+public class GroupRepo implements PanacheRepository<Group> {
+
+    public Optional<Group> findByNameContainingIgnoreCase(String name) {
+        return find("name ilike ?1", name).firstResultOptional();
+    }
+
 }

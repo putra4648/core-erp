@@ -16,33 +16,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "transactions")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-@SuperBuilder
 public class Transaction extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -59,7 +44,126 @@ public class Transaction extends BaseEntity {
     private BigDecimal totalAmount;
     private Long quantity;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<TransactionItem> items;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public String getTxnNumber() {
+        return txnNumber;
+    }
+
+    public void setTxnNumber(String txnNumber) {
+        this.txnNumber = txnNumber;
+    }
+
+    public String getTxnType() {
+        return txnType;
+    }
+
+    public void setTxnType(String txnType) {
+        this.txnType = txnType;
+    }
+
+    public ZonedDateTime getTxnDate() {
+        return txnDate;
+    }
+
+    public void setTxnDate(ZonedDateTime txnDate) {
+        this.txnDate = txnDate;
+    }
+
+    public String getSourceLocId() {
+        return sourceLocId;
+    }
+
+    public void setSourceLocId(String sourceLocId) {
+        this.sourceLocId = sourceLocId;
+    }
+
+    public String getDestLocId() {
+        return destLocId;
+    }
+
+    public void setDestLocId(String destLocId) {
+        this.destLocId = destLocId;
+    }
+
+    public String getRefNumber() {
+        return refNumber;
+    }
+
+    public void setRefNumber(String refNumber) {
+        this.refNumber = refNumber;
+    }
+
+    public String getRefType() {
+        return refType;
+    }
+
+    public void setRefType(String refType) {
+        this.refType = refType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
+
+    public List<TransactionItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<TransactionItem> items) {
+        this.items = items;
+    }
 }

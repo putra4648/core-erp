@@ -2,9 +2,6 @@ package id.putra.core_erp.warehouse.ui.views.master;
 
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -24,19 +21,19 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.entity.Category;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.inventory.dto.CategoryDto;
-import id.putra.core_erp.warehouse.module.inventory.service.core.CategoryCoreService;
+import id.putra.core_erp.warehouse.module.inventory.service.CategoryCoreService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/categories", layout = MainLayout.class)
 @PageTitle("Categories | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ CategoryDto.class })
 public class CategoryView extends VerticalLayout {
 
     private final CategoryCoreService categoryCoreService;
-    private final Grid<CategoryDto> grid = new Grid<>(CategoryDto.class);
+    private final Grid<Category> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public CategoryView(CategoryCoreService categoryCoreService) {
@@ -68,7 +65,7 @@ public class CategoryView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("Add Category", VaadinIcon.PLUS.create(),
-                e -> openCategoryDialog(new CategoryDto()));
+                e -> openCategoryDialog(new Category()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -100,23 +97,21 @@ public class CategoryView extends VerticalLayout {
     }
 
     private void refreshData() {
-        CategoryDto searchFilter = CategoryDto.builder().name(searchField.getValue()).build();
-        var page = categoryCoreService.getCategories(searchFilter, PageRequest.of(0, 100));
-        grid.setItems(page.getContent());
+        grid.setItems(categoryCoreService.getCategories(searchField.getValue(), Page.ofSize(100)));
     }
 
-    private void openCategoryDialog(CategoryDto category) {
+    private void openCategoryDialog(Category category) {
         boolean isEdit = category.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Category" : "Add Category");
 
-        Binder<CategoryDto> binder = new BeanValidationBinder<>(CategoryDto.class);
+        Binder<Category> binder = new BeanValidationBinder<>(Category.class);
 
         TextField nameField = new TextField("Category Name");
         nameField.setRequired(true);
         TextArea descField = new TextArea("Description");
 
-        binder.forField(nameField).asRequired("Name is required").bind(CategoryDto::getName, CategoryDto::setName);
-        binder.forField(descField).bind(CategoryDto::getDescription, CategoryDto::setDescription);
+        binder.forField(nameField).asRequired("Name is required").bind(Category::getName, Category::setName);
+        binder.forField(descField).bind(Category::getDescription, Category::setDescription);
         binder.readBean(category);
 
         FormLayout formLayout = new FormLayout(nameField, descField);
@@ -151,7 +146,7 @@ public class CategoryView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(CategoryDto category) {
+    private void confirmDelete(Category category) {
         Dialog confirmDialog = new Dialog("Delete Category");
         confirmDialog.add(new Paragraph("Are you sure you want to delete category '" + category.getName() + "'?"));
 

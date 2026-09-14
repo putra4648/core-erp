@@ -1,11 +1,10 @@
 package id.putra.core_erp.warehouse.module.warehouse.model.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
 import id.putra.core_erp.warehouse.module.warehouse.model.entity.Rack;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface RackRepository extends JpaRepository<Rack, Long>, JpaSpecificationExecutor<Rack> {
+@ApplicationScoped
+public class RackRepository implements PanacheRepository<Rack> {
 
 }
-

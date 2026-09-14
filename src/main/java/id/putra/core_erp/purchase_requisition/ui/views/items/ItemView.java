@@ -24,29 +24,28 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.ItemDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
+import id.putra.core_erp.purchase_requisition.model.Item;
 import id.putra.core_erp.purchase_requisition.service.CategoryService;
 import id.putra.core_erp.purchase_requisition.service.ItemService;
 import id.putra.core_erp.purchase_requisition.service.SupplierService;
+import id.putra.core_erp.shared.entity.Category;
+import id.putra.core_erp.shared.entity.Supplier;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "items", layout = MainLayout.class)
 @PageTitle("Items Catalog | PR System")
 @PermitAll
-@RegisterReflectionForBinding({ ItemDto.class, SupplierDto.class })
 public class ItemView extends VerticalLayout {
 
     private final ItemService itemService;
     private final CategoryService categoryService;
     private final SupplierService supplierService;
 
-    private final Grid<ItemDto> grid = new Grid<>();
+    private final Grid<Item> grid = new Grid<>();
     private final TextField searchField = new TextField();
     private final ComboBox<String> statusFilter = new ComboBox<>();
-    private final List<ItemDto> itemList = new ArrayList<>();
+    private final List<Item> itemList = new ArrayList<>();
 
     public ItemView(ItemService itemService, CategoryService categoryService, SupplierService supplierService) {
         this.itemService = itemService;
@@ -93,7 +92,7 @@ public class ItemView extends VerticalLayout {
     private void configureGrid() {
         grid.setSizeFull();
 
-        grid.addColumn(i -> i.getItem_number() != null ? i.getItem_number() : "-").setHeader("Item Code")
+        grid.addColumn(i -> i.getItemNumber() != null ? i.getItemNumber() : "-").setHeader("Item Code")
                 .setAutoWidth(true);
         grid.addColumn(i -> i.getName() != null ? i.getName() : "-").setHeader("Item Name").setFlexGrow(2);
         grid.addColumn(i -> i.getCategory() != null ? i.getCategory() : "-").setHeader("Category").setFlexGrow(1);
@@ -125,7 +124,7 @@ public class ItemView extends VerticalLayout {
             String search = searchField.getValue() != null ? searchField.getValue() : "";
             String status = statusFilter.getValue() != null ? statusFilter.getValue() : "ACTIVE";
 
-            List<ItemDto> items = itemService.getItems(search, status, "", 1, 100, "name", "asc");
+            List<Item> items = itemService.getItems(search, status, "", 1, 100, "name", "asc");
             itemList.clear();
             if (items != null) {
                 itemList.addAll(items);
@@ -137,7 +136,7 @@ public class ItemView extends VerticalLayout {
         }
     }
 
-    private void openItemDialog(ItemDto editItem) {
+    private void openItemDialog(Item editItem) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle(editItem == null ? "Add Item" : "Edit Item");
         dialog.setWidth("600px");
@@ -153,16 +152,17 @@ public class ItemView extends VerticalLayout {
         TextField glAccField = new TextField("GL Account");
         TextArea descField = new TextArea("Description");
 
-        ComboBox<String> categoryCombo = new ComboBox<>("Category");
+        ComboBox<Category> categoryCombo = new ComboBox<>("Category");
         try {
             var catRes = categoryService.getCategoryDropdown();
             if (catRes != null) {
-                categoryCombo.setItems(catRes.stream().map(c -> c.getName()).toList());
+                categoryCombo.setItems(catRes);
+                categoryCombo.setItemLabelGenerator(c -> c.getName());
             }
         } catch (Exception ignored) {
         }
 
-        ComboBox<SupplierDto> supplierCombo = new ComboBox<>("Supplier");
+        ComboBox<Supplier> supplierCombo = new ComboBox<>("Supplier");
         try {
             var supRes = supplierService.getSupplierDropdown();
             if (supRes != null) {
@@ -173,12 +173,12 @@ public class ItemView extends VerticalLayout {
         }
 
         if (editItem != null) {
-            itemNumberField.setValue(editItem.getItem_number() != null ? editItem.getItem_number() : "");
+            itemNumberField.setValue(editItem.getItemNumber() != null ? editItem.getItemNumber() : "");
             itemNumberField.setReadOnly(true);
             nameField.setValue(editItem.getName() != null ? editItem.getName() : "");
             priceField.setValue(editItem.getPrice() != null ? editItem.getPrice().toString() : "0");
             unitField.setValue(editItem.getUnit() != null ? editItem.getUnit() : "PCS");
-            glAccField.setValue(editItem.getGl_acc() != null ? editItem.getGl_acc() : "");
+            glAccField.setValue(editItem.getGlAcc() != null ? editItem.getGlAcc() : "");
             descField.setValue(editItem.getDescription() != null ? editItem.getDescription() : "");
             if (editItem.getCategory() != null) {
                 categoryCombo.setValue(editItem.getCategory());
@@ -198,12 +198,11 @@ public class ItemView extends VerticalLayout {
                 return;
             }
 
-            ItemDto dto = new ItemDto();
-            dto.setItem_number(itemNumberField.getValue());
+            Item dto = new Item();
+            dto.setItemNumber(itemNumberField.getValue());
             dto.setName(nameField.getValue());
             dto.setCategory(categoryCombo.getValue());
             if (supplierCombo.getValue() != null) {
-                dto.setSupplier_id(supplierCombo.getValue().getId());
                 dto.setSupplier(supplierCombo.getValue());
             }
             try {
@@ -212,7 +211,7 @@ public class ItemView extends VerticalLayout {
                 dto.setPrice(BigInteger.ZERO);
             }
             dto.setUnit(unitField.getValue());
-            dto.setGl_acc(glAccField.getValue());
+            dto.setGlAcc(glAccField.getValue());
             dto.setDescription(descField.getValue());
             dto.setStatus("ACTIVE");
 

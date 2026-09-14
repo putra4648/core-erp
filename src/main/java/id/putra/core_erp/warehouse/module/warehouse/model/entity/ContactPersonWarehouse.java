@@ -10,22 +10,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "contact_persons")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-@SuperBuilder
+
 public class ContactPersonWarehouse extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +23,54 @@ public class ContactPersonWarehouse extends BaseEntity {
     private String address;
     private String phone;
 
-    @ToString.Exclude
     @OneToMany(mappedBy = "contactPersonWarehouse", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Warehouse> warehouses;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public List<Warehouse> getWarehouses() {
+        return warehouses;
+    }
+
+    public void setWarehouses(List<Warehouse> warehouses) {
+        this.warehouses = warehouses;
+    }
 }

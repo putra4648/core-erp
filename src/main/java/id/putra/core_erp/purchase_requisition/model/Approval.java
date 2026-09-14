@@ -7,13 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "approval")
 public class Approval extends BaseModel {
@@ -33,19 +27,55 @@ public class Approval extends BaseModel {
     @JoinColumn(name = "requisition_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Requisition requisition;
 
-    // @Column(name = "is_approved")
-    // private Boolean isApproved;
+    private Boolean isApprovalPermanent;
+    private Boolean isBypassPermanent;
 
-    // @Column(name = "keepPermanentApproved")
-    // private Boolean keepPermanent;
+    public Integer getId() {
+        return id;
+    }
 
-    // @Column(name = "keepPermanentBypass")
-    // private Boolean keepPermanentBypass;
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    // @Column(name = "is_bypass")
-    // private Boolean isBypass;
+    public Users getUsers() {
+        return users;
+    }
 
-    // @Column(name = "bypass_reason")
-    // private String bypassReason;
+    public void setUsers(Users users) {
+        this.users = users;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public Requisition getRequisition() {
+        return requisition;
+    }
+
+    public void setRequisition(Requisition requisition) {
+        this.requisition = requisition;
+    }
+
+    public Boolean getIsApprovalPermanent() {
+        return isApprovalPermanent;
+    }
+
+    public void setIsApprovalPermanent(Boolean isApprovalPermanent) {
+        this.isApprovalPermanent = isApprovalPermanent;
+    }
+
+    public Boolean getIsBypassPermanent() {
+        return isBypassPermanent;
+    }
+
+    public void setIsBypassPermanent(Boolean isBypassPermanent) {
+        this.isBypassPermanent = isBypassPermanent;
+    }
 
 }

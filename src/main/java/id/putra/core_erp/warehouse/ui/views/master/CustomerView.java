@@ -2,9 +2,6 @@ package id.putra.core_erp.warehouse.ui.views.master;
 
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -26,20 +23,20 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.entity.ContactPersonCustomer;
+import id.putra.core_erp.shared.entity.Customer;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.customer.dto.ContactPersonCustomerDto;
-import id.putra.core_erp.warehouse.module.customer.dto.CustomerDto;
-import id.putra.core_erp.warehouse.module.customer.service.core.CustomerService;
+import id.putra.core_erp.warehouse.module.customer.service.CustomerService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/customer", layout = MainLayout.class)
 @PageTitle("Customers | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ CustomerDto.class, ContactPersonCustomerDto.class })
 public class CustomerView extends VerticalLayout {
 
     private final CustomerService customerService;
-    private final Grid<CustomerDto> grid = new Grid<>();
+    private final Grid<Customer> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public CustomerView(CustomerService customerService) {
@@ -71,7 +68,7 @@ public class CustomerView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("Add Customer", VaadinIcon.PLUS.create(),
-                e -> openCustomerDialog(CustomerDto.builder().build()));
+                e -> openCustomerDialog(new Customer()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -114,19 +111,18 @@ public class CustomerView extends VerticalLayout {
     }
 
     private void refreshData() {
-        var page = customerService.getAll(searchField.getValue(), PageRequest.of(0, 100));
-        grid.setItems(page.getContent());
+        grid.setItems(customerService.getAll(searchField.getValue(), Page.ofSize(100)));
     }
 
-    private void openCustomerDialog(CustomerDto customer) {
+    private void openCustomerDialog(Customer customer) {
         boolean isEdit = customer.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Customer" : "Add Customer");
 
         if (customer.getContactPerson() == null) {
-            customer.setContactPerson(new ContactPersonCustomerDto());
+            customer.setContactPerson(new ContactPersonCustomer());
         }
 
-        Binder<CustomerDto> binder = new BeanValidationBinder<>(CustomerDto.class);
+        Binder<Customer> binder = new BeanValidationBinder<>(Customer.class);
 
         TextField codeField = new TextField("Customer Code");
         TextField nameField = new TextField("Customer Name");
@@ -137,9 +133,9 @@ public class CustomerView extends VerticalLayout {
         TextField cpPhoneField = new TextField("Phone");
         TextArea cpAddressField = new TextArea("Address");
 
-        binder.forField(codeField).asRequired("Code is required").bind(CustomerDto::getCode, CustomerDto::setCode);
-        binder.forField(nameField).asRequired("Name is required").bind(CustomerDto::getName, CustomerDto::setName);
-        binder.forField(activeCheck).bind(CustomerDto::getIsActive, CustomerDto::setIsActive);
+        binder.forField(codeField).asRequired("Code is required").bind(Customer::getCode, Customer::setCode);
+        binder.forField(nameField).asRequired("Name is required").bind(Customer::getName, Customer::setName);
+        binder.forField(activeCheck).bind(Customer::getIsActive, Customer::setIsActive);
 
         codeField.setValue(customer.getCode() != null ? customer.getCode() : "");
         nameField.setValue(customer.getName() != null ? customer.getName() : "");
@@ -192,7 +188,7 @@ public class CustomerView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(CustomerDto customer) {
+    private void confirmDelete(Customer customer) {
         Dialog confirmDialog = new Dialog("Delete Customer");
         confirmDialog.add(new Paragraph("Are you sure you want to delete customer '" + customer.getName() + "'?"));
 

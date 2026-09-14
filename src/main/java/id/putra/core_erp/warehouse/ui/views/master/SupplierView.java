@@ -3,9 +3,6 @@ package id.putra.core_erp.warehouse.ui.views.master;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -27,20 +24,20 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.entity.Supplier;
+import id.putra.core_erp.shared.entity.SupplierContact;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.supplier.dto.ContactPersonSupplierDto;
-import id.putra.core_erp.warehouse.module.supplier.dto.SupplierDto;
-import id.putra.core_erp.warehouse.module.supplier.service.core.SupplierService;
+import id.putra.core_erp.warehouse.module.supplier.service.SupplierService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/suppliers", layout = MainLayout.class)
 @PageTitle("Suppliers | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ SupplierDto.class, ContactPersonSupplierDto.class })
 public class SupplierView extends VerticalLayout {
 
     private final SupplierService supplierService;
-    private final Grid<SupplierDto> grid = new Grid<>();
+    private final Grid<Supplier> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public SupplierView(SupplierService supplierService) {
@@ -72,7 +69,7 @@ public class SupplierView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("Add Supplier", VaadinIcon.PLUS.create(),
-                e -> openSupplierDialog(new SupplierDto()));
+                e -> openSupplierDialog(new Supplier()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -91,15 +88,15 @@ public class SupplierView extends VerticalLayout {
                 .setSortable(true);
 
         grid.addColumn(s -> {
-            if (s.getContactPersonSuppliers() != null && !s.getContactPersonSuppliers().isEmpty()) {
-                return s.getContactPersonSuppliers().get(0).getName();
+            if (s.getContacts() != null && !s.getContacts().isEmpty()) {
+                return s.getContacts().get(0).getName();
             }
             return "-";
         }).setHeader("Contact Person").setFlexGrow(1);
 
         grid.addColumn(s -> {
-            if (s.getContactPersonSuppliers() != null && !s.getContactPersonSuppliers().isEmpty()) {
-                return s.getContactPersonSuppliers().get(0).getEmail();
+            if (s.getContacts() != null && !s.getContacts().isEmpty()) {
+                return s.getContacts().get(0).getEmail();
             }
             return "-";
         }).setHeader("Email").setFlexGrow(1);
@@ -123,21 +120,20 @@ public class SupplierView extends VerticalLayout {
     }
 
     private void refreshData() {
-        var page = supplierService.getAll(PageRequest.of(0, 100), searchField.getValue());
-        grid.setItems(page.getContent());
+        grid.setItems(supplierService.getAll(searchField.getValue(), Page.ofSize(100)));
     }
 
-    private void openSupplierDialog(SupplierDto supplier) {
+    private void openSupplierDialog(Supplier supplier) {
         boolean isEdit = supplier.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Supplier" : "Add Supplier");
 
-        if (supplier.getContactPersonSuppliers() == null) {
-            supplier.setContactPersonSuppliers(new ArrayList<>());
+        if (supplier.getContacts() == null) {
+            supplier.setContacts(new ArrayList<>());
         }
-        ContactPersonSupplierDto cp = supplier.getContactPersonSuppliers().isEmpty() ? new ContactPersonSupplierDto()
-                : supplier.getContactPersonSuppliers().get(0);
+        SupplierContact cp = supplier.getContacts().isEmpty() ? new SupplierContact()
+                : supplier.getContacts().get(0);
 
-        Binder<SupplierDto> binder = new BeanValidationBinder<>(SupplierDto.class);
+        Binder<Supplier> binder = new BeanValidationBinder<>(Supplier.class);
 
         TextField codeField = new TextField("Supplier Code");
         TextField nameField = new TextField("Supplier Name");
@@ -148,9 +144,9 @@ public class SupplierView extends VerticalLayout {
         TextField cpPhoneField = new TextField("Phone");
         TextArea cpAddressField = new TextArea("Address");
 
-        binder.forField(codeField).asRequired("Code is required").bind(SupplierDto::getCode, SupplierDto::setCode);
-        binder.forField(nameField).asRequired("Name is required").bind(SupplierDto::getName, SupplierDto::setName);
-        binder.forField(activeCheck).bind(SupplierDto::getIsActive, SupplierDto::setIsActive);
+        binder.forField(codeField).asRequired("Code is required").bind(Supplier::getCode, Supplier::setCode);
+        binder.forField(nameField).asRequired("Name is required").bind(Supplier::getName, Supplier::setName);
+        binder.forField(activeCheck).bind(Supplier::getIsActive, Supplier::setIsActive);
 
         codeField.setValue(supplier.getCode() != null ? supplier.getCode() : "");
         nameField.setValue(supplier.getName() != null ? supplier.getName() : "");
@@ -159,7 +155,7 @@ public class SupplierView extends VerticalLayout {
         cpNameField.setValue(cp.getName() != null ? cp.getName() : "");
         cpEmailField.setValue(cp.getEmail() != null ? cp.getEmail() : "");
         cpPhoneField.setValue(cp.getPhone() != null ? cp.getPhone() : "");
-        cpAddressField.setValue(cp.getAddress() != null ? cp.getAddress() : "");
+        // cpAddressField.setValue(cp.ge() != null ? cp.getAddress() : "");
 
         FormLayout formLayout = new FormLayout(codeField, nameField, activeCheck, cpNameField, cpEmailField,
                 cpPhoneField, cpAddressField);
@@ -170,12 +166,12 @@ public class SupplierView extends VerticalLayout {
                 cp.setName(cpNameField.getValue());
                 cp.setEmail(cpEmailField.getValue());
                 cp.setPhone(cpPhoneField.getValue());
-                cp.setAddress(cpAddressField.getValue());
+                // cp.setAddress(cpAddressField.getValue());
 
-                if (supplier.getContactPersonSuppliers().isEmpty()) {
-                    supplier.getContactPersonSuppliers().add(cp);
+                if (supplier.getContacts().isEmpty()) {
+                    supplier.getContacts().add(cp);
                 } else {
-                    supplier.getContactPersonSuppliers().set(0, cp);
+                    supplier.getContacts().set(0, cp);
                 }
 
                 try {
@@ -205,7 +201,7 @@ public class SupplierView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(SupplierDto supplier) {
+    private void confirmDelete(Supplier supplier) {
         Dialog confirmDialog = new Dialog("Delete Supplier");
         confirmDialog.add(new Paragraph("Are you sure you want to delete supplier '" + supplier.getName() + "'?"));
 

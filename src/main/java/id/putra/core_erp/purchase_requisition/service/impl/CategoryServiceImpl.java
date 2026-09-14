@@ -5,120 +5,106 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
-import id.putra.core_erp.purchase_requisition.dto.CategoryDto;
 import id.putra.core_erp.purchase_requisition.repository.CategoryRepo;
 import id.putra.core_erp.purchase_requisition.service.CategoryService;
 import id.putra.core_erp.shared.entity.Category;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
-@Service("categoryService")
+@ApplicationScoped
 @Transactional(rollbackOn = { Exception.class })
-@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepo categoryRepo;
 
+    public CategoryServiceImpl(CategoryRepo categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
+
     @Override
-    public void addCategory(CategoryDto dto) {
-        List<Map<String, Object>> categories = categoryRepo.getAllCategories(dto.getName());
+    public void addCategory(Category dto) {
+        List<Category> categories = categoryRepo.findAll().list();
 
         if (categories.isEmpty()) {
             Category entity = new Category();
             entity.setName(dto.getName());
-            if (dto.getParent_id() != null && !dto.getParent_id().isBlank()
-                    && !"null".equalsIgnoreCase(dto.getParent_id())) {
-                entity.setParentId(Long.parseLong(dto.getParent_id()));
+            if (dto.getParentId() != null) {
+                entity.setParentId(dto.getParentId());
             } else {
                 entity.setParentId(null);
             }
-            categoryRepo.save(entity);
+            categoryRepo.persist(entity);
         } else {
             throw new IllegalArgumentException("Category with name '" + dto.getName() + "' already exists");
         }
     }
 
     @Override
-    public List<CategoryDto> getCategory() {
-        List<CategoryDto> categories = new ArrayList<>();
+    public List<Category> getCategory() {
+        List<Category> categories = new ArrayList<>();
 
-        categoryRepo.getAllCategories("").forEach(data -> {
+        categoryRepo.findAll().list().forEach(data -> {
             categories.add(entityToDto(data));
         });
 
-        Map<Integer, CategoryDto> categoryMap = new HashMap<>();
-        for (CategoryDto category : categories) {
-            if (category.getId() != null && !category.getId().equalsIgnoreCase("null")) {
-                categoryMap.put(Integer.parseInt(category.getId()), category);
+        Map<Long, Category> categoryMap = new HashMap<>();
+        for (Category category : categories) {
+            if (category.getId() != null) {
+                categoryMap.put(category.getId(), category);
             }
         }
 
         return buildHierarchy(categories, categoryMap);
     }
 
-    private CategoryDto entityToDto(Category entity) {
-        CategoryDto dto = new CategoryDto();
+    private Category entityToDto(Category entity) {
+        Category dto = new Category();
 
-        dto.setId(String.valueOf(entity.getId()));
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
-        dto.setParent_id(String.valueOf(entity.getParentId()));
+        dto.setParentId(entity.getParentId());
 
         return dto;
     }
 
-    private CategoryDto entityToDto(Map<String, Object> entity) {
-        CategoryDto dto = new CategoryDto();
+    public List<Category> buildHierarchy(List<Category> categories, Map<Long, Category> categoryMap) {
+        List<Category> rootCategories = new ArrayList<>();
 
-        dto.setId(String.valueOf(entity.get("id")));
-        dto.setName((String) entity.get("name"));
-        dto.setParent_id(String.valueOf(entity.get("parent_id")));
-
-        return dto;
-    }
-
-    public List<CategoryDto> buildHierarchy(List<CategoryDto> categories, Map<Integer, CategoryDto> categoryMap) {
-        List<CategoryDto> rootCategories = new ArrayList<>();
-
-        for (CategoryDto category : categories) {
-            if (category.getParent_id() == null || category.getParent_id().equalsIgnoreCase("null")
-                    || category.getParent_id().isBlank()) {
+        for (Category category : categories) {
+            if (category.getParentId() == null) {
                 // Root node
                 rootCategories.add(category);
             } else {
                 // Child node, find its parent and add it as a child
-                CategoryDto parentCategory = categoryMap.get(Integer.parseInt(category.getParent_id()));
-                if (parentCategory != null) {
-                    parentCategory.getChildren().add(category);
-                }
+                Category parentCategory = categoryMap.get(category.getParentId());
+                // if (parentCategory != null) {
+                // parentCategory.getChildren().add(category);
+                // }
             }
         }
         return rootCategories;
     }
 
     @Override
-    public void updateCategory(CategoryDto dto) {
-        if (dto.getId() != null && !dto.getId().isBlank()) {
-            long id = Long.parseLong(dto.getId());
-            categoryRepo.findById(id).ifPresent(entity -> {
+    public void updateCategory(Category dto) {
+        if (dto.getId() != null) {
+            categoryRepo.findByIdOptional(dto.getId()).ifPresent(entity -> {
                 entity.setName(dto.getName());
-                if (dto.getParent_id() != null && !dto.getParent_id().isBlank()
-                        && !"null".equalsIgnoreCase(dto.getParent_id())) {
-                    entity.setParentId(Long.parseLong(dto.getParent_id()));
+                if (dto.getParentId() != null) {
+                    entity.setParentId(dto.getParentId());
                 } else {
                     entity.setParentId(null);
                 }
-                categoryRepo.save(entity);
+                categoryRepo.persist(entity);
             });
         }
     }
 
     @Override
-    public List<CategoryDto> getCategoryDropdown() {
-        List<CategoryDto> dtos = new ArrayList<>();
+    public List<Category> getCategoryDropdown() {
+        List<Category> dtos = new ArrayList<>();
 
-        categoryRepo.findAll().forEach(data -> {
+        categoryRepo.findAll().list().forEach(data -> {
             dtos.add(entityToDto(data));
         });
         return dtos;

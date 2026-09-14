@@ -3,23 +3,23 @@ package id.putra.core_erp.purchase_requisition.service;
 import java.util.List;
 import java.util.Map;
 
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
+import id.putra.core_erp.purchase_requisition.model.Approval;
+import id.putra.core_erp.purchase_requisition.model.Department;
 
 public interface DepartmentsService {
-    List<DepartmentDto> getDepartmentDropdown();
+    List<Department> getDepartmentDropdown();
 
     Map<String, Object> getDepartments(String type, String name);
 
-    void addDepartment(DepartmentDto body);
+    void addDepartment(Department body);
 
-    DepartmentDto getDetailDepartment(String id);
+    Department getDetailDepartment(Long id);
 
-    void updateDepartment(DepartmentDto body);
+    void updateDepartment(Department body);
 
-    void updateDepartmentStatus(String id);
+    void updateDepartmentStatus(Long id);
 
-    List<ApprovalDto> getDeptApprovals(String deptId);
+    List<Approval> getDeptApprovals(Long deptId);
 
-    ApprovalDto getDeptApprovalPurchaser(String deptId);
+    Approval getDeptApprovalPurchaser(Long deptId);
 }

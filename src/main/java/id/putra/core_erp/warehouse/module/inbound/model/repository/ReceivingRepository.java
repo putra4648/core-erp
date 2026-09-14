@@ -1,11 +1,9 @@
 package id.putra.core_erp.warehouse.module.inbound.model.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
 import id.putra.core_erp.warehouse.module.inbound.model.entity.Receiving;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface ReceivingRepository extends JpaRepository<Receiving, Long>, JpaSpecificationExecutor<Receiving> {
-
+@ApplicationScoped
+public class ReceivingRepository implements PanacheRepository<Receiving> {
 }
-

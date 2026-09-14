@@ -18,24 +18,21 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.AppDto;
-import id.putra.core_erp.purchase_requisition.dto.InventoryDto;
+import id.putra.core_erp.purchase_requisition.model.Inventory;
 import id.putra.core_erp.purchase_requisition.service.InventoryService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "pr/inventory", layout = MainLayout.class)
 @PageTitle("PR Inventory | CORE ERP")
 @PermitAll
-@RegisterReflectionForBinding({ InventoryDto.class, AppDto.class })
 public class InventoryView extends VerticalLayout {
 
     private final InventoryService inventoryService;
 
     private final TextField searchField = new TextField();
-    private final Grid<InventoryDto> grid = new Grid<>();
-    private final List<InventoryDto> inventoryList = new ArrayList<>();
+    private final Grid<Inventory> grid = new Grid<>();
+    private final List<Inventory> inventoryList = new ArrayList<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public InventoryView(InventoryService inventoryService) {
@@ -67,11 +64,11 @@ public class InventoryView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(i -> i.getPo_number() != null ? i.getPo_number() : "-").setHeader("PO Number")
+        grid.addColumn(i -> i.getPoNumber() != null ? i.getPoNumber() : "-").setHeader("PO Number")
                 .setAutoWidth(true);
-        grid.addColumn(i -> i.getPart_number() != null ? i.getPart_number() : "-").setHeader("Part Number")
+        grid.addColumn(i -> i.getPartNumber() != null ? i.getPartNumber() : "-").setHeader("Part Number")
                 .setAutoWidth(true);
-        grid.addColumn(i -> i.getPart_name() != null ? i.getPart_name() : "-").setHeader("Part Name").setFlexGrow(2);
+        grid.addColumn(i -> i.getPartName() != null ? i.getPartName() : "-").setHeader("Part Name").setFlexGrow(2);
         grid.addColumn(
                 i -> (i.getArea() != null ? i.getArea() : "-") + " / " + (i.getShelf() != null ? i.getShelf() : "-"))
                 .setHeader("Area / Shelf").setFlexGrow(1);
@@ -83,12 +80,9 @@ public class InventoryView extends VerticalLayout {
 
     private void refreshGrid() {
         try {
-            AppDto<InventoryDto> appDto = new AppDto<>();
-            InventoryDto params = new InventoryDto();
-            params.setSearch(searchField.getValue() != null ? searchField.getValue() : "");
-            appDto.setParams(params);
+            Inventory params = new Inventory();
 
-            List<InventoryDto> res = inventoryService.getAll(appDto);
+            List<Inventory> res = inventoryService.getAll(params);
             if (res != null) {
                 inventoryList.clear();
                 inventoryList.addAll(res);

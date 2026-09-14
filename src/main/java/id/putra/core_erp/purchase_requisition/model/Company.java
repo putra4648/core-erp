@@ -9,50 +9,124 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "company")
 public class Company extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comp_id", nullable = false)
-    private Integer compId;
+    private Long id;
 
     @Column(name = "comp_name", nullable = false, unique = true)
-    private String compName;
+    private String name;
 
     @Column(name = "comp_telp")
-    private String compTelp;
+    private String telp;
 
     @Column(name = "comp_npwp")
-    private String compNPWP;
+    private String npwp;
 
     @Column(name = "comp_logoname")
-    private String compLogopath;
+    private String logoPath;
 
     // @Lob
     // @Column(name = "comp_logoblob")
     // private byte[] compLogoblob;
 
     @Column(name = "comp_accbank")
-    private String compAccbank;
+    private String accountBank;
 
     @Column(name = "comp_endyear")
-    private Date compEndyear;
+    private Date financialEndYear;
 
     @Column(name = "comp_currencies")
-    private List<String> compCurrencies;
+    private List<String> curr;
 
     @Column(name = "comp_needRegisterApproval")
-    private Boolean compNeedRegisterApproval;
+    private Boolean needRegisterApproval;
 
     @Column(name = "comp_needAutoCloseOrder")
-    private Boolean compNeedAutoCloseOrder;
+    private Boolean needAutoCloseOrder;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long compId) {
+        this.id = compId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String compName) {
+        this.name = compName;
+    }
+
+    public String getTelp() {
+        return telp;
+    }
+
+    public void setTelp(String compTelp) {
+        this.telp = compTelp;
+    }
+
+    public String getNpwp() {
+        return npwp;
+    }
+
+    public void setNpwp(String compNPWP) {
+        this.npwp = compNPWP;
+    }
+
+    public String getLogoPath() {
+        return logoPath;
+    }
+
+    public void setLogoPath(String compLogopath) {
+        this.logoPath = compLogopath;
+    }
+
+    public String getAccountBank() {
+        return accountBank;
+    }
+
+    public void setAccountBank(String compAccbank) {
+        this.accountBank = compAccbank;
+    }
+
+    public Date getFinancialEndYear() {
+        return financialEndYear;
+    }
+
+    public void setFinancialEndYear(Date compEndyear) {
+        this.financialEndYear = compEndyear;
+    }
+
+    public List<String> getCurr() {
+        return curr;
+    }
+
+    public void setCurr(List<String> compCurrencies) {
+        this.curr = compCurrencies;
+    }
+
+    public Boolean getNeedRegisterApproval() {
+        return needRegisterApproval;
+    }
+
+    public void setNeedRegisterApproval(Boolean compNeedRegisterApproval) {
+        this.needRegisterApproval = compNeedRegisterApproval;
+    }
+
+    public Boolean getNeedAutoCloseOrder() {
+        return needAutoCloseOrder;
+    }
+
+    public void setNeedAutoCloseOrder(Boolean compNeedAutoCloseOrder) {
+        this.needAutoCloseOrder = compNeedAutoCloseOrder;
+    }
 
 }

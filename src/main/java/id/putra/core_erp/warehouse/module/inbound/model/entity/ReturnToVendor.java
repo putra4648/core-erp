@@ -10,20 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
 
 @Entity
 @Table
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ReturnToVendor {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +21,39 @@ public class ReturnToVendor {
   @Column(precision = 12, scale = 2)
   private BigDecimal qty;
 
-  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "receiving_line_id")
   private ReceivingLine receivingLine;
-}
 
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getReason() {
+    return reason;
+  }
+
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
+
+  public BigDecimal getQty() {
+    return qty;
+  }
+
+  public void setQty(BigDecimal qty) {
+    this.qty = qty;
+  }
+
+  public ReceivingLine getReceivingLine() {
+    return receivingLine;
+  }
+
+  public void setReceivingLine(ReceivingLine receivingLine) {
+    this.receivingLine = receivingLine;
+  }
+}

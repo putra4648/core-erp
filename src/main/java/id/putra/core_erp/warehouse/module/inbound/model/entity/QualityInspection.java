@@ -7,20 +7,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
 
 @Entity
 @Table
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class QualityInspection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +17,40 @@ public class QualityInspection {
     private String result;
     private String remarks;
 
-    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "receiving_line_id")
     private ReceivingLine receivingLine;
 
-}
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public ReceivingLine getReceivingLine() {
+        return receivingLine;
+    }
+
+    public void setReceivingLine(ReceivingLine receivingLine) {
+        this.receivingLine = receivingLine;
+    }
+
+}

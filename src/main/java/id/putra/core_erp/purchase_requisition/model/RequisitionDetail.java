@@ -1,5 +1,6 @@
 package id.putra.core_erp.purchase_requisition.model;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -13,13 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "requisition_detail")
 public class RequisitionDetail extends BaseModel {
@@ -50,10 +45,12 @@ public class RequisitionDetail extends BaseModel {
     private BigInteger qty;
 
     @Column(name = "unit_price")
-    private BigInteger unitPrice;
+    private BigDecimal unitPrice;
 
     @Column(name = "supplier")
     private String supplier;
+
+    private BigDecimal subtotal;
 
     // @ManyToOne
     // @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
@@ -70,5 +67,117 @@ public class RequisitionDetail extends BaseModel {
     @ManyToOne
     @JoinColumn(name = "rfq_id", referencedColumnName = "id")
     private RFQ rfq;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getItemNumber() {
+        return itemNumber;
+    }
+
+    public void setItemNumber(String itemNumber) {
+        this.itemNumber = itemNumber;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public List<String> getSpecFiles() {
+        return specFiles;
+    }
+
+    public void setSpecFiles(List<String> specFiles) {
+        this.specFiles = specFiles;
+    }
+
+    public String getUom() {
+        return uom;
+    }
+
+    public void setUom(String uom) {
+        this.uom = uom;
+    }
+
+    public BigInteger getQty() {
+        return qty;
+    }
+
+    public void setQty(BigInteger qty) {
+        this.qty = qty;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public String getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
+    public BigInteger getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(BigInteger subTotal) {
+        this.subTotal = subTotal;
+    }
+
+    public Requisition getRequisition() {
+        return requisition;
+    }
+
+    public void setRequisition(Requisition requisition) {
+        this.requisition = requisition;
+    }
+
+    public RFQ getRfq() {
+        return rfq;
+    }
+
+    public void setRfq(RFQ rfq) {
+        this.rfq = rfq;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
+    }
 
 }

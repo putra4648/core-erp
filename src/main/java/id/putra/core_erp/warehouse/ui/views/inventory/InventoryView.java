@@ -2,8 +2,6 @@ package id.putra.core_erp.warehouse.ui.views.inventory;
 
 import java.util.List;
 
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -22,21 +20,19 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import id.putra.core_erp.warehouse.module.inventory.dto.InventoryItemDto;
-import id.putra.core_erp.warehouse.module.inventory.service.core.InventoryItemCoreService;
-import id.putra.core_erp.warehouse.shared.base.dto.ProductDto;
 import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.warehouse.module.inventory.model.entity.InventoryItem;
+import id.putra.core_erp.warehouse.module.inventory.service.InventoryItemCoreService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "inventory", layout = MainLayout.class)
 @PageTitle("Inventory | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ InventoryItemDto.class, ProductDto.class })
 public class InventoryView extends VerticalLayout {
 
     private final InventoryItemCoreService inventoryService;
-    private final Grid<InventoryItemDto> grid = new Grid<>();
+    private final Grid<InventoryItem> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public InventoryView(InventoryItemCoreService inventoryService) {
@@ -67,7 +63,8 @@ public class InventoryView extends VerticalLayout {
         searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
         searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("Add Stock Item", VaadinIcon.PLUS.create(), e -> openItemDialog(InventoryItemDto.builder().build()));
+        Button addButton = new Button("Add Stock Item", VaadinIcon.PLUS.create(),
+                e -> openItemDialog(new InventoryItem()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -80,17 +77,24 @@ public class InventoryView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(item -> item.getName() != null ? item.getName() : "").setHeader("Item Name").setFlexGrow(1).setSortable(true);
-        grid.addColumn(item -> item.getProduct() != null ? item.getProduct().getSku() : "-").setHeader("Product SKU").setAutoWidth(true);
-        grid.addColumn(item -> item.getLotNumber() != null ? item.getLotNumber() : "").setHeader("Lot Number").setAutoWidth(true);
-        grid.addColumn(item -> item.getSerialNumber() != null ? item.getSerialNumber() : "").setHeader("Serial Number").setAutoWidth(true);
-        grid.addColumn(item -> item.getQuantity() != null ? item.getQuantity() : 0).setHeader("Quantity").setAutoWidth(true);
-        grid.addColumn(item -> item.getReservedQty() != null ? item.getReservedQty() : 0).setHeader("Reserved Qty").setAutoWidth(true);
+        grid.addColumn(item -> item.getName() != null ? item.getName() : "").setHeader("Item Name").setFlexGrow(1)
+                .setSortable(true);
+        grid.addColumn(item -> item.getProduct() != null ? item.getProduct().getSku() : "-").setHeader("Product SKU")
+                .setAutoWidth(true);
+        grid.addColumn(item -> item.getLotNumber() != null ? item.getLotNumber() : "").setHeader("Lot Number")
+                .setAutoWidth(true);
+        grid.addColumn(item -> item.getSerialNumber() != null ? item.getSerialNumber() : "").setHeader("Serial Number")
+                .setAutoWidth(true);
+        grid.addColumn(item -> item.getQuantity() != null ? item.getQuantity() : 0).setHeader("Quantity")
+                .setAutoWidth(true);
+        grid.addColumn(item -> item.getReservedQty() != null ? item.getReservedQty() : 0).setHeader("Reserved Qty")
+                .setAutoWidth(true);
 
         grid.addComponentColumn(item -> {
             String status = item.getStatus() != null ? item.getStatus() : "AVAILABLE";
             Span badge = new Span(status);
-            badge.getElement().getThemeList().add("badge " + ("AVAILABLE".equalsIgnoreCase(status) ? "success" : "contrast"));
+            badge.getElement().getThemeList()
+                    .add("badge " + ("AVAILABLE".equalsIgnoreCase(status) ? "success" : "contrast"));
             return badge;
         }).setHeader("Status").setAutoWidth(true);
 
@@ -106,12 +110,10 @@ public class InventoryView extends VerticalLayout {
     }
 
     private void refreshData() {
-        InventoryItemDto filter = InventoryItemDto.builder().name(searchField.getValue()).build();
-        var page = inventoryService.getInventoryItems(filter, PageRequest.of(0, 100));
-        grid.setItems(page.getContent());
+        grid.setItems(inventoryService.getInventoryItems(searchField.getValue(), Page.ofSize(100)));
     }
 
-    private void openItemDialog(InventoryItemDto item) {
+    private void openItemDialog(InventoryItem item) {
         boolean isEdit = item.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Stock Item" : "Add Stock Item");
 
@@ -131,7 +133,7 @@ public class InventoryView extends VerticalLayout {
         dialog.add(form);
 
         Button saveBtn = new Button("Save", e -> {
-            InventoryItemDto dto = item.getId() != null ? item : InventoryItemDto.builder().build();
+            InventoryItem dto = item.getId() != null ? item : new InventoryItem();
             dto.setName(nameField.getValue());
             dto.setLotNumber(lotField.getValue());
             dto.setSerialNumber(serialField.getValue());
@@ -160,7 +162,7 @@ public class InventoryView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(InventoryItemDto item) {
+    private void confirmDelete(InventoryItem item) {
         Dialog confirmDialog = new Dialog("Delete Stock Item");
         confirmDialog.add(new Paragraph("Are you sure you want to delete inventory item '" + item.getName() + "'?"));
 
@@ -172,7 +174,8 @@ public class InventoryView extends VerticalLayout {
                 confirmDialog.close();
                 refreshData();
             } catch (Exception ex) {
-                Notification.show("Failed to delete stock item: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                Notification
+                        .show("Failed to delete stock item: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
@@ -182,6 +185,3 @@ public class InventoryView extends VerticalLayout {
         confirmDialog.open();
     }
 }
-
-
-

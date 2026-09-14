@@ -1,8 +1,5 @@
 package id.putra.core_erp.warehouse.ui.views.master;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.data.domain.PageRequest;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -25,19 +22,19 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.shared.entity.Product;
 import id.putra.core_erp.shared.ui.MainLayout;
-import id.putra.core_erp.warehouse.module.inventory.service.core.ProductCoreService;
-import id.putra.core_erp.warehouse.shared.base.dto.ProductDto;
+import id.putra.core_erp.warehouse.module.inventory.service.ProductCoreService;
+import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
 @Route(value = "master/products", layout = MainLayout.class)
 @PageTitle("Products | WMS Pro")
 @PermitAll
-@RegisterReflectionForBinding({ ProductDto.class })
 public class ProductView extends VerticalLayout {
 
     private final ProductCoreService productService;
-    private final Grid<ProductDto> grid = new Grid<>();
+    private final Grid<Product> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
     public ProductView(ProductCoreService productService) {
@@ -69,7 +66,7 @@ public class ProductView extends VerticalLayout {
         searchField.addValueChangeListener(e -> refreshData());
 
         Button addButton = new Button("Add Product", VaadinIcon.PLUS.create(),
-                e -> openProductDialog(ProductDto.builder().build()));
+                e -> openProductDialog(new Product()));
         addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -108,16 +105,16 @@ public class ProductView extends VerticalLayout {
     }
 
     private void refreshData() {
-        ProductDto searchParam = ProductDto.builder().name(searchField.getValue()).build();
-        var page = productService.getProducts(searchParam, PageRequest.of(0, 100));
-        grid.setItems(page.getContent());
+        Product searchParam = new Product();
+        searchParam.setName(searchField.getValue());
+        grid.setItems(productService.getProducts(searchParam, Page.ofSize(100)));
     }
 
-    private void openProductDialog(ProductDto product) {
+    private void openProductDialog(Product product) {
         boolean isEdit = product.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Product" : "Add Product");
 
-        Binder<ProductDto> binder = new BeanValidationBinder<>(ProductDto.class);
+        Binder<Product> binder = new BeanValidationBinder<>(Product.class);
 
         TextField skuField = new TextField("SKU");
         TextField nameField = new TextField("Product Name");
@@ -134,10 +131,10 @@ public class ProductView extends VerticalLayout {
         });
         Checkbox activeCheck = new Checkbox("Is Active");
 
-        binder.forField(skuField).asRequired("SKU is required").bind(ProductDto::getSku, ProductDto::setSku);
-        binder.forField(nameField).asRequired("Name is required").bind(ProductDto::getName, ProductDto::setName);
-        binder.forField(descField).bind(ProductDto::getDescription, ProductDto::setDescription);
-        binder.forField(activeCheck).bind(ProductDto::getIsActive, ProductDto::setIsActive);
+        binder.forField(skuField).asRequired("SKU is required").bind(Product::getSku, Product::setSku);
+        binder.forField(nameField).asRequired("Name is required").bind(Product::getName, Product::setName);
+        binder.forField(descField).bind(Product::getDescription, Product::setDescription);
+        binder.forField(activeCheck).bind(Product::getIsActive, Product::setIsActive);
 
         skuField.setValue(product.getSku() != null ? product.getSku() : "");
         nameField.setValue(product.getName() != null ? product.getName() : "");
@@ -183,7 +180,7 @@ public class ProductView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(ProductDto product) {
+    private void confirmDelete(Product product) {
         Dialog confirmDialog = new Dialog("Delete Product");
         confirmDialog.add(new Paragraph("Are you sure you want to delete product '" + product.getName() + "'?"));
 

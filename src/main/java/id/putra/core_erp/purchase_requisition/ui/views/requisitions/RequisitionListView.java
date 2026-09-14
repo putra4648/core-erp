@@ -22,40 +22,33 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.AppDto;
-import id.putra.core_erp.purchase_requisition.dto.RequisitionDto;
+import id.putra.core_erp.purchase_requisition.model.Requisition;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
-import id.putra.core_erp.shared.security.SecurityService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 
 @Route(value = "requisitions", layout = MainLayout.class)
 @PageTitle("Purchase Requisitions | PR System")
 @PermitAll
-@RegisterReflectionForBinding({ RequisitionDto.class, AppDto.class })
 public class RequisitionListView extends VerticalLayout {
 
     private final RequisitionService requisitionService;
     private final RequisitionRepo requisitionRepo;
-    private final SecurityService securityService;
     private final DepartmentRepo departmentRepo;
 
     private final TextField searchField = new TextField();
     private final ComboBox<String> statusFilter = new ComboBox<>();
-    private final Grid<RequisitionDto> grid = new Grid<>();
-    private final List<RequisitionDto> reqList = new ArrayList<>();
+    private final Grid<Requisition> grid = new Grid<>();
+    private final List<Requisition> reqList = new ArrayList<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public RequisitionListView(RequisitionService requisitionService,
             RequisitionRepo requisitionRepo,
-            SecurityService securityService,
             DepartmentRepo departmentRepo) {
         this.requisitionService = requisitionService;
         this.requisitionRepo = requisitionRepo;
-        this.securityService = securityService;
         this.departmentRepo = departmentRepo;
 
         setSizeFull();
@@ -95,9 +88,9 @@ public class RequisitionListView extends VerticalLayout {
         grid.setSizeFull();
         grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("PR Number").setAutoWidth(true);
         grid.addColumn(r -> r.getTitle() != null ? r.getTitle() : "-").setHeader("Title").setFlexGrow(2);
-        grid.addColumn(r -> r.getDepartment() != null ? r.getDepartment().getDept_name() : "-").setHeader("Department")
+        grid.addColumn(r -> r.getDepartment() != null ? r.getDepartment().getDeptName() : "-").setHeader("Department")
                 .setFlexGrow(1);
-        grid.addColumn(r -> r.getDue_date() != null ? dateFormat.format(r.getDue_date()) : "-").setHeader("Due Date")
+        grid.addColumn(r -> r.getDueDate() != null ? dateFormat.format(r.getDueDate()) : "-").setHeader("Due Date")
                 .setAutoWidth(true);
 
         grid.addComponentColumn(r -> {
@@ -116,15 +109,15 @@ public class RequisitionListView extends VerticalLayout {
         }).setHeader("Status").setAutoWidth(true);
 
         grid.addColumn(r -> {
-            if (r.getNext_approvals() != null && !r.getNext_approvals().isEmpty()) {
-                return String.join(", ", r.getNext_approvals());
+            if (r.getNextApprovals() != null && !r.getNextApprovals().isEmpty()) {
+                return String.join(", ", r.getNextApprovals());
             }
             return "-";
         }).setHeader("Next Approver").setFlexGrow(1);
 
         grid.addComponentColumn(r -> {
             Button viewBtn = new Button("View / Edit", VaadinIcon.EYE.create(),
-                    e -> UI.getCurrent().navigate(RequisitionFormView.class, r.getId()));
+                    e -> UI.getCurrent().navigate(RequisitionFormView.class, r.getId().toString()));
             viewBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
             Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> {
@@ -144,9 +137,7 @@ public class RequisitionListView extends VerticalLayout {
 
     private void refreshGrid() {
         try {
-            AppDto<RequisitionDto> appDto = new AppDto<>();
-            RequisitionDto params = new RequisitionDto();
-            params.setSearch(searchField.getValue() != null ? searchField.getValue() : "");
+            Requisition params = new Requisition();
 
             String selectedStatus = statusFilter.getValue();
             if ("ALL".equalsIgnoreCase(selectedStatus) || selectedStatus == null) {
@@ -163,16 +154,10 @@ public class RequisitionListView extends VerticalLayout {
             // deptIds.addAll(currentUser.get().getOtherDepts());
             // }
             // } else {
-            // departmentRepo.findAll().forEach(d -> deptIds.add(d.getDeptNumber()));
+            // departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getDeptNumber()));
             // }
 
-            if (deptIds.isEmpty()) {
-                deptIds.add("SUP03");
-            }
-            params.setDeptIds(deptIds);
-            appDto.setParams(params);
-
-            List<RequisitionDto> res = requisitionService.getPaginationData(appDto);
+            List<Requisition> res = requisitionService.findAll();
             reqList.clear();
             if (res != null) {
                 reqList.addAll(res);

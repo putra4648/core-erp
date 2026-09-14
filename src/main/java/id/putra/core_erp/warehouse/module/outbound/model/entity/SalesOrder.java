@@ -12,20 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
 
 @Entity
 @Table
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class SalesOrder {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,14 +23,58 @@ public class SalesOrder {
   private Date orderDate;
   private String status;
 
-  @ToString.Exclude
   @OneToMany(mappedBy = "salesOrder")
   private List<SalesOrderLine> salesOrderLines;
 
-  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "customer_id")
   private Customer customer;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getSoNumber() {
+    return soNumber;
+  }
+
+  public void setSoNumber(String soNumber) {
+    this.soNumber = soNumber;
+  }
+
+  public Date getOrderDate() {
+    return orderDate;
+  }
+
+  public void setOrderDate(Date orderDate) {
+    this.orderDate = orderDate;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public List<SalesOrderLine> getSalesOrderLines() {
+    return salesOrderLines;
+  }
+
+  public void setSalesOrderLines(List<SalesOrderLine> salesOrderLines) {
+    this.salesOrderLines = salesOrderLines;
+  }
+
+  public Customer getCustomer() {
+    return customer;
+  }
+
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
+  }
 }
-
-

@@ -9,20 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
 
 @Entity
 @Table
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Shipment {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,14 +20,59 @@ public class Shipment {
   private Date shipDate;
   private String status;
 
-  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "packing_id")
   private Packing packing;
 
-  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "carrier_id")
   private Carrier carrier;
-}
 
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getShipmentNumber() {
+    return shipmentNumber;
+  }
+
+  public void setShipmentNumber(String shipmentNumber) {
+    this.shipmentNumber = shipmentNumber;
+  }
+
+  public Date getShipDate() {
+    return shipDate;
+  }
+
+  public void setShipDate(Date shipDate) {
+    this.shipDate = shipDate;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public Packing getPacking() {
+    return packing;
+  }
+
+  public void setPacking(Packing packing) {
+    this.packing = packing;
+  }
+
+  public Carrier getCarrier() {
+    return carrier;
+  }
+
+  public void setCarrier(Carrier carrier) {
+    this.carrier = carrier;
+  }
+}

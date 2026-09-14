@@ -6,28 +6,20 @@ import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import id.putra.core_erp.purchase_requisition.dto.ApprovalDto;
-import id.putra.core_erp.purchase_requisition.dto.SupplierDto;
-import id.putra.core_erp.purchase_requisition.dto.TransferDetailDto;
+import id.putra.core_erp.shared.entity.Supplier;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "transfer_request")
 public class Transfer extends BaseModel {
 
     @Id
-    private String id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -38,11 +30,11 @@ public class Transfer extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "suppliers", columnDefinition = "jsonb")
-    private List<SupplierDto> suppliers;
+    private List<Supplier> suppliers;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "details", columnDefinition = "jsonb")
-    private List<TransferDetailDto> details;
+    private List<TransferDetail> details;
 
     @Column(name = "note")
     private String note;
@@ -68,10 +60,122 @@ public class Transfer extends BaseModel {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_approvals", columnDefinition = "jsonb")
-    private List<ApprovalDto> temApprovalDtos;
+    private List<Approval> temApprovals;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
-    private ApprovalDto tempPurchaserApprovalDto;
+    private Approval tempPurchaserApproval;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public List<Supplier> getSuppliers() {
+        return suppliers;
+    }
+
+    public void setSuppliers(List<Supplier> suppliers) {
+        this.suppliers = suppliers;
+    }
+
+    public List<TransferDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<TransferDetail> details) {
+        this.details = details;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRejectNote() {
+        return rejectNote;
+    }
+
+    public void setRejectNote(String rejectNote) {
+        this.rejectNote = rejectNote;
+    }
+
+    public Integer getCurrentApprovalStage() {
+        return currentApprovalStage;
+    }
+
+    public void setCurrentApprovalStage(Integer currentApprovalStage) {
+        this.currentApprovalStage = currentApprovalStage;
+    }
+
+    public Integer getTotalApprovalStage() {
+        return totalApprovalStage;
+    }
+
+    public void setTotalApprovalStage(Integer totalApprovalStage) {
+        this.totalApprovalStage = totalApprovalStage;
+    }
+
+    public String getLastApproved() {
+        return lastApproved;
+    }
+
+    public void setLastApproved(String lastApproved) {
+        this.lastApproved = lastApproved;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public List<Approval> getTemApprovals() {
+        return temApprovals;
+    }
+
+    public void setTemApprovals(List<Approval> temApprovalDtos) {
+        this.temApprovals = temApprovalDtos;
+    }
+
+    public Approval getTempPurchaserApproval() {
+        return tempPurchaserApproval;
+    }
+
+    public void setTempPurchaserApproval(Approval tempPurchaserApprovalDto) {
+        this.tempPurchaserApproval = tempPurchaserApprovalDto;
+    }
 
 }

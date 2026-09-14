@@ -1,13 +1,10 @@
 package id.putra.core_erp.warehouse.module.inbound.model.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
 import id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrderLine;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
-public interface PurchaseOrderLineRepository extends JpaRepository<PurchaseOrderLine, Long>, JpaSpecificationExecutor<PurchaseOrderLine> {
-    Page<PurchaseOrderLine> findByPurchaseOrderId(Long purchaseOrderId, Pageable pageable);
+@ApplicationScoped
+public class PurchaseOrderLineRepository implements PanacheRepository<PurchaseOrderLine> {
+
 }
-

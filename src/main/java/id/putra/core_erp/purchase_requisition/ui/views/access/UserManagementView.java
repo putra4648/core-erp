@@ -3,8 +3,6 @@ package id.putra.core_erp.purchase_requisition.ui.views.access;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -27,15 +25,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.purchase_requisition.dto.DepartmentDto;
-import id.putra.core_erp.purchase_requisition.dto.UsersDto;
 import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.model.Group;
 import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.repository.GroupRepo;
-import id.putra.core_erp.purchase_requisition.repository.UserRepo;
 import id.putra.core_erp.purchase_requisition.service.DepartmentsService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
@@ -43,20 +38,12 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "users", layout = MainLayout.class)
 @PageTitle("Users & Departments | PR System")
 @PermitAll
-@RegisterReflectionForBinding({
-        UsersDto.class,
-        DepartmentDto.class,
-        Department.class,
-        Group.class,
-        Users.class
-})
 public class UserManagementView extends VerticalLayout {
 
     // private final UserService userService;
     private final DepartmentsService departmentsService;
     private final DepartmentRepo departmentRepo;
     private final GroupRepo groupRepo;
-    private final UserRepo userRepo;
 
     private final Tab usersTab = new Tab(VaadinIcon.USERS.create(), new Span("Users"));
     private final Tab deptsTab = new Tab(VaadinIcon.BUILDING.create(), new Span("Departments"));
@@ -66,8 +53,8 @@ public class UserManagementView extends VerticalLayout {
 
     // Users components
     private final TextField userSearchField = new TextField();
-    private final Grid<UsersDto> usersGrid = new Grid<>();
-    private final List<UsersDto> usersList = new ArrayList<>();
+    private final Grid<Users> usersGrid = new Grid<>();
+    private final List<Users> usersList = new ArrayList<>();
 
     // Department components
     private final Grid<Department> deptGrid = new Grid<>();
@@ -80,12 +67,10 @@ public class UserManagementView extends VerticalLayout {
     public UserManagementView(
             DepartmentsService departmentsService,
             DepartmentRepo departmentRepo,
-            GroupRepo groupRepo,
-            UserRepo userRepo) {
+            GroupRepo groupRepo) {
         this.departmentsService = departmentsService;
         this.departmentRepo = departmentRepo;
         this.groupRepo = groupRepo;
-        this.userRepo = userRepo;
 
         setSizeFull();
         setPadding(true);
@@ -152,7 +137,7 @@ public class UserManagementView extends VerticalLayout {
                 .setFlexGrow(2);
         usersGrid.addColumn(u -> u.getUsername() != null ? u.getUsername() : "-").setHeader("Username").setFlexGrow(1);
         usersGrid.addColumn(u -> u.getRole() != null ? u.getRole() : "-").setHeader("Role").setFlexGrow(1);
-        usersGrid.addColumn(u -> u.getGroups() != null ? u.getGroups().getName() : "-").setHeader("Group")
+        usersGrid.addColumn(u -> u.getCompanyGroup() != null ? u.getCompanyGroup().getName() : "-").setHeader("Group")
                 .setFlexGrow(1);
 
         usersGrid.addComponentColumn(u -> {
@@ -176,7 +161,7 @@ public class UserManagementView extends VerticalLayout {
     private void refreshUsers() {
         try {
             String search = userSearchField.getValue() != null ? userSearchField.getValue() : "";
-            // List<UsersDto> users = userService.getUsers(search, "ACTIVE", 1, 100,
+            // List<Users> users = userService.getUsers(search, "ACTIVE", 1, 100,
             // "fullname", "asc");
             // usersList.clear();
             // if (users != null) {
@@ -188,7 +173,7 @@ public class UserManagementView extends VerticalLayout {
         }
     }
 
-    private void toggleUserStatus(UsersDto u) {
+    private void toggleUserStatus(Users u) {
         try {
             // userService.updateCompanyUsersStatus(u.getNrp());
             Notification.show("User status updated", 2000, Notification.Position.TOP_CENTER);
@@ -235,7 +220,7 @@ public class UserManagementView extends VerticalLayout {
 
     private void refreshDepts() {
         deptList.clear();
-        departmentRepo.findAll().forEach(deptList::add);
+        departmentRepo.findAll().list().forEach(deptList::add);
         deptGrid.setItems(deptList);
     }
 
@@ -266,7 +251,7 @@ public class UserManagementView extends VerticalLayout {
 
     private void refreshGroups() {
         groupList.clear();
-        groupRepo.findAll().forEach(groupList::add);
+        groupRepo.findAll().list().forEach(groupList::add);
         groupGrid.setItems(groupList);
     }
 
@@ -282,7 +267,7 @@ public class UserManagementView extends VerticalLayout {
         nameField.setRequired(true);
 
         List<Users> allUsers = new ArrayList<>();
-        userRepo.findAll().forEach(allUsers::add);
+        // userRepo.findAll().list().forEach(allUsers::add);
 
         ComboBox<Users> managerCombo = new ComboBox<>("Department Manager");
         managerCombo.setItemLabelGenerator(u -> u.getFullname() != null ? u.getFullname() : "-");
@@ -314,22 +299,22 @@ public class UserManagementView extends VerticalLayout {
                 return;
             }
 
-            DepartmentDto dto = new DepartmentDto();
-            dto.setDept_number(codeField.getValue());
-            dto.setDept_name(nameField.getValue());
+            Department dto = new Department();
+            dto.setDeptNumber(codeField.getValue());
+            dto.setDeptName(nameField.getValue());
 
             if (managerCombo.getValue() != null) {
-                UsersDto mDto = new UsersDto();
+                Users mDto = new Users();
                 mDto.setNrp(managerCombo.getValue().getNrp());
                 mDto.setFullname(managerCombo.getValue().getFullname());
-                dto.setDept_manager(mDto);
+                dto.setDeptManager(mDto);
             }
 
             if (purchaserCombo.getValue() != null) {
-                UsersDto pDto = new UsersDto();
+                Users pDto = new Users();
                 pDto.setNrp(purchaserCombo.getValue().getNrp());
                 pDto.setFullname(purchaserCombo.getValue().getFullname());
-                dto.setDept_purchaser(pDto);
+                dto.setDeptPurchaser(pDto);
             }
 
             try {
@@ -382,7 +367,7 @@ public class UserManagementView extends VerticalLayout {
             g.setName(nameField.getValue());
 
             try {
-                groupRepo.save(g);
+                groupRepo.persist(g);
                 Notification.show("Group saved", 3000, Notification.Position.TOP_CENTER)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();
@@ -415,14 +400,14 @@ public class UserManagementView extends VerticalLayout {
         TextField emailField = new TextField("Email");
 
         List<Department> dList = new ArrayList<>();
-        departmentRepo.findAll().forEach(dList::add);
+        departmentRepo.findAll().list().forEach(dList::add);
 
         ComboBox<Department> deptCombo = new ComboBox<>("Department");
         deptCombo.setItemLabelGenerator(d -> d.getDeptNumber() + " - " + d.getDeptName());
         deptCombo.setItems(dList);
 
         List<Group> gList = new ArrayList<>();
-        groupRepo.findAll().forEach(gList::add);
+        groupRepo.findAll().list().forEach(gList::add);
 
         ComboBox<Group> groupCombo = new ComboBox<>("Group / Role");
         groupCombo.setItemLabelGenerator(g -> g.getName());
@@ -437,16 +422,16 @@ public class UserManagementView extends VerticalLayout {
                 return;
             }
 
-            UsersDto dto = new UsersDto();
+            Users dto = new Users();
             dto.setNrp(nrpField.getValue());
             dto.setFullname(fullnameField.getValue());
             dto.setUsername(usernameField.getValue());
             dto.setEmail(emailField.getValue());
             if (deptCombo.getValue() != null) {
-                dto.setDept_id(deptCombo.getValue().getDeptNumber());
+                dto.setDepartment(deptCombo.getValue());
             }
             if (groupCombo.getValue() != null) {
-                dto.setGroup_code(groupCombo.getValue().getCode());
+                dto.setCompanyGroup(groupCombo.getValue());
             }
             dto.setStatus(StatusEnum.ACTIVE);
 

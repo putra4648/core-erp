@@ -10,13 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity()
 @Table(name = "mst_users_groups")
 public class Group {
@@ -34,4 +28,36 @@ public class Group {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "access_code", referencedColumnName = "access_number")
     private Access accessCode;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Users> getCompanyUsers() {
+        return companyUsers;
+    }
+
+    public void setCompanyUsers(List<Users> companyUsers) {
+        this.companyUsers = companyUsers;
+    }
+
+    public Access getAccessCode() {
+        return accessCode;
+    }
+
+    public void setAccessCode(Access accessCode) {
+        this.accessCode = accessCode;
+    }
 }

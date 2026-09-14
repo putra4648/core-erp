@@ -5,49 +5,57 @@ import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public class BaseModel {
+public abstract class BaseModel {
 
     @Column(name = "created_by")
-    private String userCreateBy;
+    private String createBy;
 
     @Column(name = "created_date")
     @CreationTimestamp(source = SourceType.DB)
-    private Instant createdDate;
+    private Instant createDate;
 
     @Column(name = "updated_by")
-    private String userUpdateBy;
+    private String updateBy;
 
     @Column(name = "updated_date")
     @UpdateTimestamp(source = SourceType.DB)
-    private Instant updatedDate;
+    private Instant updateDate;
 
-    /// Before any insert data
-    @PrePersist
-    public void beforeAnyInsert() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        this.setUserCreateBy(name);
+    public String getCreateBy() {
+        return createBy;
     }
 
-    @PreUpdate
-    public void beforeAnyUpdate() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        this.setUserUpdateBy(name);
+    public void setCreateBy(String userCreateBy) {
+        this.createBy = userCreateBy;
     }
+
+    public Instant getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Instant createdDate) {
+        this.createDate = createdDate;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String userUpdateBy) {
+        this.updateBy = userUpdateBy;
+    }
+
+    public Instant getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Instant updatedDate) {
+        this.updateDate = updatedDate;
+    }
+
 }
