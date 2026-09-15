@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "parameter_lookup")
@@ -16,8 +17,11 @@ public class ParameterLookup {
     private Long id;
 
     private String module;
+    @NotBlank(message = "Key is required")
     private String key;
+    @NotBlank(message = "Value is required")
     private String value;
+    @NotBlank(message = "Description is required")
     private String description;
     private Boolean isActive;
 

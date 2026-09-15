@@ -17,8 +17,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -27,6 +25,8 @@ import id.putra.core_erp.shared.entity.ParameterLookup;
 import id.putra.core_erp.shared.service.ParameterLookupService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 @Route(value = "settings", layout = MainLayout.class)
 @PageTitle("Settings | WMS Pro")
@@ -38,14 +38,15 @@ public class SettingsView extends DefaultComponent {
     private final VerticalLayout contentArea;
     private final Grid<ParameterLookup> parameterGrid = new Grid<>();
     private final TextField searchField;
-    private final Binder<ParameterLookup> binder;
+    private final Validator validator;
     private final ParameterLookup form;
 
     private final ParameterLookupService parameterLookupService;
 
     public SettingsView(ParameterLookupService parameterLookupService) {
         this.form = new ParameterLookup();
-        this.binder = new BeanValidationBinder<>(ParameterLookup.class);
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
+
         this.contentArea = new VerticalLayout();
         this.parameterLookupService = parameterLookupService;
         this.searchField = new TextField();
@@ -65,13 +66,15 @@ public class SettingsView extends DefaultComponent {
         this.parameterGrid.setItems(query -> parameterLookupService
                 .getAllParameterLookups(searchField.getValue(), Page.ofSize(query.getPageSize())).stream());
 
-        this.binder.forField(keyField).asRequired("Key is required").bind(ParameterLookup::getKey,
-                ParameterLookup::setKey);
-        this.binder.forField(valueField).asRequired("Value is required").bind(ParameterLookup::getValue,
-                ParameterLookup::setValue);
-        this.binder.forField(descriptionField).asRequired("Description is required")
-                .bind(ParameterLookup::getDescription, ParameterLookup::setDescription);
-        this.binder.setBean(form);
+        // this.binder.forField(keyField).asRequired("Key is
+        // required").bind(ParameterLookup::getKey,
+        // ParameterLookup::setKey);
+        // this.binder.forField(valueField).asRequired("Value is
+        // required").bind(ParameterLookup::getValue,
+        // ParameterLookup::setValue);
+        // this.binder.forField(descriptionField).asRequired("Description is required")
+        // .bind(ParameterLookup::getDescription, ParameterLookup::setDescription);
+        // this.binder.setBean(form);
 
         formLayout.add(keyField, valueField, descriptionField);
 
@@ -97,6 +100,7 @@ public class SettingsView extends DefaultComponent {
             configureParameterSection();
             this.parameterGrid.getDataProvider().refreshAll();
         }
+
     }
 
     private void configureParameterGrid() {
@@ -151,7 +155,7 @@ public class SettingsView extends DefaultComponent {
 
     @Override
     public void saveAction() {
-        if (binder.writeBeanIfValid(form)) {
+        if (!validator.validate(form).isEmpty()) {
             try {
                 parameterLookupService.persist(List.of(form));
                 this.parameterGrid.getDataProvider().refreshAll();

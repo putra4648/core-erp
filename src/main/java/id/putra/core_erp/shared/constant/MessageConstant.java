@@ -1,4 +1,4 @@
-package id.putra.core_erp.purchase_requisition.constant;
+package id.putra.core_erp.shared.constant;
 
 public class MessageConstant {
     public static final String SUCCESS = "Success";
