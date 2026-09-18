@@ -1,5 +1,6 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ import id.putra.core_erp.purchase_requisition.repository.InventoryRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.TransferService;
 import id.putra.core_erp.shared.util.AppFileUtil;
-import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -126,11 +126,9 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public AsyncFile download(Transfer dto) {
-
-        String file = "";
-        Path path = Paths.get(AppFileUtil.getServerPath(), "data", file);
-        return null;
+    public byte[] download(Transfer dto) throws Exception{
+        Path path = Paths.get(AppFileUtil.getServerPath(), "data", dto.getFilename());
+        return Files.readAllBytes(path);
 
     }
 

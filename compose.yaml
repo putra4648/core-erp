@@ -9,6 +9,7 @@ services:
       - 5432:5432
     volumes:
       - core_erp_db:/var/lib/postgresql
+      - ./core-erp.session.sql:/docker-entrypoint-initdb.d/01-core-erp.session.sql:ro
 
 volumes:
   core_erp_db:

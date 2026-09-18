@@ -1,5 +1,8 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +15,7 @@ import id.putra.core_erp.purchase_requisition.model.RFQ;
 import id.putra.core_erp.purchase_requisition.repository.RFQRepo;
 import id.putra.core_erp.purchase_requisition.service.RFQService;
 import id.putra.core_erp.shared.entity.Supplier;
-import io.vertx.mutiny.core.file.AsyncFile;
+import id.putra.core_erp.shared.util.AppFileUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -35,8 +38,8 @@ public class RFQServiceImpl implements RFQService {
     }
 
     @Override
-    public List<RFQ> findAll() {
-        return rfqRepository.listAll();
+    public List<RFQ> findAll(RFQ params) {
+        return rfqRepository.find("id like ?1", params.getId()).list();
     }
 
     @Override
@@ -114,7 +117,7 @@ public class RFQServiceImpl implements RFQService {
     }
 
     @Override
-    public AsyncFile download(RFQ dto) {
+    public byte[] download(RFQ dto) throws Exception{
 
         Optional<RFQ> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
@@ -122,12 +125,11 @@ public class RFQServiceImpl implements RFQService {
                 Supplier supplier = rfqOpt.get().getSuppliers().stream()
                         .filter(data -> data.getAccNo() != null)
                         .findFirst().orElse(null);
-                // if (supplier != null && supplier.getFile() != null &&
-                // supplier.getFile().getName() != null) {
-                // Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq",
-                // supplier.getFile().getName());
-                // return null;
-                // }
+                if (supplier != null) {
+                    Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq",
+                            supplier.getFilename());
+                    return Files.readAllBytes(path);
+                }
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();

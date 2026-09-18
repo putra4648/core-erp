@@ -1,15 +1,12 @@
 package id.putra.core_erp.shared.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "category")
@@ -20,6 +17,7 @@ public class Category {
     private Long id;
 
     @Column(name = "name", nullable = false)
+    @NotBlank
     private String name;
 
     @Column(name = "description")
@@ -27,9 +25,6 @@ public class Category {
 
     @Column(name = "parent_id")
     private Long parentId;
-
-    @OneToMany(mappedBy = "category")
-    private List<Product> products = new ArrayList<>();
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
@@ -63,11 +58,4 @@ public class Category {
         return parentId;
     }
 
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
 }

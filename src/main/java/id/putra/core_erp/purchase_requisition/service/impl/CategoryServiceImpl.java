@@ -1,10 +1,7 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import id.putra.core_erp.purchase_requisition.repository.CategoryRepo;
 import id.putra.core_erp.purchase_requisition.service.CategoryService;
 import id.putra.core_erp.shared.entity.Category;
@@ -46,15 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.findAll().list().forEach(data -> {
             categories.add(entityToDto(data));
         });
-
-        Map<Long, Category> categoryMap = new HashMap<>();
-        for (Category category : categories) {
-            if (category.getId() != null) {
-                categoryMap.put(category.getId(), category);
-            }
-        }
-
-        return buildHierarchy(categories, categoryMap);
+        return categories;
     }
 
     private Category entityToDto(Category entity) {
@@ -65,24 +54,6 @@ public class CategoryServiceImpl implements CategoryService {
         dto.setParentId(entity.getParentId());
 
         return dto;
-    }
-
-    public List<Category> buildHierarchy(List<Category> categories, Map<Long, Category> categoryMap) {
-        List<Category> rootCategories = new ArrayList<>();
-
-        for (Category category : categories) {
-            if (category.getParentId() == null) {
-                // Root node
-                rootCategories.add(category);
-            } else {
-                // Child node, find its parent and add it as a child
-                Category parentCategory = categoryMap.get(category.getParentId());
-                // if (parentCategory != null) {
-                // parentCategory.getChildren().add(category);
-                // }
-            }
-        }
-        return rootCategories;
     }
 
     @Override

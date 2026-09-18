@@ -4,7 +4,6 @@ import java.util.List;
 
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.model.RFQ;
-import io.vertx.mutiny.core.file.AsyncFile;
 
 public interface RFQService {
     void add(RFQ entity);
@@ -13,7 +12,7 @@ public interface RFQService {
 
     RFQ getById(Long id);
 
-    List<RFQ> findAll();
+    List<RFQ> findAll(RFQ params);
 
     void delete(Long id);
 
@@ -21,5 +20,5 @@ public interface RFQService {
 
     ApprovalEnum checkStatusApprovalIsPermanent(RFQ dto);
 
-    AsyncFile download(RFQ dto);
+    byte[] download(RFQ dto) throws Exception;
 }

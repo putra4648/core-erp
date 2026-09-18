@@ -160,7 +160,7 @@ public class UserManagementView extends VerticalLayout {
 
     private void refreshUsers() {
         try {
-            String search = userSearchField.getValue() != null ? userSearchField.getValue() : "";
+            // String search = userSearchField.getValue() != null ? userSearchField.getValue() : "";
             // List<Users> users = userService.getUsers(search, "ACTIVE", 1, 100,
             // "fullname", "asc");
             // usersList.clear();

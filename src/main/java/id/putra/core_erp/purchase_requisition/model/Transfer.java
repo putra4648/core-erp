@@ -66,6 +66,16 @@ public class Transfer extends BaseModel {
     @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
     private Approval tempPurchaserApproval;
 
+    private String filename;
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     public Long getId() {
         return id;
     }

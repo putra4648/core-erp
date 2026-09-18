@@ -87,7 +87,7 @@ public class RfqView extends VerticalLayout {
         try {
             RFQ params = new RFQ();
 
-            List<RFQ> res = rfqService.findAll();
+            List<RFQ> res = rfqService.findAll(params);
             rfqList.clear();
             if (res != null) {
                 rfqList.addAll(res);

@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "product")
@@ -16,12 +18,22 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String sku;
+
+    @NotBlank
     private String name;
+
     private String description;
+
+    @Min(value = 1)
     private Long minStock;
+
     private Long maxStock;
+
     private Boolean isActive;
+
+    @Min(value = 1)
     private Long quantity;
 
     @ManyToOne

@@ -4,7 +4,6 @@ import java.util.List;
 
 import id.putra.core_erp.purchase_requisition.enums.ApprovalEnum;
 import id.putra.core_erp.purchase_requisition.model.Requisition;
-import io.vertx.mutiny.core.file.AsyncFile;
 
 public interface RequisitionService {
 
@@ -22,5 +21,5 @@ public interface RequisitionService {
 
     ApprovalEnum checkStatusApprovalIsPermanent(Requisition dto);
 
-    AsyncFile download(Requisition dto);
+    byte[] download(Requisition dto) throws Exception;
 }

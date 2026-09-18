@@ -1,5 +1,7 @@
 package id.putra.core_erp.purchase_requisition.service.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,9 +18,7 @@ import id.putra.core_erp.purchase_requisition.repository.RequisitionRepo;
 import id.putra.core_erp.purchase_requisition.repository.TransferRequestRepo;
 import id.putra.core_erp.purchase_requisition.service.RequisitionService;
 import id.putra.core_erp.shared.util.AppFileUtil;
-import io.vertx.core.file.OpenOptions;
 import io.vertx.mutiny.core.Vertx;
-import io.vertx.mutiny.core.file.AsyncFile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -115,12 +115,11 @@ public class RequisitionServiceImpl implements RequisitionService {
     }
 
     @Override
-    public AsyncFile download(Requisition dto) {
+    public byte[] download(Requisition dto) throws IOException {
         String filename = "";
 
-        OpenOptions options = new OpenOptions().setCreate(false).setWrite(false);
         Path path = Paths.get(AppFileUtil.getServerPath(), "data", "requisitions", filename);
-        return vertx.fileSystem().openAndAwait(path.getFileName().toString(), options);
+        return Files.readAllBytes(path);
 
     }
 

@@ -146,7 +146,7 @@ public class RequisitionListView extends VerticalLayout {
                 params.setStatus(selectedStatus);
             }
 
-            List<String> deptIds = new ArrayList<>();
+            // List<String> deptIds = new ArrayList<>();
             // var currentUser = securityService.getCurrentUser();
             // if (currentUser.isPresent() && currentUser.get().getDepartment() != null) {
             // deptIds.add(currentUser.get().getDepartment().getDeptNumber());

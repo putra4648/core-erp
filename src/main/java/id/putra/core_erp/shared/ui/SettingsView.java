@@ -1,6 +1,7 @@
 package id.putra.core_erp.shared.ui;
 
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -17,8 +18,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -27,25 +26,29 @@ import id.putra.core_erp.shared.entity.ParameterLookup;
 import id.putra.core_erp.shared.service.ParameterLookupService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 
 @Route(value = "settings", layout = MainLayout.class)
 @PageTitle("Settings | WMS Pro")
 @PermitAll
 public class SettingsView extends DefaultComponent {
 
+    @Inject
+    Validator validator;
+
     private final Tab parameterTabs = new Tab(VaadinIcon.COG.create(), new Span("System Parameters"));
     private final Tabs tabs = new Tabs(this.parameterTabs);
     private final VerticalLayout contentArea;
     private final Grid<ParameterLookup> parameterGrid = new Grid<>();
     private final TextField searchField;
-    private final Binder<ParameterLookup> binder;
-    private final ParameterLookup form;
+    private ParameterLookup form;
 
     private final ParameterLookupService parameterLookupService;
 
     public SettingsView(ParameterLookupService parameterLookupService) {
         this.form = new ParameterLookup();
-        this.binder = new BeanValidationBinder<>(ParameterLookup.class);
         this.contentArea = new VerticalLayout();
         this.parameterLookupService = parameterLookupService;
         this.searchField = new TextField();
@@ -53,25 +56,23 @@ public class SettingsView extends DefaultComponent {
         super("Parameter Lookup");
 
         VerticalLayout formLayout = new VerticalLayout();
-        var keyField = new TextField("Key");
+        var keyField = new TextField("Key", val -> {
+            this.form.setKey(val.getValue());
+        });
         keyField.setRequired(true);
 
-        var valueField = new TextField("Value");
+        var valueField = new TextField("Value", val -> {
+            this.form.setValue(val.getValue());
+        });
         valueField.setRequired(true);
 
-        var descriptionField = new TextField("Description");
+        var descriptionField = new TextField("Description", val -> {
+            this.form.setDescription(val.getValue());
+        });
         descriptionField.setRequired(true);
 
         this.parameterGrid.setItems(query -> parameterLookupService
                 .getAllParameterLookups(searchField.getValue(), Page.ofSize(query.getPageSize())).stream());
-
-        this.binder.forField(keyField).asRequired("Key is required").bind(ParameterLookup::getKey,
-                ParameterLookup::setKey);
-        this.binder.forField(valueField).asRequired("Value is required").bind(ParameterLookup::getValue,
-                ParameterLookup::setValue);
-        this.binder.forField(descriptionField).asRequired("Description is required")
-                .bind(ParameterLookup::getDescription, ParameterLookup::setDescription);
-        this.binder.setBean(form);
 
         formLayout.add(keyField, valueField, descriptionField);
 
@@ -137,7 +138,6 @@ public class SettingsView extends DefaultComponent {
     }
 
     private void openAddParameterDialog() {
-        // TODO
         this.openDialog();
     }
 
@@ -151,7 +151,8 @@ public class SettingsView extends DefaultComponent {
 
     @Override
     public void saveAction() {
-        if (binder.writeBeanIfValid(form)) {
+        Set<ConstraintViolation<ParameterLookup>> validate = validator.validate(form);
+        if (validate.isEmpty()) {
             try {
                 parameterLookupService.persist(List.of(form));
                 this.parameterGrid.getDataProvider().refreshAll();

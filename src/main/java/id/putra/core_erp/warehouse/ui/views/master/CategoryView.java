@@ -16,8 +16,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -26,18 +24,26 @@ import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inventory.service.CategoryCoreService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
+import jakarta.validation.Validator;
 
 @Route(value = "master/categories", layout = MainLayout.class)
 @PageTitle("Categories | WMS Pro")
 @PermitAll
 public class CategoryView extends VerticalLayout {
 
+    @Inject
+    Validator validator;
+
     private final CategoryCoreService categoryCoreService;
     private final Grid<Category> grid = new Grid<>();
     private final TextField searchField = new TextField();
+    private final Category form;
 
     public CategoryView(CategoryCoreService categoryCoreService) {
         this.categoryCoreService = categoryCoreService;
+        this.form = new Category();
+
         setSizeFull();
         setPadding(true);
         setSpacing(true);
@@ -104,21 +110,20 @@ public class CategoryView extends VerticalLayout {
         boolean isEdit = category.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Category" : "Add Category");
 
-        Binder<Category> binder = new BeanValidationBinder<>(Category.class);
-
-        TextField nameField = new TextField("Category Name");
+        TextField nameField = new TextField("Category Name", val -> {
+            this.form.setName(val.getValue());
+        });
         nameField.setRequired(true);
-        TextArea descField = new TextArea("Description");
 
-        binder.forField(nameField).asRequired("Name is required").bind(Category::getName, Category::setName);
-        binder.forField(descField).bind(Category::getDescription, Category::setDescription);
-        binder.readBean(category);
+        TextArea descField = new TextArea("Description", val -> {
+            this.form.setName(val.getValue());
+        });
 
         FormLayout formLayout = new FormLayout(nameField, descField);
         dialog.add(formLayout);
 
         Button saveBtn = new Button("Save", e -> {
-            if (binder.writeBeanIfValid(category)) {
+            if (validator.validate(form).isEmpty()) {
                 try {
                     if (isEdit) {
                         categoryCoreService.update(List.of(category));

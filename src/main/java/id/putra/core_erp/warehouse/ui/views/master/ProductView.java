@@ -17,8 +17,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -27,18 +25,25 @@ import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.inventory.service.ProductCoreService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
+import jakarta.validation.Validator;
 
 @Route(value = "master/products", layout = MainLayout.class)
 @PageTitle("Products | WMS Pro")
 @PermitAll
 public class ProductView extends VerticalLayout {
+    @Inject
+    Validator validator;
 
     private final ProductCoreService productService;
     private final Grid<Product> grid = new Grid<>();
     private final TextField searchField = new TextField();
+    private Product form;
 
     public ProductView(ProductCoreService productService) {
         this.productService = productService;
+        this.form = new Product();
+
         setSizeFull();
         setPadding(true);
         setSpacing(true);
@@ -114,27 +119,27 @@ public class ProductView extends VerticalLayout {
         boolean isEdit = product.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Product" : "Add Product");
 
-        Binder<Product> binder = new BeanValidationBinder<>(Product.class);
-
-        TextField skuField = new TextField("SKU");
-        TextField nameField = new TextField("Product Name");
-        TextArea descField = new TextArea("Description");
-
-        IntegerField qtyField = new IntegerField("Quantity", 1, (value) -> {
-
+        TextField skuField = new TextField("SKU", val -> {
+            this.form.setSku(val.getValue());
         });
-        IntegerField minStockField = new IntegerField("Min Stock", 1, (value) -> {
-
+        TextField nameField = new TextField("Product Name", val -> {
+            this.form.setName(val.getValue());
         });
-        IntegerField maxStockField = new IntegerField("Max Stock", 1, (value) -> {
-
+        TextArea descField = new TextArea("Description", val -> {
+            this.form.setSku(val.getValue());
         });
-        Checkbox activeCheck = new Checkbox("Is Active");
-
-        binder.forField(skuField).asRequired("SKU is required").bind(Product::getSku, Product::setSku);
-        binder.forField(nameField).asRequired("Name is required").bind(Product::getName, Product::setName);
-        binder.forField(descField).bind(Product::getDescription, Product::setDescription);
-        binder.forField(activeCheck).bind(Product::getIsActive, Product::setIsActive);
+        IntegerField qtyField = new IntegerField("Quantity", 1, val -> {
+            this.form.setQuantity(val.getValue().longValue());
+        });
+        IntegerField minStockField = new IntegerField("Min Stock", 1, val -> {
+            this.form.setMinStock(val.getValue().longValue());
+        });
+        IntegerField maxStockField = new IntegerField("Max Stock", 1, val -> {
+            this.form.setMaxStock(val.getValue().longValue());
+        });
+        Checkbox activeCheck = new Checkbox("Is Active", val -> {
+            this.form.setIsActive(val.getValue());
+        });
 
         skuField.setValue(product.getSku() != null ? product.getSku() : "");
         nameField.setValue(product.getName() != null ? product.getName() : "");
@@ -149,7 +154,7 @@ public class ProductView extends VerticalLayout {
         dialog.add(formLayout);
 
         Button saveBtn = new Button("Save", e -> {
-            if (binder.writeBeanIfValid(product)) {
+            if (validator.validate(form).isEmpty()) {
                 product.setQuantity(qtyField.getValue() != null ? qtyField.getValue().longValue() : 0L);
                 product.setMinStock(minStockField.getValue() != null ? minStockField.getValue().longValue() : 0L);
                 product.setMaxStock(maxStockField.getValue() != null ? maxStockField.getValue().longValue() : 0L);

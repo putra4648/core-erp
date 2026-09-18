@@ -84,6 +84,16 @@ public class Supplier extends BaseEntity {
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SupplierContact> contacts = new ArrayList<>();
 
+    private String filename;
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
     public String getMainContact() {
         return (contacts != null && !contacts.isEmpty()) ? contacts.get(0).getContactName() : "";
     }

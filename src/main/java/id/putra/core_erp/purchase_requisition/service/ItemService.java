@@ -5,7 +5,6 @@ import java.util.List;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.purchase_requisition.model.Item;
-import io.vertx.mutiny.core.file.AsyncFile;
 
 public interface ItemService {
         void addItem(
@@ -33,5 +32,5 @@ public interface ItemService {
 
         void importItems(FileUpload file) throws Exception;
 
-        AsyncFile exportItems() throws Exception;
+        byte[] exportItems() throws Exception;
 }

@@ -18,8 +18,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -29,18 +27,26 @@ import id.putra.core_erp.shared.ui.MainLayout;
 import id.putra.core_erp.warehouse.module.customer.service.CustomerService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
+import jakarta.validation.Validator;
 
 @Route(value = "master/customer", layout = MainLayout.class)
 @PageTitle("Customers | WMS Pro")
 @PermitAll
 public class CustomerView extends VerticalLayout {
+    @Inject
+    Validator validator;
 
     private final CustomerService customerService;
     private final Grid<Customer> grid = new Grid<>();
     private final TextField searchField = new TextField();
+    private final Customer form;
 
     public CustomerView(CustomerService customerService) {
         this.customerService = customerService;
+        this.form = new Customer();
+        this.form.setContactPerson(new ContactPersonCustomer());
+
         setSizeFull();
         setPadding(true);
         setSpacing(true);
@@ -122,20 +128,28 @@ public class CustomerView extends VerticalLayout {
             customer.setContactPerson(new ContactPersonCustomer());
         }
 
-        Binder<Customer> binder = new BeanValidationBinder<>(Customer.class);
+        TextField codeField = new TextField("Customer Code", val -> {
+            this.form.setCode(val.getValue());
+        });
+        TextField nameField = new TextField("Customer Name", val -> {
+            this.form.setName(val.getValue());
+        });
+        Checkbox activeCheck = new Checkbox("Is Active", val -> {
+            this.form.setIsActive(val.getValue());
+        });
 
-        TextField codeField = new TextField("Customer Code");
-        TextField nameField = new TextField("Customer Name");
-        Checkbox activeCheck = new Checkbox("Is Active");
-
-        TextField cpNameField = new TextField("Contact Person Name");
-        TextField cpEmailField = new TextField("Email");
-        TextField cpPhoneField = new TextField("Phone");
-        TextArea cpAddressField = new TextArea("Address");
-
-        binder.forField(codeField).asRequired("Code is required").bind(Customer::getCode, Customer::setCode);
-        binder.forField(nameField).asRequired("Name is required").bind(Customer::getName, Customer::setName);
-        binder.forField(activeCheck).bind(Customer::getIsActive, Customer::setIsActive);
+        TextField cpNameField = new TextField("Contact Person Name", val -> {
+            this.form.getContactPerson().setName(val.getValue());
+        });
+        TextField cpEmailField = new TextField("Email", val -> {
+            this.form.getContactPerson().setEmail(val.getValue());
+        });
+        TextField cpPhoneField = new TextField("Phone", val -> {
+            this.form.getContactPerson().setPhone(val.getValue());
+        });
+        TextArea cpAddressField = new TextArea("Address", val -> {
+            this.form.getContactPerson().setAddress(val.getValue());
+        });
 
         codeField.setValue(customer.getCode() != null ? customer.getCode() : "");
         nameField.setValue(customer.getName() != null ? customer.getName() : "");
@@ -155,7 +169,7 @@ public class CustomerView extends VerticalLayout {
         dialog.add(formLayout);
 
         Button saveBtn = new Button("Save", e -> {
-            if (binder.writeBeanIfValid(customer)) {
+            if (validator.validate(form).isEmpty()) {
                 customer.getContactPerson().setName(cpNameField.getValue());
                 customer.getContactPerson().setEmail(cpEmailField.getValue());
                 customer.getContactPerson().setPhone(cpPhoneField.getValue());

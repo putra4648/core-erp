@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import id.putra.core_erp.purchase_requisition.constant.MessageConstant;
 import id.putra.core_erp.purchase_requisition.enums.StatusEnum;
 import id.putra.core_erp.purchase_requisition.model.Approval;
 import id.putra.core_erp.purchase_requisition.model.Department;
 import id.putra.core_erp.purchase_requisition.model.Users;
 import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
 import id.putra.core_erp.purchase_requisition.service.DepartmentsService;
+import id.putra.core_erp.shared.constant.MessageConstant;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -197,7 +197,7 @@ public class DepartmentsServiceImpl implements DepartmentsService {
         if (data.getApprovals() != null) {
             for (Approval Approval : data.getApprovals()) {
                 if (Approval.getUsers() != null && Approval.getUsers().getNrp() != null) {
-                    Approval approval = new Approval();
+                    // Approval approval = new Approval();
                     // Optional<Users> user1 = userRepo.findById(Approval.getUsers().getNrp());
                     // if (user1.isPresent()) {
                     // approval.setDepartment(entity);
