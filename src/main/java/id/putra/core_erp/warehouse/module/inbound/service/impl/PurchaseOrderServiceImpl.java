@@ -2,8 +2,6 @@ package id.putra.core_erp.warehouse.module.inbound.service.impl;
 
 import java.util.List;
 
-import org.jspecify.annotations.NonNull;
-
 import id.putra.core_erp.warehouse.module.inbound.model.entity.PurchaseOrder;
 import id.putra.core_erp.warehouse.module.inbound.model.repository.PurchaseOrderRepository;
 import id.putra.core_erp.warehouse.module.inbound.service.PurchaseOrderService;
@@ -33,7 +31,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     }
 
     @Override
-    public Boolean delete(@NonNull Long id) {
+    public Boolean delete(Long id) {
         return purchaseOrderRepository.deleteById(id);
     }
 
