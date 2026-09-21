@@ -1,0 +1,36 @@
+package id.putra.core_erp.modules.procurement.service;
+
+import java.util.List;
+
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import id.putra.core_erp.modules.procurement.model.Item;
+
+public interface ItemService {
+        void addItem(
+                        Item body,
+                        FileUpload itemImage,
+                        List<FileUpload> itemDocs) throws Exception;
+
+        List<Item> getItems(
+                        String search,
+                        String status,
+                        String supplierId,
+                        Integer page,
+                        Integer perPage,
+                        String sortBy,
+                        String order);
+
+        void updateItem(
+                        Item dto,
+                        FileUpload itemImage,
+                        List<FileUpload> itemDocs) throws Exception;
+
+        Item getItemDetail(Long id);
+
+        Boolean isItemExist(String name);
+
+        void importItems(FileUpload file) throws Exception;
+
+        byte[] exportItems() throws Exception;
+}

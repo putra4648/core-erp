@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import id.putra.core_erp.purchase_requisition.model.Department;
-import id.putra.core_erp.purchase_requisition.repository.DepartmentRepo;
+import id.putra.core_erp.modules.department.model.Department;
+import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.WebApplicationException;

@@ -9,7 +9,7 @@ import java.util.Base64;
 
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-import id.putra.core_erp.purchase_requisition.model.AppFile;
+import id.putra.core_erp.modules.procurement.model.AppFile;
 
 public class AppFileUtil {
 
