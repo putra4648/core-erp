@@ -41,6 +41,7 @@ public class SupplierService {
     public SupplierService(SupplierRepo supplierRepo) {
         this.supplierRepo = supplierRepo;
     }
+
     public void addSupplier(Supplier body, FileUpload logoFile)
             throws Exception {
         Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
@@ -69,6 +70,7 @@ public class SupplierService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public List<Supplier> getSupplier(String search, String status, Page page) {
 
         if (status == null || status.isBlank()) {
@@ -79,6 +81,7 @@ public class SupplierService {
 
         return result.list();
     }
+
     public Supplier getSupplier(Long id) {
         Optional<Supplier> supplierOptional = supplierRepo.findByIdOptional(id);
 
@@ -89,6 +92,7 @@ public class SupplierService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public void updateSupplier(Supplier body, FileUpload logoFile)
             throws Exception {
         Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
@@ -127,6 +131,7 @@ public class SupplierService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public void updateSupplierStatus(Map<String, Object> body) {
         Long id = (Long) body.get("id");
         Optional<Supplier> supplier = supplierRepo.findByIdOptional(id);
@@ -140,9 +145,11 @@ public class SupplierService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public List<Supplier> getSupplierDropdown() {
         return supplierRepo.findByStatus(StatusEnum.ACTIVE);
     }
+
     public void importSuppliers(FileUpload file) throws Exception {
         if (file == null) {
             throw new IllegalArgumentException("File is empty");
@@ -227,6 +234,7 @@ public class SupplierService {
                 return "";
         }
     }
+
     public Resource exportSuppliers() throws Exception {
         List<Supplier> suppliers = StreamSupport.stream(supplierRepo.findAll().list().spliterator(), false)
                 .collect(Collectors.toList());

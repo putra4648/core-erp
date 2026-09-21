@@ -49,6 +49,7 @@ public class ItemService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
     public void addItem(Item body, FileUpload itemImage,
             List<FileUpload> docs) throws Exception {
         Optional<Item> itemOptional = itemRepo.findByNameEqualsIgnoreCase(body.getItemNumber());
@@ -61,6 +62,7 @@ public class ItemService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public List<Item> getItems(String search, String status,
             String supplierId, Integer page, Integer perPage, String sortBy, String order) {
         if (search == null) {
@@ -83,6 +85,7 @@ public class ItemService {
 
         return result.list().stream().toList();
     }
+
     public void updateItem(Item dto, FileUpload itemImage,
             List<FileUpload> itemDocs) throws Exception {
         if (dto.getItemNumber() != null) {
@@ -161,6 +164,7 @@ public class ItemService {
             entity.setDocsPath(docsPath);
         }
     }
+
     public Item getItemDetail(Long id) {
         Optional<Item> itemOptional = itemRepo.findByIdOptional(id);
 
@@ -172,9 +176,11 @@ public class ItemService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public Boolean isItemExist(String name) {
         return itemRepo.findByNameEqualsIgnoreCase(name).isPresent();
     }
+
     public void importItems(FileUpload file) throws Exception {
         if (file == null) {
             throw new IllegalArgumentException("File is empty");
@@ -216,6 +222,7 @@ public class ItemService {
             itemRepo.persist(itemsToSave);
         }
     }
+
     public byte[] exportItems() throws Exception {
         List<Item> items = StreamSupport.stream(itemRepo.findAll().list().spliterator(), false)
                 .collect(Collectors.toList());

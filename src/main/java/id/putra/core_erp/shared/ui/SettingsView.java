@@ -28,14 +28,13 @@ import id.putra.core_erp.modules.parameter.model.ParameterLookup;
 import id.putra.core_erp.modules.parameter.service.ParameterLookupService;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
-
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 @Route(value = "settings", layout = MainLayout.class)
 @PageTitle("Settings | WMS Pro")
-@Authenticated 
+@Authenticated
 public class SettingsView extends VerticalLayout {
 
     @Inject
@@ -103,6 +102,7 @@ public class SettingsView extends VerticalLayout {
             configureParameterSection();
             this.parameterGrid.getDataProvider().refreshAll();
         }
+
     }
 
     private void configureParameterGrid() {

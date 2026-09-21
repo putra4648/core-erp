@@ -21,12 +21,12 @@ public class ParameterLookup {
     @NotBlank
     private String key;
 
-    @NotBlank 
+    @NotBlank
     private String value;
 
-    @NotBlank 
+    @NotBlank
     private String description;
-    
+
     private Boolean isActive;
 
     public Long getId() {

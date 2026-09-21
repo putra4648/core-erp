@@ -23,11 +23,13 @@ public class DepartmentsService {
     public DepartmentsService(DepartmentRepo departmentRepo) {
         this.departmentRepo = departmentRepo;
     }
+
     public List<Department> getDepartmentDropdown() {
         List<Department> dtos = new ArrayList<>();
         departmentRepo.findAll().list().forEach(data -> dtos.add(entityToDto(data)));
         return dtos;
     }
+
     public Map<String, Object> getDepartments(String type, String name) {
         Map<String, Object> detail = new HashMap<>();
 
@@ -51,6 +53,7 @@ public class DepartmentsService {
         String message = MessageFormat.format(MessageConstant.NOT_FOUND, type);
         throw new IllegalArgumentException(message);
     }
+
     public void addDepartment(Department body) {
         Optional<Department> dept = departmentRepo.findByIdOptional(body.getId());
         if (dept.isPresent()) {
@@ -61,6 +64,7 @@ public class DepartmentsService {
             departmentRepo.persist(dtoToEntity(entity, body));
         }
     }
+
     public Department getDetailDepartment(Long id) {
         Optional<Department> deptOptional = departmentRepo.findByIdOptional(id);
         if (deptOptional.isPresent()) {
@@ -71,6 +75,7 @@ public class DepartmentsService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public void updateDepartment(Department body) {
         Optional<Department> dept = departmentRepo.findByDeptNumber(body.getDeptNumber());
         if (dept.isPresent()) {
@@ -81,6 +86,7 @@ public class DepartmentsService {
             throw new IllegalArgumentException(message);
         }
     }
+
     public void updateDepartmentStatus(Long deptId) {
         Optional<Department> dept = departmentRepo.findByIdOptional(deptId);
         if (dept.isPresent()) {
@@ -102,11 +108,11 @@ public class DepartmentsService {
         // Users user = new Users();
 
         // if (data.getDeptManager() != null) {
-        //     user.setNrp(data.getDeptManager().getNrp());
-        //     user.setFullname(data.getDeptManager().getFullname());
-        //     user.setStatus(data.getDeptManager().getStatus());
-        //     user.setUsername(data.getDeptManager().getUsername());
-        //     dto.setDeptManager(user);
+        // user.setNrp(data.getDeptManager().getNrp());
+        // user.setFullname(data.getDeptManager().getFullname());
+        // user.setStatus(data.getDeptManager().getStatus());
+        // user.setUsername(data.getDeptManager().getUsername());
+        // dto.setDeptManager(user);
         // }
 
         List<Approval> approvals = new ArrayList<>();
@@ -116,12 +122,12 @@ public class DepartmentsService {
                 Approval.setId(aprv.getId());
 
                 // if (aprv.getUsers() != null) {
-                //     Users user1 = new Users();
-                //     user1.setNrp(aprv.getUsers().getNrp());
-                //     user1.setFullname(aprv.getUsers().getFullname());
-                //     user1.setStatus(aprv.getUsers().getStatus());
-                //     user1.setUsername(aprv.getUsers().getUsername());
-                //     Approval.setUsers(user1);
+                // Users user1 = new Users();
+                // user1.setNrp(aprv.getUsers().getNrp());
+                // user1.setFullname(aprv.getUsers().getFullname());
+                // user1.setStatus(aprv.getUsers().getStatus());
+                // user1.setUsername(aprv.getUsers().getUsername());
+                // Approval.setUsers(user1);
                 // }
                 approvals.add(Approval);
             });
@@ -129,21 +135,21 @@ public class DepartmentsService {
         dto.setApprovals(approvals);
 
         // if (data.getDeptPurchaser() != null) {
-        //     user = new Users();
-        //     user.setNrp(data.getDeptPurchaser().getNrp());
-        //     user.setFullname(data.getDeptPurchaser().getFullname());
-        //     user.setStatus(data.getDeptPurchaser().getStatus());
-        //     user.setUsername(data.getDeptPurchaser().getUsername());
-        //     dto.setDeptPurchaser(user);
+        // user = new Users();
+        // user.setNrp(data.getDeptPurchaser().getNrp());
+        // user.setFullname(data.getDeptPurchaser().getFullname());
+        // user.setStatus(data.getDeptPurchaser().getStatus());
+        // user.setUsername(data.getDeptPurchaser().getUsername());
+        // dto.setDeptPurchaser(user);
         // }
 
         // if (data.getApprovalPresident() != null) {
-        //     user = new Users();
-        //     user.setNrp(data.getApprovalPresident().getNrp());
-        //     user.setFullname(data.getApprovalPresident().getFullname());
-        //     user.setStatus(data.getApprovalPresident().getStatus());
-        //     user.setUsername(data.getApprovalPresident().getUsername());
-        //     dto.setApprovalPresident(user);
+        // user = new Users();
+        // user.setNrp(data.getApprovalPresident().getNrp());
+        // user.setFullname(data.getApprovalPresident().getFullname());
+        // user.setStatus(data.getApprovalPresident().getStatus());
+        // user.setUsername(data.getApprovalPresident().getUsername());
+        // dto.setApprovalPresident(user);
         // }
 
         return dto;
@@ -196,6 +202,7 @@ public class DepartmentsService {
         entity.setApprovals(approvals);
         return entity;
     }
+
     public List<Approval> getDeptApprovals(Long deptId) {
         List<Approval> dtos = new ArrayList<>();
 
@@ -217,6 +224,7 @@ public class DepartmentsService {
 
         return dtos;
     }
+
     public Approval getDeptApprovalPurchaser(Long deptId) {
         Approval dto = null;
         Optional<Department> deptOpt = departmentRepo.findByIdOptional(deptId);
