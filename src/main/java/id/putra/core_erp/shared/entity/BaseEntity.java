@@ -2,66 +2,58 @@ package id.putra.core_erp.shared.entity;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 
 @MappedSuperclass
 public class BaseEntity {
 
-    // Auto-timestamped fields - no Spring SecurityContextHolder needed!
-    @Column(name = "created_at")
-    private Instant createdAt;
-    @Column(name = "created_by")
-    private String createdBy;
+    @Column
+    @CreationTimestamp 
+    private Instant createAt;
 
-    @Column(name = "updated_at")
+    @Column
+    private String createBy;
 
-    private Instant updatedAt;
-    @Column(name = "updated_by")
-    private String updatedBy;
+    @Column
+    @UpdateTimestamp 
+    private Instant updateAt;
 
-    // Lifecycle callbacks for auto-timestamping
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now();
+    @Column
+    private String updateBy;
+
+    public Instant getCreateAt() {
+        return createAt;
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
+    public void setCreateAt(Instant createdAt) {
+        this.createAt = createdAt;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public String getCreateBy() {
+        return createBy;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public void setCreateBy(String createdBy) {
+        this.createBy = createdBy;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
+    public Instant getUpdateAt() {
+        return updateAt;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setUpdateAt(Instant updatedAt) {
+        this.updateAt = updatedAt;
     }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
+    public String getUpdateBy() {
+        return updateBy;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+    public void setUpdateBy(String updatedBy) {
+        this.updateBy = updatedBy;
     }
 }
