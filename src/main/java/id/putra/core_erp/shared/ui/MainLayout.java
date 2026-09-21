@@ -81,34 +81,30 @@ public class MainLayout extends AppLayout {
 
     private void createDrawer(String username, String pictureUrl) {
         SideNav mainNav = new SideNav();
-        mainNav.setLabel("MAIN NAVIGATION");
+        mainNav.setLabel("Main");
         mainNav.addItem(new SideNavItem("Dashboard", "", VaadinIcon.DASHBOARD.create()));
         mainNav.setWidthFull();
 
         SideNav warehouseNav = new SideNav();
-        warehouseNav.setLabel("WAREHOUSE MANAGEMENT");
-        SideNavItem inboundGroup = new SideNavItem("Inbound");
-        inboundGroup.setPrefixComponent(VaadinIcon.DOWNLOAD_ALT.create());
-        inboundGroup
-                .addItem(new SideNavItem("Purchase Orders", "inbound/purchase-order", VaadinIcon.FILE_TEXT_O.create()));
-        inboundGroup.addItem(new SideNavItem("Receiving", "inbound/receiving", VaadinIcon.INBOX.create()));
-        warehouseNav.addItem(inboundGroup);
+        warehouseNav.setLabel("Warehouse");
+        warehouseNav.addItem(new SideNavItem("Receiving", "receiving", VaadinIcon.INBOX.create()));
         warehouseNav.addItem(new SideNavItem("Inventory Stock", "inventory", VaadinIcon.PACKAGE.create()));
         warehouseNav.addItem(new SideNavItem("Outbound & Shipping", "outbound", VaadinIcon.UPLOAD_ALT.create()));
         warehouseNav.setWidthFull();
 
-        SideNav prNav = new SideNav();
-        prNav.setLabel("PURCHASE REQUISITION");
-        prNav.addItem(new SideNavItem("Requisitions", "requisitions", VaadinIcon.CLIPBOARD_CHECK.create()));
-        prNav.addItem(new SideNavItem("Request for Quotation", "rfq", VaadinIcon.MONEY.create()));
+        SideNav procNav = new SideNav();
+        procNav.setLabel("Procurement");
+        procNav.addItem(new SideNavItem("Purchase Requisitions", "pr", VaadinIcon.CLIPBOARD_CHECK.create()));
+        procNav.addItem(new SideNavItem("Request for Quotation", "rfq", VaadinIcon.MONEY.create()));
+        procNav.addItem(new SideNavItem("Purchase Orders", "po", VaadinIcon.FILE_TEXT.create()));
         // prNav.addItem(new SideNavItem("Transfer Requests", "transfers",
         // VaadinIcon.EXCHANGE.create()));
-        prNav.setWidthFull();
+        procNav.setWidthFull();
 
         SideNav masterNav = new SideNav();
-        masterNav.setLabel("MASTER DATA");
+        masterNav.setLabel("Master Data");
         masterNav.addItem(new SideNavItem("Products", "master/products", VaadinIcon.RECORDS.create()));
-        masterNav.addItem(new SideNavItem("Categories", "master/categories", VaadinIcon.TAGS.create()));
+        // masterNav.addItem(new SideNavItem("Categories", "master/categories", VaadinIcon.TAGS.create()));
         masterNav.addItem(new SideNavItem("Suppliers", "master/suppliers", VaadinIcon.TRUCK.create()));
         masterNav.addItem(new SideNavItem("Customers", "master/customer", VaadinIcon.USERS.create()));
         masterNav.addItem(new SideNavItem("Warehouses", "master/warehouses", VaadinIcon.BUILDING.create()));
@@ -125,7 +121,7 @@ public class MainLayout extends AppLayout {
         reportsNav.setLabel("REPORTS & ANALYTICS");
         reportsNav.addItem(new SideNavItem("WMS Reports", "reports", VaadinIcon.PIE_CHART.create()));
         // TODO: add PR Dashboard
-        // reportsNav.addItem(new SideNavItem("PR Dashboard", "pr/dashboard",
+        // reportsNav.addItem(new SideNavItem("PR Dashboard", "prc/dashboard",
         // VaadinIcon.CHART.create()));
         reportsNav.setWidthFull();
 
@@ -137,7 +133,7 @@ public class MainLayout extends AppLayout {
         adminNav.addItem(new SideNavItem("Help & Support", "help", VaadinIcon.QUESTION_CIRCLE.create()));
         adminNav.setWidthFull();
 
-        VerticalLayout navContainer = new VerticalLayout(mainNav, warehouseNav, prNav, masterNav, reportsNav, adminNav);
+        VerticalLayout navContainer = new VerticalLayout(mainNav, warehouseNav, procNav, masterNav, reportsNav, adminNav);
         navContainer.setPadding(true);
         navContainer.setSpacing(true);
         navContainer.setWidthFull();

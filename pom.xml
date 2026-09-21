@@ -57,6 +57,15 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-hibernate-orm-panache</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-junit-mockito</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- JDBC driver dependencies -->
 		<dependency>
