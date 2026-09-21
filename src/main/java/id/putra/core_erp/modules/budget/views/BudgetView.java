@@ -24,19 +24,18 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import id.putra.core_erp.enums.BudgetEnum;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.budget.model.BudgetDetail;
 import id.putra.core_erp.modules.budget.service.BudgetService;
 import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.department.repo.DepartmentRepo;
-import id.putra.core_erp.modules.procurement.enums.BudgetEnum;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
-
 
 @Route(value = "budgets", layout = MainLayout.class)
 @PageTitle("Budgets | Purchase Requisition System")
-@Authenticated 
+@Authenticated
 public class BudgetView extends VerticalLayout {
 
     private final BudgetService budgetService;

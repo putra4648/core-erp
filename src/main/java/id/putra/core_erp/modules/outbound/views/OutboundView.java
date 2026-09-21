@@ -19,14 +19,13 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.outbound.model.SalesOrder;
 import id.putra.core_erp.modules.outbound.service.SalesOrderService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
-
 @Route(value = "outbound", layout = MainLayout.class)
 @PageTitle("Outbound | WMS Pro")
-@Authenticated 
+@Authenticated
 public class OutboundView extends VerticalLayout {
 
     private final SalesOrderService salesOrderService;

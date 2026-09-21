@@ -26,9 +26,8 @@ import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import id.putra.core_erp.modules.procurement.model.Requisition;
 import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.service.RequisitionService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
-
 
 @Route(value = "requisitions", layout = MainLayout.class)
 @PageTitle("Purchase Requisitions | PR System")

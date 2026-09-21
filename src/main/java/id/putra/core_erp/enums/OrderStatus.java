@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.enums;
+package id.putra.core_erp.enums;
 
 public enum OrderStatus {
     DRAFT,

@@ -3,7 +3,7 @@ package id.putra.core_erp.modules.inventory.model;
 import java.time.ZonedDateTime;
 
 import id.putra.core_erp.modules.product.model.Product;
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

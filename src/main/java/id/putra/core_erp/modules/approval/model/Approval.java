@@ -1,7 +1,8 @@
-package id.putra.core_erp.modules.procurement.model;
+package id.putra.core_erp.modules.approval.model;
 
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.department.model.Department;
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.modules.procurement.model.Requisition;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

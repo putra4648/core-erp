@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.constant;
+package id.putra.core_erp.constant;
 
 public class MessageConstant {
     public static final String SUCCESS = "Success";

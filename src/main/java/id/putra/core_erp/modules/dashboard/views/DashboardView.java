@@ -19,7 +19,7 @@ import id.putra.core_erp.modules.product.model.Product;
 import id.putra.core_erp.modules.product.service.ProductService;
 import id.putra.core_erp.modules.warehouse.model.Warehouse;
 import id.putra.core_erp.modules.warehouse.service.WarehouseService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 

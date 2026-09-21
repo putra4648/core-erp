@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.security;
+package id.putra.core_erp.config;
 
 import com.vaadin.flow.router.AccessDeniedException;
 import com.vaadin.flow.router.BeforeEnterEvent;

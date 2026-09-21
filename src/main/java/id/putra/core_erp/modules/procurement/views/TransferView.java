@@ -22,13 +22,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import id.putra.core_erp.modules.procurement.model.Transfer;
 import id.putra.core_erp.modules.procurement.service.TransferService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
-
 
 @Route(value = "transfers", layout = MainLayout.class)
 @PageTitle("Transfers | Purchase Requisition System")
-@Authenticated 
+@Authenticated
 public class TransferView extends VerticalLayout {
 
     private final TransferService transferService;

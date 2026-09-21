@@ -3,7 +3,7 @@ package id.putra.core_erp.modules.company.model;
 import java.util.Date;
 import java.util.List;
 
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

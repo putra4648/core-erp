@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -152,11 +152,11 @@ public class Item extends BaseEntity {
     }
 
     // public Category getCategory() {
-    //     return category;
+    // return category;
     // }
 
     // public void setCategory(Category category) {
-    //     this.category = category;
+    // this.category = category;
     // }
 
     public String getUnit() {

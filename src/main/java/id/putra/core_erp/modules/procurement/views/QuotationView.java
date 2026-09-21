@@ -21,9 +21,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.modules.procurement.model.Quotation;
 import id.putra.core_erp.modules.procurement.service.QuotationService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
-
 
 @Route(value = "rfq", layout = MainLayout.class)
 @PageTitle("Request For Quotations | PR System")

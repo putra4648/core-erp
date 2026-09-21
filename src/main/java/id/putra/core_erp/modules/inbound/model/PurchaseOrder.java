@@ -3,8 +3,8 @@ package id.putra.core_erp.modules.inbound.model;
 import java.sql.Date;
 import java.util.List;
 
+import id.putra.core_erp.enums.OrderStatus;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.enums.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

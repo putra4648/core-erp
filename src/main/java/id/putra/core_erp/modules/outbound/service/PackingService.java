@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.outbound.service;
 
-import id.putra.core_erp.shared.service.BaseService;
+import id.putra.core_erp.service.BaseService;
 
 import java.util.List;
 
@@ -18,28 +18,36 @@ public class PackingService implements BaseService<Packing> {
     public PackingService(PackingRepository packingRepository) {
         this.packingRepository = packingRepository;
     }
+
     public Packing save(Packing dto) {
         packingRepository.persist(dto);
         return dto;
     }
+
     public Packing create(Packing dto) {
         return save(dto);
     }
+
     public void update(Packing dto) {
         packingRepository.getEntityManager().merge(dto);
     }
+
     public void delete(Long id) {
         packingRepository.deleteById(id);
     }
+
     public Packing getById(Long id) {
         return packingRepository.findById(id);
     }
+
     public Packing findById(Long id) {
         return packingRepository.findById(id);
     }
+
     public Iterable<Packing> findAll() {
         return packingRepository.findAll().list();
     }
+
     public List<Packing> getAll(Packing filter) {
         return packingRepository.findAll().list();
     }

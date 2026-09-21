@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.entity;
+package id.putra.core_erp.entity;
 
 import java.time.Instant;
 
@@ -12,14 +12,14 @@ import jakarta.persistence.MappedSuperclass;
 public class BaseEntity {
 
     @Column
-    @CreationTimestamp 
+    @CreationTimestamp
     private Instant createAt;
 
     @Column
     private String createBy;
 
     @Column
-    @UpdateTimestamp 
+    @UpdateTimestamp
     private Instant updateAt;
 
     @Column

@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.util;
+package id.putra.core_erp.util;
 
 import java.io.File;
 import java.io.IOException;

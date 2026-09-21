@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
-import id.putra.core_erp.shared.enums.OrderStatus;
+import id.putra.core_erp.enums.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

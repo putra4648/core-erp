@@ -1,7 +1,7 @@
 package id.putra.core_erp.modules.supplier.model;
 
 import id.putra.core_erp.modules.product.model.Product;
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

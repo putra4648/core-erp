@@ -6,9 +6,10 @@ import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

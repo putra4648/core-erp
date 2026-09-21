@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import id.putra.core_erp.shared.entity.BaseEntity;
-import id.putra.core_erp.shared.enums.StatusEnum;
-import id.putra.core_erp.shared.enums.TypeEnum;
+import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.enums.StatusEnum;
+import id.putra.core_erp.enums.TypeEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

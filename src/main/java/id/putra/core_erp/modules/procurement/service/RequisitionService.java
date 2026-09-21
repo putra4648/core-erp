@@ -1,7 +1,5 @@
 package id.putra.core_erp.modules.procurement.service;
 
-import id.putra.core_erp.shared.service.BaseService;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,15 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import id.putra.core_erp.enums.ApprovalEnum;
+import id.putra.core_erp.exceptions.ModuleException;
+import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.budget.repository.BudgetDetailRepo;
 import id.putra.core_erp.modules.department.repo.DepartmentRepo;
-import id.putra.core_erp.modules.approval.enums.ApprovalEnum;
-import id.putra.core_erp.modules.procurement.model.Approval;
 import id.putra.core_erp.modules.procurement.model.Requisition;
 import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.repository.TransferRequestRepo;
-import id.putra.core_erp.shared.exceptions.ModuleException;
-import id.putra.core_erp.shared.util.AppFileUtil;
+import id.putra.core_erp.service.BaseService;
+import id.putra.core_erp.util.AppFileUtil;
 import io.vertx.mutiny.core.Vertx;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -41,6 +40,7 @@ public class RequisitionService implements BaseService<Requisition> {
         this.budgetDetailRepo = budgetDetailRepo;
         this.vertx = vertx;
     }
+
     public Boolean checkApprovalFlow(Requisition dto) {
         Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
         String nrp = "";
@@ -62,6 +62,7 @@ public class RequisitionService implements BaseService<Requisition> {
             return false;
         }
     }
+
     public ApprovalEnum checkStatusApprovalIsPermanent(Requisition dto) {
         String nrp = "";
 
@@ -110,6 +111,7 @@ public class RequisitionService implements BaseService<Requisition> {
             throw new ModuleException("Requisition ID " + dto.getId() + " not found");
         }
     }
+
     public byte[] download(Requisition dto) throws IOException {
         String filename = "";
 
@@ -117,25 +119,32 @@ public class RequisitionService implements BaseService<Requisition> {
         return Files.readAllBytes(path);
 
     }
+
     public void add(Requisition entity) {
         requisitionRepo.persist(entity);
     }
+
     public Requisition save(Requisition entity) {
         requisitionRepo.persist(entity);
         return entity;
     }
+
     public void update(Requisition entity) {
         requisitionRepo.persist(entity);
     }
+
     public void delete(Requisition entity) {
         requisitionRepo.delete(entity);
     }
+
     public void delete(Long id) {
         requisitionRepo.deleteById(id);
     }
+
     public Requisition findById(Long id) {
         return requisitionRepo.findById(id);
     }
+
     public List<Requisition> findAll() {
         return requisitionRepo.findAll().list();
     }

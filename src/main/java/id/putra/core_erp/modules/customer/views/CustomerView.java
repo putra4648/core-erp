@@ -24,16 +24,15 @@ import com.vaadin.flow.router.Route;
 import id.putra.core_erp.modules.customer.model.ContactPersonCustomer;
 import id.putra.core_erp.modules.customer.model.Customer;
 import id.putra.core_erp.modules.customer.service.CustomerService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
-
 import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 
 @Route(value = "master/customer", layout = MainLayout.class)
 @PageTitle("Customers | WMS Pro")
-@Authenticated 
+@Authenticated
 public class CustomerView extends VerticalLayout {
     @Inject
     Validator validator;

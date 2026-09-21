@@ -1,4 +1,4 @@
-package id.putra.core_erp.modules.procurement.enums;
+package id.putra.core_erp.enums;
 
 public enum BudgetEnum {
     ALL(""), EXPENSE("expense"), INVESTMENT("investment");

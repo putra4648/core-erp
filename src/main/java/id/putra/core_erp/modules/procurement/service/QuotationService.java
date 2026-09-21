@@ -1,7 +1,5 @@
 package id.putra.core_erp.modules.procurement.service;
 
-import id.putra.core_erp.shared.service.BaseService;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,13 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import id.putra.core_erp.modules.approval.enums.ApprovalEnum;
-import id.putra.core_erp.modules.procurement.model.Approval;
+import id.putra.core_erp.enums.ApprovalEnum;
+import id.putra.core_erp.exceptions.ModuleException;
+import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.procurement.model.Quotation;
 import id.putra.core_erp.modules.procurement.repository.QuotationRepo;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.exceptions.ModuleException;
-import id.putra.core_erp.shared.util.AppFileUtil;
+import id.putra.core_erp.service.BaseService;
+import id.putra.core_erp.util.AppFileUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -31,25 +30,32 @@ public class QuotationService implements BaseService<Quotation> {
 
     @PersistenceContext
     private EntityManager entityManager;
+
     public void add(Quotation dto) {
         rfqRepository.persist(dto);
     }
+
     public List<Quotation> findAll(Quotation params) {
         return rfqRepository.find("id like ?1", params.getId()).list();
     }
+
     public Quotation save(Quotation entity) {
         rfqRepository.persist(entity);
         return entity;
     }
+
     public Quotation findById(Long id) {
         return rfqRepository.findById(id);
     }
+
     public Iterable<Quotation> findAll() {
         return rfqRepository.findAll().list();
     }
+
     public Quotation getById(Long id) {
         return rfqRepository.findByIdOptional(id).get();
     }
+
     public Boolean checkApprovalFlow(Quotation dto) {
         Optional<Quotation> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
@@ -67,6 +73,7 @@ public class QuotationService implements BaseService<Quotation> {
             throw new ModuleException("RFQ " + dto.getId() + " not found");
         }
     }
+
     public ApprovalEnum checkStatusApprovalIsPermanent(Quotation dto) {
         String nrp = "";
 
@@ -115,7 +122,8 @@ public class QuotationService implements BaseService<Quotation> {
             throw new ModuleException("RFQ " + dto.getId() + " not found");
         }
     }
-    public byte[] download(Quotation dto) throws Exception{
+
+    public byte[] download(Quotation dto) throws Exception {
 
         Optional<Quotation> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
@@ -137,10 +145,12 @@ public class QuotationService implements BaseService<Quotation> {
             throw new ModuleException("File ID " + dto.getId() + " not found");
         }
     }
+
     public void update(Quotation entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
+
     public void delete(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");

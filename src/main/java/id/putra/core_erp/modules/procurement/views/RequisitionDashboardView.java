@@ -21,11 +21,10 @@ import id.putra.core_erp.modules.procurement.repository.QuotationRepo;
 import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.repository.SupplierRepo;
 import id.putra.core_erp.modules.procurement.service.DashboardService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
 
-
-@Route(value = "prc/dashboard", layout = MainLayout.class)
+@Route(value = "pr", layout = MainLayout.class)
 @PageTitle("PR Dashboard | CORE ERP")
 @Authenticated
 public class RequisitionDashboardView extends VerticalLayout {

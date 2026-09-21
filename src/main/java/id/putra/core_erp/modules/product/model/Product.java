@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.product.model;
 
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -104,10 +104,10 @@ public class Product extends BaseEntity {
     }
 
     // public Category getCategory() {
-    //     return category;
+    // return category;
     // }
 
     // public void setCategory(Category category) {
-    //     this.category = category;
+    // this.category = category;
     // }
 }

@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.ui;
+package id.putra.core_erp.ui;
 
 import java.util.List;
 import java.util.Set;

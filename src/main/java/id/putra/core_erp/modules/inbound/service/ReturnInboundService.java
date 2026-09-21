@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.inbound.service;
 
-import id.putra.core_erp.shared.service.BaseService;
+import id.putra.core_erp.service.BaseService;
 
 import java.util.List;
 
@@ -18,20 +18,25 @@ public class ReturnInboundService implements BaseService<Return> {
     public ReturnInboundService(ReturnRepository returnRepository) {
         this.returnRepository = returnRepository;
     }
+
     public Return save(Return entity) {
         returnRepository.persist(entity);
         return entity;
     }
+
     public Return create(Return dto) {
         returnRepository.persist(dto);
         return dto;
     }
+
     public void update(Return dto) {
         returnRepository.getEntityManager().merge(dto);
     }
+
     public void delete(Long id) {
         returnRepository.deleteById(id);
     }
+
     public Return findById(Long id) {
         return returnRepository.findById(id);
     }
@@ -39,9 +44,11 @@ public class ReturnInboundService implements BaseService<Return> {
     public Return getById(Long id) {
         return findById(id);
     }
+
     public Iterable<Return> findAll() {
         return returnRepository.findAll().list();
     }
+
     public List<Return> getAll(Return filter) {
         return returnRepository.findAll().list();
     }

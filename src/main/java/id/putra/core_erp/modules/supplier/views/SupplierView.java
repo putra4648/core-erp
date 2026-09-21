@@ -25,7 +25,7 @@ import com.vaadin.flow.router.Route;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.modules.supplier.model.SupplierContact;
 import id.putra.core_erp.modules.supplier.service.SupplierService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
@@ -33,9 +33,9 @@ import jakarta.validation.Validator;
 
 @Route(value = "master/suppliers", layout = MainLayout.class)
 @PageTitle("Suppliers | WMS Pro")
-@Authenticated 
+@Authenticated
 public class SupplierView extends VerticalLayout {
-    @Inject 
+    @Inject
     Validator validator;
 
     private final SupplierService supplierService;

@@ -2,11 +2,11 @@ package id.putra.core_erp.modules.department.model;
 
 import java.util.List;
 
+import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.enums.StatusEnum;
+import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.budget.model.Budget;
-import id.putra.core_erp.modules.procurement.model.Approval;
 import id.putra.core_erp.modules.procurement.model.Requisition;
-import id.putra.core_erp.shared.entity.BaseEntity;
-import id.putra.core_erp.shared.enums.StatusEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

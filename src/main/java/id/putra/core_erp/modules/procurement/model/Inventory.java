@@ -3,7 +3,7 @@ package id.putra.core_erp.modules.procurement.model;
 import java.math.BigInteger;
 import java.util.Date;
 
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

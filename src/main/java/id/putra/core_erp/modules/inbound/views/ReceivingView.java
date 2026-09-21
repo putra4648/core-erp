@@ -19,15 +19,14 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.inbound.model.Receiving;
 import id.putra.core_erp.modules.inbound.service.ReceivingOrderService;
-import id.putra.core_erp.shared.enums.OrderStatus;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.enums.OrderStatus;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
-
 @Route(value = "receiving", layout = MainLayout.class)
 @PageTitle("Receiving | WMS Pro")
-@Authenticated 
+@Authenticated
 public class ReceivingView extends VerticalLayout {
 
     private final ReceivingOrderService receivingOrderService;
