@@ -33,11 +33,12 @@ import id.putra.core_erp.modules.warehouse.service.WarehouseService;
 import id.putra.core_erp.modules.warehouse.service.ZoneCoreService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "master/warehouses", layout = MainLayout.class)
 @PageTitle("Warehouses | WMS Pro")
-@PermitAll
+@Authenticated 
 public class WarehouseView extends VerticalLayout {
 
     private final WarehouseService warehouseService;

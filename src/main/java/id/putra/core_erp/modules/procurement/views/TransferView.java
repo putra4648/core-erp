@@ -23,11 +23,12 @@ import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import id.putra.core_erp.modules.procurement.model.Transfer;
 import id.putra.core_erp.modules.procurement.service.TransferService;
 import id.putra.core_erp.shared.ui.MainLayout;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "transfers", layout = MainLayout.class)
 @PageTitle("Transfers | Purchase Requisition System")
-@PermitAll
+@Authenticated 
 public class TransferView extends VerticalLayout {
 
     private final TransferService transferService;

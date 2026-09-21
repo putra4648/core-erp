@@ -22,11 +22,12 @@ import id.putra.core_erp.modules.inbound.service.ReceivingOrderService;
 import id.putra.core_erp.shared.enums.OrderStatus;
 import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "receiving", layout = MainLayout.class)
 @PageTitle("Receiving | WMS Pro")
-@PermitAll
+@Authenticated 
 public class ReceivingView extends VerticalLayout {
 
     private final ReceivingOrderService receivingOrderService;

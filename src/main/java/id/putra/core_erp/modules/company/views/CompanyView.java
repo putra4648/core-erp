@@ -18,11 +18,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import id.putra.core_erp.modules.company.model.Company;
 import id.putra.core_erp.modules.company.service.CompanyService;
 import id.putra.core_erp.shared.ui.MainLayout;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "company", layout = MainLayout.class)
 @PageTitle("Company Profile | Purchase Requisition System")
-@PermitAll
+@Authenticated 
 public class CompanyView extends VerticalLayout {
 
     private final CompanyService companyService;

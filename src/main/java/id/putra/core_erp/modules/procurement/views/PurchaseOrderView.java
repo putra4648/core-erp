@@ -21,11 +21,12 @@ import id.putra.core_erp.modules.inbound.model.PurchaseOrder;
 import id.putra.core_erp.modules.inbound.service.PurchaseOrderService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "prc/po", layout = MainLayout.class)
 @PageTitle("Purchase Orders | WMS Pro")
-@PermitAll
+@Authenticated 
 public class PurchaseOrderView extends VerticalLayout {
 
     private final PurchaseOrderService purchaseOrderService;

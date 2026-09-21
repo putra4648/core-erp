@@ -31,11 +31,12 @@ import id.putra.core_erp.shared.enums.StatusEnum;
 import id.putra.core_erp.shared.enums.TypeEnum;
 import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "prc/suppliers", layout = MainLayout.class)
 @PageTitle("PR Suppliers | CORE ERP")
-@PermitAll
+@Authenticated 
 public class SupplierView extends VerticalLayout {
 
     private final SupplierService supplierService;

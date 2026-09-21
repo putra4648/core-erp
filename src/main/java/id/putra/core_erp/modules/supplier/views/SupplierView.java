@@ -27,13 +27,13 @@ import id.putra.core_erp.modules.supplier.model.SupplierContact;
 import id.putra.core_erp.modules.supplier.service.SupplierService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 
 @Route(value = "master/suppliers", layout = MainLayout.class)
 @PageTitle("Suppliers | WMS Pro")
-@PermitAll
+@Authenticated 
 public class SupplierView extends VerticalLayout {
     @Inject 
     Validator validator;

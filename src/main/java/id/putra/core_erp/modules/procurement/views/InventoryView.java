@@ -21,11 +21,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import id.putra.core_erp.modules.procurement.model.Inventory;
 import id.putra.core_erp.modules.procurement.service.InventoryService;
 import id.putra.core_erp.shared.ui.MainLayout;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "prc/inventory", layout = MainLayout.class)
 @PageTitle("PR Inventory | CORE ERP")
-@PermitAll
+@Authenticated 
 public class InventoryView extends VerticalLayout {
 
     private final InventoryService inventoryService;

@@ -24,13 +24,13 @@ import id.putra.core_erp.modules.product.model.Product;
 import id.putra.core_erp.modules.product.service.ProductService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 
 @Route(value = "master/products", layout = MainLayout.class)
 @PageTitle("Products | WMS Pro")
-@PermitAll
+@Authenticated 
 public class ProductView extends VerticalLayout {
     @Inject
     Validator validator;

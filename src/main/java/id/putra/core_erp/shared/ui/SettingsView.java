@@ -27,14 +27,15 @@ import com.vaadin.flow.router.Route;
 import id.putra.core_erp.modules.parameter.model.ParameterLookup;
 import id.putra.core_erp.modules.parameter.service.ParameterLookupService;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 @Route(value = "settings", layout = MainLayout.class)
 @PageTitle("Settings | WMS Pro")
-@PermitAll
+@Authenticated 
 public class SettingsView extends VerticalLayout {
 
     @Inject

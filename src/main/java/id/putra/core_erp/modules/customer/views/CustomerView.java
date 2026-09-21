@@ -26,13 +26,14 @@ import id.putra.core_erp.modules.customer.model.Customer;
 import id.putra.core_erp.modules.customer.service.CustomerService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 
 @Route(value = "master/customer", layout = MainLayout.class)
 @PageTitle("Customers | WMS Pro")
-@PermitAll
+@Authenticated 
 public class CustomerView extends VerticalLayout {
     @Inject
     Validator validator;

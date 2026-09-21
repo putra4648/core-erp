@@ -29,11 +29,12 @@ import id.putra.core_erp.modules.procurement.service.ItemService;
 import id.putra.core_erp.modules.procurement.service.SupplierService;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.shared.ui.MainLayout;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "items", layout = MainLayout.class)
 @PageTitle("Items Catalog | PR System")
-@PermitAll
+@Authenticated
 public class ItemView extends VerticalLayout {
 
     private final ItemService itemService;

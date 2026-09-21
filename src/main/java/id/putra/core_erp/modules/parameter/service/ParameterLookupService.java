@@ -33,7 +33,14 @@ public class ParameterLookupService {
         parameterLookupRepository.persist(parameterLookups);
     }
     public List<ParameterLookup> getAllParameterLookups(String search, Page page) {
-        return parameterLookupRepository.find("search = ?1", search).page(page).list();
+        if (search == null || search.isBlank()) {
+            return parameterLookupRepository.findAll().page(page).list();
+        }
+
+        String pattern = "%" + search.toLowerCase() + "%";
+        return parameterLookupRepository.find(
+                "lower(key) like ?1 or lower(value) like ?1 or lower(description) like ?1",
+                pattern).page(page).list();
     }
 
 }

@@ -31,12 +31,12 @@ import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import id.putra.core_erp.modules.procurement.enums.BudgetEnum;
 import id.putra.core_erp.shared.ui.MainLayout;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "budgets", layout = MainLayout.class)
 @PageTitle("Budgets | Purchase Requisition System")
-@PermitAll
-
+@Authenticated 
 public class BudgetView extends VerticalLayout {
 
     private final BudgetService budgetService;

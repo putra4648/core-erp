@@ -22,11 +22,13 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.DownloadResponse;
 
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
+
 
 @Route(value = "reports", layout = MainLayout.class)
 @PageTitle("Reports | WMS Pro")
-@PermitAll
+@Authenticated 
 public class ReportsView extends VerticalLayout {
 
     public ReportsView() {

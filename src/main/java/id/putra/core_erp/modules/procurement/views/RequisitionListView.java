@@ -27,11 +27,12 @@ import id.putra.core_erp.modules.procurement.model.Requisition;
 import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.service.RequisitionService;
 import id.putra.core_erp.shared.ui.MainLayout;
-import jakarta.annotation.security.PermitAll;
+import io.quarkus.security.Authenticated;
+
 
 @Route(value = "requisitions", layout = MainLayout.class)
 @PageTitle("Purchase Requisitions | PR System")
-@PermitAll
+@Authenticated
 public class RequisitionListView extends VerticalLayout {
 
     private final RequisitionService requisitionService;
