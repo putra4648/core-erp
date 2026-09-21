@@ -5,6 +5,8 @@ import java.util.Set;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
@@ -33,7 +35,7 @@ import jakarta.validation.Validator;
 @Route(value = "settings", layout = MainLayout.class)
 @PageTitle("Settings | WMS Pro")
 @PermitAll
-public class SettingsView extends DefaultComponent {
+public class SettingsView extends VerticalLayout {
 
     @Inject
     Validator validator;
@@ -43,6 +45,8 @@ public class SettingsView extends DefaultComponent {
     private final VerticalLayout contentArea;
     private final Grid<ParameterLookup> parameterGrid = new Grid<>();
     private final TextField searchField;
+    private final FormLayout formLayout;
+    private final Dialog dialog;
     private ParameterLookup form;
 
     private final ParameterLookupService parameterLookupService;
@@ -50,12 +54,12 @@ public class SettingsView extends DefaultComponent {
     public SettingsView(ParameterLookupService parameterLookupService) {
         this.form = new ParameterLookup();
         this.contentArea = new VerticalLayout();
+        this.dialog = new Dialog();
         this.parameterLookupService = parameterLookupService;
         this.searchField = new TextField();
+        this.formLayout = new FormLayout();
 
-        super("Parameter Lookup");
-
-        VerticalLayout formLayout = new VerticalLayout();
+        VerticalLayout layout = new VerticalLayout();
         var keyField = new TextField("Key", val -> {
             this.form.setKey(val.getValue());
         });
@@ -74,9 +78,9 @@ public class SettingsView extends DefaultComponent {
         this.parameterGrid.setItems(query -> parameterLookupService
                 .getAllParameterLookups(searchField.getValue(), Page.ofSize(query.getPageSize())).stream());
 
-        formLayout.add(keyField, valueField, descriptionField);
+        layout.add(keyField, valueField, descriptionField);
 
-        this.addFormComponent(formLayout);
+        this.formLayout.add(layout);
 
         addHeader();
 
@@ -120,7 +124,7 @@ public class SettingsView extends DefaultComponent {
         layout.setPadding(false);
         layout.setSpacing(false);
 
-        Button addBtn = new Button("Add", VaadinIcon.PLUS.create(), e -> openAddParameterDialog());
+        Button addBtn = new Button("Add", VaadinIcon.PLUS.create(), e -> this.dialog.open());
         addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> {
@@ -137,10 +141,6 @@ public class SettingsView extends DefaultComponent {
 
     }
 
-    private void openAddParameterDialog() {
-        this.openDialog();
-    }
-
     private void addHeader() {
         H2 title = new H2("System Settings");
         title.addClassNames("m-0", "text-xl", "font-bold");
@@ -149,14 +149,13 @@ public class SettingsView extends DefaultComponent {
         add(title, desc);
     }
 
-    @Override
-    public void saveAction() {
+    private void saveAction() {
         Set<ConstraintViolation<ParameterLookup>> validate = validator.validate(form);
         if (validate.isEmpty()) {
             try {
                 parameterLookupService.persist(List.of(form));
                 this.parameterGrid.getDataProvider().refreshAll();
-                this.closeDialog();
+                this.dialog.close();
                 Notification
                         .show("Parameter saved successfully", 4000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -168,8 +167,4 @@ public class SettingsView extends DefaultComponent {
         }
     }
 
-    @Override
-    public void closeAction() {
-        this.closeDialog();
-    }
 }

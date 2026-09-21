@@ -47,7 +47,7 @@ import id.putra.core_erp.modules.procurement.service.RequisitionService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
-@Route(value = "requisitions/form", layout = MainLayout.class)
+@Route(value = "pr/form", layout = MainLayout.class)
 @PageTitle("Requisition Form | PR System")
 @PermitAll
 public class RequisitionFormView extends VerticalLayout implements HasUrlParameter<String> {

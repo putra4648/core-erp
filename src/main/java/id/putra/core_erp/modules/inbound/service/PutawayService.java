@@ -1,17 +1,48 @@
 package id.putra.core_erp.modules.inbound.service;
 
+import id.putra.core_erp.shared.service.BaseService;
+
 import java.util.List;
 
 import id.putra.core_erp.modules.inbound.model.Putaway;
+import id.putra.core_erp.modules.inbound.repository.PutawayRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
-public interface PutawayService {
-    Putaway create(Putaway dto);
+@ApplicationScoped
+@Transactional
+public class PutawayService implements BaseService<Putaway> {
 
-    Putaway update(Putaway dto);
+    private final PutawayRepository putawayRepository;
 
-    Boolean delete(Long id);
+    public PutawayService(PutawayRepository putawayRepository) {
+        this.putawayRepository = putawayRepository;
+    }
+    public Putaway save(Putaway entity) {
+        putawayRepository.persist(entity);
+        return entity;
+    }
+    public Putaway create(Putaway dto) {
+        putawayRepository.persist(dto);
+        return dto;
+    }
+    public void update(Putaway dto) {
+        putawayRepository.getEntityManager().merge(dto);
+    }
+    public void delete(Long id) {
+        putawayRepository.deleteById(id);
+    }
+    public Putaway findById(Long id) {
+        return putawayRepository.findById(id);
+    }
 
-    Putaway getById(Long id);
-
-    List<Putaway> getAll(Putaway filter);
+    public Putaway getById(Long id) {
+        return findById(id);
+    }
+    public Iterable<Putaway> findAll() {
+        return putawayRepository.findAll().list();
+    }
+    public List<Putaway> getAll(Putaway filter) {
+        return putawayRepository.findAll().list();
+    }
 }

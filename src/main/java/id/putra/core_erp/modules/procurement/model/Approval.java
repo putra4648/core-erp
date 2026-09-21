@@ -17,8 +17,6 @@ public class Approval extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "approval_nrp", referencedColumnName = "nrp", insertable = false, updatable = false)
     private String users;
 
     @ManyToOne

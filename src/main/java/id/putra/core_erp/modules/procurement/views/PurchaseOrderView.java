@@ -1,4 +1,4 @@
-package id.putra.core_erp.modules.po.views;
+package id.putra.core_erp.modules.procurement.views;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -23,16 +23,16 @@ import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
-@Route(value = "inbound/purchase-order", layout = MainLayout.class)
+@Route(value = "prc/po", layout = MainLayout.class)
 @PageTitle("Purchase Orders | WMS Pro")
 @PermitAll
-public class POView extends VerticalLayout {
+public class PurchaseOrderView extends VerticalLayout {
 
     private final PurchaseOrderService purchaseOrderService;
     private final Grid<PurchaseOrder> grid = new Grid<>();
     private final TextField searchField = new TextField();
 
-    public POView(PurchaseOrderService purchaseOrderService) {
+    public PurchaseOrderView(PurchaseOrderService purchaseOrderService) {
         this.purchaseOrderService = purchaseOrderService;
         setSizeFull();
         setPadding(true);

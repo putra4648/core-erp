@@ -23,7 +23,7 @@ import id.putra.core_erp.modules.procurement.service.InventoryService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
-@Route(value = "pr/inventory", layout = MainLayout.class)
+@Route(value = "prc/inventory", layout = MainLayout.class)
 @PageTitle("PR Inventory | CORE ERP")
 @PermitAll
 public class InventoryView extends VerticalLayout {

@@ -27,7 +27,7 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "rfq", layout = MainLayout.class)
 @PageTitle("Request For Quotations | PR System")
 @PermitAll
-public class RfqView extends VerticalLayout {
+public class QuotationView extends VerticalLayout {
 
     private final QuotationService rfqService;
 
@@ -36,7 +36,7 @@ public class RfqView extends VerticalLayout {
     private final List<Quotation> rfqList = new ArrayList<>();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public RfqView(QuotationService rfqService) {
+    public QuotationView(QuotationService rfqService) {
         this.rfqService = rfqService;
 
         setSizeFull();

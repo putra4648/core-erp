@@ -1,5 +1,5 @@
 package id.putra.core_erp.modules.outbound.service;
 
-public interface OutboundCoreService {
+public class OutboundCoreService {
 
 }

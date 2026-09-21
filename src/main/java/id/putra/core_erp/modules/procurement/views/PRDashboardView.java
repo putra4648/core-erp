@@ -24,7 +24,7 @@ import id.putra.core_erp.modules.procurement.service.DashboardService;
 import id.putra.core_erp.shared.ui.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
-@Route(value = "pr/dashboard", layout = MainLayout.class)
+@Route(value = "prc/dashboard", layout = MainLayout.class)
 @PageTitle("PR Dashboard | CORE ERP")
 @PermitAll
 public class PRDashboardView extends VerticalLayout {

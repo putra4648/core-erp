@@ -32,23 +32,17 @@ public class Department extends BaseEntity {
     @Column(name = "status")
     private StatusEnum status;
 
-    @ManyToOne
-    @JoinColumn(name = "dept_manager_nrp", referencedColumnName = "nrp")
+    @Column(name = "dept_manager_nrp")
     private String deptManager;
 
     // @Column(name = "other_managers")
     // private List<String> otherManager;
 
-    @ManyToOne()
-    @JoinColumn(name = "dept_purchaser_nrp", referencedColumnName = "nrp")
+    @Column(name = "dept_purchaser_nrp")
     private String deptPurchaser;
 
-    @ManyToOne
-    @JoinColumn(name = "approval_president_nrp", referencedColumnName = "nrp")
+    @Column(name = "approval_president_nrp")
     private String approvalPresident;
-
-    @OneToMany(mappedBy = "department", orphanRemoval = true)
-    private List<String> String;
 
     @OneToMany(mappedBy = "department")
     private List<Budget> budgets;
@@ -113,14 +107,6 @@ public class Department extends BaseEntity {
 
     public void setApprovalPresident(String approvalPresident) {
         this.approvalPresident = approvalPresident;
-    }
-
-    public List<String> getString() {
-        return String;
-    }
-
-    public void setString(List<String> String) {
-        this.String = String;
     }
 
     public List<Budget> getBudgets() {

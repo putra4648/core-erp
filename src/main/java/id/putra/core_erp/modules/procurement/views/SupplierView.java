@@ -33,7 +33,7 @@ import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
-@Route(value = "pr/suppliers", layout = MainLayout.class)
+@Route(value = "prc/suppliers", layout = MainLayout.class)
 @PageTitle("PR Suppliers | CORE ERP")
 @PermitAll
 public class SupplierView extends VerticalLayout {

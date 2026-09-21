@@ -24,7 +24,7 @@ import id.putra.core_erp.shared.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.security.PermitAll;
 
-@Route(value = "inbound/receiving", layout = MainLayout.class)
+@Route(value = "receiving", layout = MainLayout.class)
 @PageTitle("Receiving | WMS Pro")
 @PermitAll
 public class ReceivingView extends VerticalLayout {
