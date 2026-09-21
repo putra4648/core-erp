@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.warehouse.service;
 
-import id.putra.core_erp.shared.service.BaseService;
+import id.putra.core_erp.service.BaseService;
 
 import java.util.List;
 
@@ -21,34 +21,44 @@ public class LocationCoreService implements BaseService<Location> {
     public LocationCoreService(LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
     }
+
     public Location getLocation(Location dto) {
         return locationRepository.findById(dto.getId());
     }
+
     public Location save(Location entity) {
         locationRepository.persist(entity);
         return entity;
     }
+
     public Location findById(Long id) {
         return locationRepository.findById(id);
     }
+
     public Iterable<Location> findAll() {
         return locationRepository.findAll().list();
     }
+
     public void add(List<Location> dtos) {
         locationRepository.persist(dtos);
     }
+
     public void update(List<Location> dtos) {
         dtos.forEach(dto -> locationRepository.getEntityManager().merge(dto));
     }
+
     public void update(Location entity) {
         locationRepository.getEntityManager().merge(entity);
     }
+
     public void delete(List<Location> dtos) {
         dtos.forEach(dto -> locationRepository.deleteById(dto.getId()));
     }
-        public void delete(Long id) {
-            locationRepository.deleteById(id);
-        }
+
+    public void delete(Long id) {
+        locationRepository.deleteById(id);
+    }
+
     public DataProvider<Location, Void> getLocations(Location param, Page page) {
         String pattern = "%" + (param.getName() == null ? "" : param.getName().trim().toLowerCase()) + "%";
         return DataProvider.fromCallbacks(

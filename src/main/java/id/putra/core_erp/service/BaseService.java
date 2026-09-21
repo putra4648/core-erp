@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.service;
+package id.putra.core_erp.service;
 
 public interface BaseService<T> {
     public T save(T entity);

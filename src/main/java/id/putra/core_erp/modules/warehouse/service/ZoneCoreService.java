@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.warehouse.service;
 
-import id.putra.core_erp.shared.service.BaseService;
+import id.putra.core_erp.service.BaseService;
 
 import java.util.List;
 
@@ -21,34 +21,44 @@ public class ZoneCoreService implements BaseService<Zone> {
     public ZoneCoreService(ZoneRepository zoneRepository) {
         this.zoneRepository = zoneRepository;
     }
+
     public Zone getZone(Zone zoneDto) {
         return zoneRepository.findById(zoneDto.getId());
     }
+
     public Zone save(Zone entity) {
         zoneRepository.persist(entity);
         return entity;
     }
+
     public Zone findById(Long id) {
         return zoneRepository.findById(id);
     }
+
     public Iterable<Zone> findAll() {
         return zoneRepository.findAll().list();
     }
+
     public void add(List<Zone> dtos) {
         zoneRepository.persist(dtos);
     }
+
     public void update(List<Zone> dtos) {
         dtos.forEach(dto -> zoneRepository.getEntityManager().merge(dto));
     }
+
     public void update(Zone entity) {
         zoneRepository.getEntityManager().merge(entity);
     }
+
     public void delete(List<Zone> dtos) {
         dtos.forEach(dto -> zoneRepository.deleteById(dto.getId()));
     }
-        public void delete(Long id) {
-            zoneRepository.deleteById(id);
-        }
+
+    public void delete(Long id) {
+        zoneRepository.deleteById(id);
+    }
+
     public DataProvider<Zone, Void> getZones(Zone param, Page page) {
         String pattern = "%" + (param.getName() == null ? "" : param.getName().trim().toLowerCase()) + "%";
         return DataProvider.fromCallbacks(

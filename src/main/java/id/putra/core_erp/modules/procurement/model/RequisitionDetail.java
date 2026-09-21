@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Formula;
 
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

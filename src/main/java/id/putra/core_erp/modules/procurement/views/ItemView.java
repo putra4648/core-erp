@@ -28,9 +28,8 @@ import id.putra.core_erp.modules.procurement.model.Item;
 import id.putra.core_erp.modules.procurement.service.ItemService;
 import id.putra.core_erp.modules.procurement.service.SupplierService;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
-
 
 @Route(value = "items", layout = MainLayout.class)
 @PageTitle("Items Catalog | PR System")
@@ -92,7 +91,8 @@ public class ItemView extends VerticalLayout {
         grid.addColumn(i -> i.getItemNumber() != null ? i.getItemNumber() : "-").setHeader("Item Code")
                 .setAutoWidth(true);
         grid.addColumn(i -> i.getName() != null ? i.getName() : "-").setHeader("Item Name").setFlexGrow(2);
-        // grid.addColumn(i -> i.getCategory() != null ? i.getCategory() : "-").setHeader("Category").setFlexGrow(1);
+        // grid.addColumn(i -> i.getCategory() != null ? i.getCategory() :
+        // "-").setHeader("Category").setFlexGrow(1);
         grid.addColumn(i -> i.getSupplier() != null ? i.getSupplier().getName() : "-").setHeader("Supplier")
                 .setFlexGrow(1);
         grid.addColumn(i -> i.getPrice() != null ? String.format("%,d", i.getPrice()) : "-").setHeader("Price")

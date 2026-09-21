@@ -1,7 +1,5 @@
 package id.putra.core_erp.modules.customer.service;
 
-import id.putra.core_erp.shared.service.BaseService;
-
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -10,6 +8,7 @@ import com.vaadin.flow.data.provider.Query;
 
 import id.putra.core_erp.modules.customer.model.Customer;
 import id.putra.core_erp.modules.customer.repository.CustomerRepository;
+import id.putra.core_erp.service.BaseService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -44,11 +43,13 @@ public class CustomerService implements BaseService<Customer> {
         return customerRepository.findByIdOptional(id)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + id));
     }
+
     public List<Customer> create(List<Customer> dtos) {
         dtos.forEach(this::linkContactPerson);
         customerRepository.persist(dtos);
         return dtos;
     }
+
     public void update(Long id, Customer dto) {
         Customer customer = getById(id);
         customer.setCode(dto.getCode());
@@ -57,9 +58,11 @@ public class CustomerService implements BaseService<Customer> {
         customer.setContactPerson(dto.getContactPerson());
         linkContactPerson(customer);
     }
+
     public void delete(Long id) {
         customerRepository.delete(getById(id));
     }
+
     public DataProvider<Customer, Void> getAll(String value, Page page) {
         String search = value == null ? "" : value.trim().toLowerCase();
         String pattern = "%" + search + "%";
@@ -92,6 +95,7 @@ public class CustomerService implements BaseService<Customer> {
             customer.getContactPerson().setCustomer(customer);
         }
     }
+
     public void add(Customer customer) {
         customerRepository.persist(customer);
     }

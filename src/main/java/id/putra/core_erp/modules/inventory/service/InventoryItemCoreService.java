@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.inventory.service;
 
-import id.putra.core_erp.shared.service.BaseService;
+import id.putra.core_erp.service.BaseService;
 
 import java.util.List;
 
@@ -20,34 +20,44 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
     public InventoryItemCoreService(InventoryItemRepository inventoryItemRepository) {
         this.inventoryItemRepository = inventoryItemRepository;
     }
+
     public InventoryItem getInventoryItem(InventoryItem item) {
         return inventoryItemRepository.findById(item.getId());
     }
+
     public InventoryItem findById(Long id) {
         return inventoryItemRepository.findById(id);
     }
+
     public InventoryItem save(InventoryItem entity) {
         inventoryItemRepository.persist(entity);
         return entity;
     }
+
     public Iterable<InventoryItem> findAll() {
         return inventoryItemRepository.findAll().list();
     }
+
     public void save(List<InventoryItem> items) {
         inventoryItemRepository.persist(items);
     }
+
     public void update(List<InventoryItem> dtos) {
         dtos.forEach(item -> inventoryItemRepository.getEntityManager().merge(item));
     }
+
     public void update(InventoryItem entity) {
         inventoryItemRepository.getEntityManager().merge(entity);
     }
+
     public void delete(List<InventoryItem> dtos) {
         dtos.forEach(item -> inventoryItemRepository.deleteById(item.getId()));
     }
-        public void delete(Long id) {
-            inventoryItemRepository.deleteById(id);
-        }
+
+    public void delete(Long id) {
+        inventoryItemRepository.deleteById(id);
+    }
+
     public DataProvider<InventoryItem, Void> getInventoryItems(String value, Page page) {
         String pattern = "%" + (value == null ? "" : value.trim().toLowerCase()) + "%";
         return DataProvider.fromCallbacks(

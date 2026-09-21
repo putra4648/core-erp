@@ -19,14 +19,13 @@ import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.inbound.model.PurchaseOrder;
 import id.putra.core_erp.modules.inbound.service.PurchaseOrderService;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
-
-@Route(value = "prc/po", layout = MainLayout.class)
+@Route(value = "po", layout = MainLayout.class)
 @PageTitle("Purchase Orders | WMS Pro")
-@Authenticated 
+@Authenticated
 public class PurchaseOrderView extends VerticalLayout {
 
     private final PurchaseOrderService purchaseOrderService;

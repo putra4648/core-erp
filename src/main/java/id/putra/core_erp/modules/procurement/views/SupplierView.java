@@ -27,16 +27,15 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.modules.procurement.service.SupplierService;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.enums.StatusEnum;
-import id.putra.core_erp.shared.enums.TypeEnum;
-import id.putra.core_erp.shared.ui.MainLayout;
+import id.putra.core_erp.enums.StatusEnum;
+import id.putra.core_erp.enums.TypeEnum;
+import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
-
-@Route(value = "prc/suppliers", layout = MainLayout.class)
+@Route(value = "suppliers", layout = MainLayout.class)
 @PageTitle("PR Suppliers | CORE ERP")
-@Authenticated 
+@Authenticated
 public class SupplierView extends VerticalLayout {
 
     private final SupplierService supplierService;

@@ -1,7 +1,5 @@
 package id.putra.core_erp.modules.procurement.service;
 
-import id.putra.core_erp.shared.service.BaseService;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,13 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import id.putra.core_erp.modules.approval.enums.ApprovalEnum;
-import id.putra.core_erp.modules.procurement.model.Approval;
+import id.putra.core_erp.enums.ApprovalEnum;
+import id.putra.core_erp.exceptions.ModuleException;
+import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.procurement.model.Transfer;
 import id.putra.core_erp.modules.procurement.repository.InventoryRepo;
 import id.putra.core_erp.modules.procurement.repository.TransferRequestRepo;
-import id.putra.core_erp.shared.exceptions.ModuleException;
-import id.putra.core_erp.shared.util.AppFileUtil;
+import id.putra.core_erp.service.BaseService;
+import id.putra.core_erp.util.AppFileUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -28,13 +27,16 @@ public class TransferService implements BaseService<Transfer> {
         this.inventoryRepo = inventoryRepo;
         this.transferRequestRepo = transferRequestRepo;
     }
+
     public void add(Transfer dto) {
         transferRequestRepo.persist(dto);
     }
+
     public Transfer save(Transfer entity) {
         transferRequestRepo.persist(entity);
         return entity;
     }
+
     public List<Transfer> findAll(Transfer dto) {
         String status = (dto != null && dto != null && dto.getStatus() != null
                 && !dto.getStatus().isBlank())
@@ -46,15 +48,19 @@ public class TransferService implements BaseService<Transfer> {
 
         return transferRequestRepo.findByStatusLikeAndIdLike(status, id);
     }
+
     public Iterable<Transfer> findAll() {
         return transferRequestRepo.findAll().list();
     }
-        public Transfer findById(Long id) {
-            return transferRequestRepo.findById(id);
-        }
+
+    public Transfer findById(Long id) {
+        return transferRequestRepo.findById(id);
+    }
+
     public Transfer getById(Transfer dto) {
         return transferRequestRepo.findById(dto.getId());
     }
+
     public Boolean checkApprovalFlow(Transfer dto) {
         Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.getId());
         String nrp = "";
@@ -77,6 +83,7 @@ public class TransferService implements BaseService<Transfer> {
             return false;
         }
     }
+
     public ApprovalEnum checkStatusApprovalIsPermanent(Transfer dto) {
         Transfer params = dto;
         String nrp = "";
@@ -125,15 +132,18 @@ public class TransferService implements BaseService<Transfer> {
             throw new ModuleException("TransferRequest ID " + params.getId() + " not found");
         }
     }
-    public byte[] download(Transfer dto) throws Exception{
+
+    public byte[] download(Transfer dto) throws Exception {
         Path path = Paths.get(AppFileUtil.getServerPath(), "data", dto.getFilename());
         return Files.readAllBytes(path);
 
     }
+
     public void update(Transfer dto) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
+
     public void delete(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");

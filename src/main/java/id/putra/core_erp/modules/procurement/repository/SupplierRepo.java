@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.enums.StatusEnum;
+import id.putra.core_erp.enums.StatusEnum;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 

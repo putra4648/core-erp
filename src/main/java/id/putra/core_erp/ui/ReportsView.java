@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.ui;
+package id.putra.core_erp.ui;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -24,11 +24,9 @@ import com.vaadin.flow.server.streams.DownloadResponse;
 
 import io.quarkus.security.Authenticated;
 
-
-
 @Route(value = "reports", layout = MainLayout.class)
 @PageTitle("Reports | WMS Pro")
-@Authenticated 
+@Authenticated
 public class ReportsView extends VerticalLayout {
 
     public ReportsView() {

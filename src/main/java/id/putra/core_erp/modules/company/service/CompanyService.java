@@ -9,7 +9,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.modules.company.model.Company;
 import id.putra.core_erp.modules.company.repository.CompanyRepo;
-import id.putra.core_erp.shared.util.AppFileUtil;
+import id.putra.core_erp.util.AppFileUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -20,6 +20,7 @@ public class CompanyService {
     public CompanyService(CompanyRepo companyRepo) {
         this.companyRepo = companyRepo;
     }
+
     public void handleCompany(Company dto, FileUpload logo)
             throws ParseException, IOException {
         Optional<Company> comp = companyRepo.findByIdOptional(dto.getId());
@@ -34,6 +35,7 @@ public class CompanyService {
             companyRepo.persist(company);
         }
     }
+
     public Company getProfile() throws IOException {
         return getCompany();
     }

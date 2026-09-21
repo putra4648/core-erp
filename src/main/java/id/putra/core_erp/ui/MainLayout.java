@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.ui;
+package id.putra.core_erp.ui;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -104,7 +104,8 @@ public class MainLayout extends AppLayout {
         SideNav masterNav = new SideNav();
         masterNav.setLabel("Master Data");
         masterNav.addItem(new SideNavItem("Products", "master/products", VaadinIcon.RECORDS.create()));
-        // masterNav.addItem(new SideNavItem("Categories", "master/categories", VaadinIcon.TAGS.create()));
+        // masterNav.addItem(new SideNavItem("Categories", "master/categories",
+        // VaadinIcon.TAGS.create()));
         masterNav.addItem(new SideNavItem("Suppliers", "master/suppliers", VaadinIcon.TRUCK.create()));
         masterNav.addItem(new SideNavItem("Customers", "master/customer", VaadinIcon.USERS.create()));
         masterNav.addItem(new SideNavItem("Warehouses", "master/warehouses", VaadinIcon.BUILDING.create()));
@@ -118,7 +119,7 @@ public class MainLayout extends AppLayout {
         masterNav.setWidthFull();
 
         SideNav reportsNav = new SideNav();
-        reportsNav.setLabel("REPORTS & ANALYTICS");
+        reportsNav.setLabel("Reports & Analytics");
         reportsNav.addItem(new SideNavItem("WMS Reports", "reports", VaadinIcon.PIE_CHART.create()));
         // TODO: add PR Dashboard
         // reportsNav.addItem(new SideNavItem("PR Dashboard", "prc/dashboard",
@@ -126,14 +127,15 @@ public class MainLayout extends AppLayout {
         reportsNav.setWidthFull();
 
         SideNav adminNav = new SideNav();
-        adminNav.setLabel("ADMINISTRATION");
+        adminNav.setLabel("Administration");
         // adminNav.addItem(new SideNavItem("User Management", "users",
         // VaadinIcon.USER_CHECK.create()));
         adminNav.addItem(new SideNavItem("System Settings", "settings", VaadinIcon.COG.create()));
         adminNav.addItem(new SideNavItem("Help & Support", "help", VaadinIcon.QUESTION_CIRCLE.create()));
         adminNav.setWidthFull();
 
-        VerticalLayout navContainer = new VerticalLayout(mainNav, warehouseNav, procNav, masterNav, reportsNav, adminNav);
+        VerticalLayout navContainer = new VerticalLayout(mainNav, warehouseNav, procNav, masterNav, reportsNav,
+                adminNav);
         navContainer.setPadding(true);
         navContainer.setSpacing(true);
         navContainer.setWidthFull();

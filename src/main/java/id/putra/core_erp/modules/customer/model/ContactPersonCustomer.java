@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.customer.model;
 
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

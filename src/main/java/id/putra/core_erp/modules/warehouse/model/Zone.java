@@ -2,7 +2,7 @@ package id.putra.core_erp.modules.warehouse.model;
 
 import java.util.List;
 
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

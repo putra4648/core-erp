@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import id.putra.core_erp.modules.product.model.Product;
 import id.putra.core_erp.modules.inventory.model.InventoryItem;
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

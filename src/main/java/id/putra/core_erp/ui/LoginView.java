@@ -1,4 +1,4 @@
-package id.putra.core_erp.shared.ui;
+package id.putra.core_erp.ui;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;

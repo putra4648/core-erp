@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.shared.entity.BaseEntity;
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.customer.model.Customer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

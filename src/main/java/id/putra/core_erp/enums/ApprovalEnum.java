@@ -1,4 +1,4 @@
-package id.putra.core_erp.modules.approval.enums;
+package id.putra.core_erp.enums;
 
 public enum ApprovalEnum {
 
