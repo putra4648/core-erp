@@ -1,8 +1,10 @@
 package id.putra.core_erp.modules.warehouse.service;
 
 import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 
 import java.util.List;
+
 
 import id.putra.core_erp.modules.warehouse.model.ContactPersonWarehouse;
 import id.putra.core_erp.modules.warehouse.repository.ContactPersonWarehouseRepository;
@@ -23,16 +25,15 @@ public class ContactPersonWarehouseCoreService implements BaseService<ContactPer
         return contactPersonWarehouseRepository.findById(dto.getId());
     }
 
-    public ContactPersonWarehouse save(ContactPersonWarehouse entity) {
+    public void save(ContactPersonWarehouse entity) {
         contactPersonWarehouseRepository.persist(entity);
-        return entity;
     }
 
     public ContactPersonWarehouse findById(Long id) {
         return contactPersonWarehouseRepository.findById(id);
     }
 
-    public Iterable<ContactPersonWarehouse> findAll() {
+    public Iterable<ContactPersonWarehouse> findAll(ContactPersonWarehouse cpw, Page p) {
         return contactPersonWarehouseRepository.findAll().list();
     }
 

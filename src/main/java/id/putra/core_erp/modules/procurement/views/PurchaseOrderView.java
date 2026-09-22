@@ -24,7 +24,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "po", layout = MainLayout.class)
-@PageTitle("Purchase Orders | WMS Pro")
+@PageTitle("Purchase Orders")
 @Authenticated
 public class PurchaseOrderView extends VerticalLayout {
 

@@ -1,8 +1,7 @@
 package id.putra.core_erp.modules.inbound.service;
 
 import id.putra.core_erp.service.BaseService;
-
-import java.util.List;
+import io.quarkus.panache.common.Page;
 
 import id.putra.core_erp.modules.inbound.model.Return;
 import id.putra.core_erp.modules.inbound.repository.ReturnRepository;
@@ -19,9 +18,8 @@ public class ReturnInboundService implements BaseService<Return> {
         this.returnRepository = returnRepository;
     }
 
-    public Return save(Return entity) {
+    public void save(Return entity) {
         returnRepository.persist(entity);
-        return entity;
     }
 
     public Return create(Return dto) {
@@ -45,11 +43,8 @@ public class ReturnInboundService implements BaseService<Return> {
         return findById(id);
     }
 
-    public Iterable<Return> findAll() {
+    public Iterable<Return> findAll(Return r, Page p) {
         return returnRepository.findAll().list();
     }
 
-    public List<Return> getAll(Return filter) {
-        return returnRepository.findAll().list();
-    }
 }

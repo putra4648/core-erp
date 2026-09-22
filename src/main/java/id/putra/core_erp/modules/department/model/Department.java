@@ -3,7 +3,7 @@ package id.putra.core_erp.modules.department.model;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
-import id.putra.core_erp.enums.StatusEnum;
+import id.putra.core_erp.enums.Status;
 import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.procurement.model.Requisition;
@@ -22,13 +22,13 @@ public class Department extends BaseEntity {
     private Long id;
 
     @Column(name = "dept_number", nullable = false)
-    private String deptNumber;
+    private String code;
 
     @Column(name = "dept_name", nullable = false)
-    private String deptName;
+    private String name;
 
     @Column(name = "status")
-    private StatusEnum status;
+    private Status status;
 
     @Column(name = "dept_manager_nrp")
     private String deptManager;
@@ -51,6 +51,16 @@ public class Department extends BaseEntity {
     @OneToMany(mappedBy = "department")
     private List<Requisition> requisitions;
 
+    public Department() {
+
+    }
+
+    public Department(Long id, String code, String name) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
@@ -59,27 +69,27 @@ public class Department extends BaseEntity {
         this.id = id;
     }
 
-    public String getDeptNumber() {
-        return deptNumber;
+    public String getCode() {
+        return code;
     }
 
-    public void setDeptNumber(String deptNumber) {
-        this.deptNumber = deptNumber;
+    public void setCode(String deptNumber) {
+        this.code = deptNumber;
     }
 
-    public String getDeptName() {
-        return deptName;
+    public String getName() {
+        return name;
     }
 
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
+    public void setName(String deptName) {
+        this.name = deptName;
     }
 
-    public StatusEnum getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(StatusEnum status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

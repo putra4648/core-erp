@@ -24,7 +24,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.enums.BudgetEnum;
+import id.putra.core_erp.enums.BudgetType;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.budget.model.BudgetDetail;
 import id.putra.core_erp.modules.budget.service.BudgetService;
@@ -59,7 +59,7 @@ public class BudgetView extends VerticalLayout {
         header.addClassNames(LumoUtility.FontSize.XLARGE);
 
         deptCombo.setWidth("280px");
-        deptCombo.setItemLabelGenerator(d -> d.getDeptNumber() + " - " + d.getDeptName());
+        deptCombo.setItemLabelGenerator(d -> d.getCode() + " - " + d.getName());
         deptCombo.setItems(departmentList);
         deptCombo.addValueChangeListener(e -> refreshBudgets());
 
@@ -106,7 +106,7 @@ public class BudgetView extends VerticalLayout {
             return;
 
         try {
-            List<BudgetDetail> res = budgetService.getBudgetsDetail(dept.getDeptNumber(), year);
+            List<BudgetDetail> res = budgetService.getBudgetsDetail(dept.getCode(), year);
             if (res != null) {
                 budgetDetails.clear();
                 budgetDetails.addAll(res);
@@ -127,7 +127,7 @@ public class BudgetView extends VerticalLayout {
         }
 
         Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Add Budget for " + dept.getDeptName());
+        dialog.setHeaderTitle("Add Budget for " + dept.getName());
         dialog.setWidth("500px");
 
         FormLayout form = new FormLayout();
@@ -135,9 +135,9 @@ public class BudgetView extends VerticalLayout {
         budgetNoField.setRequired(true);
         TextField nameField = new TextField("Budget Name");
         nameField.setRequired(true);
-        ComboBox<BudgetEnum> typeCombo = new ComboBox<>("Budget Type");
-        typeCombo.setItems(BudgetEnum.values());
-        typeCombo.setValue(BudgetEnum.EXPENSE);
+        ComboBox<BudgetType> typeCombo = new ComboBox<>("Budget Type");
+        typeCombo.setItems(BudgetType.values());
+        typeCombo.setValue(BudgetType.EXPENSE);
         NumberField amountField = new NumberField("Annual Allocation (Total)");
         TextArea noteField = new TextArea("Notes");
 
@@ -151,8 +151,8 @@ public class BudgetView extends VerticalLayout {
 
             Budget dto = new Budget();
             Department deptDto = new Department();
-            deptDto.setDeptNumber(dept.getDeptNumber());
-            deptDto.setDeptName(dept.getDeptName());
+            deptDto.setCode(dept.getCode());
+            deptDto.setName(dept.getName());
             dto.setDepartment(deptDto);
             // dto.setFiscalYear(Date.parse(yearCombo.getValue()));
 

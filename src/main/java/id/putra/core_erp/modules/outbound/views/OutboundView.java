@@ -24,7 +24,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "outbound", layout = MainLayout.class)
-@PageTitle("Outbound | WMS Pro")
+@PageTitle("Outbound")
 @Authenticated
 public class OutboundView extends VerticalLayout {
 
@@ -119,7 +119,7 @@ public class OutboundView extends VerticalLayout {
                 if (isEdit) {
                     salesOrderService.update(order);
                 } else {
-                    salesOrderService.create(order);
+                    salesOrderService.save(order);
                 }
                 Notification.show("Sales order saved successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);

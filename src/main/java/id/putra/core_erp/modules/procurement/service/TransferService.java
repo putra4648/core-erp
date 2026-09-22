@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import id.putra.core_erp.enums.ApprovalEnum;
+import id.putra.core_erp.enums.ApprovalStatus;
 import id.putra.core_erp.exceptions.ModuleException;
 import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.procurement.model.Transfer;
@@ -15,16 +15,15 @@ import id.putra.core_erp.modules.procurement.repository.InventoryRepo;
 import id.putra.core_erp.modules.procurement.repository.TransferRequestRepo;
 import id.putra.core_erp.service.BaseService;
 import id.putra.core_erp.util.AppFileUtil;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class TransferService implements BaseService<Transfer> {
 
-    private final InventoryRepo inventoryRepo;
     private final TransferRequestRepo transferRequestRepo;
 
     public TransferService(InventoryRepo inventoryRepo, TransferRequestRepo transferRequestRepo) {
-        this.inventoryRepo = inventoryRepo;
         this.transferRequestRepo = transferRequestRepo;
     }
 
@@ -32,9 +31,8 @@ public class TransferService implements BaseService<Transfer> {
         transferRequestRepo.persist(dto);
     }
 
-    public Transfer save(Transfer entity) {
+    public void save(Transfer entity) {
         transferRequestRepo.persist(entity);
-        return entity;
     }
 
     public List<Transfer> findAll(Transfer dto) {
@@ -49,7 +47,7 @@ public class TransferService implements BaseService<Transfer> {
         return transferRequestRepo.findByStatusLikeAndIdLike(status, id);
     }
 
-    public Iterable<Transfer> findAll() {
+    public Iterable<Transfer> findAll(Transfer transfer, Page p) {
         return transferRequestRepo.findAll().list();
     }
 
@@ -84,13 +82,13 @@ public class TransferService implements BaseService<Transfer> {
         }
     }
 
-    public ApprovalEnum checkStatusApprovalIsPermanent(Transfer dto) {
+    public ApprovalStatus checkStatusApprovalIsPermanent(Transfer dto) {
         Transfer params = dto;
         String nrp = "";
 
         Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(params.getId());
         if (reqOpt.isPresent()) {
-            ApprovalEnum result = ApprovalEnum.NON_APPROVAL;
+            ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
             List<Approval> approvals = new ArrayList<>();
             if (reqOpt.get().getTemApprovals() != null) {
                 approvals.addAll(reqOpt.get().getTemApprovals());
@@ -112,7 +110,7 @@ public class TransferService implements BaseService<Transfer> {
                             .anyMatch(data -> data.getUsers() != null && data.getUsers() != null
                                     && data.getUsers().equalsIgnoreCase(nrp)
                                     && Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
-                        result = ApprovalEnum.ALREADY_APPROVED;
+                        result = ApprovalStatus.ALREADY_APPROVED;
                     }
 
                     if (approvals.stream()
@@ -122,7 +120,7 @@ public class TransferService implements BaseService<Transfer> {
                             && index == (reqOpt.get().getCurrentApprovalStage() != null
                                     ? reqOpt.get().getCurrentApprovalStage()
                                     : 0)) {
-                        result = ApprovalEnum.NEED_APPROVAL;
+                        result = ApprovalStatus.NEED_APPROVAL;
                     }
 
                 }
@@ -140,13 +138,11 @@ public class TransferService implements BaseService<Transfer> {
     }
 
     public void update(Transfer dto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        transferRequestRepo.persist(dto);
     }
 
     public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        transferRequestRepo.deleteById(id);
     }
 
 }

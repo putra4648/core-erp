@@ -25,7 +25,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "receiving", layout = MainLayout.class)
-@PageTitle("Receiving | WMS Pro")
+@PageTitle("Receiving")
 @Authenticated
 public class ReceivingView extends VerticalLayout {
 

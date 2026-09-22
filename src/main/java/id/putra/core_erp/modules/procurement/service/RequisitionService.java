@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import id.putra.core_erp.enums.ApprovalEnum;
+import id.putra.core_erp.enums.ApprovalStatus;
 import id.putra.core_erp.exceptions.ModuleException;
 import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.budget.repository.BudgetDetailRepo;
@@ -18,6 +18,7 @@ import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.repository.TransferRequestRepo;
 import id.putra.core_erp.service.BaseService;
 import id.putra.core_erp.util.AppFileUtil;
+import io.quarkus.panache.common.Page;
 import io.vertx.mutiny.core.Vertx;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -63,12 +64,12 @@ public class RequisitionService implements BaseService<Requisition> {
         }
     }
 
-    public ApprovalEnum checkStatusApprovalIsPermanent(Requisition dto) {
+    public ApprovalStatus checkStatusApprovalIsPermanent(Requisition dto) {
         String nrp = "";
 
         Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
         if (reqOpt.isPresent()) {
-            ApprovalEnum result = ApprovalEnum.NON_APPROVAL;
+            ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
             List<Approval> approvals = new ArrayList<>();
             if (reqOpt.get().getApprovals() != null) {
                 approvals.addAll(reqOpt.get().getApprovals());
@@ -91,7 +92,7 @@ public class RequisitionService implements BaseService<Requisition> {
                             data -> data.getUsers() != null && data.getUsers() != null
                                     && data.getUsers().equalsIgnoreCase(nrp)
                                     && Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
-                        result = ApprovalEnum.ALREADY_APPROVED;
+                        result = ApprovalStatus.ALREADY_APPROVED;
                     }
 
                     if (approvals.stream().anyMatch(
@@ -101,7 +102,7 @@ public class RequisitionService implements BaseService<Requisition> {
                             && index == (reqOpt.get().getCurrentApprovalStage() != null
                                     ? reqOpt.get().getCurrentApprovalStage()
                                     : 0)) {
-                        result = ApprovalEnum.NEED_APPROVAL;
+                        result = ApprovalStatus.NEED_APPROVAL;
                     }
 
                 }
@@ -124,9 +125,8 @@ public class RequisitionService implements BaseService<Requisition> {
         requisitionRepo.persist(entity);
     }
 
-    public Requisition save(Requisition entity) {
+    public void save(Requisition entity) {
         requisitionRepo.persist(entity);
-        return entity;
     }
 
     public void update(Requisition entity) {
@@ -145,7 +145,7 @@ public class RequisitionService implements BaseService<Requisition> {
         return requisitionRepo.findById(id);
     }
 
-    public List<Requisition> findAll() {
+    public List<Requisition> findAll(Requisition r, Page p) {
         return requisitionRepo.findAll().list();
     }
 

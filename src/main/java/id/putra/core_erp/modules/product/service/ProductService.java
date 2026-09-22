@@ -23,9 +23,8 @@ public class ProductService implements BaseService<Product> {
         return productRepository.findById(dto.getId());
     }
 
-    public Product save(Product dto) {
+    public void save(Product dto) {
         productRepository.persist(dto);
-        return dto;
     }
 
     public void update(Product dto) {
@@ -36,7 +35,7 @@ public class ProductService implements BaseService<Product> {
         return productRepository.findById(id);
     }
 
-    public Iterable<Product> findAll() {
+    public Iterable<Product> findAll(Product product, Page p) {
         return productRepository.findAll().list();
     }
 

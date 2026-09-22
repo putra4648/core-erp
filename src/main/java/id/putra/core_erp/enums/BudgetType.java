@@ -1,11 +1,11 @@
 package id.putra.core_erp.enums;
 
-public enum BudgetEnum {
+public enum BudgetType {
     ALL(""), EXPENSE("expense"), INVESTMENT("investment");
 
     private String value;
 
-    private BudgetEnum(String value) {
+    private BudgetType(String value) {
         this.value = value;
     }
 

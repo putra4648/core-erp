@@ -7,7 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import id.putra.core_erp.entity.BaseEntity;
-import id.putra.core_erp.enums.BudgetEnum;
+import id.putra.core_erp.enums.BudgetType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,11 +26,11 @@ public class BudgetDetail extends BaseEntity {
     private String name;
 
     @Column(name = "type")
-    private BudgetEnum type;
+    private BudgetType type;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "budgets")
-    private List<BudgetType> details;
+    private List<BudgetAllocation> allocations;
 
     @Column(name = "note")
     private String note;
@@ -39,7 +39,7 @@ public class BudgetDetail extends BaseEntity {
     @JoinColumn(name = "budget_id", referencedColumnName = "id")
     private Budget budget;
 
-    BigInteger totalBudget;
+    private BigInteger totalBudget;
 
     public BigInteger getTotalBudget() {
         return totalBudget;
@@ -65,20 +65,20 @@ public class BudgetDetail extends BaseEntity {
         this.name = name;
     }
 
-    public BudgetEnum getType() {
+    public BudgetType getType() {
         return type;
     }
 
-    public void setType(BudgetEnum type) {
+    public void setType(BudgetType type) {
         this.type = type;
     }
 
-    public List<BudgetType> getDetails() {
-        return details;
+    public List<BudgetAllocation> getAllocations() {
+        return allocations;
     }
 
-    public void setDetails(List<BudgetType> details) {
-        this.details = details;
+    public void setAllocations(List<BudgetAllocation> details) {
+        this.allocations = details;
     }
 
     public String getNote() {

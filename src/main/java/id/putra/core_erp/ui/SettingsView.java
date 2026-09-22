@@ -33,7 +33,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 @Route(value = "settings", layout = MainLayout.class)
-@PageTitle("Settings | WMS Pro")
+@PageTitle("Settings")
 @Authenticated
 public class SettingsView extends VerticalLayout {
 

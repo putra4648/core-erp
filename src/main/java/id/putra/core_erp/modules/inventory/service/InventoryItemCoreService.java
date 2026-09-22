@@ -29,12 +29,11 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
         return inventoryItemRepository.findById(id);
     }
 
-    public InventoryItem save(InventoryItem entity) {
+    public void save(InventoryItem entity) {
         inventoryItemRepository.persist(entity);
-        return entity;
     }
 
-    public Iterable<InventoryItem> findAll() {
+    public Iterable<InventoryItem> findAll(InventoryItem item, Page p) {
         return inventoryItemRepository.findAll().list();
     }
 

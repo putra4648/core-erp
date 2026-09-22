@@ -27,7 +27,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.modules.procurement.service.SupplierService;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.enums.StatusEnum;
+import id.putra.core_erp.enums.Status;
 import id.putra.core_erp.enums.TypeEnum;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
@@ -91,7 +91,7 @@ public class SupplierView extends VerticalLayout {
 
         grid.addComponentColumn(s -> {
             Span badge = new Span(s.getStatus() != null ? s.getStatus().name() : "ACTIVE");
-            if (s.getStatus() == StatusEnum.ACTIVE || s.getStatus() == null) {
+            if (s.getStatus() == Status.ACTIVE || s.getStatus() == null) {
                 badge.getElement().getThemeList().add("badge success");
             } else {
                 badge.getElement().getThemeList().add("badge error");
@@ -103,7 +103,7 @@ public class SupplierView extends VerticalLayout {
             Button editBtn = new Button("Edit", VaadinIcon.EDIT.create(), e -> openSupplierDialog(s));
             editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
-            Button toggleBtn = new Button(s.getStatus() == StatusEnum.ACTIVE ? "Deactivate" : "Activate",
+            Button toggleBtn = new Button(s.getStatus() == Status.ACTIVE ? "Deactivate" : "Activate",
                     e -> toggleStatus(s));
             toggleBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
@@ -192,7 +192,7 @@ public class SupplierView extends VerticalLayout {
             dto.setCurrency(currField.getValue());
             dto.setNotes(notesField.getValue());
             dto.setType(TypeEnum.TRADE);
-            dto.setStatus(StatusEnum.ACTIVE);
+            dto.setStatus(Status.ACTIVE);
 
             try {
                 if (editSupplier == null) {

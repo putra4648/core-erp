@@ -26,16 +26,15 @@ public class LocationCoreService implements BaseService<Location> {
         return locationRepository.findById(dto.getId());
     }
 
-    public Location save(Location entity) {
+    public void save(Location entity) {
         locationRepository.persist(entity);
-        return entity;
     }
 
     public Location findById(Long id) {
         return locationRepository.findById(id);
     }
 
-    public Iterable<Location> findAll() {
+    public Iterable<Location> findAll(Location l, Page p) {
         return locationRepository.findAll().list();
     }
 

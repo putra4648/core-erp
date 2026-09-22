@@ -3,7 +3,7 @@ package id.putra.core_erp.modules.outbound.model;
 import java.sql.Date;
 import java.util.List;
 
-import id.putra.core_erp.modules.customer.model.Customer;
+import id.putra.core_erp.modules.department.model.Department;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,7 +28,7 @@ public class SalesOrder {
 
   @ManyToOne
   @JoinColumn(name = "customer_id")
-  private Customer customer;
+  private Department customer;
 
   public Long getId() {
     return id;
@@ -70,11 +70,11 @@ public class SalesOrder {
     this.salesOrderLines = salesOrderLines;
   }
 
-  public Customer getCustomer() {
+  public Department getCustomer() {
     return customer;
   }
 
-  public void setCustomer(Customer customer) {
+  public void setCustomer(Department customer) {
     this.customer = customer;
   }
 }

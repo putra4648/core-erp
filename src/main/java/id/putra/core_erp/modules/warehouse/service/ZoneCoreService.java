@@ -26,16 +26,15 @@ public class ZoneCoreService implements BaseService<Zone> {
         return zoneRepository.findById(zoneDto.getId());
     }
 
-    public Zone save(Zone entity) {
+    public void save(Zone entity) {
         zoneRepository.persist(entity);
-        return entity;
     }
 
     public Zone findById(Long id) {
         return zoneRepository.findById(id);
     }
 
-    public Iterable<Zone> findAll() {
+    public Iterable<Zone> findAll(Zone z, Page p) {
         return zoneRepository.findAll().list();
     }
 

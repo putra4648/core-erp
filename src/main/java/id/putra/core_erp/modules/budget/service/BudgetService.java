@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.budget.model.BudgetDetail;
-import id.putra.core_erp.modules.budget.model.BudgetType;
+import id.putra.core_erp.modules.budget.model.BudgetAllocation;
 import id.putra.core_erp.modules.budget.repository.BudgetDetailRepo;
 import id.putra.core_erp.modules.budget.repository.BudgetRepo;
 import id.putra.core_erp.modules.department.model.Department;
@@ -37,6 +37,7 @@ public class BudgetService {
     }
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+
     public Map<String, Object> getBudgets(List<String> deptId) throws ParseException {
         List<Budget> current = new ArrayList<>();
         List<Budget> past = new ArrayList<>();
@@ -55,8 +56,8 @@ public class BudgetService {
 
             if (budget.getDepartment() != null) {
                 Department Department = new Department();
-                Department.setDeptName(budget.getDepartment().getDeptName());
-                Department.setDeptNumber(budget.getDepartment().getDeptNumber());
+                Department.setName(budget.getDepartment().getName());
+                Department.setCode(budget.getDepartment().getCode());
                 dto.setDepartment(Department);
             }
 
@@ -82,8 +83,8 @@ public class BudgetService {
 
             if (budget.getDepartment() != null) {
                 Department Department = new Department();
-                Department.setDeptName(budget.getDepartment().getDeptName());
-                Department.setDeptNumber(budget.getDepartment().getDeptNumber());
+                Department.setName(budget.getDepartment().getName());
+                Department.setCode(budget.getDepartment().getCode());
                 dto.setDepartment(Department);
             }
 
@@ -105,6 +106,7 @@ public class BudgetService {
         result.put("past", past);
         return result;
     }
+
     public void addOrUpdateBudget(Budget body) throws ParseException {
         Long id = Long.parseLong(body.getId());
         if (budgetRepo.findByIdOptional(id).isPresent()) {
@@ -122,15 +124,15 @@ public class BudgetService {
                     budgetDetail.setType(b.getType());
                     budgetDetail.setNote(b.getNote());
 
-                    if (b.getDetails() != null) {
-                        List<BudgetType> detailDtos = b.getDetails().stream().map(d -> {
-                            BudgetType dtlDto = new BudgetType();
-                            dtlDto.setBudgetDateStr(d.getBudgetDateStr());
+                    if (b.getAllocations() != null) {
+                        List<BudgetAllocation> detailDtos = b.getAllocations().stream().map(d -> {
+                            BudgetAllocation dtlDto = new BudgetAllocation();
+                            dtlDto.setDate(d.getDate());
                             dtlDto.setPlan(d.getPlan());
                             dtlDto.setActual(d.getActual());
                             return dtlDto;
                         }).toList();
-                        budgetDetail.setDetails(detailDtos);
+                        budgetDetail.setAllocations(detailDtos);
                     }
 
                     budgetDetail.setBudget(entity);
@@ -143,9 +145,9 @@ public class BudgetService {
             Budget entity = new Budget();
             entity.setId(body.getId());
 
-            if (body.getDepartment() != null && body.getDepartment().getDeptNumber() != null) {
+            if (body.getDepartment() != null && body.getDepartment().getCode() != null) {
                 Optional<Department> deptOpt = departmentRepo
-                        .findByDeptNumber(body.getDepartment().getDeptNumber());
+                        .findByDeptNumber(body.getDepartment().getCode());
                 deptOpt.ifPresent(entity::setDepartment);
             }
 
@@ -162,15 +164,15 @@ public class BudgetService {
                     budgetDetail.setType(b.getType());
                     budgetDetail.setNote(b.getNote());
 
-                    if (b.getDetails() != null) {
-                        List<BudgetType> detailDtos = b.getDetails().stream().map(d -> {
-                            BudgetType dtlDto = new BudgetType();
-                            dtlDto.setBudgetDateStr(d.getBudgetDateStr());
+                    if (b.getAllocations() != null) {
+                        List<BudgetAllocation> detailDtos = b.getAllocations().stream().map(d -> {
+                            BudgetAllocation dtlDto = new BudgetAllocation();
+                            dtlDto.setDate(d.getDate());
                             dtlDto.setPlan(d.getPlan());
                             dtlDto.setActual(d.getActual());
                             return dtlDto;
                         }).toList();
-                        budgetDetail.setDetails(detailDtos);
+                        budgetDetail.setAllocations(detailDtos);
                     }
 
                     budgetDetail.setBudget(entity);
@@ -181,6 +183,7 @@ public class BudgetService {
             budgetRepo.persist(entity);
         }
     }
+
     public List<BudgetDetail> getBudgetsDetail(String deptId, String budgetId, String filter) {
         List<BudgetDetail> dtos = new ArrayList<>();
         budgetDetailRepo.findAllBudgetDetailsByDeptIdAndBudgetIdAndType(deptId, budgetId, filter).forEach(d -> {
@@ -190,17 +193,18 @@ public class BudgetService {
             detailDto.setType(d.getType());
             detailDto.setNote(d.getNote());
 
-            List<BudgetType> plans = new ArrayList<>();
-            if (d.getDetails() != null) {
-                d.getDetails().forEach(plans::add);
+            List<BudgetAllocation> plans = new ArrayList<>();
+            if (d.getAllocations() != null) {
+                d.getAllocations().forEach(plans::add);
             }
-            detailDto.setDetails(plans);
+            detailDto.setAllocations(plans);
 
             dtos.add(detailDto);
         });
 
         return dtos;
     }
+
     public BudgetDetail getBudgetDetail(String deptId, String budgetId) {
         BudgetDetail dto = new BudgetDetail();
 
@@ -213,14 +217,15 @@ public class BudgetService {
             dto.setNote(d.getNote());
             dto.setType(d.getType());
 
-            List<BudgetType> plans = new ArrayList<>();
-            if (d.getDetails() != null) {
-                d.getDetails().forEach(plans::add);
+            List<BudgetAllocation> plans = new ArrayList<>();
+            if (d.getAllocations() != null) {
+                d.getAllocations().forEach(plans::add);
             }
-            dto.setDetails(plans);
+            dto.setAllocations(plans);
         }
         return dto;
     }
+
     public List<BudgetDetail> getBudgetsDetail(String deptId, String year) {
         List<BudgetDetail> dtos = new ArrayList<>();
 
@@ -232,14 +237,15 @@ public class BudgetService {
                     detailDto.setType(d.getType());
                     detailDto.setNote(d.getNote());
 
-                    List<BudgetType> plans = new ArrayList<>();
-                    if (d.getDetails() != null) {
-                        d.getDetails().forEach(plans::add);
+                    List<BudgetAllocation> plans = new ArrayList<>();
+                    if (d.getAllocations() != null) {
+                        d.getAllocations().forEach(plans::add);
                     }
                     String currentMonth = new SimpleDateFormat("MMM").format(new Date());
                     BigInteger totalBudget = plans.stream()
-                            .filter(data -> data.getBudgetDateStr() != null
-                                    && data.getBudgetDateStr().equalsIgnoreCase(currentMonth))
+                            .filter(data -> data.getDate() != null
+                                    && new SimpleDateFormat("MMM").format(data.getDate())
+                                            .equalsIgnoreCase(currentMonth))
                             .map(data -> data.getPlan() != null ? data.getPlan() : BigInteger.ZERO).findFirst()
                             .orElse(BigInteger.ZERO);
                     detailDto.setTotalBudget(totalBudget);

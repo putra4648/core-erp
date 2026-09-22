@@ -34,8 +34,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.enums.ApprovalEnum;
-import id.putra.core_erp.enums.RequisitionEnum;
+import id.putra.core_erp.enums.ApprovalStatus;
+import id.putra.core_erp.enums.RequisitionStatus;
 import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.budget.repository.BudgetDetailRepo;
 import id.putra.core_erp.modules.department.model.Department;
@@ -130,7 +130,7 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         titleField.setRequired(true);
         titleField.setWidthFull();
 
-        deptCombo.setItemLabelGenerator(d -> d.getDeptNumber() + " - " + d.getDeptName());
+        deptCombo.setItemLabelGenerator(d -> d.getCode() + " - " + d.getName());
         deptCombo.setItems(departmentList);
         deptCombo.setRequired(true);
 
@@ -201,13 +201,13 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         actions.setSpacing(true);
         actions.addClassNames(LumoUtility.Margin.Top.MEDIUM);
 
-        saveDraftBtn.addClickListener(e -> saveRequisition(RequisitionEnum.DRAFT.getValue()));
+        saveDraftBtn.addClickListener(e -> saveRequisition(RequisitionStatus.DRAFT.getValue()));
 
         submitBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        submitBtn.addClickListener(e -> saveRequisition(RequisitionEnum.SEND.getValue()));
+        submitBtn.addClickListener(e -> saveRequisition(RequisitionStatus.SEND.getValue()));
 
         approveBtn.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
-        approveBtn.addClickListener(e -> handleApproval(RequisitionEnum.APPROVED.getValue()));
+        approveBtn.addClickListener(e -> handleApproval(RequisitionStatus.APPROVED.getValue()));
         approveBtn.setVisible(false);
 
         rejectBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
@@ -316,8 +316,8 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
 
                 // Check approval status
                 try {
-                    ApprovalEnum approvalStatus = requisitionService.checkStatusApprovalIsPermanent(r);
-                    if (approvalStatus == ApprovalEnum.NEED_APPROVAL) {
+                    ApprovalStatus approvalStatus = requisitionService.checkStatusApprovalIsPermanent(r);
+                    if (approvalStatus == ApprovalStatus.NEED_APPROVAL) {
                         approveBtn.setVisible(true);
                         rejectBtn.setVisible(true);
                     }
@@ -350,8 +350,8 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         params.setStatus(status);
 
         Department deptDto = new Department();
-        deptDto.setDeptNumber(deptCombo.getValue().getDeptNumber());
-        deptDto.setDeptName(deptCombo.getValue().getDeptName());
+        deptDto.setCode(deptCombo.getValue().getCode());
+        deptDto.setName(deptCombo.getValue().getName());
         params.setDepartment(deptDto);
 
         if (dueDatePicker.getValue() != null) {
@@ -421,7 +421,7 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
             }
             noteField.setValue(noteField.getValue() + " [REJECT REASON: " + rejectReason.getValue() + "]");
             dialog.close();
-            saveRequisition(RequisitionEnum.REJECT.getValue());
+            saveRequisition(RequisitionStatus.REJECT.getValue());
         });
         rejectConfirm.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
 

@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.customer.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
@@ -31,7 +32,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 
 @Route(value = "master/customer", layout = MainLayout.class)
-@PageTitle("Customers | WMS Pro")
+@PageTitle("Customers")
 @Authenticated
 public class CustomerView extends VerticalLayout {
     @Inject
@@ -117,7 +118,11 @@ public class CustomerView extends VerticalLayout {
     }
 
     private void refreshData() {
-        grid.setItems(customerService.getAll(searchField.getValue(), Page.ofSize(100)));
+        var params = new Customer();
+        params.setName(searchField.getValue());
+        List<Customer> results = new ArrayList<>();
+        customerService.findAll(params, Page.ofSize(100));
+        grid.setItems(results);
     }
 
     private void openCustomerDialog(Customer customer) {
@@ -177,11 +182,11 @@ public class CustomerView extends VerticalLayout {
 
                 try {
                     if (isEdit) {
-                        customerService.update(customer.getId(), customer);
+                        customerService.update(customer);
                         Notification.show("Customer updated successfully", 3000, Notification.Position.TOP_END)
                                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     } else {
-                        customerService.create(List.of(customer));
+                        customerService.save(customer);
                         Notification.show("Customer created successfully", 3000, Notification.Position.TOP_END)
                                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     }

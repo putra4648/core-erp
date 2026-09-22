@@ -5,6 +5,7 @@ import java.util.List;
 import id.putra.core_erp.modules.inbound.model.QualityInspection;
 import id.putra.core_erp.modules.inbound.repository.QualityInspectionRepository;
 import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -18,9 +19,8 @@ public class InspectionService implements BaseService<QualityInspection> {
         this.qualityInspectionRepository = qualityInspectionRepository;
     }
 
-    public QualityInspection save(QualityInspection entity) {
+    public void save(QualityInspection entity) {
         qualityInspectionRepository.persist(entity);
-        return entity;
     }
 
     public QualityInspection create(QualityInspection dto) {
@@ -44,7 +44,7 @@ public class InspectionService implements BaseService<QualityInspection> {
         return findById(id);
     }
 
-    public Iterable<QualityInspection> findAll() {
+    public Iterable<QualityInspection> findAll(QualityInspection qi, Page page) {
         return qualityInspectionRepository.findAll().list();
     }
 

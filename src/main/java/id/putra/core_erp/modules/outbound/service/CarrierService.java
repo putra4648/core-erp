@@ -1,8 +1,7 @@
 package id.putra.core_erp.modules.outbound.service;
 
 import id.putra.core_erp.service.BaseService;
-
-import java.util.List;
+import io.quarkus.panache.common.Page;
 
 import id.putra.core_erp.modules.outbound.model.Carrier;
 import id.putra.core_erp.modules.outbound.repository.CarrierRepository;
@@ -19,9 +18,8 @@ public class CarrierService implements BaseService<Carrier> {
         this.carrierRepository = carrierRepository;
     }
 
-    public Carrier save(Carrier entity) {
+    public void save(Carrier entity) {
         carrierRepository.persist(entity);
-        return entity;
     }
 
     public Carrier create(Carrier dto) {
@@ -45,11 +43,7 @@ public class CarrierService implements BaseService<Carrier> {
         return carrierRepository.findById(id);
     }
 
-    public Iterable<Carrier> findAll() {
-        return carrierRepository.findAll().list();
-    }
-
-    public List<Carrier> getAll(Carrier filter) {
+    public Iterable<Carrier> findAll(Carrier c, Page p) {
         return carrierRepository.findAll().list();
     }
 }

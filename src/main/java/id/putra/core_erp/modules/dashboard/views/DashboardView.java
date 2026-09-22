@@ -24,7 +24,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "", layout = MainLayout.class)
-@PageTitle("Dashboard | WMS Pro")
+@PageTitle("Dashboard")
 @Authenticated
 public class DashboardView extends VerticalLayout {
 

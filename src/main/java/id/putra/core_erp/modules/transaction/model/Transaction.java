@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.entity.BaseEntity;
-import id.putra.core_erp.modules.customer.model.Customer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +30,7 @@ public class Transaction extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private Department customer;
 
     private String txnNumber;
     private String txnType;
@@ -63,11 +63,11 @@ public class Transaction extends BaseEntity {
         this.supplier = supplier;
     }
 
-    public Customer getCustomer() {
+    public Department getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(Department customer) {
         this.customer = customer;
     }
 

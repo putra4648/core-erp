@@ -26,16 +26,15 @@ public class RackCoreService implements BaseService<Rack> {
         return rackRepository.findById(rackDto.getId());
     }
 
-    public Rack save(Rack entity) {
+    public void save(Rack entity) {
         rackRepository.persist(entity);
-        return entity;
     }
 
     public Rack findById(Long id) {
         return rackRepository.findById(id);
     }
 
-    public Iterable<Rack> findAll() {
+    public Iterable<Rack> findAll(Rack r, Page p) {
         return rackRepository.findAll().list();
     }
 

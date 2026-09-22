@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.outbound.service;
 
 import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 
 import java.util.List;
 
@@ -19,9 +20,8 @@ public class PickingService implements BaseService<PickingTask> {
         this.pickingTaskRepository = pickingTaskRepository;
     }
 
-    public PickingTask save(PickingTask entity) {
+    public void save(PickingTask entity) {
         pickingTaskRepository.persist(entity);
-        return entity;
     }
 
     public PickingTask create(PickingTask dto) {
@@ -45,7 +45,7 @@ public class PickingService implements BaseService<PickingTask> {
         return pickingTaskRepository.findById(id);
     }
 
-    public Iterable<PickingTask> findAll() {
+    public Iterable<PickingTask> findAll(PickingTask s, Page p) {
         return pickingTaskRepository.findAll().list();
     }
 

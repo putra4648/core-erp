@@ -1,6 +1,6 @@
 package id.putra.core_erp.enums;
 
-public enum ApprovalEnum {
+public enum ApprovalStatus {
 
     NEED_APPROVAL("NEED_APPROVAL"),
     IS_PURCHASER("IS_PURCHASER"),
@@ -9,7 +9,7 @@ public enum ApprovalEnum {
 
     private String value;
 
-    private ApprovalEnum(String value) {
+    private ApprovalStatus(String value) {
         this.value = value;
 
     }

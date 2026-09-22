@@ -10,10 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class DashboardService {
 
-    private final RequisitionRepo requisitionRepo;
-
     public DashboardService(RequisitionRepo requisitionRepo) {
-        this.requisitionRepo = requisitionRepo;
     }
     public List<Map<String, Object>> getAllSpender() {
         List<Map<String, Object>> dtos = new ArrayList<>();
@@ -22,7 +19,7 @@ public class DashboardService {
         // .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
         // "");
         // if (users.isPresent() && users.get().getDepartment() != null) {
-        // String deptNumber = users.get().getDepartment().getDeptNumber();
+        // String deptNumber = users.get().getDepartment().getCode();
 
         // requisitionRepo.getAllSpender(deptNumber).forEach(entry -> {
         // Map<String, Object> data = new HashMap<>();

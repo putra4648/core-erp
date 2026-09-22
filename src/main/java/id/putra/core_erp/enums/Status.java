@@ -1,11 +1,11 @@
 package id.putra.core_erp.enums;
 
-public enum StatusEnum {
+public enum Status {
     ACTIVE("ACTIVE"), INACTIVE("INACTIVE"), ALL("");
 
     private String value;
 
-    private StatusEnum(String value) {
+    private Status(String value) {
         this.value = value;
     }
 

@@ -29,7 +29,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 
 @Route(value = "master/products", layout = MainLayout.class)
-@PageTitle("Products | WMS Pro")
+@PageTitle("Products")
 @Authenticated
 public class ProductView extends VerticalLayout {
     @Inject

@@ -1,23 +1,20 @@
 package id.putra.core_erp.modules.budget.model;
 
 import java.math.BigInteger;
+import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonProperty;
+public class BudgetAllocation {
 
-public class BudgetType {
-    @JsonAlias("budget_date")
-    @JsonProperty("budget_date")
-    private String budgetDateStr;
+    private Date date;
     private BigInteger plan;
     private BigInteger actual;
 
-    public String getBudgetDateStr() {
-        return budgetDateStr;
+    public Date getDate() {
+        return date;
     }
 
-    public void setBudgetDateStr(String budgetDateStr) {
-        this.budgetDateStr = budgetDateStr;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public BigInteger getPlan() {

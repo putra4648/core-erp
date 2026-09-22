@@ -27,7 +27,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import id.putra.core_erp.modules.procurement.repository.SupplierRepo;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.constant.MessageConstant;
-import id.putra.core_erp.enums.StatusEnum;
+import id.putra.core_erp.enums.Status;
 import id.putra.core_erp.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.Resource;
@@ -137,8 +137,8 @@ public class SupplierService {
         Optional<Supplier> supplier = supplierRepo.findByIdOptional(id);
         if (supplier.isPresent()) {
             Supplier entity = supplier.get();
-            entity.setStatus(entity.getStatus().equals(StatusEnum.ACTIVE) ? StatusEnum.INACTIVE
-                    : StatusEnum.ACTIVE);
+            entity.setStatus(entity.getStatus().equals(Status.ACTIVE) ? Status.INACTIVE
+                    : Status.ACTIVE);
             supplierRepo.persist(entity);
         } else {
             String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier ", id);
@@ -147,7 +147,7 @@ public class SupplierService {
     }
 
     public List<Supplier> getSupplierDropdown() {
-        return supplierRepo.findByStatus(StatusEnum.ACTIVE);
+        return supplierRepo.findByStatus(Status.ACTIVE);
     }
 
     public void importSuppliers(FileUpload file) throws Exception {
@@ -192,7 +192,7 @@ public class SupplierService {
             supplier.setAccNo(getCellValueAsString(row.getCell(0)));
             supplier.setName(getCellValueAsString(row.getCell(1)));
             supplier.setWebsite(getCellValueAsString(row.getCell(2)));
-            supplier.setStatus(StatusEnum.valueOf(getCellValueAsString(row.getCell(3))));
+            supplier.setStatus(Status.valueOf(getCellValueAsString(row.getCell(3))));
             supplier.setPhone(getCellValueAsString(row.getCell(4)));
             supplier.setFax(getCellValueAsString(row.getCell(5)));
             supplier.setCurrency(getCellValueAsString(row.getCell(6)));

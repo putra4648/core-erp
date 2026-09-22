@@ -88,7 +88,7 @@ public class RequisitionListView extends VerticalLayout {
         grid.setSizeFull();
         grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("PR Number").setAutoWidth(true);
         grid.addColumn(r -> r.getTitle() != null ? r.getTitle() : "-").setHeader("Title").setFlexGrow(2);
-        grid.addColumn(r -> r.getDepartment() != null ? r.getDepartment().getDeptName() : "-").setHeader("Department")
+        grid.addColumn(r -> r.getDepartment() != null ? r.getDepartment().getName() : "-").setHeader("Department")
                 .setFlexGrow(1);
         grid.addColumn(r -> r.getDueDate() != null ? dateFormat.format(r.getDueDate()) : "-").setHeader("Due Date")
                 .setAutoWidth(true);
@@ -149,15 +149,15 @@ public class RequisitionListView extends VerticalLayout {
             // List<String> deptIds = new ArrayList<>();
             // var currentUser = securityService.getCurrentUser();
             // if (currentUser.isPresent() && currentUser.get().getDepartment() != null) {
-            // deptIds.add(currentUser.get().getDepartment().getDeptNumber());
+            // deptIds.add(currentUser.get().getDepartment().getCode());
             // if (currentUser.get().getOtherDepts() != null) {
             // deptIds.addAll(currentUser.get().getOtherDepts());
             // }
             // } else {
-            // departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getDeptNumber()));
+            // departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getCode()));
             // }
 
-            List<Requisition> res = requisitionService.findAll();
+            List<Requisition> res = requisitionService.findAll(params, null);
             reqList.clear();
             if (res != null) {
                 reqList.addAll(res);

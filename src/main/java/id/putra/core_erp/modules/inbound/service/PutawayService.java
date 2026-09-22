@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.inbound.service;
 
 import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 
 import java.util.List;
 
@@ -19,9 +20,8 @@ public class PutawayService implements BaseService<Putaway> {
         this.putawayRepository = putawayRepository;
     }
 
-    public Putaway save(Putaway entity) {
+    public void save(Putaway entity) {
         putawayRepository.persist(entity);
-        return entity;
     }
 
     public Putaway create(Putaway dto) {
@@ -45,7 +45,7 @@ public class PutawayService implements BaseService<Putaway> {
         return findById(id);
     }
 
-    public Iterable<Putaway> findAll() {
+    public Iterable<Putaway> findAll(Putaway putAway, Page p) {
         return putawayRepository.findAll().list();
     }
 

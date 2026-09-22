@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import id.putra.core_erp.enums.ApprovalEnum;
+import id.putra.core_erp.enums.ApprovalStatus;
 import id.putra.core_erp.exceptions.ModuleException;
 import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.procurement.model.Quotation;
@@ -15,6 +15,7 @@ import id.putra.core_erp.modules.procurement.repository.QuotationRepo;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.service.BaseService;
 import id.putra.core_erp.util.AppFileUtil;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -22,42 +23,41 @@ import jakarta.persistence.PersistenceContext;
 @ApplicationScoped
 public class QuotationService implements BaseService<Quotation> {
 
-    private final QuotationRepo rfqRepository;
+    private final QuotationRepo quotationRepository;
 
     public QuotationService(QuotationRepo rfqRepository) {
-        this.rfqRepository = rfqRepository;
+        this.quotationRepository = rfqRepository;
     }
 
     @PersistenceContext
     private EntityManager entityManager;
 
     public void add(Quotation dto) {
-        rfqRepository.persist(dto);
+        quotationRepository.persist(dto);
     }
 
     public List<Quotation> findAll(Quotation params) {
-        return rfqRepository.find("id like ?1", params.getId()).list();
+        return quotationRepository.find("id like ?1", params.getId()).list();
     }
 
-    public Quotation save(Quotation entity) {
-        rfqRepository.persist(entity);
-        return entity;
+    public void save(Quotation entity) {
+        quotationRepository.persist(entity);
     }
 
     public Quotation findById(Long id) {
-        return rfqRepository.findById(id);
+        return quotationRepository.findById(id);
     }
 
-    public Iterable<Quotation> findAll() {
-        return rfqRepository.findAll().list();
+    public Iterable<Quotation> findAll(Quotation quotation, Page p) {
+        return quotationRepository.findAll().list();
     }
 
     public Quotation getById(Long id) {
-        return rfqRepository.findByIdOptional(id).get();
+        return quotationRepository.findByIdOptional(id).get();
     }
 
     public Boolean checkApprovalFlow(Quotation dto) {
-        Optional<Quotation> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
+        Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
             // Optional<Users> userOpt = userRepo
             // .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
@@ -74,12 +74,12 @@ public class QuotationService implements BaseService<Quotation> {
         }
     }
 
-    public ApprovalEnum checkStatusApprovalIsPermanent(Quotation dto) {
+    public ApprovalStatus checkStatusApprovalIsPermanent(Quotation dto) {
         String nrp = "";
 
-        Optional<Quotation> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
+        Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
-            ApprovalEnum result = ApprovalEnum.NON_APPROVAL;
+            ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
             List<Approval> approvals = new ArrayList<>();
             rfqOpt.ifPresent(data -> {
                 if (data.getTemApprovals() != null) {
@@ -101,7 +101,7 @@ public class QuotationService implements BaseService<Quotation> {
                         if (approvals.stream().anyMatch(
                                 data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
                                         && Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
-                            result = ApprovalEnum.ALREADY_APPROVED;
+                            result = ApprovalStatus.ALREADY_APPROVED;
                         }
 
                         if (approvals.stream().anyMatch(
@@ -110,7 +110,7 @@ public class QuotationService implements BaseService<Quotation> {
                                 && index == (rfqOpt.get().getCurrentApprovalStage() != null
                                         ? rfqOpt.get().getCurrentApprovalStage()
                                         : 0)) {
-                            result = ApprovalEnum.NEED_APPROVAL;
+                            result = ApprovalStatus.NEED_APPROVAL;
                         }
 
                     }
@@ -125,7 +125,7 @@ public class QuotationService implements BaseService<Quotation> {
 
     public byte[] download(Quotation dto) throws Exception {
 
-        Optional<Quotation> rfqOpt = rfqRepository.findByIdOptional(dto.getId());
+        Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
         if (rfqOpt.isPresent()) {
             try {
                 Supplier supplier = rfqOpt.get().getSuppliers().stream()
@@ -147,13 +147,11 @@ public class QuotationService implements BaseService<Quotation> {
     }
 
     public void update(Quotation entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        quotationRepository.persist(entity);
     }
 
     public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        quotationRepository.deleteById(id);
     }
 
 }

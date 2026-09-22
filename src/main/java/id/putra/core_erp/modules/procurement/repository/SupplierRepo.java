@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.enums.StatusEnum;
+import id.putra.core_erp.enums.Status;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -23,7 +23,7 @@ public class SupplierRepo implements PanacheRepository<Supplier> {
         return (int) count("name ilike ?1", "%" + name + "%");
     }
 
-    public List<Supplier> findByStatus(StatusEnum status) {
+    public List<Supplier> findByStatus(Status status) {
         return list("status", status);
     }
 

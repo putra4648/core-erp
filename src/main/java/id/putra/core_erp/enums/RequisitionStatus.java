@@ -1,6 +1,6 @@
 package id.putra.core_erp.enums;
 
-public enum RequisitionEnum {
+public enum RequisitionStatus {
     ALL("ALL"),
     SEND("SEND"),
     WAITING_APPROVAL("WAITING_APPROVAL"),
@@ -13,7 +13,7 @@ public enum RequisitionEnum {
 
     private String value;
 
-    private RequisitionEnum(String value) {
+    private RequisitionStatus(String value) {
         this.value = value;
     }
 

@@ -19,9 +19,8 @@ public class PurchaseOrderService implements BaseService<PurchaseOrder> {
         this.purchaseOrderRepository = purchaseOrderRepository;
     }
 
-    public PurchaseOrder save(PurchaseOrder entity) {
+    public void save(PurchaseOrder entity) {
         purchaseOrderRepository.persist(entity);
-        return entity;
     }
 
     public PurchaseOrder create(PurchaseOrder dto) {
@@ -41,7 +40,7 @@ public class PurchaseOrderService implements BaseService<PurchaseOrder> {
         return purchaseOrderRepository.findById(id);
     }
 
-    public Iterable<PurchaseOrder> findAll() {
+    public Iterable<PurchaseOrder> findAll(PurchaseOrder po, Page p) {
         return purchaseOrderRepository.findAll().list();
     }
 

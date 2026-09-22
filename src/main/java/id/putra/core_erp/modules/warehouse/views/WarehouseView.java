@@ -36,7 +36,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "master/warehouses", layout = MainLayout.class)
-@PageTitle("Warehouses | WMS Pro")
+@PageTitle("Warehouses")
 @Authenticated
 public class WarehouseView extends VerticalLayout {
 

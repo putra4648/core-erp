@@ -32,7 +32,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 
 @Route(value = "master/suppliers", layout = MainLayout.class)
-@PageTitle("Suppliers | WMS Pro")
+@PageTitle("Suppliers")
 @Authenticated
 public class SupplierView extends VerticalLayout {
     @Inject

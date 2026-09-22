@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.customer.model;
 
 import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.modules.department.model.Department;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,7 +23,7 @@ public class ContactPersonCustomer extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private Department customer;
 
     public Long getId() {
         return id;
@@ -64,11 +65,11 @@ public class ContactPersonCustomer extends BaseEntity {
         this.address = address;
     }
 
-    public Customer getCustomer() {
+    public Department getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(Department customer) {
         this.customer = customer;
     }
 }

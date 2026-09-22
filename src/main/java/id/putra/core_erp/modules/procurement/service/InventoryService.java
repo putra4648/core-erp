@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.procurement.service;
 
 import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 
 import java.util.List;
 
@@ -25,16 +26,15 @@ public class InventoryService implements BaseService<Inventory> {
         return inventoryRepo.findAll().list();
     }
 
-    public Inventory save(Inventory entity) {
+    public void save(Inventory entity) {
         inventoryRepo.persist(entity);
-        return entity;
     }
 
     public Inventory findById(Long id) {
         return inventoryRepo.findById(id);
     }
 
-    public Iterable<Inventory> findAll() {
+    public Iterable<Inventory> findAll(Inventory i, Page p) {
         return inventoryRepo.findAll().list();
     }
 
@@ -43,13 +43,11 @@ public class InventoryService implements BaseService<Inventory> {
     }
 
     public void update(Inventory inventory) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        inventoryRepo.update("partName = ?1", inventory.getPartName());
     }
 
     public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        inventoryRepo.deleteById(id);
     }
 
 }

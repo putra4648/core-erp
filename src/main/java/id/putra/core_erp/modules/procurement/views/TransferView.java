@@ -70,7 +70,7 @@ public class TransferView extends VerticalLayout {
         grid.setSizeFull();
         grid.addColumn(t -> t.getId() != null ? t.getId() : "-").setHeader("Transfer Number").setAutoWidth(true);
         grid.addColumn(t -> t.getTitle() != null ? t.getTitle() : "-").setHeader("Title").setFlexGrow(2);
-        grid.addColumn(t -> t.getDepartment() != null ? t.getDepartment().getDeptName() : "-").setHeader("Department")
+        grid.addColumn(t -> t.getDepartment() != null ? t.getDepartment().getName() : "-").setHeader("Department")
                 .setFlexGrow(1);
         grid.addColumn(t -> t.getDueDate() != null ? dateFormat.format(t.getDueDate()) : "-").setHeader("Due Date")
                 .setAutoWidth(true);
@@ -93,7 +93,7 @@ public class TransferView extends VerticalLayout {
             Transfer params = new Transfer();
 
             List<String> deptIds = new ArrayList<>();
-            departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getDeptNumber()));
+            departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getCode()));
 
             List<Transfer> res = transferService.findAll(params);
             transferList.clear();

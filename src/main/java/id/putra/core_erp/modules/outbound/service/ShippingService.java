@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.outbound.service;
 
 import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 
 import java.util.List;
 
@@ -19,13 +20,8 @@ public class ShippingService implements BaseService<Shipment> {
         this.shipmentRepository = shipmentRepository;
     }
 
-    public Shipment save(Shipment dto) {
+    public void save(Shipment dto) {
         shipmentRepository.persist(dto);
-        return dto;
-    }
-
-    public Shipment create(Shipment dto) {
-        return save(dto);
     }
 
     public void update(Shipment dto) {
@@ -44,7 +40,7 @@ public class ShippingService implements BaseService<Shipment> {
         return shipmentRepository.findById(id);
     }
 
-    public Iterable<Shipment> findAll() {
+    public Iterable<Shipment> findAll(Shipment s, Page p) {
         return shipmentRepository.findAll().list();
     }
 

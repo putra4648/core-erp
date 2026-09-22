@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.inbound.service;
 
 import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 
 import java.util.List;
 
@@ -19,9 +20,8 @@ public class LabellingService implements BaseService<Labelling> {
         this.labellingRepository = labellingRepository;
     }
 
-    public Labelling save(Labelling entity) {
+    public void save(Labelling entity) {
         labellingRepository.persist(entity);
-        return entity;
     }
 
     public Labelling create(Labelling dto) {
@@ -45,7 +45,7 @@ public class LabellingService implements BaseService<Labelling> {
         return findById(id);
     }
 
-    public Iterable<Labelling> findAll() {
+    public Iterable<Labelling> findAll(Labelling s, Page p) {
         return labellingRepository.findAll().list();
     }
 

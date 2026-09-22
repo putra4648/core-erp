@@ -16,20 +16,15 @@ public class SalesOrderService implements BaseService<SalesOrder> {
 
     private SalesOrderRepository salesOrderRepository;
 
-    public void create(SalesOrder dto) {
+    public void save(SalesOrder dto) {
         salesOrderRepository.persist(dto);
-    }
-
-    public SalesOrder save(SalesOrder dto) {
-        create(dto);
-        return dto;
     }
 
     public SalesOrder findById(Long id) {
         return salesOrderRepository.findById(id);
     }
 
-    public Iterable<SalesOrder> findAll() {
+    public Iterable<SalesOrder> findAll(SalesOrder so, Page p) {
         return salesOrderRepository.findAll().list();
     }
 

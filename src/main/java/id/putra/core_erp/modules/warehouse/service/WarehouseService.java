@@ -26,16 +26,15 @@ public class WarehouseService implements BaseService<Warehouse> {
         return warehouseRepository.findById(dto.getId());
     }
 
-    public Warehouse save(Warehouse entity) {
+    public void save(Warehouse entity) {
         warehouseRepository.persist(entity);
-        return entity;
     }
 
     public Warehouse findById(Long id) {
         return warehouseRepository.findById(id);
     }
 
-    public Iterable<Warehouse> findAll() {
+    public Iterable<Warehouse> findAll(Warehouse w, Page p) {
         return warehouseRepository.findAll().list();
     }
 

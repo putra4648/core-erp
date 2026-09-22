@@ -25,7 +25,7 @@ import com.vaadin.flow.server.streams.DownloadResponse;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "reports", layout = MainLayout.class)
-@PageTitle("Reports | WMS Pro")
+@PageTitle("Reports")
 @Authenticated
 public class ReportsView extends VerticalLayout {
 
