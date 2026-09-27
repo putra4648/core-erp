@@ -1,46 +1,53 @@
 package id.putra.core_erp.modules.parameter.service;
 
-import java.util.List;
-
 import id.putra.core_erp.modules.parameter.model.ParameterLookup;
 import id.putra.core_erp.modules.parameter.repository.ParameterLookupRepository;
+import id.putra.core_erp.service.BaseService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @Transactional
 @ApplicationScoped
-public class ParameterLookupService {
+public class ParameterLookupService implements BaseService<ParameterLookup> {
 
     private final ParameterLookupRepository parameterLookupRepository;
 
     public ParameterLookupService(ParameterLookupRepository parameterLookupRepository) {
         this.parameterLookupRepository = parameterLookupRepository;
     }
+
     public ParameterLookup getParameterLookupByIdOrKey(Long parameterId, String parameterKey) {
         return parameterLookupRepository.findByIdOrKey(parameterId, parameterKey);
     }
-    public void createParameterLookup(ParameterLookup parameterLookup) {
+
+    public void save(ParameterLookup parameterLookup) {
         parameterLookupRepository.persist(parameterLookup);
     }
-    public void updateParameterLookup(ParameterLookup parameterLookup) {
+
+    public void update(ParameterLookup parameterLookup) {
         parameterLookupRepository.persist(parameterLookup);
     }
-    public void deleteParameterLookup(Long id) {
+
+    public void delete(Long id) {
         parameterLookupRepository.deleteById(id);
     }
-    public void persist(List<ParameterLookup> parameterLookups) throws Exception {
-        parameterLookupRepository.persist(parameterLookups);
-    }
-    public List<ParameterLookup> getAllParameterLookups(String search, Page page) {
-        if (search == null || search.isBlank()) {
+
+    public Iterable<ParameterLookup> findAll(ParameterLookup entity, Page page) {
+        if (entity == null || entity.getKey() == null || entity.getKey().isBlank()) {
             return parameterLookupRepository.findAll().page(page).list();
         }
 
-        String pattern = "%" + search.toLowerCase() + "%";
+        String pattern = "%" + entity.getKey().toLowerCase() + "%";
         return parameterLookupRepository.find(
                 "lower(key) like ?1 or lower(value) like ?1 or lower(description) like ?1",
                 pattern).page(page).list();
+    }
+
+    @Override
+    public ParameterLookup findById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
 }

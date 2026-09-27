@@ -1,5 +1,6 @@
 package id.putra.core_erp.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +21,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -40,47 +40,19 @@ public class SettingsView extends VerticalLayout {
     @Inject
     Validator validator;
 
+    private final ParameterLookupService parameterLookupService;
     private final Tab parameterTabs = new Tab(VaadinIcon.COG.create(), new Span("System Parameters"));
     private final Tabs tabs = new Tabs(this.parameterTabs);
-    private final VerticalLayout contentArea;
+    private final VerticalLayout contentArea = new VerticalLayout();
     private final Grid<ParameterLookup> parameterGrid = new Grid<>();
-    private final TextField searchField;
-    private final FormLayout formLayout;
-    private final Dialog dialog;
-    private ParameterLookup form;
-
-    private final ParameterLookupService parameterLookupService;
+    private final TextField searchField = new TextField();
 
     public SettingsView(ParameterLookupService parameterLookupService) {
-        this.form = new ParameterLookup();
-        this.contentArea = new VerticalLayout();
-        this.dialog = new Dialog();
         this.parameterLookupService = parameterLookupService;
-        this.searchField = new TextField();
-        this.formLayout = new FormLayout();
 
-        VerticalLayout layout = new VerticalLayout();
-        var keyField = new TextField("Key", val -> {
-            this.form.setKey(val.getValue());
-        });
-        keyField.setRequired(true);
-
-        var valueField = new TextField("Value", val -> {
-            this.form.setValue(val.getValue());
-        });
-        valueField.setRequired(true);
-
-        var descriptionField = new TextField("Description", val -> {
-            this.form.setDescription(val.getValue());
-        });
-        descriptionField.setRequired(true);
-
-        this.parameterGrid.setItems(query -> parameterLookupService
-                .getAllParameterLookups(searchField.getValue(), Page.ofSize(query.getPageSize())).stream());
-
-        layout.add(keyField, valueField, descriptionField);
-
-        this.formLayout.add(layout);
+        setSizeFull();
+        setPadding(true);
+        setSpacing(true);
 
         addHeader();
 
@@ -91,55 +63,7 @@ public class SettingsView extends VerticalLayout {
         add(tabs, contentArea);
 
         configureParameterGrid();
-
         updateContent(parameterTabs);
-
-    }
-
-    private void updateContent(Tab selectedTab) {
-        contentArea.removeAll();
-        if (selectedTab.equals(parameterTabs)) {
-            configureParameterSection();
-            this.parameterGrid.getDataProvider().refreshAll();
-        }
-
-    }
-
-    private void configureParameterGrid() {
-        parameterGrid.addColumn(p -> p.getKey()).setHeader("Key").setKey("key").setSortable(true);
-        parameterGrid.addColumn(p -> p.getValue()).setHeader("Value").setKey("value").setSortable(true);
-        parameterGrid.addColumn(p -> p.getDescription()).setHeader("Description").setKey("description")
-                .setSortable(true);
-    }
-
-    private void configureParameterSection() {
-        this.searchField.setPlaceholder("Search parameters...");
-        this.searchField.setClearButtonVisible(true);
-        this.searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        this.searchField.setWidth("280px");
-        this.searchField.setValueChangeMode(ValueChangeMode.LAZY);
-        this.searchField.addValueChangeListener(e -> this.parameterGrid.getDataProvider().refreshAll());
-
-        VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
-        layout.setPadding(false);
-        layout.setSpacing(false);
-
-        Button addBtn = new Button("Add", VaadinIcon.PLUS.create(), e -> this.dialog.open());
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> {
-            this.searchField.clear();
-            this.parameterGrid.getDataProvider().refreshAll();
-        });
-
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, addBtn, refreshBtn);
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
-
-        layout.add(toolbar, parameterGrid);
-
-        contentArea.add(layout);
-
     }
 
     private void addHeader() {
@@ -150,22 +74,154 @@ public class SettingsView extends VerticalLayout {
         add(title, desc);
     }
 
-    private void saveAction() {
-        Set<ConstraintViolation<ParameterLookup>> validate = validator.validate(form);
-        if (validate.isEmpty()) {
-            try {
-                parameterLookupService.persist(List.of(form));
-                this.parameterGrid.getDataProvider().refreshAll();
-                this.dialog.close();
-                Notification
-                        .show("Parameter saved successfully", 4000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            } catch (Exception ex) {
-                Notification
-                        .show("Failed to save parameter: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
+    private void updateContent(Tab selectedTab) {
+        contentArea.removeAll();
+        if (selectedTab.equals(parameterTabs)) {
+            configureParameterSection();
+            refreshData();
         }
     }
 
+    private void configureParameterSection() {
+        searchField.setPlaceholder("Search parameters...");
+        searchField.setClearButtonVisible(true);
+        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        searchField.setWidth("280px");
+        searchField.addValueChangeListener(e -> refreshData());
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.setPadding(false);
+        layout.setSpacing(true);
+
+        Button addBtn = new Button("Add Parameter", VaadinIcon.PLUS.create(), e -> openParameterDialog(new ParameterLookup()));
+        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> {
+            searchField.clear();
+            refreshData();
+        });
+
+        HorizontalLayout toolbar = new HorizontalLayout(searchField, addBtn, refreshBtn);
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.add(toolbar, parameterGrid);
+        contentArea.add(layout);
+    }
+
+    private void configureParameterGrid() {
+        parameterGrid.setSizeFull();
+        parameterGrid.addColumn(ParameterLookup::getKey).setHeader("Key").setKey("key").setSortable(true).setAutoWidth(true);
+        parameterGrid.addColumn(ParameterLookup::getValue).setHeader("Value").setKey("value").setSortable(true).setAutoWidth(true);
+        parameterGrid.addColumn(ParameterLookup::getDescription).setHeader("Description").setKey("description").setSortable(true).setFlexGrow(1);
+
+        parameterGrid.addComponentColumn(param -> {
+            Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openParameterDialog(param));
+            editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+            Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(param));
+            deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+
+            return new HorizontalLayout(editBtn, deleteBtn);
+        }).setHeader("Actions").setAutoWidth(true);
+    }
+
+    private void refreshData() {
+        ParameterLookup search = new ParameterLookup();
+        String searchTerm = searchField.getValue();
+        if (searchTerm != null && !searchTerm.isBlank()) {
+            search.setKey(searchTerm.trim());
+        }
+
+        List<ParameterLookup> result = new ArrayList<>();
+        parameterLookupService.findAll(search, Page.ofSize(100)).forEach(result::add);
+        parameterGrid.setItems(result);
+    }
+
+    private void openParameterDialog(ParameterLookup parameter) {
+        boolean isEdit = parameter.getId() != null;
+        Dialog dialog = new Dialog(isEdit ? "Edit Parameter" : "Add Parameter");
+
+        FormLayout parameterForm = new FormLayout();
+
+        TextField keyField = new TextField("Key");
+        keyField.setRequired(true);
+        keyField.setValue(parameter.getKey() != null ? parameter.getKey() : "");
+
+        TextField valueField = new TextField("Value");
+        valueField.setRequired(true);
+        valueField.setValue(parameter.getValue() != null ? parameter.getValue() : "");
+
+        TextField descriptionField = new TextField("Description");
+        descriptionField.setRequired(true);
+        descriptionField.setValue(parameter.getDescription() != null ? parameter.getDescription() : "");
+
+        parameterForm.add(keyField, valueField, descriptionField);
+        dialog.add(parameterForm);
+
+        Button saveBtn = new Button("Save", e -> {
+            parameter.setKey(keyField.getValue());
+            parameter.setValue(valueField.getValue());
+            parameter.setDescription(descriptionField.getValue());
+
+            Set<ConstraintViolation<ParameterLookup>> violations = validator.validate(parameter);
+            if (!violations.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (ConstraintViolation<ParameterLookup> violation : violations) {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(violation.getPropertyPath()).append(" ").append(violation.getMessage());
+                }
+                Notification.show("Validation failed: " + sb, 4000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                return;
+            }
+
+            try {
+                if (isEdit) {
+                    parameterLookupService.update(parameter);
+                    Notification.show("Parameter updated successfully", 3000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                } else {
+                    parameterLookupService.save(parameter);
+                    Notification.show("Parameter created successfully", 3000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                }
+                dialog.close();
+                refreshData();
+            } catch (Exception ex) {
+                Notification.show("Failed to save parameter: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button cancelBtn = new Button("Cancel", e -> dialog.close());
+
+        dialog.getFooter().add(cancelBtn, saveBtn);
+        dialog.open();
+    }
+
+    private void confirmDelete(ParameterLookup parameter) {
+        Dialog confirmDialog = new Dialog("Delete Parameter");
+        confirmDialog.add(new Paragraph("Are you sure you want to delete parameter '" + parameter.getKey() + "'?"));
+
+        Button deleteBtn = new Button("Delete", e -> {
+            try {
+                parameterLookupService.delete(parameter.getId());
+                Notification.show("Parameter deleted successfully", 3000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                confirmDialog.close();
+                refreshData();
+            } catch (Exception ex) {
+                Notification.show("Failed to delete parameter: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+
+        Button cancelBtn = new Button("Cancel", e -> confirmDialog.close());
+
+        confirmDialog.getFooter().add(cancelBtn, deleteBtn);
+        confirmDialog.open();
+    }
 }
