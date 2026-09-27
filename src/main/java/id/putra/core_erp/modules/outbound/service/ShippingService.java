@@ -1,19 +1,17 @@
 package id.putra.core_erp.modules.outbound.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
-
 import java.util.List;
 
 import id.putra.core_erp.modules.outbound.model.Shipment;
 import id.putra.core_erp.modules.outbound.repository.ShipmentRepository;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
 public class ShippingService implements BaseService<Shipment> {
-
     private final ShipmentRepository shipmentRepository;
 
     public ShippingService(ShipmentRepository shipmentRepository) {
@@ -24,6 +22,10 @@ public class ShippingService implements BaseService<Shipment> {
         shipmentRepository.persist(dto);
     }
 
+    public Shipment findById(Long id) {
+        return shipmentRepository.findById(id);
+    }
+
     public void update(Shipment dto) {
         shipmentRepository.getEntityManager().merge(dto);
     }
@@ -32,19 +34,7 @@ public class ShippingService implements BaseService<Shipment> {
         shipmentRepository.deleteById(id);
     }
 
-    public Shipment getById(Long id) {
-        return shipmentRepository.findById(id);
-    }
-
-    public Shipment findById(Long id) {
-        return shipmentRepository.findById(id);
-    }
-
-    public Iterable<Shipment> findAll(Shipment s, Page p) {
-        return shipmentRepository.findAll().list();
-    }
-
-    public List<Shipment> getAll(Shipment filter) {
+    public List<Shipment> findAll(Shipment s, Page p) {
         return shipmentRepository.findAll().list();
     }
 }

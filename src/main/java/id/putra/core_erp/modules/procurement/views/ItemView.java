@@ -29,6 +29,7 @@ import id.putra.core_erp.modules.procurement.service.ItemService;
 import id.putra.core_erp.modules.procurement.service.SupplierService;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.ui.MainLayout;
+import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "items", layout = MainLayout.class)
@@ -151,7 +152,9 @@ public class ItemView extends VerticalLayout {
 
         ComboBox<Supplier> supplierCombo = new ComboBox<>("Supplier");
         try {
-            var supRes = supplierService.getSupplierDropdown();
+            var params = new Supplier();
+            params.setName("");
+            var supRes = supplierService.findAll(params, Page.of(1, 1000));
             if (supRes != null) {
                 supplierCombo.setItems(supRes);
                 supplierCombo.setItemLabelGenerator(s -> s.getName());

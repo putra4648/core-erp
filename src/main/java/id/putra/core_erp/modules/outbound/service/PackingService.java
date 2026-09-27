@@ -1,19 +1,17 @@
 package id.putra.core_erp.modules.outbound.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
-
 import java.util.List;
 
 import id.putra.core_erp.modules.outbound.model.Packing;
 import id.putra.core_erp.modules.outbound.repository.PackingRepository;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
 public class PackingService implements BaseService<Packing> {
-
     private final PackingRepository packingRepository;
 
     public PackingService(PackingRepository packingRepository) {
@@ -24,6 +22,10 @@ public class PackingService implements BaseService<Packing> {
         packingRepository.persist(dto);
     }
 
+    public Packing findById(Long id) {
+        return packingRepository.findById(id);
+    }
+
     public void update(Packing dto) {
         packingRepository.getEntityManager().merge(dto);
     }
@@ -32,19 +34,7 @@ public class PackingService implements BaseService<Packing> {
         packingRepository.deleteById(id);
     }
 
-    public Packing getById(Long id) {
-        return packingRepository.findById(id);
-    }
-
-    public Packing findById(Long id) {
-        return packingRepository.findById(id);
-    }
-
-    public Iterable<Packing> findAll(Packing packing, Page p) {
-        return packingRepository.findAll().list();
-    }
-
-    public List<Packing> getAll(Packing filter) {
+    public List<Packing> findAll(Packing packing, Page p) {
         return packingRepository.findAll().list();
     }
 }

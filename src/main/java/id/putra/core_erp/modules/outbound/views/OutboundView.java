@@ -1,5 +1,8 @@
 package id.putra.core_erp.modules.outbound.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -100,7 +103,11 @@ public class OutboundView extends VerticalLayout {
     }
 
     private void refreshData() {
-        grid.setItems(salesOrderService.getAll(searchField.getValue(), Page.ofSize(100)));
+        var params = new SalesOrder();
+        params.setSoNumber(searchField.getValue());
+        List<SalesOrder> results = new ArrayList<>();
+        salesOrderService.findAll(params, Page.ofSize(100)).forEach(results::add);
+        grid.setItems(results);
     }
 
     private void openOrderDialog(SalesOrder order) {

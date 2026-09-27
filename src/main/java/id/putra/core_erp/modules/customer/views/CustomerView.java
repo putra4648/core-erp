@@ -5,13 +5,11 @@ import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -100,13 +98,6 @@ public class CustomerView extends VerticalLayout {
                 .setHeader("Phone").setAutoWidth(true);
 
         grid.addComponentColumn(customer -> {
-            boolean active = Boolean.TRUE.equals(customer.getIsActive());
-            Span badge = new Span(active ? "Active" : "Inactive");
-            badge.getElement().getThemeList().add("badge " + (active ? "success" : "error"));
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
-
-        grid.addComponentColumn(customer -> {
             Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openCustomerDialog(customer));
             editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
@@ -139,10 +130,6 @@ public class CustomerView extends VerticalLayout {
         TextField nameField = new TextField("Customer Name", val -> {
             this.form.setName(val.getValue());
         });
-        Checkbox activeCheck = new Checkbox("Is Active", val -> {
-            this.form.setIsActive(val.getValue());
-        });
-
         TextField cpNameField = new TextField("Contact Person Name", val -> {
             this.form.getContactPerson().setName(val.getValue());
         });
@@ -158,7 +145,6 @@ public class CustomerView extends VerticalLayout {
 
         codeField.setValue(customer.getCode() != null ? customer.getCode() : "");
         nameField.setValue(customer.getName() != null ? customer.getName() : "");
-        activeCheck.setValue(customer.getIsActive() != null ? customer.getIsActive() : true);
 
         cpNameField
                 .setValue(customer.getContactPerson().getName() != null ? customer.getContactPerson().getName() : "");
@@ -169,7 +155,7 @@ public class CustomerView extends VerticalLayout {
         cpAddressField.setValue(
                 customer.getContactPerson().getAddress() != null ? customer.getContactPerson().getAddress() : "");
 
-        FormLayout formLayout = new FormLayout(codeField, nameField, activeCheck, cpNameField, cpEmailField,
+        FormLayout formLayout = new FormLayout(codeField, nameField, cpNameField, cpEmailField,
                 cpPhoneField, cpAddressField);
         dialog.add(formLayout);
 

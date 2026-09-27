@@ -1,14 +1,15 @@
 package id.putra.core_erp.modules.product.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -92,13 +93,6 @@ public class ProductView extends VerticalLayout {
         grid.addColumn(p -> p.getMaxStock() != null ? p.getMaxStock() : 0).setHeader("Max Stock").setAutoWidth(true);
 
         grid.addComponentColumn(product -> {
-            boolean active = Boolean.TRUE.equals(product.getIsActive());
-            Span badge = new Span(active ? "Active" : "Inactive");
-            badge.getElement().getThemeList().add("badge " + (active ? "success" : "error"));
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
-
-        grid.addComponentColumn(product -> {
             Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openProductDialog(product));
             editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
@@ -112,7 +106,9 @@ public class ProductView extends VerticalLayout {
     private void refreshData() {
         Product searchParam = new Product();
         searchParam.setName(searchField.getValue());
-        grid.setItems(productService.getProducts(searchParam, Page.ofSize(100)));
+        List<Product> results = new ArrayList<>();
+        productService.findAll(searchParam, Page.ofSize(100)).forEach(results::add);
+        grid.setItems(results);
     }
 
     private void openProductDialog(Product product) {
@@ -137,9 +133,6 @@ public class ProductView extends VerticalLayout {
         IntegerField maxStockField = new IntegerField("Max Stock", 1, val -> {
             this.form.setMaxStock(val.getValue().longValue());
         });
-        Checkbox activeCheck = new Checkbox("Is Active", val -> {
-            this.form.setIsActive(val.getValue());
-        });
 
         skuField.setValue(product.getSku() != null ? product.getSku() : "");
         nameField.setValue(product.getName() != null ? product.getName() : "");
@@ -147,9 +140,8 @@ public class ProductView extends VerticalLayout {
         qtyField.setValue(product.getQuantity() != null ? product.getQuantity().intValue() : 0);
         minStockField.setValue(product.getMinStock() != null ? product.getMinStock().intValue() : 0);
         maxStockField.setValue(product.getMaxStock() != null ? product.getMaxStock().intValue() : 0);
-        activeCheck.setValue(product.getIsActive() != null ? product.getIsActive() : true);
 
-        FormLayout formLayout = new FormLayout(skuField, nameField, qtyField, minStockField, maxStockField, activeCheck,
+        FormLayout formLayout = new FormLayout(skuField, nameField, qtyField, minStockField, maxStockField,
                 descField);
         dialog.add(formLayout);
 

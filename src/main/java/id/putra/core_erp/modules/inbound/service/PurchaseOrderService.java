@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class PurchaseOrderService implements BaseService<PurchaseOrder> {
-
     private final PurchaseOrderRepository purchaseOrderRepository;
 
     public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository) {
@@ -23,9 +22,8 @@ public class PurchaseOrderService implements BaseService<PurchaseOrder> {
         purchaseOrderRepository.persist(entity);
     }
 
-    public PurchaseOrder create(PurchaseOrder dto) {
-        purchaseOrderRepository.persist(dto);
-        return dto;
+    public PurchaseOrder findById(Long id) {
+        return purchaseOrderRepository.findById(id);
     }
 
     public void update(PurchaseOrder dto) {
@@ -36,17 +34,7 @@ public class PurchaseOrderService implements BaseService<PurchaseOrder> {
         purchaseOrderRepository.deleteById(id);
     }
 
-    public PurchaseOrder findById(Long id) {
-        return purchaseOrderRepository.findById(id);
-    }
-
-    public Iterable<PurchaseOrder> findAll(PurchaseOrder po, Page p) {
+    public List<PurchaseOrder> findAll(PurchaseOrder po, Page p) {
         return purchaseOrderRepository.findAll().list();
     }
-
-    public List<PurchaseOrder> getAll(PurchaseOrder dto, Page page) {
-        String poNumber = dto.getPoNumber() == null ? "" : dto.getPoNumber();
-        return purchaseOrderRepository.find("poNumber LIKE ?1", "%" + poNumber + "%").page(page).list();
-    }
-
 }

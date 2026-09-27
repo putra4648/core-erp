@@ -1,5 +1,8 @@
 package id.putra.core_erp.modules.procurement.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -103,8 +106,9 @@ public class PurchaseOrderView extends VerticalLayout {
     private void refreshData() {
         PurchaseOrder searchParam = new PurchaseOrder();
         searchParam.setPoNumber(searchField.getValue());
-        var page = purchaseOrderService.getAll(searchParam, Page.ofSize(100));
-        grid.setItems(page);
+        List<PurchaseOrder> results = new ArrayList<>();
+        purchaseOrderService.findAll(searchParam, Page.ofSize(100)).forEach(results::add);
+        grid.setItems(results);
     }
 
     private void openPoDialog(PurchaseOrder po) {
@@ -118,7 +122,7 @@ public class PurchaseOrderView extends VerticalLayout {
         Button saveBtn = new Button("Create PO", e -> {
             po.setPoNumber(poNumField.getValue());
             try {
-                purchaseOrderService.create(po);
+                purchaseOrderService.save(po);
                 Notification.show("PO created successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();

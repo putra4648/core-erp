@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.customer.service;
 
+import java.util.List;
+
 import id.putra.core_erp.modules.customer.model.Customer;
 import id.putra.core_erp.modules.customer.repository.CustomerRepository;
 import id.putra.core_erp.service.BaseService;
@@ -20,12 +22,14 @@ public class CustomerService implements BaseService<Customer> {
         customerRepository.persist(customer);
     }
 
-    public Iterable<Customer> findAll(Customer c, Page page) {
+    public List<Customer> findAll(Customer c, Page page) {
         return customerRepository.findAll().list();
     }
 
     public void update(Customer customer) {
-        customerRepository.getEntityManager().merge(customer);
+        customerRepository.update("code = ?1, name = ?2, contactPerson = ?3 WHERE id = ?4",
+                customer.getCode(), customer.getName(), customer.getContactPerson(),
+                customer.getId());
     }
 
     public Customer findById(Long id) {
@@ -34,9 +38,5 @@ public class CustomerService implements BaseService<Customer> {
 
     public void delete(Long id) {
         customerRepository.deleteById(id);
-    }
-
-    public void add(Customer customer) {
-        customerRepository.persist(customer);
     }
 }

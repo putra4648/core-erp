@@ -48,7 +48,7 @@ public class QuotationService implements BaseService<Quotation> {
         return quotationRepository.findById(id);
     }
 
-    public Iterable<Quotation> findAll(Quotation quotation, Page p) {
+    public List<Quotation> findAll(Quotation quotation, Page p) {
         return quotationRepository.findAll().list();
     }
 
@@ -129,7 +129,6 @@ public class QuotationService implements BaseService<Quotation> {
         if (rfqOpt.isPresent()) {
             try {
                 Supplier supplier = rfqOpt.get().getSuppliers().stream()
-                        .filter(data -> data.getAccNo() != null)
                         .findFirst().orElse(null);
                 if (supplier != null) {
                     Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq",

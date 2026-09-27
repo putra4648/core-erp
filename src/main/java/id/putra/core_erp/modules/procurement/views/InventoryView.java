@@ -21,6 +21,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import id.putra.core_erp.modules.procurement.model.Inventory;
 import id.putra.core_erp.modules.procurement.service.InventoryService;
 import id.putra.core_erp.ui.MainLayout;
+import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "inventory", layout = MainLayout.class)
@@ -82,7 +83,8 @@ public class InventoryView extends VerticalLayout {
         try {
             Inventory params = new Inventory();
 
-            List<Inventory> res = inventoryService.getAll(params);
+            List<Inventory> res = new ArrayList<>();
+            inventoryService.findAll(params, Page.ofSize(100)).forEach(res::add);
             if (res != null) {
                 inventoryList.clear();
                 inventoryList.addAll(res);

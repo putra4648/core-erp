@@ -25,8 +25,6 @@ public class Rack extends BaseEntity {
 
     private Long cols;
 
-    private Boolean isActive;
-
     @OneToMany(mappedBy = "rack")
     private List<Location> locations;
 
@@ -64,14 +62,6 @@ public class Rack extends BaseEntity {
 
     public void setCols(Long cols) {
         this.cols = cols;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
     }
 
     public List<Location> getLocations() {

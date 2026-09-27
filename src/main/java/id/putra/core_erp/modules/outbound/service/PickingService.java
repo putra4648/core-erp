@@ -1,19 +1,17 @@
 package id.putra.core_erp.modules.outbound.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
-
 import java.util.List;
 
 import id.putra.core_erp.modules.outbound.model.PickingTask;
 import id.putra.core_erp.modules.outbound.repository.PickingTaskRepository;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
 public class PickingService implements BaseService<PickingTask> {
-
     private final PickingTaskRepository pickingTaskRepository;
 
     public PickingService(PickingTaskRepository pickingTaskRepository) {
@@ -24,9 +22,8 @@ public class PickingService implements BaseService<PickingTask> {
         pickingTaskRepository.persist(entity);
     }
 
-    public PickingTask create(PickingTask dto) {
-        pickingTaskRepository.persist(dto);
-        return dto;
+    public PickingTask findById(Long id) {
+        return pickingTaskRepository.findById(id);
     }
 
     public void update(PickingTask dto) {
@@ -37,19 +34,7 @@ public class PickingService implements BaseService<PickingTask> {
         pickingTaskRepository.deleteById(id);
     }
 
-    public PickingTask getById(Long id) {
-        return pickingTaskRepository.findById(id);
-    }
-
-    public PickingTask findById(Long id) {
-        return pickingTaskRepository.findById(id);
-    }
-
-    public Iterable<PickingTask> findAll(PickingTask s, Page p) {
-        return pickingTaskRepository.findAll().list();
-    }
-
-    public List<PickingTask> getAll(PickingTask filter) {
+    public List<PickingTask> findAll(PickingTask s, Page p) {
         return pickingTaskRepository.findAll().list();
     }
 }

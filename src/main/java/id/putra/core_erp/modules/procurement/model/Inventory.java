@@ -10,14 +10,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-
 @Table(name = "inventory")
 public class Inventory extends BaseEntity {
+
+    @Id
+    private Long id;
 
     @Column(name = "po_number")
     private String poNumber;
 
-    @Id
     @Column(name = "part_number")
     private String partNumber;
 
@@ -53,6 +54,14 @@ public class Inventory extends BaseEntity {
 
     @Column(name = "uom")
     private String uom;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getPoNumber() {
         return poNumber;

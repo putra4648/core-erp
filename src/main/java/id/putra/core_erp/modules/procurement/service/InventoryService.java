@@ -1,29 +1,19 @@
 package id.putra.core_erp.modules.procurement.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
-
 import java.util.List;
 
 import id.putra.core_erp.modules.procurement.model.Inventory;
 import id.putra.core_erp.modules.procurement.repository.InventoryRepo;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class InventoryService implements BaseService<Inventory> {
-
     private final InventoryRepo inventoryRepo;
 
     public InventoryService(InventoryRepo inventoryRepo) {
         this.inventoryRepo = inventoryRepo;
-    }
-
-    public void add(Inventory inventory) {
-        inventoryRepo.persist(inventory);
-    }
-
-    public List<Inventory> getAll(Inventory dto) {
-        return inventoryRepo.findAll().list();
     }
 
     public void save(Inventory entity) {
@@ -34,20 +24,20 @@ public class InventoryService implements BaseService<Inventory> {
         return inventoryRepo.findById(id);
     }
 
-    public Iterable<Inventory> findAll(Inventory i, Page p) {
+    public List<Inventory> findAll(Inventory i, Page p) {
         return inventoryRepo.findAll().list();
-    }
-
-    public Inventory getInventory(Inventory inventory) {
-        return inventoryRepo.findByPartNumber(inventory.getPartNumber());
-    }
-
-    public void update(Inventory inventory) {
-        inventoryRepo.update("partName = ?1", inventory.getPartName());
     }
 
     public void delete(Long id) {
         inventoryRepo.deleteById(id);
     }
 
+    @Override
+    public void update(Inventory entity) {
+        inventoryRepo.update(
+                "poNumber = ?1, partNumber = ?2, partName = ?3, description = ?4, area = ?5, shelf = ?6, supplier = ?7, unit = ?8, qty = ?9, itemArea = ?10, date = ?11, location = ?12, uom = ?13 where id = ?14",
+                entity.getPoNumber(), entity.getPartNumber(), entity.getPartName(), entity.getDescription(),
+                entity.getArea(), entity.getShelf(), entity.getSupplier(), entity.getUnit(), entity.getQty(),
+                entity.getItemArea(), entity.getDate(), entity.getLocation(), entity.getUom(), entity.getId());
+    }
 }

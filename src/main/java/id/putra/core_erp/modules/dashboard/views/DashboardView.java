@@ -15,12 +15,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import id.putra.core_erp.modules.product.model.Product;
 import id.putra.core_erp.modules.product.service.ProductService;
-import id.putra.core_erp.modules.warehouse.model.Warehouse;
 import id.putra.core_erp.modules.warehouse.service.WarehouseService;
 import id.putra.core_erp.ui.MainLayout;
-import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "", layout = MainLayout.class)
@@ -54,15 +51,17 @@ public class DashboardView extends VerticalLayout {
         long totalProducts = 0;
         long totalWarehouses = 0;
 
-        try {
-            totalProducts = productService.countGetProducts(new Product(), Page.ofSize(0));
-        } catch (Exception ignored) {
-        }
+        // try {
+        // totalProducts = productService.countGetProducts(new Product(),
+        // Page.ofSize(0));
+        // } catch (Exception ignored) {
+        // }
 
-        try {
-            totalWarehouses = warehouseService.countGetWarehouses(new Warehouse(), Page.ofSize(1));
-        } catch (Exception ignored) {
-        }
+        // try {
+        // totalWarehouses = warehouseService.countGetWarehouses(new Warehouse(),
+        // Page.ofSize(1));
+        // } catch (Exception ignored) {
+        // }
 
         HorizontalLayout cardsLayout = new HorizontalLayout();
         cardsLayout.setWidthFull();

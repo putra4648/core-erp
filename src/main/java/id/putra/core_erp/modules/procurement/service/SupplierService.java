@@ -1,13 +1,9 @@
 package id.putra.core_erp.modules.procurement.service;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.file.Path;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -26,15 +22,14 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import id.putra.core_erp.modules.procurement.repository.SupplierRepo;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.constant.MessageConstant;
-import id.putra.core_erp.enums.Status;
-import id.putra.core_erp.util.AppFileUtil;
+import id.putra.core_erp.service.BaseService;
+import id.putra.core_erp.service.ImportFIleService;
 import io.quarkus.panache.common.Page;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class SupplierService {
+public class SupplierService implements BaseService<Supplier>, ImportFIleService {
 
     private final SupplierRepo supplierRepo;
 
@@ -42,115 +37,8 @@ public class SupplierService {
         this.supplierRepo = supplierRepo;
     }
 
-    public void addSupplier(Supplier body, FileUpload logoFile)
-            throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
-        if (!supplier.isPresent()) {
-            Supplier entity = new Supplier();
-            entity.setAccNo(body.getAccNo());
-            entity.setName(body.getName());
-            entity.setWebsite(body.getWebsite());
-            entity.setStatus(body.getStatus());
-            entity.setPhone(body.getPhone());
-            entity.setFax(body.getFax());
-            entity.setCurrency(body.getCurrency());
-            entity.setNpwp(body.getNpwp());
-            entity.setAccBank(body.getAccBank());
-            entity.setNotes(body.getNotes());
-            entity.setType(body.getType());
-
-            if (logoFile != null) {
-                Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
-                        logoFile);
-                entity.setSupplierLogoPath(path.toString());
-            }
-            supplierRepo.persist(entity);
-        } else {
-            String message = MessageFormat.format(MessageConstant.EXIST, "Supplier ", body.getAccNo());
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    public List<Supplier> getSupplier(String search, String status, Page page) {
-
-        if (status == null || status.isBlank()) {
-            status = "";
-        }
-
-        var result = supplierRepo.findAll().page(page);
-
-        return result.list();
-    }
-
-    public Supplier getSupplier(Long id) {
-        Optional<Supplier> supplierOptional = supplierRepo.findByIdOptional(id);
-
-        if (supplierOptional.isPresent()) {
-            return supplierOptional.get();
-        } else {
-            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + id);
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    public void updateSupplier(Supplier body, FileUpload logoFile)
-            throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
-        if (supplier.isPresent()) {
-            Supplier entity = supplier.get();
-
-            if (logoFile != null) {
-                if (entity.getSupplierLogoPath() != null) {
-                    Path path = AppFileUtil.recreateFileFromFileUpload(entity.getAccNo(), logoFile,
-                            AppFileUtil.SUPPLIER_FOLDER,
-                            entity.getSupplierLogoPath());
-                    entity.setSupplierLogoPath(path.toString());
-                } else {
-                    Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
-                            logoFile);
-                    entity.setSupplierLogoPath(path.toString());
-                }
-            }
-
-            entity.setName(body.getName());
-            entity.setAccNo(body.getAccNo());
-            entity.setWebsite(body.getWebsite());
-            entity.setStatus(body.getStatus());
-            entity.setPhone(body.getPhone());
-            entity.setFax(body.getFax());
-            entity.setCurrency(body.getCurrency());
-            entity.setNpwp(body.getNpwp());
-            entity.setAccBank(body.getAccBank());
-            entity.setNotes(body.getNotes());
-            entity.setType(body.getType());
-
-            Supplier updatedEntity = entity;
-            supplierRepo.persist(updatedEntity);
-        } else {
-            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + body.getAccNo());
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    public void updateSupplierStatus(Map<String, Object> body) {
-        Long id = (Long) body.get("id");
-        Optional<Supplier> supplier = supplierRepo.findByIdOptional(id);
-        if (supplier.isPresent()) {
-            Supplier entity = supplier.get();
-            entity.setStatus(entity.getStatus().equals(Status.ACTIVE) ? Status.INACTIVE
-                    : Status.ACTIVE);
-            supplierRepo.persist(entity);
-        } else {
-            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier ", id);
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    public List<Supplier> getSupplierDropdown() {
-        return supplierRepo.findByStatus(Status.ACTIVE);
-    }
-
-    public void importSuppliers(FileUpload file) throws Exception {
+    @Override
+    public void importFile(FileUpload file) throws Exception {
         if (file == null) {
             throw new IllegalArgumentException("File is empty");
         }
@@ -189,18 +77,10 @@ public class SupplierService {
         try {
             Supplier supplier = new Supplier();
 
-            supplier.setAccNo(getCellValueAsString(row.getCell(0)));
             supplier.setName(getCellValueAsString(row.getCell(1)));
-            supplier.setWebsite(getCellValueAsString(row.getCell(2)));
-            supplier.setStatus(Status.valueOf(getCellValueAsString(row.getCell(3))));
             supplier.setPhone(getCellValueAsString(row.getCell(4)));
-            supplier.setFax(getCellValueAsString(row.getCell(5)));
-            supplier.setCurrency(getCellValueAsString(row.getCell(6)));
-            supplier.setNpwp(getCellValueAsString(row.getCell(7)));
-            supplier.setAccBank(getCellValueAsString(row.getCell(8)));
-            supplier.setNotes(getCellValueAsString(row.getCell(9)));
 
-            if (supplier.getAccNo().isEmpty() || supplier.getName().isEmpty()) {
+            if (supplier.getName().isEmpty()) {
                 return null;
             }
 
@@ -297,5 +177,31 @@ public class SupplierService {
                 return null;
             }
         }
+    }
+
+    @Override
+    public void save(Supplier entity) {
+        supplierRepo.persist(entity);
+    }
+
+    @Override
+    public Supplier findById(Long id) {
+        return supplierRepo.findById(id);
+    }
+
+    @Override
+    public void delete(Long id) {
+        supplierRepo.deleteById(id);
+    }
+
+    @Override
+    public void update(Supplier entity) {
+        supplierRepo.update("name = ?1, phone = ?2, updateDate = ?3 where code = ?4",
+                entity.getName(), entity.getPhone(), entity.getUpdatedDate(), entity.getCode());
+    }
+
+    @Override
+    public List<Supplier> findAll(Supplier entity, Page page) {
+        return supplierRepo.find("name like ?1", "%" + entity.getName() + "%", page).list();
     }
 }

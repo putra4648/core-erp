@@ -2,8 +2,8 @@ package id.putra.core_erp.modules.warehouse.model;
 
 import java.util.List;
 
-import id.putra.core_erp.modules.inbound.model.ReceivingLine;
 import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.modules.inbound.model.ReceivingLine;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,8 +26,6 @@ public class Location extends BaseEntity {
     private String type;
 
     private String binNumber;
-
-    private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rack_id")
@@ -66,14 +64,6 @@ public class Location extends BaseEntity {
 
     public void setBinNumber(String binNumber) {
         this.binNumber = binNumber;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
     }
 
     public Rack getRack() {

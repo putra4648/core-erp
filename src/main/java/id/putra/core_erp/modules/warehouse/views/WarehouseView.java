@@ -1,16 +1,15 @@
 package id.putra.core_erp.modules.warehouse.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -109,7 +108,9 @@ public class WarehouseView extends VerticalLayout {
         Runnable refresh = () -> {
             Warehouse param = new Warehouse();
             param.setName(search.getValue());
-            grid.setItems(warehouseService.getWarehouses(param, Page.ofSize(100)));
+            List<Warehouse> res = new ArrayList<>();
+            warehouseService.findAll(param, Page.ofSize(100)).forEach(res::add);
+            grid.setItems(res);
         };
         search.addValueChangeListener(e -> refresh.run());
 
@@ -129,18 +130,11 @@ public class WarehouseView extends VerticalLayout {
         grid.addColumn(w -> w.getArea() != null ? w.getArea() + " m²" : "-").setHeader("Area").setAutoWidth(true);
 
         grid.addComponentColumn(wh -> {
-            boolean active = Boolean.TRUE.equals(wh.getIsActive());
-            Span badge = new Span(active ? "Active" : "Inactive");
-            badge.getElement().getThemeList().add("badge " + (active ? "success" : "error"));
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
-
-        grid.addComponentColumn(wh -> {
             Button edit = new Button(VaadinIcon.EDIT.create(), e -> openWarehouseDialog(wh, refresh));
             edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
                 try {
-                    warehouseService.delete(List.of(wh.getId()));
+                    warehouseService.delete(wh.getId());
                     Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     refresh.run();
@@ -164,14 +158,12 @@ public class WarehouseView extends VerticalLayout {
         TextField nameField = new TextField("Name");
         TextField locationField = new TextField("Location");
         NumberField areaField = new NumberField("Area (m²)");
-        Checkbox activeCheck = new Checkbox("Is Active");
 
         nameField.setValue(warehouse.getName() != null ? warehouse.getName() : "");
         locationField.setValue(warehouse.getLocation() != null ? warehouse.getLocation() : "");
         areaField.setValue(warehouse.getArea() != null ? warehouse.getArea() : 0.0);
-        activeCheck.setValue(warehouse.getIsActive() != null ? warehouse.getIsActive() : true);
 
-        FormLayout form = new FormLayout(nameField, locationField, areaField, activeCheck);
+        FormLayout form = new FormLayout(nameField, locationField, areaField);
         dialog.add(form);
 
         Button save = new Button("Save", e -> {
@@ -180,13 +172,12 @@ public class WarehouseView extends VerticalLayout {
             dto.setName(nameField.getValue());
             dto.setLocation(locationField.getValue());
             dto.setArea(areaField.getValue());
-            dto.setIsActive(activeCheck.getValue());
 
             try {
                 if (isEdit) {
-                    warehouseService.update(List.of(dto));
+                    warehouseService.update(dto);
                 } else {
-                    warehouseService.save(List.of(dto));
+                    warehouseService.save(dto);
                 }
                 Notification.show("Warehouse saved", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -212,7 +203,9 @@ public class WarehouseView extends VerticalLayout {
         Runnable refresh = () -> {
             Zone param = new Zone();
             param.setName(search.getValue());
-            grid.setItems(zoneService.getZones(param, Page.ofSize(100)));
+            List<Zone> res = new ArrayList<>();
+            zoneService.findAll(param, Page.ofSize(100)).forEach(res::add);
+            grid.setItems(res);
         };
         search.addValueChangeListener(e -> refresh.run());
 
@@ -231,7 +224,7 @@ public class WarehouseView extends VerticalLayout {
 
         grid.addComponentColumn(z -> {
             Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
-                zoneService.delete(List.of(z));
+                zoneService.delete(z.getId());
                 refresh.run();
             });
             delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
@@ -254,8 +247,7 @@ public class WarehouseView extends VerticalLayout {
             dto.setCode(code.getValue());
             dto.setName(name.getValue());
             dto.setType(type.getValue());
-            dto.setIsActive(true);
-            zoneService.add(List.of(dto));
+            zoneService.save(dto);
             dialog.close();
             onSave.run();
         });
@@ -274,7 +266,9 @@ public class WarehouseView extends VerticalLayout {
         Runnable refresh = () -> {
             Rack param = new Rack();
             param.setName(search.getValue());
-            grid.setItems(rackService.getRacks(param, Page.ofSize(100)));
+            List<Rack> res = new ArrayList<>();
+            rackService.findAll(param, Page.ofSize(100)).forEach(res::add);
+            grid.setItems(res);
         };
         search.addValueChangeListener(e -> refresh.run());
 
@@ -307,8 +301,7 @@ public class WarehouseView extends VerticalLayout {
             dto.setName(name.getValue());
             dto.setRows(rows.getValue() != null ? rows.getValue().longValue() : 1L);
             dto.setCols(cols.getValue() != null ? cols.getValue().longValue() : 1L);
-            dto.setIsActive(true);
-            rackService.add(List.of(dto));
+            rackService.save(dto);
             dialog.close();
             onSave.run();
         });
@@ -327,7 +320,9 @@ public class WarehouseView extends VerticalLayout {
         Runnable refresh = () -> {
             Location param = new Location();
             param.setName(search.getValue());
-            grid.setItems(locationService.getLocations(param, Page.ofSize(100)));
+            List<Location> res = new ArrayList<>();
+            locationService.findAll(param, Page.ofSize(100)).forEach(res::add);
+            grid.setItems(res);
         };
         search.addValueChangeListener(e -> refresh.run());
 
@@ -361,8 +356,8 @@ public class WarehouseView extends VerticalLayout {
             dto.setName(name.getValue());
             dto.setBinNumber(bin.getValue());
             dto.setType(type.getValue());
-            dto.setIsActive(true);
-            locationService.add(List.of(dto));
+
+            locationService.save(dto);
             dialog.close();
             onSave.run();
         });

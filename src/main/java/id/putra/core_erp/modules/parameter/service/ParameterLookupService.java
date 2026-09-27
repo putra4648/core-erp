@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.parameter.service;
 
+import java.util.List;
+
 import id.putra.core_erp.modules.parameter.model.ParameterLookup;
 import id.putra.core_erp.modules.parameter.repository.ParameterLookupRepository;
 import id.putra.core_erp.service.BaseService;
@@ -33,7 +35,7 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
         parameterLookupRepository.deleteById(id);
     }
 
-    public Iterable<ParameterLookup> findAll(ParameterLookup entity, Page page) {
+    public List<ParameterLookup> findAll(ParameterLookup entity, Page page) {
         if (entity == null || entity.getKey() == null || entity.getKey().isBlank()) {
             return parameterLookupRepository.findAll().page(page).list();
         }
@@ -46,8 +48,7 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
 
     @Override
     public ParameterLookup findById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return parameterLookupRepository.findById(id);
     }
 
 }

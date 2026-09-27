@@ -25,11 +25,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
+import id.putra.core_erp.constant.MessageConstant;
 import id.putra.core_erp.modules.procurement.model.Item;
 import id.putra.core_erp.modules.procurement.repository.ItemRepo;
 import id.putra.core_erp.modules.procurement.repository.SupplierRepo;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.constant.MessageConstant;
 import id.putra.core_erp.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -208,7 +208,8 @@ public class ItemService {
                 item.setPrice(BigInteger
                         .valueOf((long) (row.getCell(2) != null ? row.getCell(2).getNumericCellValue() * 100 : 0)));
                 item.setDescription(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : "");
-                item.setStatus(row.getCell(4) != null ? row.getCell(4).getStringCellValue().toUpperCase() : "ACTIVE");
+                // item.setStatus(row.getCell(4) != null ?
+                // row.getCell(4).getStringCellValue().toUpperCase() : "ACTIVE");
 
                 if (row.getCell(5) != null) {
                     Optional<Supplier> supplier = supplierRepo

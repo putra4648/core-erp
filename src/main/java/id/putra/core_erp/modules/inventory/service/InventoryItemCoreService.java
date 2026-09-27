@@ -1,13 +1,12 @@
 package id.putra.core_erp.modules.inventory.service;
 
-import id.putra.core_erp.service.BaseService;
-
 import java.util.List;
 
 import com.vaadin.flow.data.provider.DataProvider;
 
 import id.putra.core_erp.modules.inventory.model.InventoryItem;
 import id.putra.core_erp.modules.inventory.repository.InventoryItemRepository;
+import id.putra.core_erp.service.BaseService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -33,7 +32,7 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
         inventoryItemRepository.persist(entity);
     }
 
-    public Iterable<InventoryItem> findAll(InventoryItem item, Page p) {
+    public List<InventoryItem> findAll(InventoryItem item, Page p) {
         return inventoryItemRepository.findAll().list();
     }
 

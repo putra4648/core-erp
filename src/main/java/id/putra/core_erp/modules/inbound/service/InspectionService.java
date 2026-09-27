@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class InspectionService implements BaseService<QualityInspection> {
-
     private final QualityInspectionRepository qualityInspectionRepository;
 
     public InspectionService(QualityInspectionRepository qualityInspectionRepository) {
@@ -23,9 +22,8 @@ public class InspectionService implements BaseService<QualityInspection> {
         qualityInspectionRepository.persist(entity);
     }
 
-    public QualityInspection create(QualityInspection dto) {
-        qualityInspectionRepository.persist(dto);
-        return dto;
+    public QualityInspection findById(Long id) {
+        return qualityInspectionRepository.findById(id);
     }
 
     public void update(QualityInspection dto) {
@@ -36,19 +34,7 @@ public class InspectionService implements BaseService<QualityInspection> {
         qualityInspectionRepository.deleteById(id);
     }
 
-    public QualityInspection findById(Long id) {
-        return qualityInspectionRepository.findById(id);
-    }
-
-    public QualityInspection getById(Long id) {
-        return findById(id);
-    }
-
-    public Iterable<QualityInspection> findAll(QualityInspection qi, Page page) {
-        return qualityInspectionRepository.findAll().list();
-    }
-
-    public List<QualityInspection> getAll(QualityInspection filter) {
+    public List<QualityInspection> findAll(QualityInspection qi, Page page) {
         return qualityInspectionRepository.findAll().list();
     }
 }

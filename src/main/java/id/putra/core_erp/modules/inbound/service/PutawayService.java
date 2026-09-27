@@ -1,19 +1,17 @@
 package id.putra.core_erp.modules.inbound.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
-
 import java.util.List;
 
 import id.putra.core_erp.modules.inbound.model.Putaway;
 import id.putra.core_erp.modules.inbound.repository.PutawayRepository;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
 public class PutawayService implements BaseService<Putaway> {
-
     private final PutawayRepository putawayRepository;
 
     public PutawayService(PutawayRepository putawayRepository) {
@@ -24,9 +22,8 @@ public class PutawayService implements BaseService<Putaway> {
         putawayRepository.persist(entity);
     }
 
-    public Putaway create(Putaway dto) {
-        putawayRepository.persist(dto);
-        return dto;
+    public Putaway findById(Long id) {
+        return putawayRepository.findById(id);
     }
 
     public void update(Putaway dto) {
@@ -37,19 +34,7 @@ public class PutawayService implements BaseService<Putaway> {
         putawayRepository.deleteById(id);
     }
 
-    public Putaway findById(Long id) {
-        return putawayRepository.findById(id);
-    }
-
-    public Putaway getById(Long id) {
-        return findById(id);
-    }
-
-    public Iterable<Putaway> findAll(Putaway putAway, Page p) {
-        return putawayRepository.findAll().list();
-    }
-
-    public List<Putaway> getAll(Putaway filter) {
+    public List<Putaway> findAll(Putaway putAway, Page p) {
         return putawayRepository.findAll().list();
     }
 }

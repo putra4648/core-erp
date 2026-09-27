@@ -47,7 +47,7 @@ public class TransferService implements BaseService<Transfer> {
         return transferRequestRepo.findByStatusLikeAndIdLike(status, id);
     }
 
-    public Iterable<Transfer> findAll(Transfer transfer, Page p) {
+    public List<Transfer> findAll(Transfer transfer, Page p) {
         return transferRequestRepo.findAll().list();
     }
 

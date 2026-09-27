@@ -25,8 +25,6 @@ public class Customer extends BaseEntity {
     @NotBlank
     private String name;
 
-    private Boolean isActive;
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "contact_person_id")
     @NotEmpty
@@ -54,14 +52,6 @@ public class Customer extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
     }
 
     public ContactPersonCustomer getContactPerson() {

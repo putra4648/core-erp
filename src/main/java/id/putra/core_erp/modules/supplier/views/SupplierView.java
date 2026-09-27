@@ -5,13 +5,11 @@ import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -104,13 +102,6 @@ public class SupplierView extends VerticalLayout {
         }).setHeader("Email").setFlexGrow(1);
 
         grid.addComponentColumn(supplier -> {
-            boolean active = Boolean.TRUE.equals(supplier.getIsActive());
-            Span badge = new Span(active ? "Active" : "Inactive");
-            badge.getElement().getThemeList().add("badge " + (active ? "success" : "error"));
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
-
-        grid.addComponentColumn(supplier -> {
             Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openSupplierDialog(supplier));
             editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
@@ -137,7 +128,6 @@ public class SupplierView extends VerticalLayout {
 
         TextField codeField = new TextField("Supplier Code");
         TextField nameField = new TextField("Supplier Name");
-        Checkbox activeCheck = new Checkbox("Is Active");
 
         TextField cpNameField = new TextField("Contact Name");
         TextField cpEmailField = new TextField("Email");
@@ -146,14 +136,13 @@ public class SupplierView extends VerticalLayout {
 
         codeField.setValue(supplier.getCode() != null ? supplier.getCode() : "");
         nameField.setValue(supplier.getName() != null ? supplier.getName() : "");
-        activeCheck.setValue(supplier.getIsActive() != null ? supplier.getIsActive() : true);
 
         cpNameField.setValue(cp.getName() != null ? cp.getName() : "");
         cpEmailField.setValue(cp.getEmail() != null ? cp.getEmail() : "");
         cpPhoneField.setValue(cp.getPhone() != null ? cp.getPhone() : "");
         // cpAddressField.setValue(cp.ge() != null ? cp.getAddress() : "");
 
-        FormLayout formLayout = new FormLayout(codeField, nameField, activeCheck, cpNameField, cpEmailField,
+        FormLayout formLayout = new FormLayout(codeField, nameField, cpNameField, cpEmailField,
                 cpPhoneField, cpAddressField);
         dialog.add(formLayout);
 

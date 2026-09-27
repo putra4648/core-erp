@@ -23,8 +23,6 @@ public class Warehouse extends BaseEntity {
 
     private String name;
 
-    private Boolean isActive;
-
     private String location;
 
     private Double area;
@@ -52,14 +50,6 @@ public class Warehouse extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
     }
 
     public String getLocation() {

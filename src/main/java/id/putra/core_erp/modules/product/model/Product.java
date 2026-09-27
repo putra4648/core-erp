@@ -30,8 +30,6 @@ public class Product extends BaseEntity {
 
     private Long maxStock;
 
-    private Boolean isActive;
-
     @Min(value = 1)
     private Long quantity;
 
@@ -85,14 +83,6 @@ public class Product extends BaseEntity {
 
     public void setMaxStock(Long maxStock) {
         this.maxStock = maxStock;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
     }
 
     public Long getQuantity() {
