@@ -31,177 +31,171 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class SupplierService implements BaseService<Supplier>, ImportFIleService {
 
-    private final SupplierRepo supplierRepo;
+	private final SupplierRepo supplierRepo;
 
-    public SupplierService(SupplierRepo supplierRepo) {
-        this.supplierRepo = supplierRepo;
-    }
+	public SupplierService(SupplierRepo supplierRepo) {
+		this.supplierRepo = supplierRepo;
+	}
 
-    @Override
-    public void importFile(FileUpload file) throws Exception {
-        if (file == null) {
-            throw new IllegalArgumentException("File is empty");
-        }
+	@Override
+	public void importFile(FileUpload file) throws Exception {
+		if (file == null) {
+			throw new IllegalArgumentException("File is empty");
+		}
 
-        String originalFilename = file.fileName();
-        if (originalFilename == null || (!originalFilename.endsWith(".xlsx") && !originalFilename.endsWith(".xls"))) {
-            throw new IllegalArgumentException("Invalid file type. Please upload an Excel file.");
-        }
+		String originalFilename = file.fileName();
+		if (originalFilename == null || (!originalFilename.endsWith(".xlsx") && !originalFilename.endsWith(".xls"))) {
+			throw new IllegalArgumentException("Invalid file type. Please upload an Excel file.");
+		}
 
-        try (Workbook workbook = originalFilename.endsWith(".xlsx")
-                ? new XSSFWorkbook()
-                : new HSSFWorkbook()) {
+		try (Workbook workbook = originalFilename.endsWith(".xlsx") ? new XSSFWorkbook() : new HSSFWorkbook()) {
 
-            Sheet sheet = workbook.getSheetAt(0);
-            List<Supplier> suppliersToSave = new ArrayList<>();
+			Sheet sheet = workbook.getSheetAt(0);
+			List<Supplier> suppliersToSave = new ArrayList<>();
 
-            for (Row row : sheet) {
-                if (row.getRowNum() == 0)
-                    continue;
+			for (Row row : sheet) {
+				if (row.getRowNum() == 0)
+					continue;
 
-                Supplier supplier = parseRowToSupplier(row);
-                if (supplier != null) {
-                    suppliersToSave.add(supplier);
-                }
-            }
+				Supplier supplier = parseRowToSupplier(row);
+				if (supplier != null) {
+					suppliersToSave.add(supplier);
+				}
+			}
 
-            if (!suppliersToSave.isEmpty()) {
-                supplierRepo.persist(suppliersToSave);
-            } else {
-                throw new IllegalArgumentException("No valid suppliers found in the file.");
-            }
-        }
-    }
+			if (!suppliersToSave.isEmpty()) {
+				supplierRepo.persist(suppliersToSave);
+			} else {
+				throw new IllegalArgumentException("No valid suppliers found in the file.");
+			}
+		}
+	}
 
-    private Supplier parseRowToSupplier(Row row) {
-        try {
-            Supplier supplier = new Supplier();
+	private Supplier parseRowToSupplier(Row row) {
+		try {
+			Supplier supplier = new Supplier();
 
-            supplier.setName(getCellValueAsString(row.getCell(1)));
-            supplier.setPhone(getCellValueAsString(row.getCell(4)));
+			supplier.setName(getCellValueAsString(row.getCell(1)));
+			supplier.setPhone(getCellValueAsString(row.getCell(4)));
 
-            if (supplier.getName().isEmpty()) {
-                return null;
-            }
+			if (supplier.getName().isEmpty()) {
+				return null;
+			}
 
-            return supplier;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+			return supplier;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    private String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return "";
-        }
+	private String getCellValueAsString(Cell cell) {
+		if (cell == null) {
+			return "";
+		}
 
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue().trim();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    return dateFormat.format(cell.getDateCellValue());
-                } else {
-                    return String.valueOf(cell.getNumericCellValue()).trim();
-                }
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue()).trim();
-            case FORMULA:
-                return cell.getCellFormula().trim();
-            default:
-                return "";
-        }
-    }
+		switch (cell.getCellType()) {
+		case STRING:
+			return cell.getStringCellValue().trim();
+		case NUMERIC:
+			if (DateUtil.isCellDateFormatted(cell)) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				return dateFormat.format(cell.getDateCellValue());
+			} else {
+				return String.valueOf(cell.getNumericCellValue()).trim();
+			}
+		case BOOLEAN:
+			return String.valueOf(cell.getBooleanCellValue()).trim();
+		case FORMULA:
+			return cell.getCellFormula().trim();
+		default:
+			return "";
+		}
+	}
 
-    public Resource exportSuppliers() throws Exception {
-        List<Supplier> suppliers = StreamSupport.stream(supplierRepo.findAll().list().spliterator(), false)
-                .collect(Collectors.toList());
+	public Resource exportSuppliers() throws Exception {
+		List<Supplier> suppliers = StreamSupport.stream(supplierRepo.findAll().list().spliterator(), false)
+				.collect(Collectors.toList());
 
-        try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Suppliers");
+		try (Workbook workbook = new XSSFWorkbook()) {
+			Sheet sheet = workbook.createSheet("Suppliers");
 
-            String[] headers = { "Supplier Name", "Main Contact", "Phone Number", "Country", "Last Edited" };
-            Row headerRow = sheet.createRow(0);
+			String[] headers = { "Supplier Name", "Main Contact", "Phone Number", "Country", "Last Edited" };
+			Row headerRow = sheet.createRow(0);
 
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font headerFont = workbook.createFont();
-            headerFont.setBold(true);
-            headerStyle.setFont(headerFont);
-            headerStyle.setAlignment(HorizontalAlignment.CENTER);
-            headerStyle.setBorderTop(BorderStyle.THIN);
-            headerStyle.setBorderBottom(BorderStyle.THIN);
-            headerStyle.setBorderLeft(BorderStyle.THIN);
-            headerStyle.setBorderRight(BorderStyle.THIN);
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.CENTER);
+			headerStyle.setBorderTop(BorderStyle.THIN);
+			headerStyle.setBorderBottom(BorderStyle.THIN);
+			headerStyle.setBorderLeft(BorderStyle.THIN);
+			headerStyle.setBorderRight(BorderStyle.THIN);
 
-            CellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.setBorderTop(BorderStyle.THIN);
-            cellStyle.setBorderBottom(BorderStyle.THIN);
-            cellStyle.setBorderLeft(BorderStyle.THIN);
-            cellStyle.setBorderRight(BorderStyle.THIN);
+			CellStyle cellStyle = workbook.createCellStyle();
+			cellStyle.setBorderTop(BorderStyle.THIN);
+			cellStyle.setBorderBottom(BorderStyle.THIN);
+			cellStyle.setBorderLeft(BorderStyle.THIN);
+			cellStyle.setBorderRight(BorderStyle.THIN);
 
-            for (int i = 0; i < headers.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(headers[i]);
-                cell.setCellStyle(headerStyle);
-            }
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+				cell.setCellStyle(headerStyle);
+			}
 
-            int rowNum = 1;
-            for (Supplier supplier : suppliers) {
-                Row row = sheet.createRow(rowNum++);
+			int rowNum = 1;
+			for (Supplier supplier : suppliers) {
+				Row row = sheet.createRow(rowNum++);
 
-                Cell cell0 = row.createCell(0);
-                cell0.setCellValue(supplier.getName() != null ? supplier.getName() : "");
-                cell0.setCellStyle(cellStyle);
+				Cell cell0 = row.createCell(0);
+				cell0.setCellValue(supplier.getName() != null ? supplier.getName() : "");
+				cell0.setCellStyle(cellStyle);
 
-                Cell cell1 = row.createCell(1);
-                cell1.setCellValue(supplier.getMainContact() != null ? supplier.getMainContact() : "");
-                cell1.setCellStyle(cellStyle);
+				Cell cell2 = row.createCell(1);
+				cell2.setCellValue(supplier.getPhone() != null ? supplier.getPhone() : "");
+				cell2.setCellStyle(cellStyle);
 
-                Cell cell2 = row.createCell(2);
-                cell2.setCellValue(supplier.getPhone() != null ? supplier.getPhone() : "");
-                cell2.setCellStyle(cellStyle);
+				Cell cell3 = row.createCell(2);
+				cell3.setCellValue(supplier.getUpdatedDate() != null ? supplier.getUpdatedDate().toString() : "");
+				cell3.setCellStyle(cellStyle);
+			}
 
-                Cell cell3 = row.createCell(3);
-                cell3.setCellValue(supplier.getUpdatedDate() != null ? supplier.getUpdatedDate().toString() : "");
-                cell3.setCellStyle(cellStyle);
-            }
+			for (int i = 0; i < headers.length; i++) {
+				sheet.autoSizeColumn(i);
+			}
 
-            for (int i = 0; i < headers.length; i++) {
-                sheet.autoSizeColumn(i);
-            }
+			try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+				workbook.write(byteArrayOutputStream);
+				return null;
+			}
+		}
+	}
 
-            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-                workbook.write(byteArrayOutputStream);
-                return null;
-            }
-        }
-    }
+	@Override
+	public void save(Supplier entity) {
+		supplierRepo.persist(entity);
+	}
 
-    @Override
-    public void save(Supplier entity) {
-        supplierRepo.persist(entity);
-    }
+	@Override
+	public Supplier findById(Long id) {
+		return supplierRepo.findById(id);
+	}
 
-    @Override
-    public Supplier findById(Long id) {
-        return supplierRepo.findById(id);
-    }
+	@Override
+	public void delete(Long id) {
+		supplierRepo.deleteById(id);
+	}
 
-    @Override
-    public void delete(Long id) {
-        supplierRepo.deleteById(id);
-    }
+	@Override
+	public void update(Supplier entity) {
+		supplierRepo.update("name = ?1, phone = ?2, updateDate = ?3 where code = ?4", entity.getName(),
+				entity.getPhone(), entity.getUpdatedDate(), entity.getCode());
+	}
 
-    @Override
-    public void update(Supplier entity) {
-        supplierRepo.update("name = ?1, phone = ?2, updateDate = ?3 where code = ?4",
-                entity.getName(), entity.getPhone(), entity.getUpdatedDate(), entity.getCode());
-    }
-
-    @Override
-    public List<Supplier> findAll(Supplier entity, Page page) {
-        return supplierRepo.find("name like ?1", "%" + entity.getName() + "%", page).list();
-    }
+	@Override
+	public List<Supplier> findAll(Supplier entity, Page page) {
+		return supplierRepo.find("name like ?1", "%" + entity.getName() + "%", page).list();
+	}
 }

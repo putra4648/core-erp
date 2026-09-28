@@ -22,120 +22,88 @@ import jakarta.persistence.Table;
 @Table(name = "suppliers")
 public class Supplier extends BaseEntity {
 
-    @Id
-    private Long id;
+	@Id
+	private Long id;
 
-    @Column(name = "code")
-    private String code;
+	@Column(name = "code")
+	private String code;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    // @Column(name = "status")
-    // @Enumerated(EnumType.STRING)
-    // private Status status;
+	private String email;
 
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private TypeEnum type;
+	@Column(name = "type")
+	@Enumerated(EnumType.STRING)
+	private TypeEnum type;
 
-    @Column(name = "phone")
-    private String phone;
+	@Column(name = "phone")
+	private String phone;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_po_address_id", referencedColumnName = "id")
-    private SupplierPOAddress supplierPOAddress;
+	private String filename;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_address_id", referencedColumnName = "id")
-    private SupplierAddress supplierAddress;
+	public String getFilename() {
+		return filename;
+	}
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SupplierContact> contacts = new ArrayList<>();
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 
-    private String filename;
+	public Instant getCreatedDate() {
+		return null;
+	}
 
-    public String getFilename() {
-        return filename;
-    }
+	public Instant getUpdatedDate() {
+		return null;
+	}
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getMainContact() {
-        return (contacts != null && !contacts.isEmpty()) ? contacts.get(0).getContactName() : "";
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Instant getCreatedDate() {
-        return null;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public Instant getUpdatedDate() {
-        return null;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public TypeEnum getType() {
+		return type;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setType(TypeEnum type) {
+		this.type = type;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    public TypeEnum getType() {
-        return type;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setType(TypeEnum type) {
-        this.type = type;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public SupplierPOAddress getSupplierPOAddress() {
-        return supplierPOAddress;
-    }
-
-    public void setSupplierPOAddress(SupplierPOAddress supplierPOAddress) {
-        this.supplierPOAddress = supplierPOAddress;
-    }
-
-    public SupplierAddress getSupplierAddress() {
-        return supplierAddress;
-    }
-
-    public void setSupplierAddress(SupplierAddress supplierAddress) {
-        this.supplierAddress = supplierAddress;
-    }
-
-    public List<SupplierContact> getContacts() {
-        return contacts;
-    }
-
-    public void setContacts(List<SupplierContact> contacts) {
-        this.contacts = contacts;
-    }
 }

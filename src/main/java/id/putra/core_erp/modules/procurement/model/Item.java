@@ -36,7 +36,7 @@ public class Item extends BaseEntity {
     private String unit;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
+    @JoinColumn(name = "supplier_id", referencedColumnName = "id")
     private Supplier supplier;
 
     @Column(name = "other_supplier")

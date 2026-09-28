@@ -21,7 +21,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.modules.supplier.model.SupplierContact;
 import id.putra.core_erp.modules.supplier.service.SupplierService;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
@@ -88,15 +87,8 @@ public class SupplierView extends VerticalLayout {
                 .setSortable(true);
 
         grid.addColumn(s -> {
-            if (s.getContacts() != null && !s.getContacts().isEmpty()) {
-                return s.getContacts().get(0).getName();
-            }
-            return "-";
-        }).setHeader("Contact Person").setFlexGrow(1);
-
-        grid.addColumn(s -> {
-            if (s.getContacts() != null && !s.getContacts().isEmpty()) {
-                return s.getContacts().get(0).getEmail();
+            if (s.getEmail() != null ) {
+                return s.getEmail();
             }
             return "-";
         }).setHeader("Email").setFlexGrow(1);
@@ -120,45 +112,20 @@ public class SupplierView extends VerticalLayout {
         boolean isEdit = supplier.getId() != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Supplier" : "Add Supplier");
 
-        if (supplier.getContacts() == null) {
-            supplier.setContacts(new ArrayList<>());
-        }
-        SupplierContact cp = supplier.getContacts().isEmpty() ? new SupplierContact()
-                : supplier.getContacts().get(0);
-
         TextField codeField = new TextField("Supplier Code");
         TextField nameField = new TextField("Supplier Name");
-
-        TextField cpNameField = new TextField("Contact Name");
-        TextField cpEmailField = new TextField("Email");
-        TextField cpPhoneField = new TextField("Phone");
-        TextArea cpAddressField = new TextArea("Address");
+        TextField emailField = new TextField("Email");
 
         codeField.setValue(supplier.getCode() != null ? supplier.getCode() : "");
         nameField.setValue(supplier.getName() != null ? supplier.getName() : "");
+        emailField.setValue(supplier.getEmail() != null ? supplier.getEmail() : "");
 
-        cpNameField.setValue(cp.getName() != null ? cp.getName() : "");
-        cpEmailField.setValue(cp.getEmail() != null ? cp.getEmail() : "");
-        cpPhoneField.setValue(cp.getPhone() != null ? cp.getPhone() : "");
-        // cpAddressField.setValue(cp.ge() != null ? cp.getAddress() : "");
 
-        FormLayout formLayout = new FormLayout(codeField, nameField, cpNameField, cpEmailField,
-                cpPhoneField, cpAddressField);
+        FormLayout formLayout = new FormLayout(codeField, nameField, emailField);
         dialog.add(formLayout);
 
         Button saveBtn = new Button("Save", e -> {
             if (validator.validate(supplier).isEmpty()) {
-                cp.setName(cpNameField.getValue());
-                cp.setEmail(cpEmailField.getValue());
-                cp.setPhone(cpPhoneField.getValue());
-                // cp.setAddress(cpAddressField.getValue());
-
-                if (supplier.getContacts().isEmpty()) {
-                    supplier.getContacts().add(cp);
-                } else {
-                    supplier.getContacts().set(0, cp);
-                }
-
                 try {
                     if (isEdit) {
                         supplierService.update(supplier.getId(), supplier);
