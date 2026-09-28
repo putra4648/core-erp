@@ -61,8 +61,6 @@ jobs:
 
       - name: Build native image
         run: |
-          - name: Build native image
-        run: |
           ./mvnw -B clean verify -Dnative \
             --no-transfer-progress \
             -Dquarkus.http.host=0.0.0.0 \
