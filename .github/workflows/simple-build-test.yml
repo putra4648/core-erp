@@ -56,12 +56,15 @@ jobs:
           distribution: mandrel
           java-version: '25'
           cache: maven
-          native-image-job-reports: 'true'
-          native-image-pr-reports: 'true'
+          #native-image-job-reports: 'true'
+          #native-image-pr-reports: 'true'
 
       - name: Build native image
+        run: |
+          - name: Build native image
         run: |
           ./mvnw -B clean verify -Dnative \
             --no-transfer-progress \
             -Dquarkus.http.host=0.0.0.0 \
-            -Dmaven.compiler.release=25
+            -Dmaven.compiler.release=25 \
+            -Dquarkus.native.additional-build-args="--enable-monitoring=heapdump"
