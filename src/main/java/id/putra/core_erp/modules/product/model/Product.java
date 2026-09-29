@@ -13,91 +13,91 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "product")
 public class Product extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	private String description;
 
-    @NotBlank
-    private String sku;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @NotBlank
-    private String name;
+	private Long maxStock;
 
-    private String description;
+	@Min(value = 1)
+	private Long minStock;
 
-    @Min(value = 1)
-    private Long minStock;
+	@NotBlank
+	private String name;
 
-    private Long maxStock;
+	@Min(value = 1)
+	private Long quantity;
 
-    @Min(value = 1)
-    private Long quantity;
+	@NotBlank
+	private String sku;
 
-    // @ManyToOne
-    // @JoinColumn(name = "category_id")
-    // private Category category;
+	// @ManyToOne
+	// @JoinColumn(name = "category_id")
+	// private Category category;
 
-    public Long getId() {
-        return id;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getSku() {
-        return sku;
-    }
+	public Long getMaxStock() {
+		return maxStock;
+	}
 
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
+	public Long getMinStock() {
+		return minStock;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public Long getQuantity() {
+		return quantity;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getSku() {
+		return sku;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public Long getMinStock() {
-        return minStock;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setMinStock(Long minStock) {
-        this.minStock = minStock;
-    }
+	public void setMaxStock(Long maxStock) {
+		this.maxStock = maxStock;
+	}
 
-    public Long getMaxStock() {
-        return maxStock;
-    }
+	public void setMinStock(Long minStock) {
+		this.minStock = minStock;
+	}
 
-    public void setMaxStock(Long maxStock) {
-        this.maxStock = maxStock;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Long getQuantity() {
-        return quantity;
-    }
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
+	}
 
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
 
-    // public Category getCategory() {
-    // return category;
-    // }
+	// public Category getCategory() {
+	// return category;
+	// }
 
-    // public void setCategory(Category category) {
-    // this.category = category;
-    // }
+	// public void setCategory(Category category) {
+	// this.category = category;
+	// }
 }

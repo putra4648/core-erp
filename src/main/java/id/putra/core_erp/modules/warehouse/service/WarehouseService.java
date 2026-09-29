@@ -12,30 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class WarehouseService implements BaseService<Warehouse> {
-    private final WarehouseRepository warehouseRepository;
+	private final WarehouseRepository warehouseRepository;
 
-    public WarehouseService(WarehouseRepository warehouseRepository) {
-        this.warehouseRepository = warehouseRepository;
-    }
+	public WarehouseService(WarehouseRepository warehouseRepository) {
+		this.warehouseRepository = warehouseRepository;
+	}
 
-    public void save(Warehouse entity) {
-        warehouseRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		warehouseRepository.deleteById(id);
+	}
 
-    public Warehouse findById(Long id) {
-        return warehouseRepository.findById(id);
-    }
+	@Override
+	public List<Warehouse> findAll(Warehouse w, Page p) {
+		return warehouseRepository.findAll().list();
+	}
 
-    public List<Warehouse> findAll(Warehouse w, Page p) {
-        return warehouseRepository.findAll().list();
-    }
+	@Override
+	public Warehouse findById(Long id) {
+		return warehouseRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        warehouseRepository.deleteById(id);
-    }
+	@Override
+	public void save(Warehouse entity) {
+		warehouseRepository.persist(entity);
+	}
 
-    @Override
-    public void update(Warehouse entity) {
-        warehouseRepository.update("name = ?1 where id = ?2", entity.getName(), entity.getId());
-    }
+	@Override
+	public void update(Warehouse entity) {
+		warehouseRepository.update("name = ?1 where id = ?2", entity.getName(), entity.getId());
+	}
 }

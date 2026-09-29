@@ -2,8 +2,8 @@ package id.putra.core_erp.modules.inventory.model;
 
 import java.time.ZonedDateTime;
 
-import id.putra.core_erp.modules.product.model.Product;
 import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.modules.product.model.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,91 +16,91 @@ import jakarta.persistence.Table;
 @Entity
 public class InventoryItem extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private Long reservedQty;
-    private String lotNumber;
-    private ZonedDateTime expiredDate;
-    private String status;
-    private String serialNumber;
-    private Long quantity;
+	private ZonedDateTime expiredDate;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String lotNumber;
+	private String name;
+	@ManyToOne
+	@JoinColumn(name = "product_sku")
+	private Product product;
+	private Long quantity;
+	private Long reservedQty;
+	private String serialNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "product_sku")
-    private Product product;
+	private String status;
 
-    public Long getId() {
-        return id;
-    }
+	public ZonedDateTime getExpiredDate() {
+		return expiredDate;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getLotNumber() {
+		return lotNumber;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Long getReservedQty() {
-        return reservedQty;
-    }
+	public Product getProduct() {
+		return product;
+	}
 
-    public void setReservedQty(Long reservedQty) {
-        this.reservedQty = reservedQty;
-    }
+	public Long getQuantity() {
+		return quantity;
+	}
 
-    public String getLotNumber() {
-        return lotNumber;
-    }
+	public Long getReservedQty() {
+		return reservedQty;
+	}
 
-    public void setLotNumber(String lotNumber) {
-        this.lotNumber = lotNumber;
-    }
+	public String getSerialNumber() {
+		return serialNumber;
+	}
 
-    public ZonedDateTime getExpiredDate() {
-        return expiredDate;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setExpiredDate(ZonedDateTime expiredDate) {
-        this.expiredDate = expiredDate;
-    }
+	public void setExpiredDate(ZonedDateTime expiredDate) {
+		this.expiredDate = expiredDate;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setLotNumber(String lotNumber) {
+		this.lotNumber = lotNumber;
+	}
 
-    public String getSerialNumber() {
-        return serialNumber;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
-    public Long getQuantity() {
-        return quantity;
-    }
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
+	}
 
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
+	public void setReservedQty(Long reservedQty) {
+		this.reservedQty = reservedQty;
+	}
 
-    public Product getProduct() {
-        return product;
-    }
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 }

@@ -12,31 +12,35 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class RackCoreService implements BaseService<Rack> {
-    private final RackRepository rackRepository;
+	private final RackRepository rackRepository;
 
-    public RackCoreService(RackRepository rackRepository) {
-        this.rackRepository = rackRepository;
-    }
+	public RackCoreService(RackRepository rackRepository) {
+		this.rackRepository = rackRepository;
+	}
 
-    public void save(Rack entity) {
-        rackRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		rackRepository.deleteById(id);
+	}
 
-    public Rack findById(Long id) {
-        return rackRepository.findById(id);
-    }
+	@Override
+	public List<Rack> findAll(Rack r, Page p) {
+		return rackRepository.findAll().list();
+	}
 
-    public List<Rack> findAll(Rack r, Page p) {
-        return rackRepository.findAll().list();
-    }
+	@Override
+	public Rack findById(Long id) {
+		return rackRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        rackRepository.deleteById(id);
-    }
+	@Override
+	public void save(Rack entity) {
+		rackRepository.persist(entity);
+	}
 
-    @Override
-    public void update(Rack entity) {
-        rackRepository.update("name = ?1, zoneId = ?2, rows = ?3, cols = ?4 where id = ?5",
-                entity.getName(), entity.getZone().getId(), entity.getRows(), entity.getCols(), entity.getId());
-    }
+	@Override
+	public void update(Rack entity) {
+		rackRepository.update("name = ?1, zoneId = ?2, rows = ?3, cols = ?4 where id = ?5", entity.getName(),
+				entity.getZone().getId(), entity.getRows(), entity.getCols(), entity.getId());
+	}
 }

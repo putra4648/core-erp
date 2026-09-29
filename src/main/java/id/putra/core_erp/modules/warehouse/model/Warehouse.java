@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -16,80 +14,67 @@ import jakarta.persistence.Table;
 @Entity
 
 public class Warehouse extends BaseEntity {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	private Double area;
 
-    private String name;
+	private String location;
 
-    private String location;
+	private String name;
 
-    private Double area;
+	private Integer total;
 
-    private Integer total;
+	@OneToMany(mappedBy = "warehouse", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+	private List<Zone> zones;
 
-    @OneToMany(mappedBy = "warehouse", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
-    private List<Zone> zones;
+	public Double getArea() {
+		return area;
+	}
 
-    @ManyToOne
-    @JoinColumn(name = "contact_person_id", referencedColumnName = "id")
-    private ContactPersonWarehouse contactPersonWarehouse;
+	public Long getId() {
+		return id;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public String getLocation() {
+		return location;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Integer getTotal() {
+		return total;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public List<Zone> getZones() {
+		return zones;
+	}
 
-    public String getLocation() {
-        return location;
-    }
+	public void setArea(Double area) {
+		this.area = area;
+	}
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Double getArea() {
-        return area;
-    }
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-    public void setArea(Double area) {
-        this.area = area;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Integer getTotal() {
-        return total;
-    }
+	public void setTotal(Integer total) {
+		this.total = total;
+	}
 
-    public void setTotal(Integer total) {
-        this.total = total;
-    }
-
-    public List<Zone> getZones() {
-        return zones;
-    }
-
-    public void setZones(List<Zone> zones) {
-        this.zones = zones;
-    }
-
-    public ContactPersonWarehouse getContactPersonWarehouse() {
-        return contactPersonWarehouse;
-    }
-
-    public void setContactPersonWarehouse(ContactPersonWarehouse contactPersonWarehouse) {
-        this.contactPersonWarehouse = contactPersonWarehouse;
-    }
+	public void setZones(List<Zone> zones) {
+		this.zones = zones;
+	}
 
 }

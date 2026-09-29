@@ -29,73 +29,73 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class QuotationView extends VerticalLayout {
 
-    private final QuotationService rfqService;
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final TextField searchField = new TextField();
-    private final Grid<Quotation> grid = new Grid<>();
-    private final List<Quotation> rfqList = new ArrayList<>();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private final Grid<Quotation> grid = new Grid<>();
+	private final List<Quotation> rfqList = new ArrayList<>();
+	private final QuotationService rfqService;
+	private final TextField searchField = new TextField();
 
-    public QuotationView(QuotationService rfqService) {
-        this.rfqService = rfqService;
+	public QuotationView(QuotationService rfqService) {
+		this.rfqService = rfqService;
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        H2 header = new H2("Request For Quotations (RFQ)");
-        header.addClassNames(LumoUtility.FontSize.XLARGE);
+		H2 header = new H2("Request For Quotations (RFQ)");
+		header.addClassNames(LumoUtility.FontSize.XLARGE);
 
-        searchField.setPlaceholder("Search RFQ by ID or Note...");
-        searchField.setClearButtonVisible(true);
-        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        searchField.setWidth("280px");
-        searchField.addValueChangeListener(e -> refreshGrid());
+		searchField.setPlaceholder("Search RFQ by ID or Note...");
+		searchField.setClearButtonVisible(true);
+		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+		searchField.setWidth("280px");
+		searchField.addValueChangeListener(e -> refreshGrid());
 
-        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshGrid());
+		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshGrid());
 
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, refreshBtn);
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+		HorizontalLayout toolbar = new HorizontalLayout(searchField, refreshBtn);
+		toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        configureGrid();
+		configureGrid();
 
-        add(header, toolbar, grid);
-        refreshGrid();
-    }
+		add(header, toolbar, grid);
+		refreshGrid();
+	}
 
-    private void configureGrid() {
-        grid.setSizeFull();
-        grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("RFQ Number").setAutoWidth(true);
-        grid.addColumn(r -> r.getDueDate() != null ? dateFormat.format(r.getDueDate()) : "-").setHeader("Due Date")
-                .setAutoWidth(true);
-        grid.addColumn(r -> r.getNote() != null ? r.getNote() : "-").setHeader("Notes").setFlexGrow(2);
-        grid.addColumn(r -> r.getSuppliers() != null ? r.getSuppliers().size() + " suppliers" : "0 suppliers")
-                .setHeader("Suppliers Quoted").setAutoWidth(true);
+	private void configureGrid() {
+		grid.setSizeFull();
+		grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("RFQ Number").setAutoWidth(true);
+		grid.addColumn(r -> r.getDueDate() != null ? dateFormat.format(r.getDueDate()) : "-").setHeader("Due Date")
+				.setAutoWidth(true);
+		grid.addColumn(r -> r.getNote() != null ? r.getNote() : "-").setHeader("Notes").setFlexGrow(2);
+		grid.addColumn(r -> r.getSuppliers() != null ? r.getSuppliers().size() + " suppliers" : "0 suppliers")
+				.setHeader("Suppliers Quoted").setAutoWidth(true);
 
-        grid.addComponentColumn(r -> {
-            Span badge = new Span(r.getStatus() != null ? r.getStatus() : "ACTIVE");
-            if ("COMPLETED".equalsIgnoreCase(r.getStatus()) || "APPROVED".equalsIgnoreCase(r.getStatus())) {
-                badge.getElement().getThemeList().add("badge success");
-            } else {
-                badge.getElement().getThemeList().add("badge");
-            }
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
-    }
+		grid.addComponentColumn(r -> {
+			Span badge = new Span(r.getStatus() != null ? r.getStatus() : "ACTIVE");
+			if ("COMPLETED".equalsIgnoreCase(r.getStatus()) || "APPROVED".equalsIgnoreCase(r.getStatus())) {
+				badge.getElement().getThemeList().add("badge success");
+			} else {
+				badge.getElement().getThemeList().add("badge");
+			}
+			return badge;
+		}).setHeader("Status").setAutoWidth(true);
+	}
 
-    private void refreshGrid() {
-        try {
-            Quotation params = new Quotation();
+	private void refreshGrid() {
+		try {
+			Quotation params = new Quotation();
 
-            List<Quotation> res = rfqService.findAll(params);
-            rfqList.clear();
-            if (res != null) {
-                rfqList.addAll(res);
-            }
-            grid.setItems(rfqList);
-        } catch (Exception ex) {
-            Notification.show("Failed to load RFQs: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
+			List<Quotation> res = rfqService.findAll(params);
+			rfqList.clear();
+			if (res != null) {
+				rfqList.addAll(res);
+			}
+			grid.setItems(rfqList);
+		} catch (Exception ex) {
+			Notification.show("Failed to load RFQs: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		}
+	}
 }

@@ -11,34 +11,34 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "purchase")
 public class Purchase {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	private Date date;
 
-    private Date date;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    public Integer getId() {
-        return id;
-    }
+	public Date getDate() {
+		return date;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public Date getDate() {
-        return date;
-    }
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "status_id", referencedColumnName = "status_id", nullable
-    // = false)
-    // private Status status;
+	// @OneToOne(cascade = CascadeType.ALL)
+	// @JoinColumn(name = "status_id", referencedColumnName = "status_id", nullable
+	// = false)
+	// private Status status;
 
-    // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "approval", referencedColumnName = "nrp")
-    // private Users users;
+	// @OneToOne(cascade = CascadeType.ALL)
+	// @JoinColumn(name = "approval", referencedColumnName = "nrp")
+	// private Users users;
 }

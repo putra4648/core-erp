@@ -14,69 +14,69 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "approval")
 public class Approval extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@ManyToOne
+	@JoinColumn(name = "approval_dept_id", referencedColumnName = "dept_number", insertable = false, updatable = false)
+	private Department department;
 
-    private String users;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "approval_dept_id", referencedColumnName = "dept_number", insertable = false, updatable = false)
-    private Department department;
+	private Boolean isApprovalPermanent;
 
-    @ManyToOne
-    @JoinColumn(name = "requisition_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private Requisition requisition;
+	private Boolean isBypassPermanent;
 
-    private Boolean isApprovalPermanent;
-    private Boolean isBypassPermanent;
+	@ManyToOne
+	@JoinColumn(name = "requisition_id", referencedColumnName = "id", insertable = false, updatable = false)
+	private Requisition requisition;
+	private String users;
 
-    public Integer getId() {
-        return id;
-    }
+	public Department getDepartment() {
+		return department;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getUsers() {
-        return users;
-    }
+	public Boolean getIsApprovalPermanent() {
+		return isApprovalPermanent;
+	}
 
-    public void setUsers(String users) {
-        this.users = users;
-    }
+	public Boolean getIsBypassPermanent() {
+		return isBypassPermanent;
+	}
 
-    public Department getDepartment() {
-        return department;
-    }
+	public Requisition getRequisition() {
+		return requisition;
+	}
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
+	public String getUsers() {
+		return users;
+	}
 
-    public Requisition getRequisition() {
-        return requisition;
-    }
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
 
-    public void setRequisition(Requisition requisition) {
-        this.requisition = requisition;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public Boolean getIsApprovalPermanent() {
-        return isApprovalPermanent;
-    }
+	public void setIsApprovalPermanent(Boolean isApprovalPermanent) {
+		this.isApprovalPermanent = isApprovalPermanent;
+	}
 
-    public void setIsApprovalPermanent(Boolean isApprovalPermanent) {
-        this.isApprovalPermanent = isApprovalPermanent;
-    }
+	public void setIsBypassPermanent(Boolean isBypassPermanent) {
+		this.isBypassPermanent = isBypassPermanent;
+	}
 
-    public Boolean getIsBypassPermanent() {
-        return isBypassPermanent;
-    }
+	public void setRequisition(Requisition requisition) {
+		this.requisition = requisition;
+	}
 
-    public void setIsBypassPermanent(Boolean isBypassPermanent) {
-        this.isBypassPermanent = isBypassPermanent;
-    }
+	public void setUsers(String users) {
+		this.users = users;
+	}
 
 }

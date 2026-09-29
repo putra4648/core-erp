@@ -12,32 +12,35 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class LocationCoreService implements BaseService<Location> {
-    private final LocationRepository locationRepository;
+	private final LocationRepository locationRepository;
 
-    public LocationCoreService(LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
-    }
+	public LocationCoreService(LocationRepository locationRepository) {
+		this.locationRepository = locationRepository;
+	}
 
-    public void save(Location entity) {
-        locationRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		locationRepository.deleteById(id);
+	}
 
-    public Location findById(Long id) {
-        return locationRepository.findById(id);
-    }
+	@Override
+	public List<Location> findAll(Location l, Page p) {
+		return locationRepository.findAll().list();
+	}
 
-    public List<Location> findAll(Location l, Page p) {
-        return locationRepository.findAll().list();
-    }
+	@Override
+	public Location findById(Long id) {
+		return locationRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        locationRepository.deleteById(id);
-    }
+	@Override
+	public void save(Location entity) {
+		locationRepository.persist(entity);
+	}
 
-    @Override
-    public void update(Location entity) {
-        locationRepository.update("name = ?1, rackId = ?2, binNumber = ?3, type = ?4, where id = ?5",
-                entity.getName(), entity.getRack().getId(), entity.getBinNumber(), entity.getType(),
-                entity.getId());
-    }
+	@Override
+	public void update(Location entity) {
+		locationRepository.update("name = ?1, rackId = ?2, binNumber = ?3, type = ?4, where id = ?5", entity.getName(),
+				entity.getRack().getId(), entity.getBinNumber(), entity.getType(), entity.getId());
+	}
 }

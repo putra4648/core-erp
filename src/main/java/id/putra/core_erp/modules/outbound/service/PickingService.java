@@ -12,29 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class PickingService implements BaseService<PickingTask> {
-    private final PickingTaskRepository pickingTaskRepository;
+	private final PickingTaskRepository pickingTaskRepository;
 
-    public PickingService(PickingTaskRepository pickingTaskRepository) {
-        this.pickingTaskRepository = pickingTaskRepository;
-    }
+	public PickingService(PickingTaskRepository pickingTaskRepository) {
+		this.pickingTaskRepository = pickingTaskRepository;
+	}
 
-    public void save(PickingTask entity) {
-        pickingTaskRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		pickingTaskRepository.deleteById(id);
+	}
 
-    public PickingTask findById(Long id) {
-        return pickingTaskRepository.findById(id);
-    }
+	@Override
+	public List<PickingTask> findAll(PickingTask s, Page p) {
+		return pickingTaskRepository.findAll().list();
+	}
 
-    public void update(PickingTask dto) {
-        pickingTaskRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public PickingTask findById(Long id) {
+		return pickingTaskRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        pickingTaskRepository.deleteById(id);
-    }
+	@Override
+	public void save(PickingTask entity) {
+		pickingTaskRepository.persist(entity);
+	}
 
-    public List<PickingTask> findAll(PickingTask s, Page p) {
-        return pickingTaskRepository.findAll().list();
-    }
+	@Override
+	public void update(PickingTask dto) {
+		pickingTaskRepository.getEntityManager().merge(dto);
+	}
 }

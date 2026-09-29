@@ -12,39 +12,39 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class SalesOrderLine {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "product_id")
-  private Product product;
+	@ManyToOne
+	@JoinColumn(name = "product_id")
+	private Product product;
 
-  @ManyToOne
-  @JoinColumn(name = "sales_order_id")
-  private SalesOrder salesOrder;
+	@ManyToOne
+	@JoinColumn(name = "sales_order_id")
+	private SalesOrder salesOrder;
 
-  public Long getId() {
-    return id;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	public Product getProduct() {
+		return product;
+	}
 
-  public Product getProduct() {
-    return product;
-  }
+	public SalesOrder getSalesOrder() {
+		return salesOrder;
+	}
 
-  public void setProduct(Product product) {
-    this.product = product;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public SalesOrder getSalesOrder() {
-    return salesOrder;
-  }
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
-  public void setSalesOrder(SalesOrder salesOrder) {
-    this.salesOrder = salesOrder;
-  }
+	public void setSalesOrder(SalesOrder salesOrder) {
+		this.salesOrder = salesOrder;
+	}
 }

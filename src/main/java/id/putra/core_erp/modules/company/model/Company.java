@@ -14,116 +14,116 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "company")
 public class Company extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+	@Column(nullable = false)
+	private String accountBank;
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+	@Column(name = "currencies")
+	private List<String> curr;
 
-    @Column(name = "telp")
-    private String telp;
+	@Column(name = "end_year")
+	private Date financialEndYear;
 
-    @Column(name = "npwp")
-    private String npwp;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-    @Column(name = "logo_path")
-    private String logoPath;
+	@Column(name = "logo_path")
+	private String logoPath;
 
-    @Column(nullable = false)
-    private String accountBank;
+	@Column(name = "name", nullable = false, unique = true)
+	private String name;
 
-    @Column(name = "end_year")
-    private Date financialEndYear;
+	@Column(nullable = false)
+	private Boolean needAutoCloseOrder;
 
-    @Column(name = "currencies")
-    private List<String> curr;
+	@Column(nullable = false)
+	private Boolean needRegisterApproval;
 
-    @Column(nullable = false)
-    private Boolean needRegisterApproval;
+	@Column(name = "npwp")
+	private String npwp;
 
-    @Column(nullable = false)
-    private Boolean needAutoCloseOrder;
+	@Column(name = "telp")
+	private String telp;
 
-    public Long getId() {
-        return id;
-    }
+	public String getAccountBank() {
+		return accountBank;
+	}
 
-    public void setId(Long compId) {
-        this.id = compId;
-    }
+	public List<String> getCurr() {
+		return curr;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Date getFinancialEndYear() {
+		return financialEndYear;
+	}
 
-    public void setName(String compName) {
-        this.name = compName;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getTelp() {
-        return telp;
-    }
+	public String getLogoPath() {
+		return logoPath;
+	}
 
-    public void setTelp(String compTelp) {
-        this.telp = compTelp;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getNpwp() {
-        return npwp;
-    }
+	public Boolean getNeedAutoCloseOrder() {
+		return needAutoCloseOrder;
+	}
 
-    public void setNpwp(String compNPWP) {
-        this.npwp = compNPWP;
-    }
+	public Boolean getNeedRegisterApproval() {
+		return needRegisterApproval;
+	}
 
-    public String getLogoPath() {
-        return logoPath;
-    }
+	public String getNpwp() {
+		return npwp;
+	}
 
-    public void setLogoPath(String compLogopath) {
-        this.logoPath = compLogopath;
-    }
+	public String getTelp() {
+		return telp;
+	}
 
-    public String getAccountBank() {
-        return accountBank;
-    }
+	public void setAccountBank(String compAccbank) {
+		this.accountBank = compAccbank;
+	}
 
-    public void setAccountBank(String compAccbank) {
-        this.accountBank = compAccbank;
-    }
+	public void setCurr(List<String> compCurrencies) {
+		this.curr = compCurrencies;
+	}
 
-    public Date getFinancialEndYear() {
-        return financialEndYear;
-    }
+	public void setFinancialEndYear(Date compEndyear) {
+		this.financialEndYear = compEndyear;
+	}
 
-    public void setFinancialEndYear(Date compEndyear) {
-        this.financialEndYear = compEndyear;
-    }
+	public void setId(Long compId) {
+		this.id = compId;
+	}
 
-    public List<String> getCurr() {
-        return curr;
-    }
+	public void setLogoPath(String compLogopath) {
+		this.logoPath = compLogopath;
+	}
 
-    public void setCurr(List<String> compCurrencies) {
-        this.curr = compCurrencies;
-    }
+	public void setName(String compName) {
+		this.name = compName;
+	}
 
-    public Boolean getNeedRegisterApproval() {
-        return needRegisterApproval;
-    }
+	public void setNeedAutoCloseOrder(Boolean compNeedAutoCloseOrder) {
+		this.needAutoCloseOrder = compNeedAutoCloseOrder;
+	}
 
-    public void setNeedRegisterApproval(Boolean compNeedRegisterApproval) {
-        this.needRegisterApproval = compNeedRegisterApproval;
-    }
+	public void setNeedRegisterApproval(Boolean compNeedRegisterApproval) {
+		this.needRegisterApproval = compNeedRegisterApproval;
+	}
 
-    public Boolean getNeedAutoCloseOrder() {
-        return needAutoCloseOrder;
-    }
+	public void setNpwp(String compNPWP) {
+		this.npwp = compNPWP;
+	}
 
-    public void setNeedAutoCloseOrder(Boolean compNeedAutoCloseOrder) {
-        this.needAutoCloseOrder = compNeedAutoCloseOrder;
-    }
+	public void setTelp(String compTelp) {
+		this.telp = compTelp;
+	}
 
 }

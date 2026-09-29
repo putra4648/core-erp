@@ -12,29 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class ProductService implements BaseService<Product> {
-    private final ProductRepository productRepository;
+	private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+	public ProductService(ProductRepository productRepository) {
+		this.productRepository = productRepository;
+	}
 
-    public void save(Product dto) {
-        productRepository.persist(dto);
-    }
+	@Override
+	public void delete(Long id) {
+		productRepository.deleteById(id);
+	}
 
-    public Product findById(Long id) {
-        return productRepository.findById(id);
-    }
+	@Override
+	public List<Product> findAll(Product product, Page p) {
+		return productRepository.findAll().list();
+	}
 
-    public void update(Product dto) {
-        productRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public Product findById(Long id) {
+		return productRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        productRepository.deleteById(id);
-    }
+	@Override
+	public void save(Product dto) {
+		productRepository.persist(dto);
+	}
 
-    public List<Product> findAll(Product product, Page p) {
-        return productRepository.findAll().list();
-    }
+	@Override
+	public void update(Product dto) {
+		productRepository.getEntityManager().merge(dto);
+	}
 }

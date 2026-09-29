@@ -12,29 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class LabellingService implements BaseService<Labelling> {
-    private final LabellingRepository labellingRepository;
+	private final LabellingRepository labellingRepository;
 
-    public LabellingService(LabellingRepository labellingRepository) {
-        this.labellingRepository = labellingRepository;
-    }
+	public LabellingService(LabellingRepository labellingRepository) {
+		this.labellingRepository = labellingRepository;
+	}
 
-    public void save(Labelling entity) {
-        labellingRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		labellingRepository.deleteById(id);
+	}
 
-    public Labelling findById(Long id) {
-        return labellingRepository.findById(id);
-    }
+	@Override
+	public List<Labelling> findAll(Labelling s, Page p) {
+		return labellingRepository.findAll().list();
+	}
 
-    public void update(Labelling dto) {
-        labellingRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public Labelling findById(Long id) {
+		return labellingRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        labellingRepository.deleteById(id);
-    }
+	@Override
+	public void save(Labelling entity) {
+		labellingRepository.persist(entity);
+	}
 
-    public List<Labelling> findAll(Labelling s, Page p) {
-        return labellingRepository.findAll().list();
-    }
+	@Override
+	public void update(Labelling dto) {
+		labellingRepository.getEntityManager().merge(dto);
+	}
 }

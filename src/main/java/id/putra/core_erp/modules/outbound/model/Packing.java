@@ -14,54 +14,54 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class Packing {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private String packageNumber;
-  @Column(precision = 12, scale = 2)
-  private BigDecimal weight;
-  private String dimension;
+	private String dimension;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String packageNumber;
+	@OneToMany(mappedBy = "packing")
+	private List<Shipment> shipments;
 
-  @OneToMany(mappedBy = "packing")
-  private List<Shipment> shipments;
+	@Column(precision = 12, scale = 2)
+	private BigDecimal weight;
 
-  public Long getId() {
-    return id;
-  }
+	public String getDimension() {
+		return dimension;
+	}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public String getPackageNumber() {
-    return packageNumber;
-  }
+	public String getPackageNumber() {
+		return packageNumber;
+	}
 
-  public void setPackageNumber(String packageNumber) {
-    this.packageNumber = packageNumber;
-  }
+	public List<Shipment> getShipments() {
+		return shipments;
+	}
 
-  public BigDecimal getWeight() {
-    return weight;
-  }
+	public BigDecimal getWeight() {
+		return weight;
+	}
 
-  public void setWeight(BigDecimal weight) {
-    this.weight = weight;
-  }
+	public void setDimension(String dimension) {
+		this.dimension = dimension;
+	}
 
-  public String getDimension() {
-    return dimension;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public void setDimension(String dimension) {
-    this.dimension = dimension;
-  }
+	public void setPackageNumber(String packageNumber) {
+		this.packageNumber = packageNumber;
+	}
 
-  public List<Shipment> getShipments() {
-    return shipments;
-  }
+	public void setShipments(List<Shipment> shipments) {
+		this.shipments = shipments;
+	}
 
-  public void setShipments(List<Shipment> shipments) {
-    this.shipments = shipments;
-  }
+	public void setWeight(BigDecimal weight) {
+		this.weight = weight;
+	}
 }

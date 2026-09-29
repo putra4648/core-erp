@@ -1,141 +1,100 @@
 package id.putra.core_erp.modules.supplier.model;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.enums.TypeEnum;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "suppliers")
 public class Supplier extends BaseEntity {
+	@Id
+	private Long id;
 
-    @Id
-    private Long id;
+	@Column(name = "code")
+	private String code;
 
-    @Column(name = "code")
-    private String code;
+	private String filename;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    // @Column(name = "status")
-    // @Enumerated(EnumType.STRING)
-    // private Status status;
+	@Column(name = "phone")
+	private String phone;
 
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private TypeEnum type;
+	private String email;
 
-    @Column(name = "phone")
-    private String phone;
+	@Column(name = "type")
+	@Enumerated(EnumType.STRING)
+	private TypeEnum type;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_po_address_id", referencedColumnName = "id")
-    private SupplierPOAddress supplierPOAddress;
+	public String getCode() {
+		return code;
+	}
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_address_id", referencedColumnName = "id")
-    private SupplierAddress supplierAddress;
+	public Instant getCreatedDate() {
+		return null;
+	}
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SupplierContact> contacts = new ArrayList<>();
+	public String getFilename() {
+		return filename;
+	}
 
-    private String filename;
+	public Long getId() {
+		return id;
+	}
 
-    public String getFilename() {
-        return filename;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
+	public String getPhone() {
+		return phone;
+	}
 
-    public String getMainContact() {
-        return (contacts != null && !contacts.isEmpty()) ? contacts.get(0).getContactName() : "";
-    }
+	public TypeEnum getType() {
+		return type;
+	}
 
-    public Instant getCreatedDate() {
-        return null;
-    }
+	public Instant getUpdatedDate() {
+		return null;
+	}
 
-    public Instant getUpdatedDate() {
-        return null;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setType(TypeEnum type) {
+		this.type = type;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public TypeEnum getType() {
-        return type;
-    }
-
-    public void setType(TypeEnum type) {
-        this.type = type;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public SupplierPOAddress getSupplierPOAddress() {
-        return supplierPOAddress;
-    }
-
-    public void setSupplierPOAddress(SupplierPOAddress supplierPOAddress) {
-        this.supplierPOAddress = supplierPOAddress;
-    }
-
-    public SupplierAddress getSupplierAddress() {
-        return supplierAddress;
-    }
-
-    public void setSupplierAddress(SupplierAddress supplierAddress) {
-        this.supplierAddress = supplierAddress;
-    }
-
-    public List<SupplierContact> getContacts() {
-        return contacts;
-    }
-
-    public void setContacts(List<SupplierContact> contacts) {
-        this.contacts = contacts;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

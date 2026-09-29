@@ -18,48 +18,48 @@ import jakarta.persistence.Table;
 @Table(name = "budget")
 public class Budget extends BaseEntity {
 
-    @Id
-    private String id;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "department", referencedColumnName = "dept_number")
+	private Department department;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "department", referencedColumnName = "dept_number")
-    private Department department;
+	@OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BudgetDetail> details;
 
-    @Column(name = "fy")
-    private Date fiscalYear;
+	@Column(name = "fy")
+	private Date fiscalYear;
 
-    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BudgetDetail> details;
+	@Id
+	private String id;
 
-    public String getId() {
-        return id;
-    }
+	public Department getDepartment() {
+		return department;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public List<BudgetDetail> getDetails() {
+		return details;
+	}
 
-    public Department getDepartment() {
-        return department;
-    }
+	public Date getFiscalYear() {
+		return fiscalYear;
+	}
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public Date getFiscalYear() {
-        return fiscalYear;
-    }
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
 
-    public void setFiscalYear(Date fiscalYear) {
-        this.fiscalYear = fiscalYear;
-    }
+	public void setDetails(List<BudgetDetail> details) {
+		this.details = details;
+	}
 
-    public List<BudgetDetail> getDetails() {
-        return details;
-    }
+	public void setFiscalYear(Date fiscalYear) {
+		this.fiscalYear = fiscalYear;
+	}
 
-    public void setDetails(List<BudgetDetail> details) {
-        this.details = details;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 }

@@ -5,13 +5,13 @@ import java.util.List;
 import io.quarkus.panache.common.Page;
 
 public interface BaseService<T> {
-    public void save(T entity);
+	public void delete(Long id);
 
-    public T findById(Long id);
+	public List<T> findAll(T entity, Page page);
 
-    public void delete(Long id);
+	public T findById(Long id);
 
-    public void update(T entity);
+	public void save(T entity);
 
-    public List<T> findAll(T entity, Page page);
+	public void update(T entity);
 }

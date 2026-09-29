@@ -11,46 +11,46 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class QualityInspection {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String result;
-    private String remarks;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@ManyToOne
+	@JoinColumn(name = "receiving_line_id")
+	private ReceivingLine receivingLine;
+	private String remarks;
 
-    @ManyToOne
-    @JoinColumn(name = "receiving_line_id")
-    private ReceivingLine receivingLine;
+	private String result;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public ReceivingLine getReceivingLine() {
+		return receivingLine;
+	}
 
-    public String getResult() {
-        return result;
-    }
+	public String getRemarks() {
+		return remarks;
+	}
 
-    public void setResult(String result) {
-        this.result = result;
-    }
+	public String getResult() {
+		return result;
+	}
 
-    public String getRemarks() {
-        return remarks;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
+	public void setReceivingLine(ReceivingLine receivingLine) {
+		this.receivingLine = receivingLine;
+	}
 
-    public ReceivingLine getReceivingLine() {
-        return receivingLine;
-    }
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
 
-    public void setReceivingLine(ReceivingLine receivingLine) {
-        this.receivingLine = receivingLine;
-    }
+	public void setResult(String result) {
+		this.result = result;
+	}
 
 }

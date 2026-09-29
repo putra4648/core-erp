@@ -14,34 +14,38 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class SupplierService {
 
-    private final SupplierRepository supplierRepository;
+	private final SupplierRepository supplierRepository;
 
-    public SupplierService(SupplierRepository supplierRepository) {
-        this.supplierRepository = supplierRepository;
-    }
-    public Supplier getById(Long id) {
-        return supplierRepository.find("id", id).firstResult();
-    }
-    public List<Supplier> create(List<Supplier> dto) {
-        supplierRepository.persist(dto);
-        return dto;
-    }
-    public void update(Long id, Supplier dto) {
-        supplierRepository.getEntityManager().merge(dto);
-    }
-    public void delete(Long id) {
-        Supplier supplier = getById(id);
-        if (supplier != null) {
-            supplierRepository.delete(supplier);
-        }
-    }
-    public DataProvider<Supplier, Void> getAll(String value, Page page) {
-        String pattern = "%" + (value == null ? "" : value.trim().toLowerCase()) + "%";
-        return DataProvider.fromCallbacks(
-                query -> supplierRepository.find("lower(name) like ?1 or lower(code) like ?1", pattern)
-                        .page(Page.of(query.getOffset() / query.getLimit(), query.getLimit()))
-                        .list().stream(),
-                query -> Math
-                        .toIntExact(supplierRepository.count("lower(name) like ?1 or lower(code) like ?1", pattern)));
-    }
+	public SupplierService(SupplierRepository supplierRepository) {
+		this.supplierRepository = supplierRepository;
+	}
+
+	public List<Supplier> create(List<Supplier> dto) {
+		supplierRepository.persist(dto);
+		return dto;
+	}
+
+	public void delete(Long id) {
+		Supplier supplier = getById(id);
+		if (supplier != null) {
+			supplierRepository.delete(supplier);
+		}
+	}
+
+	public DataProvider<Supplier, Void> getAll(String value, Page page) {
+		String pattern = "%" + (value == null ? "" : value.trim().toLowerCase()) + "%";
+		return DataProvider.fromCallbacks(
+				query -> supplierRepository.find("lower(name) like ?1 or lower(code) like ?1", pattern)
+						.page(Page.of(query.getOffset() / query.getLimit(), query.getLimit())).list().stream(),
+				query -> Math
+						.toIntExact(supplierRepository.count("lower(name) like ?1 or lower(code) like ?1", pattern)));
+	}
+
+	public Supplier getById(Long id) {
+		return supplierRepository.find("id", id).firstResult();
+	}
+
+	public void update(Long id, Supplier dto) {
+		supplierRepository.getEntityManager().merge(dto);
+	}
 }

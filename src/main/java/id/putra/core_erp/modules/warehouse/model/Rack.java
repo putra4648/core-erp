@@ -15,68 +15,68 @@ import jakarta.persistence.Table;
 @Table(name = "warehouse_racks")
 @Entity
 public class Rack extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	private Long cols;
 
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private Long rows;
+	@OneToMany(mappedBy = "rack")
+	private List<Location> locations;
 
-    private Long cols;
+	private String name;
 
-    @OneToMany(mappedBy = "rack")
-    private List<Location> locations;
+	private Long rows;
 
-    @ManyToOne
-    @JoinColumn(name = "zone_id")
-    private Zone zone;
+	@ManyToOne
+	@JoinColumn(name = "zone_id")
+	private Zone zone;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getCols() {
+		return cols;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public List<Location> getLocations() {
+		return locations;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Long getRows() {
-        return rows;
-    }
+	public Long getRows() {
+		return rows;
+	}
 
-    public void setRows(Long rows) {
-        this.rows = rows;
-    }
+	public Zone getZone() {
+		return zone;
+	}
 
-    public Long getCols() {
-        return cols;
-    }
+	public void setCols(Long cols) {
+		this.cols = cols;
+	}
 
-    public void setCols(Long cols) {
-        this.cols = cols;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public List<Location> getLocations() {
-        return locations;
-    }
+	public void setLocations(List<Location> locations) {
+		this.locations = locations;
+	}
 
-    public void setLocations(List<Location> locations) {
-        this.locations = locations;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Zone getZone() {
-        return zone;
-    }
+	public void setRows(Long rows) {
+		this.rows = rows;
+	}
 
-    public void setZone(Zone zone) {
-        this.zone = zone;
-    }
+	public void setZone(Zone zone) {
+		this.zone = zone;
+	}
 }

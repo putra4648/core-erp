@@ -31,144 +31,143 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class PurchaseOrderView extends VerticalLayout {
 
-    private final PurchaseOrderService purchaseOrderService;
-    private final Grid<PurchaseOrder> grid = new Grid<>();
-    private final TextField searchField = new TextField();
+	private final Grid<PurchaseOrder> grid = new Grid<>();
+	private final PurchaseOrderService purchaseOrderService;
+	private final TextField searchField = new TextField();
 
-    public PurchaseOrderView(PurchaseOrderService purchaseOrderService) {
-        this.purchaseOrderService = purchaseOrderService;
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+	public PurchaseOrderView(PurchaseOrderService purchaseOrderService) {
+		this.purchaseOrderService = purchaseOrderService;
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        addHeader();
-        addToolbar();
-        configureGrid();
-        add(grid);
+		addHeader();
+		addToolbar();
+		configureGrid();
+		add(grid);
 
-        refreshData();
-    }
+		refreshData();
+	}
 
-    private void addHeader() {
-        H2 title = new H2("Purchase Orders");
-        title.addClassNames("m-0", "text-xl", "font-bold");
-        Paragraph desc = new Paragraph("Track inbound vendor purchase orders and item lines.");
-        desc.addClassNames("text-secondary", "m-0");
-        add(title, desc);
-    }
+	private void addHeader() {
+		H2 title = new H2("Purchase Orders");
+		title.addClassNames("m-0", "text-xl", "font-bold");
+		Paragraph desc = new Paragraph("Track inbound vendor purchase orders and item lines.");
+		desc.addClassNames("text-secondary", "m-0");
+		add(title, desc);
+	}
 
-    private void addToolbar() {
-        searchField.setPlaceholder("Search PO number...");
-        searchField.setClearButtonVisible(true);
-        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        searchField.addValueChangeListener(e -> refreshData());
+	private void addToolbar() {
+		searchField.setPlaceholder("Search PO number...");
+		searchField.setClearButtonVisible(true);
+		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+		searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("New Purchase Order", VaadinIcon.PLUS.create(),
-                e -> openPoDialog(new PurchaseOrder()));
-        addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button addButton = new Button("New Purchase Order", VaadinIcon.PLUS.create(),
+				e -> openPoDialog(new PurchaseOrder()));
+		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
+		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
 
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
-        toolbar.setWidthFull();
-        toolbar.setFlexGrow(1, searchField);
-        add(toolbar);
-    }
+		HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
+		toolbar.setWidthFull();
+		toolbar.setFlexGrow(1, searchField);
+		add(toolbar);
+	}
 
-    private void configureGrid() {
-        grid.setSizeFull();
-        grid.addColumn(p -> p.getPoNumber() != null ? p.getPoNumber() : "").setHeader("PO Number").setAutoWidth(true)
-                .setSortable(true);
-        grid.addColumn(p -> p.getOrderDate() != null ? p.getOrderDate().toString() : "-").setHeader("Order Date")
-                .setAutoWidth(true);
-        grid.addColumn(p -> p.getSupplier() != null ? "Supplier #" + p.getSupplier().getId() : "-")
-                .setHeader("Supplier")
-                .setFlexGrow(1);
+	private void configureGrid() {
+		grid.setSizeFull();
+		grid.addColumn(p -> p.getPoNumber() != null ? p.getPoNumber() : "").setHeader("PO Number").setAutoWidth(true)
+				.setSortable(true);
+		grid.addColumn(p -> p.getOrderDate() != null ? p.getOrderDate().toString() : "-").setHeader("Order Date")
+				.setAutoWidth(true);
+		grid.addColumn(p -> p.getSupplier() != null ? "Supplier #" + p.getSupplier().getId() : "-")
+				.setHeader("Supplier").setFlexGrow(1);
 
-        grid.addComponentColumn(po -> {
-            String status = po.getStatus() != null ? po.getStatus().name() : "DRAFT";
-            Span badge = new Span(status);
-            badge.getElement().getThemeList().add("badge " + ("APPROVED".equals(status) ? "success" : "neutral"));
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
+		grid.addComponentColumn(po -> {
+			String status = po.getStatus() != null ? po.getStatus().name() : "DRAFT";
+			Span badge = new Span(status);
+			badge.getElement().getThemeList().add("badge " + ("APPROVED".equals(status) ? "success" : "neutral"));
+			return badge;
+		}).setHeader("Status").setAutoWidth(true);
 
-        grid.addComponentColumn(po -> {
-            Button viewBtn = new Button(VaadinIcon.EYE.create(), e -> openDetailsDialog(po));
-            viewBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		grid.addComponentColumn(po -> {
+			Button viewBtn = new Button(VaadinIcon.EYE.create(), e -> openDetailsDialog(po));
+			viewBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-            Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(po));
-            deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(po));
+			deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
 
-            return new HorizontalLayout(viewBtn, deleteBtn);
-        }).setHeader("Actions").setAutoWidth(true);
-    }
+			return new HorizontalLayout(viewBtn, deleteBtn);
+		}).setHeader("Actions").setAutoWidth(true);
+	}
 
-    private void refreshData() {
-        PurchaseOrder searchParam = new PurchaseOrder();
-        searchParam.setPoNumber(searchField.getValue());
-        List<PurchaseOrder> results = new ArrayList<>();
-        purchaseOrderService.findAll(searchParam, Page.ofSize(100)).forEach(results::add);
-        grid.setItems(results);
-    }
+	private void confirmDelete(PurchaseOrder po) {
+		Dialog confirmDialog = new Dialog("Delete Purchase Order");
+		confirmDialog.add(new Paragraph("Are you sure you want to delete PO '" + po.getPoNumber() + "'?"));
 
-    private void openPoDialog(PurchaseOrder po) {
-        Dialog dialog = new Dialog("New Purchase Order");
-        TextField poNumField = new TextField("PO Number");
-        poNumField.setRequired(true);
+		Button deleteBtn = new Button("Delete", e -> {
+			try {
+				purchaseOrderService.delete(po.getId());
+				Notification.show("PO deleted successfully", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				confirmDialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to delete PO: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
-        FormLayout form = new FormLayout(poNumField);
-        dialog.add(form);
+		confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
+		confirmDialog.open();
+	}
 
-        Button saveBtn = new Button("Create PO", e -> {
-            po.setPoNumber(poNumField.getValue());
-            try {
-                purchaseOrderService.save(po);
-                Notification.show("PO created successfully", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                dialog.close();
-                refreshData();
-            } catch (Exception ex) {
-                Notification.show("Failed to create PO: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), saveBtn);
-        dialog.open();
-    }
+	private void openDetailsDialog(PurchaseOrder po) {
+		Dialog dialog = new Dialog("Purchase Order: " + po.getPoNumber());
+		dialog.setWidth("600px");
 
-    private void openDetailsDialog(PurchaseOrder po) {
-        Dialog dialog = new Dialog("Purchase Order: " + po.getPoNumber());
-        dialog.setWidth("600px");
+		VerticalLayout layout = new VerticalLayout();
+		layout.add(new Paragraph("PO Number: " + po.getPoNumber()));
+		layout.add(new Paragraph("Status: " + (po.getStatus() != null ? po.getStatus().name() : "DRAFT")));
 
-        VerticalLayout layout = new VerticalLayout();
-        layout.add(new Paragraph("PO Number: " + po.getPoNumber()));
-        layout.add(new Paragraph("Status: " + (po.getStatus() != null ? po.getStatus().name() : "DRAFT")));
+		dialog.add(layout);
+		dialog.getFooter().add(new Button("Close", e -> dialog.close()));
+		dialog.open();
+	}
 
-        dialog.add(layout);
-        dialog.getFooter().add(new Button("Close", e -> dialog.close()));
-        dialog.open();
-    }
+	private void openPoDialog(PurchaseOrder po) {
+		Dialog dialog = new Dialog("New Purchase Order");
+		TextField poNumField = new TextField("PO Number");
+		poNumField.setRequired(true);
 
-    private void confirmDelete(PurchaseOrder po) {
-        Dialog confirmDialog = new Dialog("Delete Purchase Order");
-        confirmDialog.add(new Paragraph("Are you sure you want to delete PO '" + po.getPoNumber() + "'?"));
+		FormLayout form = new FormLayout(poNumField);
+		dialog.add(form);
 
-        Button deleteBtn = new Button("Delete", e -> {
-            try {
-                purchaseOrderService.delete(po.getId());
-                Notification.show("PO deleted successfully", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                confirmDialog.close();
-                refreshData();
-            } catch (Exception ex) {
-                Notification.show("Failed to delete PO: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-        deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+		Button saveBtn = new Button("Create PO", e -> {
+			po.setPoNumber(poNumField.getValue());
+			try {
+				purchaseOrderService.save(po);
+				Notification.show("PO created successfully", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				dialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to create PO: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), saveBtn);
+		dialog.open();
+	}
 
-        confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
-        confirmDialog.open();
-    }
+	private void refreshData() {
+		PurchaseOrder searchParam = new PurchaseOrder();
+		searchParam.setPoNumber(searchField.getValue());
+		List<PurchaseOrder> results = new ArrayList<>();
+		purchaseOrderService.findAll(searchParam, Page.ofSize(100)).forEach(results::add);
+		grid.setItems(results);
+	}
 }

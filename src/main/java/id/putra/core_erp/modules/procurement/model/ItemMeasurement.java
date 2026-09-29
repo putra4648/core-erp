@@ -13,63 +13,63 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "items_measurement")
 public class ItemMeasurement {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
+	@Column(name = "amount")
+	private BigInteger amount;
 
-    @Column(name = "unit")
-    private String unit;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Integer id;
 
-    // @Column(name = "qty")
-    // private BigInteger qty;
+	// @Column(name = "qty")
+	// private BigInteger qty;
 
-    @Column(name = "amount")
-    private BigInteger amount;
+	@OneToOne(mappedBy = "measurement")
+	private Item item;
 
-    @Column(name = "notes")
-    private String notes;
+	@Column(name = "notes")
+	private String notes;
 
-    @OneToOne(mappedBy = "measurement")
-    private Item item;
+	@Column(name = "unit")
+	private String unit;
 
-    public Integer getId() {
-        return id;
-    }
+	public BigInteger getAmount() {
+		return amount;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getUnit() {
-        return unit;
-    }
+	public Item getItem() {
+		return item;
+	}
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+	public String getNotes() {
+		return notes;
+	}
 
-    public BigInteger getAmount() {
-        return amount;
-    }
+	public String getUnit() {
+		return unit;
+	}
 
-    public void setAmount(BigInteger amount) {
-        this.amount = amount;
-    }
+	public void setAmount(BigInteger amount) {
+		this.amount = amount;
+	}
 
-    public String getNotes() {
-        return notes;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+	public void setItem(Item item) {
+		this.item = item;
+	}
 
-    public Item getItem() {
-        return item;
-    }
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
 
-    public void setItem(Item item) {
-        this.item = item;
-    }
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 }

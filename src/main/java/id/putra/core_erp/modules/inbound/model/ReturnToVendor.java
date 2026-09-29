@@ -14,46 +14,46 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class ReturnToVendor {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private String reason;
-  @Column(precision = 12, scale = 2)
-  private BigDecimal qty;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@Column(precision = 12, scale = 2)
+	private BigDecimal qty;
+	private String reason;
 
-  @ManyToOne
-  @JoinColumn(name = "receiving_line_id")
-  private ReceivingLine receivingLine;
+	@ManyToOne
+	@JoinColumn(name = "receiving_line_id")
+	private ReceivingLine receivingLine;
 
-  public Long getId() {
-    return id;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	public BigDecimal getQty() {
+		return qty;
+	}
 
-  public String getReason() {
-    return reason;
-  }
+	public String getReason() {
+		return reason;
+	}
 
-  public void setReason(String reason) {
-    this.reason = reason;
-  }
+	public ReceivingLine getReceivingLine() {
+		return receivingLine;
+	}
 
-  public BigDecimal getQty() {
-    return qty;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public void setQty(BigDecimal qty) {
-    this.qty = qty;
-  }
+	public void setQty(BigDecimal qty) {
+		this.qty = qty;
+	}
 
-  public ReceivingLine getReceivingLine() {
-    return receivingLine;
-  }
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
 
-  public void setReceivingLine(ReceivingLine receivingLine) {
-    this.receivingLine = receivingLine;
-  }
+	public void setReceivingLine(ReceivingLine receivingLine) {
+		this.receivingLine = receivingLine;
+	}
 }

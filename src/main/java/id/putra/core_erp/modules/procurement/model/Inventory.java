@@ -13,158 +13,158 @@ import jakarta.persistence.Table;
 @Table(name = "inventory")
 public class Inventory extends BaseEntity {
 
-    @Id
-    private Long id;
+	@Column(name = "area")
+	private String area;
 
-    @Column(name = "po_number")
-    private String poNumber;
+	@Column(name = "date")
+	private Date date;
 
-    @Column(name = "part_number")
-    private String partNumber;
+	@Column(name = "description")
+	private String description;
 
-    @Column(name = "part_name")
-    private String partName;
+	@Id
+	private Long id;
 
-    @Column(name = "description")
-    private String description;
+	@Column(name = "item_area")
+	private String itemArea;
 
-    @Column(name = "area")
-    private String area;
+	@Column(name = "location")
+	private String location;
 
-    @Column(name = "shelf")
-    private String shelf;
+	@Column(name = "part_name")
+	private String partName;
 
-    @Column(name = "supplier")
-    private String supplier;
+	@Column(name = "part_number")
+	private String partNumber;
 
-    @Column(name = "unit")
-    private String unit;
+	@Column(name = "po_number")
+	private String poNumber;
 
-    @Column(name = "qty")
-    private BigInteger qty;
+	@Column(name = "qty")
+	private BigInteger qty;
 
-    @Column(name = "item_area")
-    private String itemArea;
+	@Column(name = "shelf")
+	private String shelf;
 
-    @Column(name = "date")
-    private Date date;
+	@Column(name = "supplier")
+	private String supplier;
 
-    @Column(name = "location")
-    private String location;
+	@Column(name = "unit")
+	private String unit;
 
-    @Column(name = "uom")
-    private String uom;
+	@Column(name = "uom")
+	private String uom;
 
-    public Long getId() {
-        return id;
-    }
+	public String getArea() {
+		return area;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Date getDate() {
+		return date;
+	}
 
-    public String getPoNumber() {
-        return poNumber;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setPoNumber(String poNumber) {
-        this.poNumber = poNumber;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getPartNumber() {
-        return partNumber;
-    }
+	public String getItemArea() {
+		return itemArea;
+	}
 
-    public void setPartNumber(String partNumber) {
-        this.partNumber = partNumber;
-    }
+	public String getLocation() {
+		return location;
+	}
 
-    public String getPartName() {
-        return partName;
-    }
+	public String getPartName() {
+		return partName;
+	}
 
-    public void setPartName(String partName) {
-        this.partName = partName;
-    }
+	public String getPartNumber() {
+		return partNumber;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getPoNumber() {
+		return poNumber;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public BigInteger getQty() {
+		return qty;
+	}
 
-    public String getArea() {
-        return area;
-    }
+	public String getShelf() {
+		return shelf;
+	}
 
-    public void setArea(String area) {
-        this.area = area;
-    }
+	public String getSupplier() {
+		return supplier;
+	}
 
-    public String getShelf() {
-        return shelf;
-    }
+	public String getUnit() {
+		return unit;
+	}
 
-    public void setShelf(String shelf) {
-        this.shelf = shelf;
-    }
+	public String getUom() {
+		return uom;
+	}
 
-    public String getSupplier() {
-        return supplier;
-    }
+	public void setArea(String area) {
+		this.area = area;
+	}
 
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
-    }
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
-    public String getUnit() {
-        return unit;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public BigInteger getQty() {
-        return qty;
-    }
+	public void setItemArea(String itemArea) {
+		this.itemArea = itemArea;
+	}
 
-    public void setQty(BigInteger qty) {
-        this.qty = qty;
-    }
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-    public String getItemArea() {
-        return itemArea;
-    }
+	public void setPartName(String partName) {
+		this.partName = partName;
+	}
 
-    public void setItemArea(String itemArea) {
-        this.itemArea = itemArea;
-    }
+	public void setPartNumber(String partNumber) {
+		this.partNumber = partNumber;
+	}
 
-    public Date getDate() {
-        return date;
-    }
+	public void setPoNumber(String poNumber) {
+		this.poNumber = poNumber;
+	}
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
+	public void setQty(BigInteger qty) {
+		this.qty = qty;
+	}
 
-    public String getLocation() {
-        return location;
-    }
+	public void setShelf(String shelf) {
+		this.shelf = shelf;
+	}
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+	public void setSupplier(String supplier) {
+		this.supplier = supplier;
+	}
 
-    public String getUom() {
-        return uom;
-    }
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 
-    public void setUom(String uom) {
-        this.uom = uom;
-    }
+	public void setUom(String uom) {
+		this.uom = uom;
+	}
 
 }

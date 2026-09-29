@@ -17,69 +17,69 @@ import jakarta.persistence.Table;
 @Entity
 
 public class Zone extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	private String code;
 
-    private String code;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String name;
+	private String name;
 
-    private String type;
+	@OneToMany(mappedBy = "zone", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Rack> racks;
 
-    @ManyToOne
-    @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
-    private Warehouse warehouse;
+	private String type;
 
-    @OneToMany(mappedBy = "zone", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rack> racks;
+	@ManyToOne
+	@JoinColumn(name = "warehouse_id", referencedColumnName = "id")
+	private Warehouse warehouse;
 
-    public Long getId() {
-        return id;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public List<Rack> getRacks() {
+		return racks;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public Warehouse getWarehouse() {
+		return warehouse;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
+	public void setRacks(List<Rack> racks) {
+		this.racks = racks;
+	}
 
-    public List<Rack> getRacks() {
-        return racks;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    public void setRacks(List<Rack> racks) {
-        this.racks = racks;
-    }
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = warehouse;
+	}
 
 }

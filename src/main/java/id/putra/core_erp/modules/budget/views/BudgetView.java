@@ -38,149 +38,149 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class BudgetView extends VerticalLayout {
 
-    private final BudgetService budgetService;
+	private final List<BudgetDetail> budgetDetails = new ArrayList<>();
 
-    private final ComboBox<Department> deptCombo = new ComboBox<>("Select Department");
-    private final ComboBox<String> yearCombo = new ComboBox<>("Fiscal Year");
-    private final Grid<BudgetDetail> grid = new Grid<>();
-    private final List<BudgetDetail> budgetDetails = new ArrayList<>();
-    private final List<Department> departmentList = new ArrayList<>();
+	private final BudgetService budgetService;
+	private final List<Department> departmentList = new ArrayList<>();
+	private final ComboBox<Department> deptCombo = new ComboBox<>("Select Department");
+	private final Grid<BudgetDetail> grid = new Grid<>();
+	private final ComboBox<String> yearCombo = new ComboBox<>("Fiscal Year");
 
-    public BudgetView(BudgetService budgetService, DepartmentRepo departmentRepo) {
-        this.budgetService = budgetService;
+	public BudgetView(BudgetService budgetService, DepartmentRepo departmentRepo) {
+		this.budgetService = budgetService;
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        departmentRepo.findAll().list().forEach(departmentList::add);
+		departmentRepo.findAll().list().forEach(departmentList::add);
 
-        H2 header = new H2("Budget Planning & Management");
-        header.addClassNames(LumoUtility.FontSize.XLARGE);
+		H2 header = new H2("Budget Planning & Management");
+		header.addClassNames(LumoUtility.FontSize.XLARGE);
 
-        deptCombo.setWidth("280px");
-        deptCombo.setItemLabelGenerator(d -> d.getCode() + " - " + d.getName());
-        deptCombo.setItems(departmentList);
-        deptCombo.addValueChangeListener(e -> refreshBudgets());
+		deptCombo.setWidth("280px");
+		deptCombo.setItemLabelGenerator(d -> d.getCode() + " - " + d.getName());
+		deptCombo.setItems(departmentList);
+		deptCombo.addValueChangeListener(e -> refreshBudgets());
 
-        yearCombo.setWidth("140px");
-        yearCombo.setItems("2024", "2025", "2026", "2027");
-        yearCombo.setValue("2025");
-        yearCombo.addValueChangeListener(e -> refreshBudgets());
+		yearCombo.setWidth("140px");
+		yearCombo.setItems("2024", "2025", "2026", "2027");
+		yearCombo.setValue("2025");
+		yearCombo.addValueChangeListener(e -> refreshBudgets());
 
-        Button addBtn = new Button("Add Budget", VaadinIcon.PLUS.create(), e -> openAddBudgetDialog());
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button addBtn = new Button("Add Budget", VaadinIcon.PLUS.create(), e -> openAddBudgetDialog());
+		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshBudgets());
+		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshBudgets());
 
-        HorizontalLayout toolbar = new HorizontalLayout(deptCombo, yearCombo, addBtn, refreshBtn);
-        toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
+		HorizontalLayout toolbar = new HorizontalLayout(deptCombo, yearCombo, addBtn, refreshBtn);
+		toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
 
-        configureGrid();
+		configureGrid();
 
-        add(header, toolbar, grid);
+		add(header, toolbar, grid);
 
-        if (!departmentList.isEmpty()) {
-            deptCombo.setValue(departmentList.get(0));
-        }
-    }
+		if (!departmentList.isEmpty()) {
+			deptCombo.setValue(departmentList.get(0));
+		}
+	}
 
-    private void configureGrid() {
-        grid.setSizeFull();
-        grid.addColumn(b -> b.getId() != null ? b.getId() : "-").setHeader("Budget No")
-                .setAutoWidth(true);
-        grid.addColumn(b -> b.getName() != null ? b.getName() : "-").setHeader("Budget Title / Description")
-                .setFlexGrow(2);
-        grid.addColumn(b -> b.getType() != null ? b.getType().name() : "OPEX").setHeader("Type").setAutoWidth(true);
-        grid.addColumn(b -> b.getTotalBudget() != null ? b.getTotalBudget() : "0").setHeader("Total Budget")
-                .setFlexGrow(1);
-        // grid.addColumn(b -> b.getNotes() != null ? b.getNotes() :
-        // "-").setHeader("Notes").setFlexGrow(1);
-    }
+	private void configureGrid() {
+		grid.setSizeFull();
+		grid.addColumn(b -> b.getId() != null ? b.getId() : "-").setHeader("Budget No").setAutoWidth(true);
+		grid.addColumn(b -> b.getName() != null ? b.getName() : "-").setHeader("Budget Title / Description")
+				.setFlexGrow(2);
+		grid.addColumn(b -> b.getType() != null ? b.getType().name() : "OPEX").setHeader("Type").setAutoWidth(true);
+		grid.addColumn(b -> b.getTotalBudget() != null ? b.getTotalBudget() : "0").setHeader("Total Budget")
+				.setFlexGrow(1);
+		// grid.addColumn(b -> b.getNotes() != null ? b.getNotes() :
+		// "-").setHeader("Notes").setFlexGrow(1);
+	}
 
-    private void refreshBudgets() {
-        Department dept = deptCombo.getValue();
-        String year = yearCombo.getValue();
+	private void openAddBudgetDialog() {
+		Department dept = deptCombo.getValue();
+		if (dept == null) {
+			Notification.show("Please select a department first", 3000, Notification.Position.TOP_CENTER);
+			return;
+		}
 
-        if (dept == null || year == null)
-            return;
+		Dialog dialog = new Dialog();
+		dialog.setHeaderTitle("Add Budget for " + dept.getName());
+		dialog.setWidth("500px");
 
-        try {
-            List<BudgetDetail> res = budgetService.getBudgetsDetail(dept.getCode(), year);
-            if (res != null) {
-                budgetDetails.clear();
-                budgetDetails.addAll(res);
-                grid.setItems(budgetDetails);
-            } else {
-                grid.setItems(List.of());
-            }
-        } catch (Exception ex) {
-            grid.setItems(List.of());
-        }
-    }
+		FormLayout form = new FormLayout();
+		TextField budgetNoField = new TextField("Budget Code");
+		budgetNoField.setRequired(true);
+		TextField nameField = new TextField("Budget Name");
+		nameField.setRequired(true);
+		ComboBox<BudgetType> typeCombo = new ComboBox<>("Budget Type");
+		typeCombo.setItems(BudgetType.values());
+		typeCombo.setValue(BudgetType.EXPENSE);
+		NumberField amountField = new NumberField("Annual Allocation (Total)");
+		TextArea noteField = new TextArea("Notes");
 
-    private void openAddBudgetDialog() {
-        Department dept = deptCombo.getValue();
-        if (dept == null) {
-            Notification.show("Please select a department first", 3000, Notification.Position.TOP_CENTER);
-            return;
-        }
+		form.add(budgetNoField, nameField, typeCombo, amountField, noteField);
 
-        Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Add Budget for " + dept.getName());
-        dialog.setWidth("500px");
+		Button saveBtn = new Button("Save", e -> {
+			if (budgetNoField.getValue().isBlank() || nameField.getValue().isBlank()) {
+				Notification.show("Code and Name are required", 3000, Notification.Position.TOP_CENTER);
+				return;
+			}
 
-        FormLayout form = new FormLayout();
-        TextField budgetNoField = new TextField("Budget Code");
-        budgetNoField.setRequired(true);
-        TextField nameField = new TextField("Budget Name");
-        nameField.setRequired(true);
-        ComboBox<BudgetType> typeCombo = new ComboBox<>("Budget Type");
-        typeCombo.setItems(BudgetType.values());
-        typeCombo.setValue(BudgetType.EXPENSE);
-        NumberField amountField = new NumberField("Annual Allocation (Total)");
-        TextArea noteField = new TextArea("Notes");
+			Budget dto = new Budget();
+			Department deptDto = new Department();
+			deptDto.setCode(dept.getCode());
+			deptDto.setName(dept.getName());
+			dto.setDepartment(deptDto);
+			// dto.setFiscalYear(Date.parse(yearCombo.getValue()));
 
-        form.add(budgetNoField, nameField, typeCombo, amountField, noteField);
+			BudgetDetail dtl = new BudgetDetail();
+			dtl.setId(Long.parseLong(budgetNoField.getValue()));
+			dtl.setName(nameField.getValue());
+			dtl.setType(typeCombo.getValue());
+			dtl.setTotalBudget(new BigInteger(amountField.getValue().toString()));
+			dtl.setNote(noteField.getValue());
+			dto.setDetails(List.of(dtl));
 
-        Button saveBtn = new Button("Save", e -> {
-            if (budgetNoField.getValue().isBlank() || nameField.getValue().isBlank()) {
-                Notification.show("Code and Name are required", 3000, Notification.Position.TOP_CENTER);
-                return;
-            }
+			try {
+				budgetService.addOrUpdateBudget(dto);
+				Notification.show("Budget saved successfully", 3000, Notification.Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				dialog.close();
+				refreshBudgets();
+			} catch (Exception ex) {
+				Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-            Budget dto = new Budget();
-            Department deptDto = new Department();
-            deptDto.setCode(dept.getCode());
-            deptDto.setName(dept.getName());
-            dto.setDepartment(deptDto);
-            // dto.setFiscalYear(Date.parse(yearCombo.getValue()));
+		Button cancelBtn = new Button("Cancel", ev -> dialog.close());
 
-            BudgetDetail dtl = new BudgetDetail();
-            dtl.setId(Long.parseLong(budgetNoField.getValue()));
-            dtl.setName(nameField.getValue());
-            dtl.setType(typeCombo.getValue());
-            dtl.setTotalBudget(new BigInteger(amountField.getValue().toString()));
-            dtl.setNote(noteField.getValue());
-            dto.setDetails(List.of(dtl));
+		dialog.add(form);
+		dialog.getFooter().add(cancelBtn, saveBtn);
+		dialog.open();
+	}
 
-            try {
-                budgetService.addOrUpdateBudget(dto);
-                Notification.show("Budget saved successfully", 3000, Notification.Position.TOP_CENTER)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                dialog.close();
-                refreshBudgets();
-            } catch (Exception ex) {
-                Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+	private void refreshBudgets() {
+		Department dept = deptCombo.getValue();
+		String year = yearCombo.getValue();
 
-        Button cancelBtn = new Button("Cancel", ev -> dialog.close());
+		if (dept == null || year == null) {
+			return;
+		}
 
-        dialog.add(form);
-        dialog.getFooter().add(cancelBtn, saveBtn);
-        dialog.open();
-    }
+		try {
+			List<BudgetDetail> res = budgetService.getBudgetsDetail(dept.getCode(), year);
+			if (res != null) {
+				budgetDetails.clear();
+				budgetDetails.addAll(res);
+				grid.setItems(budgetDetails);
+			} else {
+				grid.setItems(List.of());
+			}
+		} catch (Exception ex) {
+			grid.setItems(List.of());
+		}
+	}
 }

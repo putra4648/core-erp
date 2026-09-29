@@ -12,31 +12,35 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class CustomerService implements BaseService<Customer> {
-    private final CustomerRepository customerRepository;
+	private final CustomerRepository customerRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+	public CustomerService(CustomerRepository customerRepository) {
+		this.customerRepository = customerRepository;
+	}
 
-    public void save(Customer customer) {
-        customerRepository.persist(customer);
-    }
+	@Override
+	public void delete(Long id) {
+		customerRepository.deleteById(id);
+	}
 
-    public List<Customer> findAll(Customer c, Page page) {
-        return customerRepository.findAll().list();
-    }
+	@Override
+	public List<Customer> findAll(Customer c, Page page) {
+		return customerRepository.findAll().list();
+	}
 
-    public void update(Customer customer) {
-        customerRepository.update("code = ?1, name = ?2, contactPerson = ?3 WHERE id = ?4",
-                customer.getCode(), customer.getName(), customer.getContactPerson(),
-                customer.getId());
-    }
+	@Override
+	public Customer findById(Long id) {
+		return customerRepository.findById(id);
+	}
 
-    public Customer findById(Long id) {
-        return customerRepository.findById(id);
-    }
+	@Override
+	public void save(Customer customer) {
+		customerRepository.persist(customer);
+	}
 
-    public void delete(Long id) {
-        customerRepository.deleteById(id);
-    }
+	@Override
+	public void update(Customer customer) {
+		customerRepository.update("code = ?1, name = ?2 WHERE id = ?3", customer.getCode(), customer.getName(),
+				customer.getId());
+	}
 }

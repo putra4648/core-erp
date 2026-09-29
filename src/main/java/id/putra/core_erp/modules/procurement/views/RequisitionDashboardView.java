@@ -29,125 +29,114 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class RequisitionDashboardView extends VerticalLayout {
 
-    private final DashboardService dashboardService;
-    private final RequisitionRepo requisitionRepo;
-    private final QuotationRepo rfqRepo;
-    private final SupplierRepo supplierRepo;
-    private final ItemRepo itemRepo;
+	private final DashboardService dashboardService;
+	private final ItemRepo itemRepo;
+	private final RequisitionRepo requisitionRepo;
+	private final QuotationRepo rfqRepo;
+	private final SupplierRepo supplierRepo;
 
-    public RequisitionDashboardView(DashboardService dashboardService,
-            RequisitionRepo requisitionRepo,
-            QuotationRepo rfqRepo,
-            SupplierRepo supplierRepo,
-            ItemRepo itemRepo) {
-        this.dashboardService = dashboardService;
-        this.requisitionRepo = requisitionRepo;
-        this.rfqRepo = rfqRepo;
-        this.supplierRepo = supplierRepo;
-        this.itemRepo = itemRepo;
+	public RequisitionDashboardView(DashboardService dashboardService, RequisitionRepo requisitionRepo,
+			QuotationRepo rfqRepo, SupplierRepo supplierRepo, ItemRepo itemRepo) {
+		this.dashboardService = dashboardService;
+		this.requisitionRepo = requisitionRepo;
+		this.rfqRepo = rfqRepo;
+		this.supplierRepo = supplierRepo;
+		this.itemRepo = itemRepo;
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        H2 header = new H2("Overview Dashboard");
-        header.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Margin.Bottom.MEDIUM);
+		H2 header = new H2("Overview Dashboard");
+		header.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Margin.Bottom.MEDIUM);
 
-        add(header, createStatsGrid(), createSpendersSection());
-    }
+		add(header, createStatsGrid(), createSpendersSection());
+	}
 
-    private Component createStatsGrid() {
-        HorizontalLayout stats = new HorizontalLayout();
-        stats.setWidthFull();
-        stats.setSpacing(true);
+	private Component createSpendersSection() {
+		VerticalLayout section = new VerticalLayout();
+		section.setPadding(true);
+		section.setSizeFull();
+		section.getStyle().set("background", "#ffffff").set("border-radius", "12px")
+				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)").set("border", "1px solid #e2e8f0");
 
-        long prCount = requisitionRepo.count();
-        long rfqCount = rfqRepo.count();
-        long supplierCount = supplierRepo.count();
-        long itemCount = itemRepo.count();
+		H3 title = new H3("Top Department Spenders");
+		title.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);
 
-        stats.add(
-                createStatCard("Total Requisitions", String.valueOf(prCount), VaadinIcon.FILE_TEXT, "#2563eb",
-                        "#dbeafe"),
-                createStatCard("Active RFQs", String.valueOf(rfqCount), VaadinIcon.SCALE, "#059669", "#d1fae5"),
-                createStatCard("Registered Suppliers", String.valueOf(supplierCount), VaadinIcon.TRUCK, "#d97706",
-                        "#fef3c7"),
-                createStatCard("Catalog Items", String.valueOf(itemCount), VaadinIcon.PACKAGE, "#7c3aed", "#ede9fe"));
+		Grid<Map<String, Object>> grid = new Grid<>();
+		grid.addColumn(map -> map.getOrDefault("dept_name", "-")).setHeader("Department").setFlexGrow(2);
+		grid.addColumn(map -> map.getOrDefault("total_amount", "0")).setHeader("Total Spend").setFlexGrow(1);
+		grid.addColumn(map -> map.getOrDefault("count_pr", "0")).setHeader("Requisitions Count").setFlexGrow(1);
 
-        return stats;
-    }
+		try {
+			var response = dashboardService.getAllSpender();
+			if (response != null) {
+				grid.setItems(response);
+			}
+		} catch (Exception ex) {
+			// handle gracefully
+		}
 
-    private Component createStatCard(String title, String value, VaadinIcon iconType, String iconColor,
-            String bgColor) {
-        VerticalLayout card = new VerticalLayout();
-        card.setPadding(true);
-        card.setSpacing(false);
-        card.getStyle()
-                .set("background", "#ffffff")
-                .set("border-radius", "12px")
-                .set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)")
-                .set("border", "1px solid #e2e8f0");
+		section.add(title, grid);
+		return section;
+	}
 
-        HorizontalLayout topRow = new HorizontalLayout();
-        topRow.setWidthFull();
-        topRow.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        topRow.setAlignItems(FlexComponent.Alignment.CENTER);
+	private Component createStatCard(String title, String value, VaadinIcon iconType, String iconColor,
+			String bgColor) {
+		VerticalLayout card = new VerticalLayout();
+		card.setPadding(true);
+		card.setSpacing(false);
+		card.getStyle().set("background", "#ffffff").set("border-radius", "12px")
+				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)")
+				.set("border", "1px solid #e2e8f0");
 
-        Span titleSpan = new Span(title);
-        titleSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.FontWeight.MEDIUM,
-                LumoUtility.TextColor.SECONDARY);
+		HorizontalLayout topRow = new HorizontalLayout();
+		topRow.setWidthFull();
+		topRow.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+		topRow.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        Icon icon = iconType.create();
-        icon.setSize("20px");
-        icon.setColor(iconColor);
+		Span titleSpan = new Span(title);
+		titleSpan.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.FontWeight.MEDIUM,
+				LumoUtility.TextColor.SECONDARY);
 
-        HorizontalLayout iconWrapper = new HorizontalLayout(icon);
-        iconWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
-        iconWrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-        iconWrapper.getStyle()
-                .set("background", bgColor)
-                .set("border-radius", "8px")
-                .set("width", "36px")
-                .set("height", "36px");
+		Icon icon = iconType.create();
+		icon.setSize("20px");
+		icon.setColor(iconColor);
 
-        topRow.add(titleSpan, iconWrapper);
+		HorizontalLayout iconWrapper = new HorizontalLayout(icon);
+		iconWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
+		iconWrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+		iconWrapper.getStyle().set("background", bgColor).set("border-radius", "8px").set("width", "36px").set("height",
+				"36px");
 
-        Span valSpan = new Span(value);
-        valSpan.addClassNames(LumoUtility.FontSize.XXLARGE, LumoUtility.FontWeight.BOLD, LumoUtility.TextColor.HEADER);
-        valSpan.getStyle().set("margin-top", "12px");
+		topRow.add(titleSpan, iconWrapper);
 
-        card.add(topRow, valSpan);
-        return card;
-    }
+		Span valSpan = new Span(value);
+		valSpan.addClassNames(LumoUtility.FontSize.XXLARGE, LumoUtility.FontWeight.BOLD, LumoUtility.TextColor.HEADER);
+		valSpan.getStyle().set("margin-top", "12px");
 
-    private Component createSpendersSection() {
-        VerticalLayout section = new VerticalLayout();
-        section.setPadding(true);
-        section.setSizeFull();
-        section.getStyle()
-                .set("background", "#ffffff")
-                .set("border-radius", "12px")
-                .set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)")
-                .set("border", "1px solid #e2e8f0");
+		card.add(topRow, valSpan);
+		return card;
+	}
 
-        H3 title = new H3("Top Department Spenders");
-        title.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);
+	private Component createStatsGrid() {
+		HorizontalLayout stats = new HorizontalLayout();
+		stats.setWidthFull();
+		stats.setSpacing(true);
 
-        Grid<Map<String, Object>> grid = new Grid<>();
-        grid.addColumn(map -> map.getOrDefault("dept_name", "-")).setHeader("Department").setFlexGrow(2);
-        grid.addColumn(map -> map.getOrDefault("total_amount", "0")).setHeader("Total Spend").setFlexGrow(1);
-        grid.addColumn(map -> map.getOrDefault("count_pr", "0")).setHeader("Requisitions Count").setFlexGrow(1);
+		long prCount = requisitionRepo.count();
+		long rfqCount = rfqRepo.count();
+		long supplierCount = supplierRepo.count();
+		long itemCount = itemRepo.count();
 
-        try {
-            var response = dashboardService.getAllSpender();
-            if (response != null) {
-                grid.setItems(response);
-            }
-        } catch (Exception ex) {
-            // handle gracefully
-        }
+		stats.add(
+				createStatCard("Total Requisitions", String.valueOf(prCount), VaadinIcon.FILE_TEXT, "#2563eb",
+						"#dbeafe"),
+				createStatCard("Active RFQs", String.valueOf(rfqCount), VaadinIcon.SCALE, "#059669", "#d1fae5"),
+				createStatCard("Registered Suppliers", String.valueOf(supplierCount), VaadinIcon.TRUCK, "#d97706",
+						"#fef3c7"),
+				createStatCard("Catalog Items", String.valueOf(itemCount), VaadinIcon.PACKAGE, "#7c3aed", "#ede9fe"));
 
-        section.add(title, grid);
-        return section;
-    }
+		return stats;
+	}
 }

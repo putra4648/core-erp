@@ -12,29 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class ShippingService implements BaseService<Shipment> {
-    private final ShipmentRepository shipmentRepository;
+	private final ShipmentRepository shipmentRepository;
 
-    public ShippingService(ShipmentRepository shipmentRepository) {
-        this.shipmentRepository = shipmentRepository;
-    }
+	public ShippingService(ShipmentRepository shipmentRepository) {
+		this.shipmentRepository = shipmentRepository;
+	}
 
-    public void save(Shipment dto) {
-        shipmentRepository.persist(dto);
-    }
+	@Override
+	public void delete(Long id) {
+		shipmentRepository.deleteById(id);
+	}
 
-    public Shipment findById(Long id) {
-        return shipmentRepository.findById(id);
-    }
+	@Override
+	public List<Shipment> findAll(Shipment s, Page p) {
+		return shipmentRepository.findAll().list();
+	}
 
-    public void update(Shipment dto) {
-        shipmentRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public Shipment findById(Long id) {
+		return shipmentRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        shipmentRepository.deleteById(id);
-    }
+	@Override
+	public void save(Shipment dto) {
+		shipmentRepository.persist(dto);
+	}
 
-    public List<Shipment> findAll(Shipment s, Page p) {
-        return shipmentRepository.findAll().list();
-    }
+	@Override
+	public void update(Shipment dto) {
+		shipmentRepository.getEntityManager().merge(dto);
+	}
 }

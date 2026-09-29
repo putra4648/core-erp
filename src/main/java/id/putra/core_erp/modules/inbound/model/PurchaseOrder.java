@@ -20,79 +20,79 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class PurchaseOrder {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String poNumber;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private Date orderDate;
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+	private String poNumber;
 
-    private Date orderDate;
+	@OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<PurchaseOrderLine> purchaseOrderLines;
 
-    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PurchaseOrderLine> purchaseOrderLines;
+	@OneToMany(mappedBy = "purchaseOrder")
+	private List<Receiving> receivings;
 
-    @OneToMany(mappedBy = "purchaseOrder")
-    private List<Receiving> receivings;
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
+	@ManyToOne
+	@JoinColumn(name = "supplier_id")
+	private Supplier supplier;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Date getOrderDate() {
+		return orderDate;
+	}
 
-    public String getPoNumber() {
-        return poNumber;
-    }
+	public String getPoNumber() {
+		return poNumber;
+	}
 
-    public void setPoNumber(String poNumber) {
-        this.poNumber = poNumber;
-    }
+	public List<PurchaseOrderLine> getPurchaseOrderLines() {
+		return purchaseOrderLines;
+	}
 
-    public OrderStatus getStatus() {
-        return status;
-    }
+	public List<Receiving> getReceivings() {
+		return receivings;
+	}
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
+	public OrderStatus getStatus() {
+		return status;
+	}
 
-    public Date getOrderDate() {
-        return orderDate;
-    }
+	public Supplier getSupplier() {
+		return supplier;
+	}
 
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public List<PurchaseOrderLine> getPurchaseOrderLines() {
-        return purchaseOrderLines;
-    }
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
 
-    public void setPurchaseOrderLines(List<PurchaseOrderLine> purchaseOrderLines) {
-        this.purchaseOrderLines = purchaseOrderLines;
-    }
+	public void setPoNumber(String poNumber) {
+		this.poNumber = poNumber;
+	}
 
-    public List<Receiving> getReceivings() {
-        return receivings;
-    }
+	public void setPurchaseOrderLines(List<PurchaseOrderLine> purchaseOrderLines) {
+		this.purchaseOrderLines = purchaseOrderLines;
+	}
 
-    public void setReceivings(List<Receiving> receivings) {
-        this.receivings = receivings;
-    }
+	public void setReceivings(List<Receiving> receivings) {
+		this.receivings = receivings;
+	}
 
-    public Supplier getSupplier() {
-        return supplier;
-    }
+	public void setStatus(OrderStatus status) {
+		this.status = status;
+	}
 
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
-    }
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
+	}
 }

@@ -20,70 +20,70 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class Receiving {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String receivingNumber = UUID.randomUUID().toString();
-    private Date receivedDate;
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+	@ManyToOne
+	@JoinColumn(name = "purchase_order_id")
+	private PurchaseOrder purchaseOrder;
+	private Date receivedDate;
+	@OneToMany(mappedBy = "receiving", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ReceivingLine> receivingLines;
 
-    @OneToMany(mappedBy = "receiving", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReceivingLine> receivingLines;
+	private String receivingNumber = UUID.randomUUID().toString();
 
-    // @CreatedBy
-    // private String receivedBy;
+	// @CreatedBy
+	// private String receivedBy;
 
-    @ManyToOne
-    @JoinColumn(name = "purchase_order_id")
-    private PurchaseOrder purchaseOrder;
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public PurchaseOrder getPurchaseOrder() {
+		return purchaseOrder;
+	}
 
-    public String getReceivingNumber() {
-        return receivingNumber;
-    }
+	public Date getReceivedDate() {
+		return receivedDate;
+	}
 
-    public void setReceivingNumber(String receivingNumber) {
-        this.receivingNumber = receivingNumber;
-    }
+	public List<ReceivingLine> getReceivingLines() {
+		return receivingLines;
+	}
 
-    public Date getReceivedDate() {
-        return receivedDate;
-    }
+	public String getReceivingNumber() {
+		return receivingNumber;
+	}
 
-    public void setReceivedDate(Date receivedDate) {
-        this.receivedDate = receivedDate;
-    }
+	public OrderStatus getStatus() {
+		return status;
+	}
 
-    public OrderStatus getStatus() {
-        return status;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
+	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+		this.purchaseOrder = purchaseOrder;
+	}
 
-    public List<ReceivingLine> getReceivingLines() {
-        return receivingLines;
-    }
+	public void setReceivedDate(Date receivedDate) {
+		this.receivedDate = receivedDate;
+	}
 
-    public void setReceivingLines(List<ReceivingLine> receivingLines) {
-        this.receivingLines = receivingLines;
-    }
+	public void setReceivingLines(List<ReceivingLine> receivingLines) {
+		this.receivingLines = receivingLines;
+	}
 
-    public PurchaseOrder getPurchaseOrder() {
-        return purchaseOrder;
-    }
+	public void setReceivingNumber(String receivingNumber) {
+		this.receivingNumber = receivingNumber;
+	}
 
-    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-        this.purchaseOrder = purchaseOrder;
-    }
+	public void setStatus(OrderStatus status) {
+		this.status = status;
+	}
 }

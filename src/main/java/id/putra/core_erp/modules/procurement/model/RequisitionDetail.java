@@ -19,166 +19,166 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "requisition_detail")
 public class RequisitionDetail extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+	@Column(name = "description")
+	private String description;
 
-    @Column(name = "name")
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private String id;
 
-    @Column(name = "item_number")
-    private String itemNumber;
+	@Column(name = "item_number")
+	private String itemNumber;
 
-    @Column(name = "description")
-    private String description;
+	@Column(name = "name")
+	private String name;
 
-    @Column(name = "note")
-    private String note;
+	@Column(name = "note")
+	private String note;
 
-    // Only path
-    @Column(name = "spec_files")
-    private List<String> specFiles;
+	@Column(name = "qty")
+	private BigInteger qty;
 
-    @Column(name = "uom")
-    private String uom;
+	@ManyToOne
+	@JoinColumn(name = "requisition_id", referencedColumnName = "id")
+	private Requisition requisition;
 
-    @Column(name = "qty")
-    private BigInteger qty;
+	@ManyToOne
+	@JoinColumn(name = "rfq_id", referencedColumnName = "id")
+	private Quotation rfq;
 
-    @Column(name = "unit_price")
-    private BigDecimal unitPrice;
+	// Only path
+	@Column(name = "spec_files")
+	private List<String> specFiles;
 
-    @Column(name = "supplier")
-    private String supplier;
+	private BigDecimal subtotal;
 
-    private BigDecimal subtotal;
+	@Formula("qty * currency")
+	@Column(name = "sub_total")
+	private BigInteger subTotal;
 
-    // @ManyToOne
-    // @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
-    // private Supplier supplier;
+	// @ManyToOne
+	// @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
+	// private Supplier supplier;
 
-    @Formula("qty * currency")
-    @Column(name = "sub_total")
-    private BigInteger subTotal;
+	@Column(name = "supplier")
+	private String supplier;
 
-    @ManyToOne
-    @JoinColumn(name = "requisition_id", referencedColumnName = "id")
-    private Requisition requisition;
+	@Column(name = "unit_price")
+	private BigDecimal unitPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "rfq_id", referencedColumnName = "id")
-    private Quotation rfq;
+	@Column(name = "uom")
+	private String uom;
 
-    public String getId() {
-        return id;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getItemNumber() {
+		return itemNumber;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getItemNumber() {
-        return itemNumber;
-    }
+	public String getNote() {
+		return note;
+	}
 
-    public void setItemNumber(String itemNumber) {
-        this.itemNumber = itemNumber;
-    }
+	public BigInteger getQty() {
+		return qty;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public Requisition getRequisition() {
+		return requisition;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public Quotation getRfq() {
+		return rfq;
+	}
 
-    public String getNote() {
-        return note;
-    }
+	public List<String> getSpecFiles() {
+		return specFiles;
+	}
 
-    public void setNote(String note) {
-        this.note = note;
-    }
+	public BigDecimal getSubtotal() {
+		return subtotal;
+	}
 
-    public List<String> getSpecFiles() {
-        return specFiles;
-    }
+	public BigInteger getSubTotal() {
+		return subTotal;
+	}
 
-    public void setSpecFiles(List<String> specFiles) {
-        this.specFiles = specFiles;
-    }
+	public String getSupplier() {
+		return supplier;
+	}
 
-    public String getUom() {
-        return uom;
-    }
+	public BigDecimal getUnitPrice() {
+		return unitPrice;
+	}
 
-    public void setUom(String uom) {
-        this.uom = uom;
-    }
+	public String getUom() {
+		return uom;
+	}
 
-    public BigInteger getQty() {
-        return qty;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setQty(BigInteger qty) {
-        this.qty = qty;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
+	public void setItemNumber(String itemNumber) {
+		this.itemNumber = itemNumber;
+	}
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getSupplier() {
-        return supplier;
-    }
+	public void setNote(String note) {
+		this.note = note;
+	}
 
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
-    }
+	public void setQty(BigInteger qty) {
+		this.qty = qty;
+	}
 
-    public BigInteger getSubTotal() {
-        return subTotal;
-    }
+	public void setRequisition(Requisition requisition) {
+		this.requisition = requisition;
+	}
 
-    public void setSubTotal(BigInteger subTotal) {
-        this.subTotal = subTotal;
-    }
+	public void setRfq(Quotation rfq) {
+		this.rfq = rfq;
+	}
 
-    public Requisition getRequisition() {
-        return requisition;
-    }
+	public void setSpecFiles(List<String> specFiles) {
+		this.specFiles = specFiles;
+	}
 
-    public void setRequisition(Requisition requisition) {
-        this.requisition = requisition;
-    }
+	public void setSubtotal(BigDecimal subtotal) {
+		this.subtotal = subtotal;
+	}
 
-    public Quotation getRfq() {
-        return rfq;
-    }
+	public void setSubTotal(BigInteger subTotal) {
+		this.subTotal = subTotal;
+	}
 
-    public void setRfq(Quotation rfq) {
-        this.rfq = rfq;
-    }
+	public void setSupplier(String supplier) {
+		this.supplier = supplier;
+	}
 
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
+	public void setUnitPrice(BigDecimal unitPrice) {
+		this.unitPrice = unitPrice;
+	}
 
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
-    }
+	public void setUom(String uom) {
+		this.uom = uom;
+	}
 
 }

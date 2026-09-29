@@ -12,44 +12,44 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class Carrier {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private String name;
-  private String serviceType;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String name;
+	private String serviceType;
 
-  @OneToMany(mappedBy = "carrier")
-  private List<Shipment> shipments;
+	@OneToMany(mappedBy = "carrier")
+	private List<Shipment> shipments;
 
-  public Long getId() {
-    return id;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	public String getName() {
+		return name;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public String getServiceType() {
+		return serviceType;
+	}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+	public List<Shipment> getShipments() {
+		return shipments;
+	}
 
-  public String getServiceType() {
-    return serviceType;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public void setServiceType(String serviceType) {
-    this.serviceType = serviceType;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-  public List<Shipment> getShipments() {
-    return shipments;
-  }
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
 
-  public void setShipments(List<Shipment> shipments) {
-    this.shipments = shipments;
-  }
+	public void setShipments(List<Shipment> shipments) {
+		this.shipments = shipments;
+	}
 }

@@ -33,132 +33,132 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class SupplierView extends VerticalLayout {
 
-    private final SupplierService supplierService;
+	private final Grid<Supplier> grid = new Grid<>();
 
-    private final TextField searchField = new TextField();
-    private final ComboBox<String> statusFilter = new ComboBox<>();
-    private final Grid<Supplier> grid = new Grid<>();
-    private final List<Supplier> supplierList = new ArrayList<>();
+	private final TextField searchField = new TextField();
+	private final ComboBox<String> statusFilter = new ComboBox<>();
+	private final List<Supplier> supplierList = new ArrayList<>();
+	private final SupplierService supplierService;
 
-    public SupplierView(SupplierService supplierService) {
-        this.supplierService = supplierService;
+	public SupplierView(SupplierService supplierService) {
+		this.supplierService = supplierService;
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        H2 header = new H2("Supplier Directory");
-        header.addClassNames(LumoUtility.FontSize.XLARGE);
+		H2 header = new H2("Supplier Directory");
+		header.addClassNames(LumoUtility.FontSize.XLARGE);
 
-        Button addBtn = new Button("Add Supplier", VaadinIcon.PLUS.create(), e -> openSupplierDialog(null));
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button addBtn = new Button("Add Supplier", VaadinIcon.PLUS.create(), e -> openSupplierDialog(null));
+		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        searchField.setPlaceholder("Search suppliers...");
-        searchField.setClearButtonVisible(true);
-        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        searchField.setWidth("280px");
-        searchField.addValueChangeListener(e -> refreshGrid());
+		searchField.setPlaceholder("Search suppliers...");
+		searchField.setClearButtonVisible(true);
+		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+		searchField.setWidth("280px");
+		searchField.addValueChangeListener(e -> refreshGrid());
 
-        statusFilter.setPlaceholder("Status");
-        statusFilter.setItems("ACTIVE", "INACTIVE");
-        statusFilter.setValue("ACTIVE");
-        statusFilter.setWidth("140px");
-        statusFilter.addValueChangeListener(e -> refreshGrid());
+		statusFilter.setPlaceholder("Status");
+		statusFilter.setItems("ACTIVE", "INACTIVE");
+		statusFilter.setValue("ACTIVE");
+		statusFilter.setWidth("140px");
+		statusFilter.addValueChangeListener(e -> refreshGrid());
 
-        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshGrid());
+		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshGrid());
 
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, statusFilter, addBtn, refreshBtn);
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+		HorizontalLayout toolbar = new HorizontalLayout(searchField, statusFilter, addBtn, refreshBtn);
+		toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        configureGrid();
+		configureGrid();
 
-        add(header, toolbar, grid);
-        refreshGrid();
-    }
+		add(header, toolbar, grid);
+		refreshGrid();
+	}
 
-    private void configureGrid() {
-        grid.setSizeFull();
+	private void configureGrid() {
+		grid.setSizeFull();
 
-        grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(2);
-        grid.addColumn(s -> s.getPhone() != null ? s.getPhone() : "-").setHeader("Phone").setFlexGrow(1);
+		grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(2);
+		grid.addColumn(s -> s.getPhone() != null ? s.getPhone() : "-").setHeader("Phone").setFlexGrow(1);
 
-        grid.addComponentColumn(s -> {
-            Button editBtn = new Button("Edit", VaadinIcon.EDIT.create(), e -> openSupplierDialog(s));
-            editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+		grid.addComponentColumn(s -> {
+			Button editBtn = new Button("Edit", VaadinIcon.EDIT.create(), e -> openSupplierDialog(s));
+			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
-            HorizontalLayout actions = new HorizontalLayout(editBtn);
-            return actions;
-        }).setHeader("Actions").setAutoWidth(true);
-    }
+			HorizontalLayout actions = new HorizontalLayout(editBtn);
+			return actions;
+		}).setHeader("Actions").setAutoWidth(true);
+	}
 
-    private void refreshGrid() {
-        try {
-            var params = new Supplier();
-            params.setName(searchField.getValue());
+	private void openSupplierDialog(Supplier editSupplier) {
+		Dialog dialog = new Dialog();
+		dialog.setHeaderTitle(editSupplier == null ? "Add Supplier" : "Edit Supplier");
+		dialog.setWidth("600px");
 
-            List<Supplier> res = supplierService.findAll(params, Page.ofSize(100));
-            supplierList.clear();
-            if (res != null) {
-                supplierList.addAll(res);
-            }
-            grid.setItems(supplierList);
-        } catch (Exception ex) {
-            Notification.show("Failed to load suppliers: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
+		FormLayout form = new FormLayout();
+		TextField nameField = new TextField("Supplier Name");
+		nameField.setRequired(true);
+		TextField phoneField = new TextField("Phone");
 
-    private void openSupplierDialog(Supplier editSupplier) {
-        Dialog dialog = new Dialog();
-        dialog.setHeaderTitle(editSupplier == null ? "Add Supplier" : "Edit Supplier");
-        dialog.setWidth("600px");
+		if (editSupplier != null) {
+			nameField.setValue(editSupplier.getName() != null ? editSupplier.getName() : "");
+		}
 
-        FormLayout form = new FormLayout();
-        TextField nameField = new TextField("Supplier Name");
-        nameField.setRequired(true);
-        TextField phoneField = new TextField("Phone");
+		form.add(nameField, phoneField);
 
-        if (editSupplier != null) {
-            nameField.setValue(editSupplier.getName() != null ? editSupplier.getName() : "");
-        }
+		Button saveBtn = new Button("Save", e -> {
+			if (nameField.getValue().isBlank()) {
+				Notification.show("Name is required", 3000, Notification.Position.TOP_CENTER);
+				return;
+			}
 
-        form.add(nameField, phoneField);
+			Supplier dto = new Supplier();
+			dto.setName(nameField.getValue());
+			dto.setPhone(phoneField.getValue());
+			dto.setType(TypeEnum.TRADE);
 
-        Button saveBtn = new Button("Save", e -> {
-            if (nameField.getValue().isBlank()) {
-                Notification.show("Name is required", 3000, Notification.Position.TOP_CENTER);
-                return;
-            }
+			try {
+				if (editSupplier == null) {
+					supplierService.save(dto);
+					Notification.show("Supplier added successfully", 3000, Notification.Position.TOP_CENTER)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				} else {
+					dto.setId(editSupplier.getId());
+					supplierService.update(dto);
+					Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_CENTER)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				}
+				dialog.close();
+				refreshGrid();
+			} catch (Exception ex) {
+				Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-            Supplier dto = new Supplier();
-            dto.setName(nameField.getValue());
-            dto.setPhone(phoneField.getValue());
-            dto.setType(TypeEnum.TRADE);
+		Button cancelBtn = new Button("Cancel", e -> dialog.close());
 
-            try {
-                if (editSupplier == null) {
-                    supplierService.save(dto);
-                    Notification.show("Supplier added successfully", 3000, Notification.Position.TOP_CENTER)
-                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                } else {
-                    dto.setId(editSupplier.getId());
-                    supplierService.update(dto);
-                    Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_CENTER)
-                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                }
-                dialog.close();
-                refreshGrid();
-            } catch (Exception ex) {
-                Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		dialog.add(form);
+		dialog.getFooter().add(cancelBtn, saveBtn);
+		dialog.open();
+	}
 
-        Button cancelBtn = new Button("Cancel", e -> dialog.close());
+	private void refreshGrid() {
+		try {
+			var params = new Supplier();
+			params.setName(searchField.getValue());
 
-        dialog.add(form);
-        dialog.getFooter().add(cancelBtn, saveBtn);
-        dialog.open();
-    }
+			List<Supplier> res = supplierService.findAll(params, Page.ofSize(100));
+			supplierList.clear();
+			if (res != null) {
+				supplierList.addAll(res);
+			}
+			grid.setItems(supplierList);
+		} catch (Exception ex) {
+			Notification.show("Failed to load suppliers: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		}
+	}
 }

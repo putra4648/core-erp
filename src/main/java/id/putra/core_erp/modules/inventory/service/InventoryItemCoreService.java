@@ -14,55 +14,59 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class InventoryItemCoreService implements BaseService<InventoryItem> {
-    private final InventoryItemRepository inventoryItemRepository;
+	private final InventoryItemRepository inventoryItemRepository;
 
-    public InventoryItemCoreService(InventoryItemRepository inventoryItemRepository) {
-        this.inventoryItemRepository = inventoryItemRepository;
-    }
+	public InventoryItemCoreService(InventoryItemRepository inventoryItemRepository) {
+		this.inventoryItemRepository = inventoryItemRepository;
+	}
 
-    public InventoryItem getInventoryItem(InventoryItem item) {
-        return inventoryItemRepository.findById(item.getId());
-    }
+	public void delete(List<InventoryItem> dtos) {
+		dtos.forEach(item -> inventoryItemRepository.deleteById(item.getId()));
+	}
 
-    public InventoryItem findById(Long id) {
-        return inventoryItemRepository.findById(id);
-    }
+	@Override
+	public void delete(Long id) {
+		inventoryItemRepository.deleteById(id);
+	}
 
-    public void save(InventoryItem entity) {
-        inventoryItemRepository.persist(entity);
-    }
+	@Override
+	public List<InventoryItem> findAll(InventoryItem item, Page p) {
+		return inventoryItemRepository.findAll().list();
+	}
 
-    public List<InventoryItem> findAll(InventoryItem item, Page p) {
-        return inventoryItemRepository.findAll().list();
-    }
+	@Override
+	public InventoryItem findById(Long id) {
+		return inventoryItemRepository.findById(id);
+	}
 
-    public void save(List<InventoryItem> items) {
-        inventoryItemRepository.persist(items);
-    }
+	public InventoryItem getInventoryItem(InventoryItem item) {
+		return inventoryItemRepository.findById(item.getId());
+	}
 
-    public void update(List<InventoryItem> dtos) {
-        dtos.forEach(item -> inventoryItemRepository.getEntityManager().merge(item));
-    }
+	public DataProvider<InventoryItem, Void> getInventoryItems(String value, Page page) {
+		String pattern = "%" + (value == null ? "" : value.trim().toLowerCase()) + "%";
+		return DataProvider.fromCallbacks(
+				query -> inventoryItemRepository.find("lower(name) like ?1", pattern)
+						.page(Page.of(query.getOffset() / query.getLimit(), query.getLimit())).list().stream(),
+				query -> Math.toIntExact(inventoryItemRepository.count("lower(name) like ?1", pattern)));
+	}
 
-    public void update(InventoryItem entity) {
-        inventoryItemRepository.getEntityManager().merge(entity);
-    }
+	@Override
+	public void save(InventoryItem entity) {
+		inventoryItemRepository.persist(entity);
+	}
 
-    public void delete(List<InventoryItem> dtos) {
-        dtos.forEach(item -> inventoryItemRepository.deleteById(item.getId()));
-    }
+	public void save(List<InventoryItem> items) {
+		inventoryItemRepository.persist(items);
+	}
 
-    public void delete(Long id) {
-        inventoryItemRepository.deleteById(id);
-    }
+	@Override
+	public void update(InventoryItem entity) {
+		inventoryItemRepository.getEntityManager().merge(entity);
+	}
 
-    public DataProvider<InventoryItem, Void> getInventoryItems(String value, Page page) {
-        String pattern = "%" + (value == null ? "" : value.trim().toLowerCase()) + "%";
-        return DataProvider.fromCallbacks(
-                query -> inventoryItemRepository.find("lower(name) like ?1", pattern)
-                        .page(Page.of(query.getOffset() / query.getLimit(), query.getLimit()))
-                        .list().stream(),
-                query -> Math.toIntExact(inventoryItemRepository.count("lower(name) like ?1", pattern)));
-    }
+	public void update(List<InventoryItem> dtos) {
+		dtos.forEach(item -> inventoryItemRepository.getEntityManager().merge(item));
+	}
 
 }

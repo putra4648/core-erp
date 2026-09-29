@@ -12,29 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class PurchaseOrderService implements BaseService<PurchaseOrder> {
-    private final PurchaseOrderRepository purchaseOrderRepository;
+	private final PurchaseOrderRepository purchaseOrderRepository;
 
-    public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository) {
-        this.purchaseOrderRepository = purchaseOrderRepository;
-    }
+	public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository) {
+		this.purchaseOrderRepository = purchaseOrderRepository;
+	}
 
-    public void save(PurchaseOrder entity) {
-        purchaseOrderRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		purchaseOrderRepository.deleteById(id);
+	}
 
-    public PurchaseOrder findById(Long id) {
-        return purchaseOrderRepository.findById(id);
-    }
+	@Override
+	public List<PurchaseOrder> findAll(PurchaseOrder po, Page p) {
+		return purchaseOrderRepository.findAll().list();
+	}
 
-    public void update(PurchaseOrder dto) {
-        purchaseOrderRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public PurchaseOrder findById(Long id) {
+		return purchaseOrderRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        purchaseOrderRepository.deleteById(id);
-    }
+	@Override
+	public void save(PurchaseOrder entity) {
+		purchaseOrderRepository.persist(entity);
+	}
 
-    public List<PurchaseOrder> findAll(PurchaseOrder po, Page p) {
-        return purchaseOrderRepository.findAll().list();
-    }
+	@Override
+	public void update(PurchaseOrder dto) {
+		purchaseOrderRepository.getEntityManager().merge(dto);
+	}
 }

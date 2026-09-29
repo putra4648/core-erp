@@ -52,383 +52,374 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class RequisitionFormView extends VerticalLayout implements HasUrlParameter<String> {
 
-    private final RequisitionService requisitionService;
-    private final DepartmentRepo departmentRepo;
-    private final BudgetDetailRepo budgetDetailRepo;
-    private final ItemRepo itemRepo;
+	private final Button approveBtn = new Button("Approve");
+	private final Button backBtn = new Button("Back to Requisitions", VaadinIcon.ARROW_LEFT.create(),
+			e -> UI.getCurrent().navigate(RequisitionListView.class));
+	private final TextField budgetDetailIdField = new TextField("Budget Detail Reference ID");
+	private final BudgetDetailRepo budgetDetailRepo;
 
-    private Long requisitionId = null;
-    private String currentStatus = "DRAFT";
+	private String currentStatus = "DRAFT";
+	private final List<Department> departmentList = new ArrayList<>();
 
-    private final H2 titleHeader = new H2("Create Purchase Requisition");
-    private final TextField titleField = new TextField("PR Title");
-    private final ComboBox<Department> deptCombo = new ComboBox<>("Department");
-    private final DatePicker dueDatePicker = new DatePicker("Due Date");
-    private final TextField budgetDetailIdField = new TextField("Budget Detail Reference ID");
-    private final TextArea noteField = new TextArea("Requisition Notes / Justification");
+	private final DepartmentRepo departmentRepo;
+	private final ComboBox<Department> deptCombo = new ComboBox<>("Department");
+	private final DatePicker dueDatePicker = new DatePicker("Due Date");
+	private final Span grandTotalSpan = new Span("Total: IDR 0");
+	private final ItemRepo itemRepo;
+	private final Grid<RequisitionDetail> itemsGrid = new Grid<>();
 
-    private final Grid<RequisitionDetail> itemsGrid = new Grid<>();
-    private final List<RequisitionDetail> lineItems = new ArrayList<>();
-    private final List<Department> departmentList = new ArrayList<>();
-    private final Span grandTotalSpan = new Span("Total: IDR 0");
+	private final List<RequisitionDetail> lineItems = new ArrayList<>();
+	private final TextArea noteField = new TextArea("Requisition Notes / Justification");
+	private final Button rejectBtn = new Button("Reject");
+	private Long requisitionId = null;
 
-    private final Button saveDraftBtn = new Button("Save Draft");
-    private final Button submitBtn = new Button("Submit for Approval");
-    private final Button approveBtn = new Button("Approve");
-    private final Button rejectBtn = new Button("Reject");
-    private final Button backBtn = new Button("Back to Requisitions", VaadinIcon.ARROW_LEFT.create(),
-            e -> UI.getCurrent().navigate(RequisitionListView.class));
+	private final RequisitionService requisitionService;
+	private final Button saveDraftBtn = new Button("Save Draft");
+	private final Button submitBtn = new Button("Submit for Approval");
+	private final TextField titleField = new TextField("PR Title");
+	private final H2 titleHeader = new H2("Create Purchase Requisition");
 
-    public RequisitionFormView(RequisitionService requisitionService,
-            DepartmentRepo departmentRepo,
-            BudgetDetailRepo budgetDetailRepo,
-            ItemRepo itemRepo) {
-        this.requisitionService = requisitionService;
-        this.departmentRepo = departmentRepo;
-        this.budgetDetailRepo = budgetDetailRepo;
-        this.itemRepo = itemRepo;
+	public RequisitionFormView(RequisitionService requisitionService, DepartmentRepo departmentRepo,
+			BudgetDetailRepo budgetDetailRepo, ItemRepo itemRepo) {
+		this.requisitionService = requisitionService;
+		this.departmentRepo = departmentRepo;
+		this.budgetDetailRepo = budgetDetailRepo;
+		this.itemRepo = itemRepo;
 
-        departmentRepo.findAll().list().forEach(departmentList::add);
+		departmentRepo.findAll().list().forEach(departmentList::add);
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        HorizontalLayout topBar = new HorizontalLayout(backBtn);
-        topBar.setAlignItems(FlexComponent.Alignment.CENTER);
+		HorizontalLayout topBar = new HorizontalLayout(backBtn);
+		topBar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        add(topBar, titleHeader, createFormSection(), createItemsSection(), createActionButtons());
-    }
+		add(topBar, titleHeader, createFormSection(), createItemsSection(), createActionButtons());
+	}
 
-    @Override
-    public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
-        if (parameter != null && !parameter.isBlank()) {
-            this.requisitionId = Long.parseLong(parameter);
-            this.titleHeader.setText("Purchase Requisition: " + parameter);
-            loadRequisition(Long.parseLong(parameter));
-        } else {
-            this.requisitionId = null;
-            this.titleHeader.setText("Create Purchase Requisition");
-            dueDatePicker.setValue(LocalDate.now().plusDays(14));
-            // securityService.().ifPresent(u -> {
-            // if (u.getDepartment() != null) {
-            // deptCombo.setValue(u.getDepartment());
-            // }
-            // });
-        }
-    }
+	private HorizontalLayout createActionButtons() {
+		HorizontalLayout actions = new HorizontalLayout();
+		actions.setSpacing(true);
+		actions.addClassNames(LumoUtility.Margin.Top.MEDIUM);
 
-    private VerticalLayout createFormSection() {
-        VerticalLayout card = new VerticalLayout();
-        card.setPadding(true);
-        card.getStyle()
-                .set("background", "#ffffff")
-                .set("border-radius", "12px")
-                .set("border", "1px solid #e2e8f0");
+		saveDraftBtn.addClickListener(e -> saveRequisition(RequisitionStatus.DRAFT.getValue()));
 
-        FormLayout form = new FormLayout();
-        titleField.setRequired(true);
-        titleField.setWidthFull();
+		submitBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		submitBtn.addClickListener(e -> saveRequisition(RequisitionStatus.SEND.getValue()));
 
-        deptCombo.setItemLabelGenerator(d -> d.getCode() + " - " + d.getName());
-        deptCombo.setItems(departmentList);
-        deptCombo.setRequired(true);
+		approveBtn.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
+		approveBtn.addClickListener(e -> handleApproval(RequisitionStatus.APPROVED.getValue()));
+		approveBtn.setVisible(false);
 
-        budgetDetailIdField.setPlaceholder("e.g. 1");
-        budgetDetailIdField.setValue("1");
+		rejectBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+		rejectBtn.addClickListener(e -> openRejectDialog());
+		rejectBtn.setVisible(false);
 
-        form.add(titleField, deptCombo, dueDatePicker, budgetDetailIdField, noteField);
-        form.setColspan(titleField, 2);
-        form.setColspan(noteField, 2);
+		actions.add(saveDraftBtn, submitBtn, approveBtn, rejectBtn);
+		return actions;
+	}
 
-        card.add(form);
-        return card;
-    }
+	private VerticalLayout createFormSection() {
+		VerticalLayout card = new VerticalLayout();
+		card.setPadding(true);
+		card.getStyle().set("background", "#ffffff").set("border-radius", "12px").set("border", "1px solid #e2e8f0");
 
-    private VerticalLayout createItemsSection() {
-        VerticalLayout card = new VerticalLayout();
-        card.setPadding(true);
-        card.getStyle()
-                .set("background", "#ffffff")
-                .set("border-radius", "12px")
-                .set("border", "1px solid #e2e8f0");
+		FormLayout form = new FormLayout();
+		titleField.setRequired(true);
+		titleField.setWidthFull();
 
-        H3 itemsTitle = new H3("Line Items");
-        itemsTitle.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);
+		deptCombo.setItemLabelGenerator(d -> d.getCode() + " - " + d.getName());
+		deptCombo.setItems(departmentList);
+		deptCombo.setRequired(true);
 
-        Button addItemBtn = new Button("Add Item", VaadinIcon.PLUS.create(), e -> openAddItemDialog());
-        addItemBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
+		budgetDetailIdField.setPlaceholder("e.g. 1");
+		budgetDetailIdField.setValue("1");
 
-        HorizontalLayout itemsBar = new HorizontalLayout(itemsTitle, addItemBtn);
-        itemsBar.setWidthFull();
-        itemsBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        itemsBar.setAlignItems(FlexComponent.Alignment.CENTER);
+		form.add(titleField, deptCombo, dueDatePicker, budgetDetailIdField, noteField);
+		form.setColspan(titleField, 2);
+		form.setColspan(noteField, 2);
 
-        itemsGrid.setHeight("250px");
-        itemsGrid.addColumn(d -> d.getName() != null ? d.getName() : "-").setHeader("Item Name").setFlexGrow(2);
-        itemsGrid.addColumn(d -> d.getItemNumber() != null ? d.getItemNumber() : "-").setHeader("Item Code")
-                .setAutoWidth(true);
-        itemsGrid.addColumn(d -> d.getUom() != null ? d.getUom() : "PCS").setHeader("UOM").setAutoWidth(true);
-        itemsGrid.addColumn(d -> d.getQty() != null ? d.getQty().toString() : "1").setHeader("Qty").setAutoWidth(true);
-        itemsGrid.addColumn(d -> d.getUnitPrice() != null ? String.format("%,d", d.getUnitPrice()) : "0")
-                .setHeader("Unit Price").setFlexGrow(1);
-        itemsGrid.addColumn(d -> d.getSubtotal() != null ? String.format("%,d", d.getSubtotal()) : "0")
-                .setHeader("Subtotal").setFlexGrow(1);
+		card.add(form);
+		return card;
+	}
 
-        itemsGrid.addComponentColumn(item -> {
-            Button delBtn = new Button(VaadinIcon.TRASH.create(), e -> {
-                lineItems.remove(item);
-                itemsGrid.setItems(lineItems);
-                recalculateTotal();
-            });
-            delBtn.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
-            return delBtn;
-        }).setHeader("Action").setAutoWidth(true);
+	private VerticalLayout createItemsSection() {
+		VerticalLayout card = new VerticalLayout();
+		card.setPadding(true);
+		card.getStyle().set("background", "#ffffff").set("border-radius", "12px").set("border", "1px solid #e2e8f0");
 
-        grandTotalSpan.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.FontWeight.BOLD,
-                LumoUtility.Margin.Left.AUTO);
+		H3 itemsTitle = new H3("Line Items");
+		itemsTitle.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);
 
-        HorizontalLayout footer = new HorizontalLayout(grandTotalSpan);
-        footer.setWidthFull();
-        footer.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+		Button addItemBtn = new Button("Add Item", VaadinIcon.PLUS.create(), e -> openAddItemDialog());
+		addItemBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
 
-        card.add(itemsBar, itemsGrid, footer);
-        return card;
-    }
+		HorizontalLayout itemsBar = new HorizontalLayout(itemsTitle, addItemBtn);
+		itemsBar.setWidthFull();
+		itemsBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+		itemsBar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-    private HorizontalLayout createActionButtons() {
-        HorizontalLayout actions = new HorizontalLayout();
-        actions.setSpacing(true);
-        actions.addClassNames(LumoUtility.Margin.Top.MEDIUM);
+		itemsGrid.setHeight("250px");
+		itemsGrid.addColumn(d -> d.getName() != null ? d.getName() : "-").setHeader("Item Name").setFlexGrow(2);
+		itemsGrid.addColumn(d -> d.getItemNumber() != null ? d.getItemNumber() : "-").setHeader("Item Code")
+				.setAutoWidth(true);
+		itemsGrid.addColumn(d -> d.getUom() != null ? d.getUom() : "PCS").setHeader("UOM").setAutoWidth(true);
+		itemsGrid.addColumn(d -> d.getQty() != null ? d.getQty().toString() : "1").setHeader("Qty").setAutoWidth(true);
+		itemsGrid.addColumn(d -> d.getUnitPrice() != null ? String.format("%,d", d.getUnitPrice()) : "0")
+				.setHeader("Unit Price").setFlexGrow(1);
+		itemsGrid.addColumn(d -> d.getSubtotal() != null ? String.format("%,d", d.getSubtotal()) : "0")
+				.setHeader("Subtotal").setFlexGrow(1);
 
-        saveDraftBtn.addClickListener(e -> saveRequisition(RequisitionStatus.DRAFT.getValue()));
+		itemsGrid.addComponentColumn(item -> {
+			Button delBtn = new Button(VaadinIcon.TRASH.create(), e -> {
+				lineItems.remove(item);
+				itemsGrid.setItems(lineItems);
+				recalculateTotal();
+			});
+			delBtn.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+			return delBtn;
+		}).setHeader("Action").setAutoWidth(true);
 
-        submitBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        submitBtn.addClickListener(e -> saveRequisition(RequisitionStatus.SEND.getValue()));
+		grandTotalSpan.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.FontWeight.BOLD,
+				LumoUtility.Margin.Left.AUTO);
 
-        approveBtn.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
-        approveBtn.addClickListener(e -> handleApproval(RequisitionStatus.APPROVED.getValue()));
-        approveBtn.setVisible(false);
+		HorizontalLayout footer = new HorizontalLayout(grandTotalSpan);
+		footer.setWidthFull();
+		footer.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
-        rejectBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        rejectBtn.addClickListener(e -> openRejectDialog());
-        rejectBtn.setVisible(false);
+		card.add(itemsBar, itemsGrid, footer);
+		return card;
+	}
 
-        actions.add(saveDraftBtn, submitBtn, approveBtn, rejectBtn);
-        return actions;
-    }
+	private void handleApproval(String status) {
+		saveRequisition(status);
+	}
 
-    private void openAddItemDialog() {
-        Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Add Line Item");
-        dialog.setWidth("500px");
+	private void loadRequisition(Long id) {
 
-        FormLayout form = new FormLayout();
-        TextField nameField = new TextField("Item Name");
-        nameField.setRequired(true);
-        TextField itemNumberField = new TextField("Item Number / Code");
-        TextField uomField = new TextField("UOM");
-        uomField.setValue("PCS");
-        TextField qtyField = new TextField("Quantity");
-        qtyField.setValue("1");
-        TextField unitPriceField = new TextField("Unit Price");
-        unitPriceField.setValue("0");
-        TextArea descField = new TextArea("Description");
+		try {
+			Requisition r = requisitionService.findById(id);
+			if (r != null && r.getId() != null) {
+				this.currentStatus = r.getStatus() != null ? r.getStatus() : "DRAFT";
+				titleField.setValue(r.getTitle() != null ? r.getTitle() : "");
+				noteField.setValue(r.getNote() != null ? r.getNote() : "");
+				if (r.getBudget() != null) {
+					budgetDetailIdField.setValue(String.valueOf(r.getBudget().getId()));
+				}
+				// if (r.getDueDate() != null) {
+				// dueDatePicker.setValue(r.getDueDate());
+				// }
+				// if (r.getDepartment() != null && r.getDepartment().getDept_number() != null)
+				// {
+				// departmentRepo.findByDeptNumber(r.getDepartment().getDept_number()).ifPresent(deptCombo::setValue);
+				// }
 
-        form.add(nameField, itemNumberField, uomField, qtyField, unitPriceField, descField);
-        form.setColspan(descField, 2);
+				lineItems.clear();
+				if (r.getDetails() != null) {
+					lineItems.addAll(r.getDetails());
+				}
+				itemsGrid.setItems(lineItems);
+				recalculateTotal();
 
-        Button addBtn = new Button("Add to List", e -> {
-            if (nameField.getValue().isBlank()) {
-                Notification.show("Item name is required", 3000, Notification.Position.TOP_CENTER);
-                return;
-            }
+				// Check approval status
+				try {
+					ApprovalStatus approvalStatus = requisitionService.checkStatusApprovalIsPermanent(r);
+					if (approvalStatus == ApprovalStatus.NEED_APPROVAL) {
+						approveBtn.setVisible(true);
+						rejectBtn.setVisible(true);
+					}
+				} catch (Exception ignored) {
+				}
+			}
+		} catch (Exception ex) {
+			Notification.show("Error loading PR: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		}
+	}
 
-            RequisitionDetail item = new RequisitionDetail();
-            item.setId(String.valueOf(lineItems.size() + 1));
-            item.setName(nameField.getValue());
-            item.setItemNumber(itemNumberField.getValue());
-            item.setUom(uomField.getValue());
-            item.setDescription(descField.getValue());
-            item.setSpecFiles(new ArrayList<>());
+	private void openAddItemDialog() {
+		Dialog dialog = new Dialog();
+		dialog.setHeaderTitle("Add Line Item");
+		dialog.setWidth("500px");
 
-            try {
-                item.setQty(new BigInteger(qtyField.getValue().replaceAll("[^0-9]", "")));
-            } catch (Exception ex) {
-                item.setQty(BigInteger.ONE);
-            }
+		FormLayout form = new FormLayout();
+		TextField nameField = new TextField("Item Name");
+		nameField.setRequired(true);
+		TextField itemNumberField = new TextField("Item Number / Code");
+		TextField uomField = new TextField("UOM");
+		uomField.setValue("PCS");
+		TextField qtyField = new TextField("Quantity");
+		qtyField.setValue("1");
+		TextField unitPriceField = new TextField("Unit Price");
+		unitPriceField.setValue("0");
+		TextArea descField = new TextArea("Description");
 
-            try {
-                BigDecimal price = new BigDecimal(unitPriceField.getValue().replaceAll("[^0-9]", ""));
-                item.setUnitPrice(price);
-                item.setSubtotal(price.multiply(new BigDecimal(item.getQty())));
-            } catch (Exception ex) {
-                item.setUnitPrice(BigDecimal.ZERO);
-                item.setSubtotal(BigDecimal.ZERO);
-            }
+		form.add(nameField, itemNumberField, uomField, qtyField, unitPriceField, descField);
+		form.setColspan(descField, 2);
 
-            lineItems.add(item);
-            itemsGrid.setItems(lineItems);
-            recalculateTotal();
-            dialog.close();
-        });
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button addBtn = new Button("Add to List", e -> {
+			if (nameField.getValue().isBlank()) {
+				Notification.show("Item name is required", 3000, Notification.Position.TOP_CENTER);
+				return;
+			}
 
-        Button cancelBtn = new Button("Cancel", ev -> dialog.close());
+			RequisitionDetail item = new RequisitionDetail();
+			item.setId(String.valueOf(lineItems.size() + 1));
+			item.setName(nameField.getValue());
+			item.setItemNumber(itemNumberField.getValue());
+			item.setUom(uomField.getValue());
+			item.setDescription(descField.getValue());
+			item.setSpecFiles(new ArrayList<>());
 
-        dialog.add(form);
-        dialog.getFooter().add(cancelBtn, addBtn);
-        dialog.open();
-    }
+			try {
+				item.setQty(new BigInteger(qtyField.getValue().replaceAll("[^0-9]", "")));
+			} catch (Exception ex) {
+				item.setQty(BigInteger.ONE);
+			}
 
-    private void recalculateTotal() {
-        BigDecimal total = lineItems.stream()
-                .map(d -> d.getSubtotal() != null ? d.getSubtotal() : BigDecimal.ZERO)
-                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
-        grandTotalSpan.setText("Total: IDR " + String.format("%,d", total));
-    }
+			try {
+				BigDecimal price = new BigDecimal(unitPriceField.getValue().replaceAll("[^0-9]", ""));
+				item.setUnitPrice(price);
+				item.setSubtotal(price.multiply(new BigDecimal(item.getQty())));
+			} catch (Exception ex) {
+				item.setUnitPrice(BigDecimal.ZERO);
+				item.setSubtotal(BigDecimal.ZERO);
+			}
 
-    private void loadRequisition(Long id) {
+			lineItems.add(item);
+			itemsGrid.setItems(lineItems);
+			recalculateTotal();
+			dialog.close();
+		});
+		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        try {
-            Requisition r = requisitionService.findById(id);
-            if (r != null && r.getId() != null) {
-                this.currentStatus = r.getStatus() != null ? r.getStatus() : "DRAFT";
-                titleField.setValue(r.getTitle() != null ? r.getTitle() : "");
-                noteField.setValue(r.getNote() != null ? r.getNote() : "");
-                if (r.getBudget() != null) {
-                    budgetDetailIdField.setValue(String.valueOf(r.getBudget().getId()));
-                }
-                // if (r.getDueDate() != null) {
-                // dueDatePicker.setValue(r.getDueDate());
-                // }
-                // if (r.getDepartment() != null && r.getDepartment().getDept_number() != null)
-                // {
-                // departmentRepo.findByDeptNumber(r.getDepartment().getDept_number()).ifPresent(deptCombo::setValue);
-                // }
+		Button cancelBtn = new Button("Cancel", ev -> dialog.close());
 
-                lineItems.clear();
-                if (r.getDetails() != null) {
-                    lineItems.addAll(r.getDetails());
-                }
-                itemsGrid.setItems(lineItems);
-                recalculateTotal();
+		dialog.add(form);
+		dialog.getFooter().add(cancelBtn, addBtn);
+		dialog.open();
+	}
 
-                // Check approval status
-                try {
-                    ApprovalStatus approvalStatus = requisitionService.checkStatusApprovalIsPermanent(r);
-                    if (approvalStatus == ApprovalStatus.NEED_APPROVAL) {
-                        approveBtn.setVisible(true);
-                        rejectBtn.setVisible(true);
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        } catch (Exception ex) {
-            Notification.show("Error loading PR: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
+	private void openRejectDialog() {
+		Dialog dialog = new Dialog();
+		dialog.setHeaderTitle("Reject Purchase Requisition");
+		dialog.setWidth("450px");
 
-    private void saveRequisition(String status) {
-        if (titleField.getValue().isBlank() || deptCombo.getValue() == null) {
-            Notification.show("Title and Department are required", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            return;
-        }
+		TextArea rejectReason = new TextArea("Rejection Reason");
+		rejectReason.setRequired(true);
+		rejectReason.setWidthFull();
 
-        if (lineItems.isEmpty()) {
-            Notification.show("Please add at least one line item", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            return;
-        }
+		Button rejectConfirm = new Button("Confirm Rejection", e -> {
+			if (rejectReason.getValue().isBlank()) {
+				Notification.show("Reason is required", 3000, Notification.Position.TOP_CENTER);
+				return;
+			}
+			noteField.setValue(noteField.getValue() + " [REJECT REASON: " + rejectReason.getValue() + "]");
+			dialog.close();
+			saveRequisition(RequisitionStatus.REJECT.getValue());
+		});
+		rejectConfirm.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
 
-        Requisition params = new Requisition();
-        params.setId(requisitionId != null ? requisitionId : null);
-        params.setTitle(titleField.getValue());
-        params.setNote(noteField.getValue());
-        params.setStatus(status);
+		Button cancel = new Button("Cancel", e -> dialog.close());
 
-        Department deptDto = new Department();
-        deptDto.setCode(deptCombo.getValue().getCode());
-        deptDto.setName(deptCombo.getValue().getName());
-        params.setDepartment(deptDto);
+		dialog.add(rejectReason);
+		dialog.getFooter().add(cancel, rejectConfirm);
+		dialog.open();
+	}
 
-        if (dueDatePicker.getValue() != null) {
-            params.setDueDate(Date.from(dueDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        } else {
-            params.setDueDate(new Date());
-        }
+	private void recalculateTotal() {
+		BigDecimal total = lineItems.stream().map(d -> d.getSubtotal() != null ? d.getSubtotal() : BigDecimal.ZERO)
+				.reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+		grandTotalSpan.setText("Total: IDR " + String.format("%,d", total));
+	}
 
-        params.setBudgetDetailId(budgetDetailIdField.getValue() != null && !budgetDetailIdField.getValue().isBlank()
-                ? Long.parseLong(budgetDetailIdField.getValue())
-                : 1);
+	private void saveRequisition(String status) {
+		if (titleField.getValue().isBlank() || deptCombo.getValue() == null) {
+			Notification.show("Title and Department are required", 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			return;
+		}
 
-        params.setDetails(lineItems);
+		if (lineItems.isEmpty()) {
+			Notification.show("Please add at least one line item", 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			return;
+		}
 
-        // build default approval list
-        List<Approval> approvals = new ArrayList<>();
-        if (deptCombo.getValue().getApprovals() != null) {
-            for (Approval app : deptCombo.getValue().getApprovals()) {
-                if (app.getUsers() != null) {
-                    Approval appDto = new Approval();
-                    String nrp = "";
-                    appDto.setUsers(nrp);
-                    appDto.setIsApprovalPermanent(false);
-                    appDto.setIsBypassPermanent(false);
-                    approvals.add(appDto);
-                }
-            }
-        }
-        params.setApprovals(approvals);
+		Requisition params = new Requisition();
+		params.setId(requisitionId != null ? requisitionId : null);
+		params.setTitle(titleField.getValue());
+		params.setNote(noteField.getValue());
+		params.setStatus(status);
 
-        if (deptCombo.getValue().getDeptPurchaser() != null) {
-            Approval purchaserDto = new Approval();
-            String nrp = "";
-            purchaserDto.setUsers(nrp);
-            purchaserDto.setIsApprovalPermanent(false);
-            params.setPurchaser(purchaserDto);
-        }
+		Department deptDto = new Department();
+		deptDto.setCode(deptCombo.getValue().getCode());
+		deptDto.setName(deptCombo.getValue().getName());
+		params.setDepartment(deptDto);
 
-        try {
-            requisitionService.add(params);
-            Notification.show("Requisition saved successfully", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            UI.getCurrent().navigate(RequisitionListView.class);
-        } catch (Exception ex) {
-            Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
+		if (dueDatePicker.getValue() != null) {
+			params.setDueDate(Date.from(dueDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		} else {
+			params.setDueDate(new Date());
+		}
 
-    private void handleApproval(String status) {
-        saveRequisition(status);
-    }
+		params.setBudgetDetailId(budgetDetailIdField.getValue() != null && !budgetDetailIdField.getValue().isBlank()
+				? Long.parseLong(budgetDetailIdField.getValue())
+				: 1);
 
-    private void openRejectDialog() {
-        Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Reject Purchase Requisition");
-        dialog.setWidth("450px");
+		params.setDetails(lineItems);
 
-        TextArea rejectReason = new TextArea("Rejection Reason");
-        rejectReason.setRequired(true);
-        rejectReason.setWidthFull();
+		// build default approval list
+		List<Approval> approvals = new ArrayList<>();
+		if (deptCombo.getValue().getApprovals() != null) {
+			for (Approval app : deptCombo.getValue().getApprovals()) {
+				if (app.getUsers() != null) {
+					Approval appDto = new Approval();
+					String nrp = "";
+					appDto.setUsers(nrp);
+					appDto.setIsApprovalPermanent(false);
+					appDto.setIsBypassPermanent(false);
+					approvals.add(appDto);
+				}
+			}
+		}
+		params.setApprovals(approvals);
 
-        Button rejectConfirm = new Button("Confirm Rejection", e -> {
-            if (rejectReason.getValue().isBlank()) {
-                Notification.show("Reason is required", 3000, Notification.Position.TOP_CENTER);
-                return;
-            }
-            noteField.setValue(noteField.getValue() + " [REJECT REASON: " + rejectReason.getValue() + "]");
-            dialog.close();
-            saveRequisition(RequisitionStatus.REJECT.getValue());
-        });
-        rejectConfirm.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
+		if (deptCombo.getValue().getDeptPurchaser() != null) {
+			Approval purchaserDto = new Approval();
+			String nrp = "";
+			purchaserDto.setUsers(nrp);
+			purchaserDto.setIsApprovalPermanent(false);
+			params.setPurchaser(purchaserDto);
+		}
 
-        Button cancel = new Button("Cancel", e -> dialog.close());
+		try {
+			requisitionService.add(params);
+			Notification.show("Requisition saved successfully", 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+			UI.getCurrent().navigate(RequisitionListView.class);
+		} catch (Exception ex) {
+			Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		}
+	}
 
-        dialog.add(rejectReason);
-        dialog.getFooter().add(cancel, rejectConfirm);
-        dialog.open();
-    }
+	@Override
+	public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+		if (parameter != null && !parameter.isBlank()) {
+			this.requisitionId = Long.parseLong(parameter);
+			this.titleHeader.setText("Purchase Requisition: " + parameter);
+			loadRequisition(Long.parseLong(parameter));
+		} else {
+			this.requisitionId = null;
+			this.titleHeader.setText("Create Purchase Requisition");
+			dueDatePicker.setValue(LocalDate.now().plusDays(14));
+			// securityService.().ifPresent(u -> {
+			// if (u.getDepartment() != null) {
+			// deptCombo.setValue(u.getDepartment());
+			// }
+			// });
+		}
+	}
 }

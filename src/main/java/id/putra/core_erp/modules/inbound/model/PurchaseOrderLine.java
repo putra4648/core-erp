@@ -15,57 +15,57 @@ import jakarta.persistence.Table;
 @Table
 public class PurchaseOrderLine {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-    private Integer quantity;
-    private BigDecimal price;
+	private BigDecimal price;
+	@ManyToOne
+	@JoinColumn(name = "product_id")
+	private Product product;
+	@ManyToOne
+	@JoinColumn(name = "purchase_order_id")
+	private PurchaseOrder purchaseOrder;
 
-    @ManyToOne
-    @JoinColumn(name = "purchase_order_id")
-    private PurchaseOrder purchaseOrder;
+	private Integer quantity;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public BigDecimal getPrice() {
+		return price;
+	}
 
-    public Product getProduct() {
-        return product;
-    }
+	public Product getProduct() {
+		return product;
+	}
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+	public PurchaseOrder getPurchaseOrder() {
+		return purchaseOrder;
+	}
 
-    public Integer getQuantity() {
-        return quantity;
-    }
+	public Integer getQuantity() {
+		return quantity;
+	}
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
-    public PurchaseOrder getPurchaseOrder() {
-        return purchaseOrder;
-    }
+	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+		this.purchaseOrder = purchaseOrder;
+	}
 
-    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-        this.purchaseOrder = purchaseOrder;
-    }
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 }

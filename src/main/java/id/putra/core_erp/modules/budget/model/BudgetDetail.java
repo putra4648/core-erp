@@ -19,81 +19,81 @@ import jakarta.persistence.Table;
 @Table(name = "budget_detail")
 public class BudgetDetail extends BaseEntity {
 
-    @Id
-    private Long id;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(columnDefinition = "jsonb", name = "budgets")
+	private List<BudgetAllocation> allocations;
 
-    @Column(name = "name")
-    private String name;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "budget_id", referencedColumnName = "id")
+	private Budget budget;
 
-    @Column(name = "type")
-    private BudgetType type;
+	@Id
+	private Long id;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb", name = "budgets")
-    private List<BudgetAllocation> allocations;
+	@Column(name = "name")
+	private String name;
 
-    @Column(name = "note")
-    private String note;
+	@Column(name = "note")
+	private String note;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "budget_id", referencedColumnName = "id")
-    private Budget budget;
+	private BigInteger totalBudget;
 
-    private BigInteger totalBudget;
+	@Column(name = "type")
+	private BudgetType type;
 
-    public BigInteger getTotalBudget() {
-        return totalBudget;
-    }
+	public List<BudgetAllocation> getAllocations() {
+		return allocations;
+	}
 
-    public void setTotalBudget(BigInteger totalBudget) {
-        this.totalBudget = totalBudget;
-    }
+	public Budget getBudget() {
+		return budget;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getNote() {
+		return note;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public BigInteger getTotalBudget() {
+		return totalBudget;
+	}
 
-    public BudgetType getType() {
-        return type;
-    }
+	public BudgetType getType() {
+		return type;
+	}
 
-    public void setType(BudgetType type) {
-        this.type = type;
-    }
+	public void setAllocations(List<BudgetAllocation> details) {
+		this.allocations = details;
+	}
 
-    public List<BudgetAllocation> getAllocations() {
-        return allocations;
-    }
+	public void setBudget(Budget budget) {
+		this.budget = budget;
+	}
 
-    public void setAllocations(List<BudgetAllocation> details) {
-        this.allocations = details;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getNote() {
-        return note;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setNote(String note) {
-        this.note = note;
-    }
+	public void setNote(String note) {
+		this.note = note;
+	}
 
-    public Budget getBudget() {
-        return budget;
-    }
+	public void setTotalBudget(BigInteger totalBudget) {
+		this.totalBudget = totalBudget;
+	}
 
-    public void setBudget(Budget budget) {
-        this.budget = budget;
-    }
+	public void setType(BudgetType type) {
+		this.type = type;
+	}
 }

@@ -12,59 +12,59 @@ import jakarta.validation.constraints.NotBlank;
 
 public class ParameterLookup {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@NotBlank
+	private String description;
 
-    private String module;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @NotBlank
-    private String key;
+	@NotBlank
+	private String key;
 
-    @NotBlank
-    private String value;
+	private String module;
 
-    @NotBlank
-    private String description;
+	@NotBlank
+	private String value;
 
-    public Long getId() {
-        return id;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getModule() {
-        return module;
-    }
+	public String getKey() {
+		return key;
+	}
 
-    public void setModule(String module) {
-        this.module = module;
-    }
+	public String getModule() {
+		return module;
+	}
 
-    public String getKey() {
-        return key;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+	public void setKey(String key) {
+		this.key = key;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setModule(String module) {
+		this.module = module;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 }

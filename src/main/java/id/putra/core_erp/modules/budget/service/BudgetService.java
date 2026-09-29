@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import id.putra.core_erp.modules.budget.model.Budget;
-import id.putra.core_erp.modules.budget.model.BudgetDetail;
 import id.putra.core_erp.modules.budget.model.BudgetAllocation;
+import id.putra.core_erp.modules.budget.model.BudgetDetail;
 import id.putra.core_erp.modules.budget.repository.BudgetDetailRepo;
 import id.putra.core_erp.modules.budget.repository.BudgetRepo;
 import id.putra.core_erp.modules.department.model.Department;
@@ -26,233 +26,230 @@ import jakarta.transaction.Transactional;
 @Transactional(rollbackOn = { ParseException.class })
 public class BudgetService {
 
-    private final BudgetRepo budgetRepo;
-    private final DepartmentRepo departmentRepo;
-    private final BudgetDetailRepo budgetDetailRepo;
+	private final BudgetDetailRepo budgetDetailRepo;
+	private final BudgetRepo budgetRepo;
+	private final DepartmentRepo departmentRepo;
 
-    public BudgetService(BudgetRepo budgetRepo, DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo) {
-        this.budgetRepo = budgetRepo;
-        this.departmentRepo = departmentRepo;
-        this.budgetDetailRepo = budgetDetailRepo;
-    }
+	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+	public BudgetService(BudgetRepo budgetRepo, DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo) {
+		this.budgetRepo = budgetRepo;
+		this.departmentRepo = departmentRepo;
+		this.budgetDetailRepo = budgetDetailRepo;
+	}
 
-    public Map<String, Object> getBudgets(List<String> deptId) throws ParseException {
-        List<Budget> current = new ArrayList<>();
-        List<Budget> past = new ArrayList<>();
+	public void addOrUpdateBudget(Budget body) throws ParseException {
+		Long id = Long.parseLong(body.getId());
+		if (budgetRepo.findByIdOptional(id).isPresent()) {
+			Budget entity = budgetRepo.findById(id);
+			entity.setFiscalYear(body.getFiscalYear());
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.YEAR, -1);
+			List<BudgetDetail> details = entity.getDetails();
 
-        Date year = simpleDateFormat.parse(new SimpleDateFormat("yyyy").format(calendar.getTime()));
+			details.clear();
+			if (body.getDetails() != null) {
+				body.getDetails().forEach(b -> {
+					BudgetDetail budgetDetail = new BudgetDetail();
+					budgetDetail.setName(b.getName());
+					budgetDetail.setId(b.getId());
+					budgetDetail.setType(b.getType());
+					budgetDetail.setNote(b.getNote());
 
-        List<Department> dept = departmentRepo.findAll().list();
-        Map<String, Object> result = new HashMap<>();
+					if (b.getAllocations() != null) {
+						List<BudgetAllocation> detailDtos = b.getAllocations().stream().map(d -> {
+							BudgetAllocation dtlDto = new BudgetAllocation();
+							dtlDto.setDate(d.getDate());
+							dtlDto.setPlan(d.getPlan());
+							dtlDto.setActual(d.getActual());
+							return dtlDto;
+						}).toList();
+						budgetDetail.setAllocations(detailDtos);
+					}
 
-        budgetRepo.findByDepartmentInAndFiscalYearAfter(dept, year).forEach(budget -> {
-            Budget dto = new Budget();
+					budgetDetail.setBudget(entity);
+					details.add(budgetDetail);
+				});
+			}
+			entity.setDetails(details);
+			budgetRepo.persist(entity);
+		} else {
+			Budget entity = new Budget();
+			entity.setId(body.getId());
 
-            if (budget.getDepartment() != null) {
-                Department Department = new Department();
-                Department.setName(budget.getDepartment().getName());
-                Department.setCode(budget.getDepartment().getCode());
-                dto.setDepartment(Department);
-            }
+			if (body.getDepartment() != null && body.getDepartment().getCode() != null) {
+				Optional<Department> deptOpt = departmentRepo.findByDeptNumber(body.getDepartment().getCode());
+				deptOpt.ifPresent(entity::setDepartment);
+			}
 
-            dto.setId(budget.getId());
-            if (budget.getFiscalYear() != null) {
-                dto.setFiscalYear(budget.getFiscalYear());
-            }
-            dto.setCreateBy(budget.getCreateBy());
-            dto.setUpdateBy(budget.getUpdateBy());
-            if (budget.getCreateAt() != null) {
-                dto.setCreateAt(Instant.from(budget.getCreateAt()));
-            }
-            if (budget.getUpdateAt() != null) {
-                dto.setUpdateAt(Instant.from(budget.getUpdateAt()));
-            }
+			if (body.getFiscalYear() != null) {
+				entity.setFiscalYear(body.getFiscalYear());
+			}
 
-            current.add(dto);
-        });
-        result.put("current", current);
+			List<BudgetDetail> details = new ArrayList<>();
+			if (body.getDetails() != null) {
+				body.getDetails().forEach(b -> {
+					BudgetDetail budgetDetail = new BudgetDetail();
+					budgetDetail.setName(b.getName());
+					budgetDetail.setId(b.getId());
+					budgetDetail.setType(b.getType());
+					budgetDetail.setNote(b.getNote());
 
-        budgetRepo.findByDepartmentInAndFiscalYearBefore(dept, year).forEach(budget -> {
-            Budget dto = new Budget();
+					if (b.getAllocations() != null) {
+						List<BudgetAllocation> detailDtos = b.getAllocations().stream().map(d -> {
+							BudgetAllocation dtlDto = new BudgetAllocation();
+							dtlDto.setDate(d.getDate());
+							dtlDto.setPlan(d.getPlan());
+							dtlDto.setActual(d.getActual());
+							return dtlDto;
+						}).toList();
+						budgetDetail.setAllocations(detailDtos);
+					}
 
-            if (budget.getDepartment() != null) {
-                Department Department = new Department();
-                Department.setName(budget.getDepartment().getName());
-                Department.setCode(budget.getDepartment().getCode());
-                dto.setDepartment(Department);
-            }
+					budgetDetail.setBudget(entity);
+					details.add(budgetDetail);
+				});
+			}
+			entity.setDetails(details);
+			budgetRepo.persist(entity);
+		}
+	}
 
-            dto.setId(budget.getId());
-            if (budget.getFiscalYear() != null) {
-                dto.setFiscalYear(budget.getFiscalYear());
-            }
-            dto.setCreateBy(budget.getCreateBy());
-            dto.setUpdateBy(budget.getUpdateBy());
-            if (budget.getCreateAt() != null) {
-                dto.setCreateAt(Instant.from(budget.getCreateAt()));
-            }
-            if (budget.getUpdateAt() != null) {
-                dto.setUpdateAt(Instant.from(budget.getUpdateAt()));
-            }
+	public BudgetDetail getBudgetDetail(String deptId, String budgetId) {
+		BudgetDetail dto = new BudgetDetail();
 
-            past.add(dto);
-        });
-        result.put("past", past);
-        return result;
-    }
+		Optional<BudgetDetail> detailOpt = budgetDetailRepo.findByBudgetId(budgetId);
 
-    public void addOrUpdateBudget(Budget body) throws ParseException {
-        Long id = Long.parseLong(body.getId());
-        if (budgetRepo.findByIdOptional(id).isPresent()) {
-            Budget entity = budgetRepo.findById(id);
-            entity.setFiscalYear(body.getFiscalYear());
+		if (detailOpt.isPresent()) {
+			BudgetDetail d = detailOpt.get();
+			dto.setId(d.getId());
+			dto.setName(d.getName());
+			dto.setNote(d.getNote());
+			dto.setType(d.getType());
 
-            List<BudgetDetail> details = entity.getDetails();
+			List<BudgetAllocation> plans = new ArrayList<>();
+			if (d.getAllocations() != null) {
+				d.getAllocations().forEach(plans::add);
+			}
+			dto.setAllocations(plans);
+		}
+		return dto;
+	}
 
-            details.clear();
-            if (body.getDetails() != null) {
-                body.getDetails().forEach(b -> {
-                    BudgetDetail budgetDetail = new BudgetDetail();
-                    budgetDetail.setName(b.getName());
-                    budgetDetail.setId(b.getId());
-                    budgetDetail.setType(b.getType());
-                    budgetDetail.setNote(b.getNote());
+	public Map<String, Object> getBudgets(List<String> deptId) throws ParseException {
+		List<Budget> current = new ArrayList<>();
+		List<Budget> past = new ArrayList<>();
 
-                    if (b.getAllocations() != null) {
-                        List<BudgetAllocation> detailDtos = b.getAllocations().stream().map(d -> {
-                            BudgetAllocation dtlDto = new BudgetAllocation();
-                            dtlDto.setDate(d.getDate());
-                            dtlDto.setPlan(d.getPlan());
-                            dtlDto.setActual(d.getActual());
-                            return dtlDto;
-                        }).toList();
-                        budgetDetail.setAllocations(detailDtos);
-                    }
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.YEAR, -1);
 
-                    budgetDetail.setBudget(entity);
-                    details.add(budgetDetail);
-                });
-            }
-            entity.setDetails(details);
-            budgetRepo.persist(entity);
-        } else {
-            Budget entity = new Budget();
-            entity.setId(body.getId());
+		Date year = simpleDateFormat.parse(new SimpleDateFormat("yyyy").format(calendar.getTime()));
 
-            if (body.getDepartment() != null && body.getDepartment().getCode() != null) {
-                Optional<Department> deptOpt = departmentRepo
-                        .findByDeptNumber(body.getDepartment().getCode());
-                deptOpt.ifPresent(entity::setDepartment);
-            }
+		List<Department> dept = departmentRepo.findAll().list();
+		Map<String, Object> result = new HashMap<>();
 
-            if (body.getFiscalYear() != null) {
-                entity.setFiscalYear(body.getFiscalYear());
-            }
+		budgetRepo.findByDepartmentInAndFiscalYearAfter(dept, year).forEach(budget -> {
+			Budget dto = new Budget();
 
-            List<BudgetDetail> details = new ArrayList<>();
-            if (body.getDetails() != null) {
-                body.getDetails().forEach(b -> {
-                    BudgetDetail budgetDetail = new BudgetDetail();
-                    budgetDetail.setName(b.getName());
-                    budgetDetail.setId(b.getId());
-                    budgetDetail.setType(b.getType());
-                    budgetDetail.setNote(b.getNote());
+			if (budget.getDepartment() != null) {
+				Department Department = new Department();
+				Department.setName(budget.getDepartment().getName());
+				Department.setCode(budget.getDepartment().getCode());
+				dto.setDepartment(Department);
+			}
 
-                    if (b.getAllocations() != null) {
-                        List<BudgetAllocation> detailDtos = b.getAllocations().stream().map(d -> {
-                            BudgetAllocation dtlDto = new BudgetAllocation();
-                            dtlDto.setDate(d.getDate());
-                            dtlDto.setPlan(d.getPlan());
-                            dtlDto.setActual(d.getActual());
-                            return dtlDto;
-                        }).toList();
-                        budgetDetail.setAllocations(detailDtos);
-                    }
+			dto.setId(budget.getId());
+			if (budget.getFiscalYear() != null) {
+				dto.setFiscalYear(budget.getFiscalYear());
+			}
+			dto.setCreateBy(budget.getCreateBy());
+			dto.setUpdateBy(budget.getUpdateBy());
+			if (budget.getCreateAt() != null) {
+				dto.setCreateAt(Instant.from(budget.getCreateAt()));
+			}
+			if (budget.getUpdateAt() != null) {
+				dto.setUpdateAt(Instant.from(budget.getUpdateAt()));
+			}
 
-                    budgetDetail.setBudget(entity);
-                    details.add(budgetDetail);
-                });
-            }
-            entity.setDetails(details);
-            budgetRepo.persist(entity);
-        }
-    }
+			current.add(dto);
+		});
+		result.put("current", current);
 
-    public List<BudgetDetail> getBudgetsDetail(String deptId, String budgetId, String filter) {
-        List<BudgetDetail> dtos = new ArrayList<>();
-        budgetDetailRepo.findAllBudgetDetailsByDeptIdAndBudgetIdAndType(deptId, budgetId, filter).forEach(d -> {
-            BudgetDetail detailDto = new BudgetDetail();
-            detailDto.setId(d.getId());
-            detailDto.setName(d.getName());
-            detailDto.setType(d.getType());
-            detailDto.setNote(d.getNote());
+		budgetRepo.findByDepartmentInAndFiscalYearBefore(dept, year).forEach(budget -> {
+			Budget dto = new Budget();
 
-            List<BudgetAllocation> plans = new ArrayList<>();
-            if (d.getAllocations() != null) {
-                d.getAllocations().forEach(plans::add);
-            }
-            detailDto.setAllocations(plans);
+			if (budget.getDepartment() != null) {
+				Department Department = new Department();
+				Department.setName(budget.getDepartment().getName());
+				Department.setCode(budget.getDepartment().getCode());
+				dto.setDepartment(Department);
+			}
 
-            dtos.add(detailDto);
-        });
+			dto.setId(budget.getId());
+			if (budget.getFiscalYear() != null) {
+				dto.setFiscalYear(budget.getFiscalYear());
+			}
+			dto.setCreateBy(budget.getCreateBy());
+			dto.setUpdateBy(budget.getUpdateBy());
+			if (budget.getCreateAt() != null) {
+				dto.setCreateAt(Instant.from(budget.getCreateAt()));
+			}
+			if (budget.getUpdateAt() != null) {
+				dto.setUpdateAt(Instant.from(budget.getUpdateAt()));
+			}
 
-        return dtos;
-    }
+			past.add(dto);
+		});
+		result.put("past", past);
+		return result;
+	}
 
-    public BudgetDetail getBudgetDetail(String deptId, String budgetId) {
-        BudgetDetail dto = new BudgetDetail();
+	public List<BudgetDetail> getBudgetsDetail(String deptId, String year) {
+		List<BudgetDetail> dtos = new ArrayList<>();
 
-        Optional<BudgetDetail> detailOpt = budgetDetailRepo.findByBudgetId(budgetId);
+		budgetDetailRepo.findAllBudgetDetailsByDeptIdAndYear(deptId, year).forEach(d -> {
+			BudgetDetail detailDto = new BudgetDetail();
+			detailDto.setId(d.getId());
+			detailDto.setName(d.getName());
+			detailDto.setType(d.getType());
+			detailDto.setNote(d.getNote());
 
-        if (detailOpt.isPresent()) {
-            BudgetDetail d = detailOpt.get();
-            dto.setId(d.getId());
-            dto.setName(d.getName());
-            dto.setNote(d.getNote());
-            dto.setType(d.getType());
+			List<BudgetAllocation> plans = new ArrayList<>();
+			if (d.getAllocations() != null) {
+				d.getAllocations().forEach(plans::add);
+			}
+			String currentMonth = new SimpleDateFormat("MMM").format(new Date());
+			BigInteger totalBudget = plans.stream()
+					.filter(data -> data.getDate() != null
+							&& new SimpleDateFormat("MMM").format(data.getDate()).equalsIgnoreCase(currentMonth))
+					.map(data -> data.getPlan() != null ? data.getPlan() : BigInteger.ZERO).findFirst()
+					.orElse(BigInteger.ZERO);
+			detailDto.setTotalBudget(totalBudget);
 
-            List<BudgetAllocation> plans = new ArrayList<>();
-            if (d.getAllocations() != null) {
-                d.getAllocations().forEach(plans::add);
-            }
-            dto.setAllocations(plans);
-        }
-        return dto;
-    }
+			dtos.add(detailDto);
+		});
 
-    public List<BudgetDetail> getBudgetsDetail(String deptId, String year) {
-        List<BudgetDetail> dtos = new ArrayList<>();
+		return dtos;
+	}
 
-        budgetDetailRepo.findAllBudgetDetailsByDeptIdAndYear(deptId, year)
-                .forEach(d -> {
-                    BudgetDetail detailDto = new BudgetDetail();
-                    detailDto.setId(d.getId());
-                    detailDto.setName(d.getName());
-                    detailDto.setType(d.getType());
-                    detailDto.setNote(d.getNote());
+	public List<BudgetDetail> getBudgetsDetail(String deptId, String budgetId, String filter) {
+		List<BudgetDetail> dtos = new ArrayList<>();
+		budgetDetailRepo.findAllBudgetDetailsByDeptIdAndBudgetIdAndType(deptId, budgetId, filter).forEach(d -> {
+			BudgetDetail detailDto = new BudgetDetail();
+			detailDto.setId(d.getId());
+			detailDto.setName(d.getName());
+			detailDto.setType(d.getType());
+			detailDto.setNote(d.getNote());
 
-                    List<BudgetAllocation> plans = new ArrayList<>();
-                    if (d.getAllocations() != null) {
-                        d.getAllocations().forEach(plans::add);
-                    }
-                    String currentMonth = new SimpleDateFormat("MMM").format(new Date());
-                    BigInteger totalBudget = plans.stream()
-                            .filter(data -> data.getDate() != null
-                                    && new SimpleDateFormat("MMM").format(data.getDate())
-                                            .equalsIgnoreCase(currentMonth))
-                            .map(data -> data.getPlan() != null ? data.getPlan() : BigInteger.ZERO).findFirst()
-                            .orElse(BigInteger.ZERO);
-                    detailDto.setTotalBudget(totalBudget);
+			List<BudgetAllocation> plans = new ArrayList<>();
+			if (d.getAllocations() != null) {
+				d.getAllocations().forEach(plans::add);
+			}
+			detailDto.setAllocations(plans);
 
-                    dtos.add(detailDto);
-                });
+			dtos.add(detailDto);
+		});
 
-        return dtos;
-    }
+		return dtos;
+	}
 }

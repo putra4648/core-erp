@@ -1,64 +1,67 @@
 package id.putra.core_erp.modules.customer.model;
 
 import id.putra.core_erp.entity.BaseEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "customers")
 public class Customer extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@NotBlank
+	private String code;
 
-    @NotBlank
-    private String code;
+	private String email;
 
-    @NotBlank
-    private String name;
+	private String phone;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "contact_person_id")
-    @NotEmpty
-    private ContactPersonCustomer contactPerson;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    public Long getId() {
-        return id;
-    }
+	@NotBlank
+	private String name;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public ContactPersonCustomer getContactPerson() {
-        return contactPerson;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setContactPerson(ContactPersonCustomer contactPerson) {
-        this.contactPerson = contactPerson;
-    }
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 }

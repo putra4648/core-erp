@@ -11,49 +11,49 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public class BaseEntity {
 
-    @Column
-    @CreationTimestamp
-    private Instant createAt;
+	@Column
+	@CreationTimestamp
+	private Instant createAt;
 
-    @Column
-    private String createBy;
+	@Column
+	private String createBy;
 
-    @Column
-    @UpdateTimestamp
-    private Instant updateAt;
+	@Column
+	@UpdateTimestamp
+	private Instant updateAt;
 
-    @Column
-    private String updateBy;
+	@Column
+	private String updateBy;
 
-    public Instant getCreateAt() {
-        return createAt;
-    }
+	public Instant getCreateAt() {
+		return createAt;
+	}
 
-    public void setCreateAt(Instant createdAt) {
-        this.createAt = createdAt;
-    }
+	public String getCreateBy() {
+		return createBy;
+	}
 
-    public String getCreateBy() {
-        return createBy;
-    }
+	public Instant getUpdateAt() {
+		return updateAt;
+	}
 
-    public void setCreateBy(String createdBy) {
-        this.createBy = createdBy;
-    }
+	public String getUpdateBy() {
+		return updateBy;
+	}
 
-    public Instant getUpdateAt() {
-        return updateAt;
-    }
+	public void setCreateAt(Instant createdAt) {
+		this.createAt = createdAt;
+	}
 
-    public void setUpdateAt(Instant updatedAt) {
-        this.updateAt = updatedAt;
-    }
+	public void setCreateBy(String createdBy) {
+		this.createBy = createdBy;
+	}
 
-    public String getUpdateBy() {
-        return updateBy;
-    }
+	public void setUpdateAt(Instant updatedAt) {
+		this.updateAt = updatedAt;
+	}
 
-    public void setUpdateBy(String updatedBy) {
-        this.updateBy = updatedBy;
-    }
+	public void setUpdateBy(String updatedBy) {
+		this.updateBy = updatedBy;
+	}
 }

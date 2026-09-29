@@ -12,29 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class ReturnInboundService implements BaseService<Return> {
-    private final ReturnRepository returnRepository;
+	private final ReturnRepository returnRepository;
 
-    public ReturnInboundService(ReturnRepository returnRepository) {
-        this.returnRepository = returnRepository;
-    }
+	public ReturnInboundService(ReturnRepository returnRepository) {
+		this.returnRepository = returnRepository;
+	}
 
-    public void save(Return entity) {
-        returnRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		returnRepository.deleteById(id);
+	}
 
-    public Return findById(Long id) {
-        return returnRepository.findById(id);
-    }
+	@Override
+	public List<Return> findAll(Return r, Page p) {
+		return returnRepository.findAll().list();
+	}
 
-    public void update(Return dto) {
-        returnRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public Return findById(Long id) {
+		return returnRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        returnRepository.deleteById(id);
-    }
+	@Override
+	public void save(Return entity) {
+		returnRepository.persist(entity);
+	}
 
-    public List<Return> findAll(Return r, Page p) {
-        return returnRepository.findAll().list();
-    }
+	@Override
+	public void update(Return dto) {
+		returnRepository.getEntityManager().merge(dto);
+	}
 }

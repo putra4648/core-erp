@@ -12,29 +12,34 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class PutawayService implements BaseService<Putaway> {
-    private final PutawayRepository putawayRepository;
+	private final PutawayRepository putawayRepository;
 
-    public PutawayService(PutawayRepository putawayRepository) {
-        this.putawayRepository = putawayRepository;
-    }
+	public PutawayService(PutawayRepository putawayRepository) {
+		this.putawayRepository = putawayRepository;
+	}
 
-    public void save(Putaway entity) {
-        putawayRepository.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		putawayRepository.deleteById(id);
+	}
 
-    public Putaway findById(Long id) {
-        return putawayRepository.findById(id);
-    }
+	@Override
+	public List<Putaway> findAll(Putaway putAway, Page p) {
+		return putawayRepository.findAll().list();
+	}
 
-    public void update(Putaway dto) {
-        putawayRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public Putaway findById(Long id) {
+		return putawayRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        putawayRepository.deleteById(id);
-    }
+	@Override
+	public void save(Putaway entity) {
+		putawayRepository.persist(entity);
+	}
 
-    public List<Putaway> findAll(Putaway putAway, Page p) {
-        return putawayRepository.findAll().list();
-    }
+	@Override
+	public void update(Putaway dto) {
+		putawayRepository.getEntityManager().merge(dto);
+	}
 }

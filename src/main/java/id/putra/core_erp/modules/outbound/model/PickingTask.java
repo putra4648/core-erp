@@ -11,38 +11,38 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class PickingTask {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sales_order_line_id")
-    private SalesOrderLine salesOrderLine;
+	@ManyToOne
+	@JoinColumn(name = "sales_order_line_id")
+	private SalesOrderLine salesOrderLine;
 
-    private String status;
+	private String status;
 
-    public String getStatus() {
-        return status;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public SalesOrderLine getSalesOrderLine() {
+		return salesOrderLine;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public SalesOrderLine getSalesOrderLine() {
-        return salesOrderLine;
-    }
+	public void setSalesOrderLine(SalesOrderLine salesOrderLine) {
+		this.salesOrderLine = salesOrderLine;
+	}
 
-    public void setSalesOrderLine(SalesOrderLine salesOrderLine) {
-        this.salesOrderLine = salesOrderLine;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 }

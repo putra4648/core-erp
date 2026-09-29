@@ -13,66 +13,66 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class Shipment {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  private String shipmentNumber;
-  private Date shipDate;
-  private String status;
+	@ManyToOne
+	@JoinColumn(name = "carrier_id")
+	private Carrier carrier;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@ManyToOne
+	@JoinColumn(name = "packing_id")
+	private Packing packing;
+	private Date shipDate;
 
-  @ManyToOne
-  @JoinColumn(name = "packing_id")
-  private Packing packing;
+	private String shipmentNumber;
 
-  @ManyToOne
-  @JoinColumn(name = "carrier_id")
-  private Carrier carrier;
+	private String status;
 
-  public Long getId() {
-    return id;
-  }
+	public Carrier getCarrier() {
+		return carrier;
+	}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public String getShipmentNumber() {
-    return shipmentNumber;
-  }
+	public Packing getPacking() {
+		return packing;
+	}
 
-  public void setShipmentNumber(String shipmentNumber) {
-    this.shipmentNumber = shipmentNumber;
-  }
+	public Date getShipDate() {
+		return shipDate;
+	}
 
-  public Date getShipDate() {
-    return shipDate;
-  }
+	public String getShipmentNumber() {
+		return shipmentNumber;
+	}
 
-  public void setShipDate(Date shipDate) {
-    this.shipDate = shipDate;
-  }
+	public String getStatus() {
+		return status;
+	}
 
-  public String getStatus() {
-    return status;
-  }
+	public void setCarrier(Carrier carrier) {
+		this.carrier = carrier;
+	}
 
-  public void setStatus(String status) {
-    this.status = status;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public Packing getPacking() {
-    return packing;
-  }
+	public void setPacking(Packing packing) {
+		this.packing = packing;
+	}
 
-  public void setPacking(Packing packing) {
-    this.packing = packing;
-  }
+	public void setShipDate(Date shipDate) {
+		this.shipDate = shipDate;
+	}
 
-  public Carrier getCarrier() {
-    return carrier;
-  }
+	public void setShipmentNumber(String shipmentNumber) {
+		this.shipmentNumber = shipmentNumber;
+	}
 
-  public void setCarrier(Carrier carrier) {
-    this.carrier = carrier;
-  }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }
