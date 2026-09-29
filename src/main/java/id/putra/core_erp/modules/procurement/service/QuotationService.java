@@ -107,26 +107,6 @@ public class QuotationService implements BaseService<Quotation> {
 		quotationRepository.deleteById(id);
 	}
 
-	public byte[] download(Quotation dto) throws Exception {
-
-		Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
-		if (rfqOpt.isPresent()) {
-			try {
-				Supplier supplier = rfqOpt.get().getSuppliers().stream().findFirst().orElse(null);
-				if (supplier != null) {
-					Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq", supplier.getFilename());
-					return Files.readAllBytes(path);
-				}
-				return null;
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("Error reading file", e);
-			}
-		} else {
-			throw new ModuleException("File ID " + dto.getId() + " not found");
-		}
-	}
-
 	public List<Quotation> findAll(Quotation params) {
 		return quotationRepository.find("id like ?1", params.getId()).list();
 	}

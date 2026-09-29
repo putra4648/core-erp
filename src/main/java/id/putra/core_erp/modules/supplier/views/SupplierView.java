@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.supplier.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -30,149 +32,148 @@ import jakarta.validation.Validator;
 @PageTitle("Suppliers")
 @Authenticated
 public class SupplierView extends VerticalLayout {
-	private final Grid<Supplier> grid = new Grid<>();
+    @Inject
+    Validator validator;
 
-	private final TextField searchField = new TextField();
-	private final SupplierService supplierService;
-	@Inject
-	Validator validator;
+    private final SupplierService supplierService;
+    private final Grid<Supplier> grid = new Grid<>();
+    private final TextField searchField = new TextField();
 
-	public SupplierView(SupplierService supplierService) {
-		this.supplierService = supplierService;
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+    public SupplierView(SupplierService supplierService) {
+        this.supplierService = supplierService;
+        setSizeFull();
+        setPadding(true);
+        setSpacing(true);
 
-		addHeader();
-		addToolbar();
-		configureGrid();
-		add(grid);
+        addHeader();
+        addToolbar();
+        configureGrid();
+        add(grid);
 
-		refreshData();
-	}
+        refreshData();
+    }
 
-	private void addHeader() {
-		H2 title = new H2("Supplier Management");
-		title.addClassNames("m-0", "text-xl", "font-bold");
-		Paragraph desc = new Paragraph("Manage suppliers, vendor profiles, and contacts.");
-		desc.addClassNames("text-secondary", "m-0");
-		add(title, desc);
-	}
+    private void addHeader() {
+        H2 title = new H2("Supplier Management");
+        title.addClassNames("m-0", "text-xl", "font-bold");
+        Paragraph desc = new Paragraph("Manage suppliers, vendor profiles, and contacts.");
+        desc.addClassNames("text-secondary", "m-0");
+        add(title, desc);
+    }
 
-	private void addToolbar() {
-		searchField.setPlaceholder("Search suppliers...");
-		searchField.setClearButtonVisible(true);
-		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-		searchField.addValueChangeListener(e -> refreshData());
+    private void addToolbar() {
+        searchField.setPlaceholder("Search suppliers...");
+        searchField.setClearButtonVisible(true);
+        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        searchField.addValueChangeListener(e -> refreshData());
 
-		Button addButton = new Button("Add Supplier", VaadinIcon.PLUS.create(),
-				e -> openSupplierDialog(new Supplier()));
-		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        Button addButton = new Button("Add Supplier", VaadinIcon.PLUS.create(),
+                e -> openSupplierDialog(new Supplier()));
+        addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
+        Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
 
-		HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
-		toolbar.setWidthFull();
-		toolbar.setFlexGrow(1, searchField);
-		add(toolbar);
-	}
+        HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
+        toolbar.setWidthFull();
+        toolbar.setFlexGrow(1, searchField);
+        add(toolbar);
+    }
 
-	private void configureGrid() {
-		grid.setSizeFull();
-		grid.addColumn(s -> s.getCode() != null ? s.getCode() : "-").setHeader("Supplier Code").setAutoWidth(true)
-				.setSortable(true);
-		grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(1)
-				.setSortable(true);
+    private void configureGrid() {
+        grid.setSizeFull();
+        grid.addColumn(s -> s.getCode() != null ? s.getCode() : "-").setHeader("Supplier Code").setAutoWidth(true)
+                .setSortable(true);
+        grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(1)
+                .setSortable(true);
 
-		grid.addColumn(s -> {
-			if (s.getEmail() != null && !s.getEmail().isEmpty()) {
-				return s.getEmail();
-			}
-			return "-";
-		}).setHeader("Email").setFlexGrow(1);
+        grid.addColumn(s -> {
+            if (s.getEmail() != null ) {
+                return s.getEmail();
+            }
+            return "-";
+        }).setHeader("Email").setFlexGrow(1);
 
-		grid.addComponentColumn(supplier -> {
-			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openSupplierDialog(supplier));
-			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        grid.addComponentColumn(supplier -> {
+            Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openSupplierDialog(supplier));
+            editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(supplier));
-			deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+            Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(supplier));
+            deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
 
-			return new HorizontalLayout(editBtn, deleteBtn);
-		}).setHeader("Actions").setAutoWidth(true);
-	}
+            return new HorizontalLayout(editBtn, deleteBtn);
+        }).setHeader("Actions").setAutoWidth(true);
+    }
 
-	private void confirmDelete(Supplier supplier) {
-		Dialog confirmDialog = new Dialog("Delete Supplier");
-		confirmDialog.add(new Paragraph("Are you sure you want to delete supplier '" + supplier.getName() + "'?"));
+    private void refreshData() {
+        grid.setItems(supplierService.getAll(searchField.getValue(), Page.ofSize(100)));
+    }
 
-		Button deleteBtn = new Button("Delete", e -> {
-			try {
-				supplierService.delete(supplier.getId());
-				Notification.show("Supplier deleted successfully", 3000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-				confirmDialog.close();
-				refreshData();
-			} catch (Exception ex) {
-				Notification.show("Failed to delete supplier: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_ERROR);
-			}
-		});
-		deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+    private void openSupplierDialog(Supplier supplier) {
+        boolean isEdit = supplier.getId() != null;
+        Dialog dialog = new Dialog(isEdit ? "Edit Supplier" : "Add Supplier");
 
-		Button cancelBtn = new Button("Cancel", e -> confirmDialog.close());
+        TextField codeField = new TextField("Supplier Code");
+        TextField nameField = new TextField("Supplier Name");
+        TextField emailField = new TextField("Email");
 
-		confirmDialog.getFooter().add(cancelBtn, deleteBtn);
-		confirmDialog.open();
-	}
+        codeField.setValue(supplier.getCode() != null ? supplier.getCode() : "");
+        nameField.setValue(supplier.getName() != null ? supplier.getName() : "");
+        emailField.setValue(supplier.getEmail() != null ? supplier.getEmail() : "");
 
-	private void openSupplierDialog(Supplier supplier) {
-		boolean isEdit = supplier.getId() != null;
-		Dialog dialog = new Dialog(isEdit ? "Edit Supplier" : "Add Supplier");
 
-		TextField codeField = new TextField("Supplier Code");
-		TextField nameField = new TextField("Supplier Name");
-		TextField emailField = new TextField("Email");
+        FormLayout formLayout = new FormLayout(codeField, nameField, emailField);
+        dialog.add(formLayout);
 
-		codeField.setValue(supplier.getCode() != null ? supplier.getCode() : "");
-		nameField.setValue(supplier.getName() != null ? supplier.getName() : "");
-		emailField.setValue(supplier.getEmail() != null ? supplier.getEmail() : "");
-		// cpAddressField.setValue(cp.ge() != null ? cp.getAddress() : "");
+        Button saveBtn = new Button("Save", e -> {
+            if (validator.validate(supplier).isEmpty()) {
+                try {
+                    if (isEdit) {
+                        supplierService.update(supplier.getId(), supplier);
+                        Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_END)
+                                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    } else {
+                        supplierService.create(List.of(supplier));
+                        Notification.show("Supplier created successfully", 3000, Notification.Position.TOP_END)
+                                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    }
+                    dialog.close();
+                    refreshData();
+                } catch (Exception ex) {
+                    Notification
+                            .show("Failed to save supplier: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
+            }
+        });
+        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		FormLayout formLayout = new FormLayout(codeField, nameField, emailField);
-		dialog.add(formLayout);
+        Button cancelBtn = new Button("Cancel", e -> dialog.close());
 
-		Button saveBtn = new Button("Save", e -> {
-			if (validator.validate(supplier).isEmpty()) {
+        dialog.getFooter().add(cancelBtn, saveBtn);
+        dialog.open();
+    }
 
-				try {
-					if (isEdit) {
-						supplierService.update(supplier.getId(), supplier);
-						Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_END)
-								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-					} else {
-						supplierService.create(List.of(supplier));
-						Notification.show("Supplier created successfully", 3000, Notification.Position.TOP_END)
-								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-					}
-					dialog.close();
-					refreshData();
-				} catch (Exception ex) {
-					Notification
-							.show("Failed to save supplier: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_ERROR);
-				}
-			}
-		});
-		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    private void confirmDelete(Supplier supplier) {
+        Dialog confirmDialog = new Dialog("Delete Supplier");
+        confirmDialog.add(new Paragraph("Are you sure you want to delete supplier '" + supplier.getName() + "'?"));
 
-		Button cancelBtn = new Button("Cancel", e -> dialog.close());
+        Button deleteBtn = new Button("Delete", e -> {
+            try {
+                supplierService.delete(supplier.getId());
+                Notification.show("Supplier deleted successfully", 3000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                confirmDialog.close();
+                refreshData();
+            } catch (Exception ex) {
+                Notification.show("Failed to delete supplier: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
 
-		dialog.getFooter().add(cancelBtn, saveBtn);
-		dialog.open();
-	}
+        Button cancelBtn = new Button("Cancel", e -> confirmDialog.close());
 
-	private void refreshData() {
-		grid.setItems(supplierService.getAll(searchField.getValue(), Page.ofSize(100)));
-	}
+        confirmDialog.getFooter().add(cancelBtn, deleteBtn);
+        confirmDialog.open();
+    }
 }
