@@ -29,9 +29,9 @@ public class ProductRepositoryTest {
 		var page = Page.ofSize(10);
 		var sort = Sort.by("name");
 
-		Mockito.when(productRepository.find("sku like ?1", sort, "%").page(page).list()).thenReturn(list);
-		Assertions.assertEquals(list, productRepository.find("sku like ?1", sort, "%").list());
-		Mockito.verify(productRepository, Mockito.times(1)).find("sku like ?1", sort, "%");
+		Mockito.when(productRepository.find("name like ?1", sort, "%").page(page).list()).thenReturn(list);
+		Assertions.assertEquals(list, productRepository.find("name like ?1", sort, "%").list());
+		Mockito.verify(productRepository, Mockito.times(1)).find("name like ?1", sort, "%");
 
 	}
 
