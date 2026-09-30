@@ -19,7 +19,9 @@ public class ProductRepositoryTest {
 
 	@Test
 	public void findAllByName() throws Throwable{
-		var p1 = new Product("1", "P1");
+		var p1 = new Product();
+		p1.setId(1L);
+		p1.setName("Product 1");
 
 		var list = new ArrayList<Product>();
 		list.add(p1);

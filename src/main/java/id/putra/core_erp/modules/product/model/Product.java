@@ -12,12 +12,10 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 @Table(name = "product")
 public class Product extends BaseEntity {
+	@Id
+	private Long id;
 
 	private String description;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
 	private Long maxStock;
 
@@ -32,10 +30,6 @@ public class Product extends BaseEntity {
 
 	@NotBlank
 	private String sku;
-
-	// @ManyToOne
-	// @JoinColumn(name = "category_id")
-	// private Category category;
 
 	public String getDescription() {
 		return description;
