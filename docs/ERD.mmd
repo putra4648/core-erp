@@ -1,0 +1,504 @@
+erDiagram
+    %% MASTER DATA MODULE
+    Company {
+        bigint id PK "Primary Key"
+        string name "Nama perusahaan"
+        string code "Kode unik"
+        text address "Alamat"
+        string tax_number "NPWP"
+        date fiscal_year_start "Tahun fiskal mulai"
+    }
+
+    Department {
+        bigint id PK "Primary Key"
+        string department_number "Kode departemen"
+        string code "Short code"
+        string name "Nama departemen"
+        user manager_id "Manajer"
+        bigint parent_department_id FK "Parent dept"
+        string cost_center "Cost center"
+        address address "Alamat fisik"
+        enum department_type "Dept Type"
+    }
+
+    ParameterLookup {
+        bigint id PK "Primary Key"
+        string key "Lookup key"
+        string value "Value"
+        string group "Group"
+        string category "Kategori"
+    }
+
+    Product {
+        bigint id PK "Primary Key"
+        string sku UK "Stock Keeping Unit"
+        string barcode "Barcode"
+        string name "Nama produk"
+        text description "Deskripsi"
+        string category "Kategori produk"
+        string unit_of_measure "Satuan"
+        decimal unit_cost "Harga pokok modal"
+        string tax_code "Kode pajak"
+        boolean active "Status aktif"
+    }
+
+    Supplier {
+        bigint id PK "Primary Key"
+        string supplier_code UK "Kode vendor"
+        string name "Nama supplier"
+        enum type "Supplier Type"
+        address address "Alamat billing"
+        address shipping_address "Alamat pengiriman"
+        string tax_number "NPWP vendor"
+    }
+
+    SupplierContact {
+        bigint id PK "Primary Key"
+        bigint supplier_id FK "Foreign Key"
+        string name "Nama kontak"
+        string email "Email"
+        string phone "Telepon"
+    }
+
+    SupplierAddress {
+        bigint id PK "Primary Key"
+        bigint supplier_id FK "Foreign Key"
+        string address_type UK "Billing/Shipping"
+        text address "Alamat detail"
+        string postal_code "Kode pos"
+    }
+
+    ProductSupplier {
+        bigint id PK "Primary Key"
+        bigint product_id FK "Product"
+        bigint supplier_id FK "Supplier"
+        decimal price "Harga supplier"
+        boolean primary_supplier "Supplier utama"
+    }
+
+    Customer {
+        bigint id PK "Primary Key"
+        string customer_code UK "Kode pelanggan"
+        string name "Nama pelanggan"
+        enum type "Customer Type"
+        address address "Alamat billing"
+        address shipping_address "Alamat pengiriman"
+        string tax_number "NPWP pelanggan"
+        decimal credit_limit "Limit kredit"
+    }
+
+    ContactPersonCustomer {
+        bigint id PK "Primary Key"
+        bigint customer_id FK "Foreign Key"
+        string name "Nama kontak"
+        string email "Email"
+        string phone "Telepon"
+    }
+
+    Warehouse {
+        bigint id PK "Primary Key"
+        string warehouse_code UK "Kode gudang"
+        string name "Nama gudang"
+        text address "Alamat"
+        user contact_person "Kontak person"
+        string phone "Telepon"
+        string email "Email"
+    }
+
+    Zone {
+        bigint id PK "Primary Key"
+        string name "Nama zona"
+        bigint warehouse_id FK "Warehouse"
+    }
+
+    Rack {
+        bigint id PK "Primary Key"
+        string code "Kode rack"
+        bigint zone_id FK "Zone"
+    }
+
+    Location {
+        bigint id PK "Primary Key"
+        string code "Kode lokasi"
+        string barcode "Barcode"
+        bigint rack_id FK "Rack"
+    }
+
+    %% BUDGET & FINANCE MODULE
+    BudgetType {
+        bigint id PK "Primary Key"
+        string type_code UK "Kode tipe"
+        string name "Nama"
+        text description "Deskripsi"
+        string category "Kategori"
+    }
+
+    Budget {
+        bigint id PK "Primary Key"
+        string budget_number UK "Nomor anggaran"
+        bigint company_id FK "Company ID"
+        bigint department_id FK "Department ID"
+        bigint budget_type_id FK "Budget Type"
+        integer budget_year "Tahun fiskal"
+        integer fiscal_period "Periode"
+        decimal total_amount "Total anggaran"
+        string currency "Mata uang"
+        enum status "DRAFT/ACTIVE/CLOSED"
+        user created_by "Pembuat"
+    }
+
+    BudgetDetail {
+        bigint id PK "Primary Key"
+        bigint budget_id FK "Budget ID"
+        string cost_center "Cost center"
+        enum expense_type "Tipe pengeluaran"
+        decimal planned_amount "Jumlah direncanakan"
+        decimal actual_spent "Yang sudah terpakai"
+        decimal variance "Selisih"
+    }
+
+    %% APPROVAL WORKFLOW ENGINE
+    Approval {
+        bigint id PK "Primary Key"
+        string approval_number UK "Nomor approval"
+        bigint document_id FK "Document ID"
+        integer current_approval_stage "Stage saat ini"
+        integer total_approval_stage "Total stages"
+        enum status "DRAFT/WAITING/APPROVED/REJECTED"
+        datetime last_approved "Timestamp terakhir approval"
+        boolean is_approval_permanent "Flag permanent"
+        boolean is_bypass_permanent "Flag bypass"
+        list next_approvals "Approver berikutnya"
+        text reject_note "Catatan penolakan"
+    }
+
+    %% PROCURE-TO-PAY (P2P)
+    Requisition {
+        bigint id PK "Primary Key"
+        string requisition_number UK "Nomor PR"
+        bigint company_id FK "Company ID"
+        bigint department_id FK "Department ID"
+        bigint budget_id FK "Budget line"
+        user requester_id "Pembuat"
+        datetime requisition_date "Tanggal request"
+        datetime due_date "Target delivery"
+        decimal total_price "Total harga"
+        string currency "Mata uang"
+        enum status "DRAFT/SEND/APPROVED/CLOSED"
+        string reference_po "PO Number jika ada"
+    }
+
+    RequisitionLine {
+        bigint id PK "Primary Key"
+        bigint requisition_id FK "Requisition ID"
+        bigint product_id FK "Product ID"
+        decimal quantity "Jumlah"
+        decimal unit_price "Harga satuan"
+        decimal total_price "Total"
+        string lot_batch "Batch/Lot"
+    }
+
+    Quotation {
+        bigint id PK "Primary Key"
+        string quotation_number UK "Nomor RFQ"
+        bigint company_id FK "Company ID"
+        bigint requisition_id FK "Requisition"
+        bigint supplier_id FK "Supplier"
+        enum status "DRAFT/SENT/APPROVED/CLOSED"
+        datetime quotation_date "Tanggal RFQ"
+        decimal total_amount "Total nilai"
+        string currency "Mata uang"
+        datetime delivery_date "Target delivery"
+    }
+
+    QuotationLine {
+        bigint id PK "Primary Key"
+        bigint quotation_id FK "Quotation ID"
+        bigint product_id FK "Product ID"
+        decimal quantity "Jumlah"
+        decimal unit_price "Harga satuan"
+        decimal total_price "Total"
+    }
+
+    Transfer {
+        bigint id PK "Primary Key"
+        string transfer_number UK "Nomor transfer"
+        bigint company_id FK "Company ID"
+        bigint from_department_id FK "Departemen asal"
+        bigint to_department_id FK "Departemen tujuan"
+        bigint source_warehouse_id FK "Gudang asal"
+        bigint destination_warehouse_id FK "Gudang tujuan"
+        text reason "Alasan transfer"
+        enum status "DRAFT/SENT/APPROVED/CLOSED"
+        datetime transfer_date "Tanggal transfer"
+    }
+
+    TransferLine {
+        bigint id PK "Primary Key"
+        bigint transfer_id FK "Transfer ID"
+        bigint product_id FK "Product ID"
+        decimal quantity "Jumlah"
+    }
+
+    PurchaseOrder {
+        bigint id PK "Primary Key"
+        string po_number UK "Nomor PO"
+        bigint company_id FK "Company ID"
+        bigint department_id FK "Department ID"
+        bigint supplier_id FK "Supplier"
+        bigint budget_id FK "Budget line"
+        datetime po_date "Tanggal PO"
+        datetime delivery_date "Target delivery"
+        decimal total_amount "Total nilai"
+        string currency "Mata uang"
+        enum status "DRAFT/SENT/DELIVERED/CLOSED"
+        string supplier_reference "Supplier PO reference"
+    }
+
+    PurchaseOrderLine {
+        bigint id PK "Primary Key"
+        bigint purchase_order_id FK "Purchase Order ID"
+        bigint product_id FK "Product ID"
+        decimal quantity "Jumlah"
+        decimal unit_price "Harga satuan"
+        decimal total_price "Total"
+        string lot_batch "Batch/Lot"
+    }
+
+    %% INBOUND LOGISTICS
+    Receiving {
+        bigint id PK "Primary Key"
+        string receiving_number UK "Nomor penerimaan"
+        bigint purchase_order_id FK "PO reference"
+        bigint company_id FK "Company ID"
+        datetime receiving_date "Tanggal terima"
+        enum status "DRAFT/IN_PROGRESS/CLOSED"
+        user supplier_contact_person "Supplier rep"
+    }
+
+    ReceivingLine {
+        bigint id PK "Primary Key"
+        bigint receiving_id FK "Receiving ID"
+        bigint product_id FK "Product ID"
+        bigint purchase_order_line_id FK "PO Line"
+        decimal expected_quantity "Qty di PO"
+        decimal received_quantity "Qty diterima"
+        string lot_batch "Batch/Lot number"
+        date expiry_date "Tanggal kadaluarsa"
+        enum received_status "OPEN/RECEIVED/RETURNED"
+    }
+
+    QualityInspection {
+        bigint id PK "Primary Key"
+        bigint receiving_id FK "Receiving ID"
+        datetime inspection_date "Tanggal inspeksi"
+        user inspector "Inspectur"
+        enum result "PASSED/FAILED/CONDITIONAL"
+        text remarks "Catatan hasil"
+    }
+
+    QualityInspectionLine {
+        bigint id PK "Primary Key"
+        bigint quality_inspection_id FK "Quality Inspection ID"
+        bigint receiving_line_id FK "Receiving Line ID"
+        enum result "PASSED/FAILED/CONDITIONAL"
+        text remarks "Catatan detail"
+    }
+
+    Labelling {
+        bigint id PK "Primary Key"
+        bigint receiving_id FK "Receiving ID"
+        string lot_batch "Batch/Lot number"
+        string barcode "Scannable barcode"
+        string tracking_code "Internal tracking ID"
+    }
+
+    Putaway {
+        bigint id PK "Primary Key"
+        bigint receiving_id FK "Receiving ID"
+        bigint product_id FK "Product ID"
+        bigint location_id FK "Target Location"
+        decimal quantity "Qty dipindahkan"
+        datetime execution_date "Tanggal putaway"
+    }
+
+    ReturnToVendor {
+        bigint id PK "Primary Key"
+        string return_number UK "Nomor RTV"
+        bigint purchase_order_id FK "PO Reference"
+        bigint receiving_id FK "Original Receiving ID"
+        enum reason "DEFECTIVE/DAMAGED/WARRANTY"
+        bigint supplier_id FK "Supplier"
+        datetime return_date "Tanggal pengembalian"
+        enum status "DRAFT/SENT/CLOSED"
+    }
+
+    ReturnLine {
+        bigint id PK "Primary Key"
+        bigint return_to_vendor_id FK "RTV ID"
+        bigint product_id FK "Product ID"
+        decimal quantity "Jumlah"
+    }
+
+    %% INVENTORY MANAGEMENT
+    InventoryItem {
+        bigint id PK "Primary Key"
+        bigint product_id FK "Product ID"
+        bigint location_id FK "Warehouse Location"
+        decimal quantity_on_hand "Fisik tersedia"
+        decimal quantity_allocated "Reserved untuk SO"
+        decimal quantity_available "qtyOnHand - qtyAllocated"
+        string lot_batch "Batch/Lot number"
+        date expiry_date "Kadaluarsa"
+        enum status "ACTIVE/EXPIRED/QUIESCENT"
+    }
+
+    %% ORDER-TO-CASH (O2C)
+    SalesOrder {
+        bigint id PK "Primary Key"
+        string so_number UK "Nomor SO"
+        bigint company_id FK "Company ID"
+        bigint customer_id FK "Customer ID"
+        user sales_rep_id "Sales rep"
+        datetime so_date "Tanggal SO"
+        datetime delivery_date "Target delivery"
+        decimal total_amount "Total nilai"
+        string currency "Mata uang"
+        enum status "DRAFT/CONFIRMED/PICKED/PACKED/SHIPPED/DIVERED/CLOSED"
+    }
+
+    SalesOrderLine {
+        bigint id PK "Primary Key"
+        bigint sales_order_id FK "Sales Order ID"
+        bigint product_id FK "Product ID"
+        decimal quantity "Jumlah"
+        decimal unit_price "Harga satuan"
+        decimal total_price "Total"
+        string lot_batch "Batch/Lot"
+    }
+
+    PickingTask {
+        bigint id PK "Primary Key"
+        bigint sales_order_id FK "Sales Order ID"
+        bigint product_id FK "Product ID"
+        bigint location_id FK "Source Location"
+        decimal expected_quantity "Qty di SO"
+        decimal picked_quantity "Qty terpilih"
+        user picker "Picker"
+        enum task_status "OPEN/PICKED/COMPLETED"
+    }
+
+    Packing {
+        bigint id PK "Primary Key"
+        bigint picking_id FK "Picking Task ID"
+        string package_number UK "Nomor packing"
+        decimal weight "Berat paket"
+        text dimensions "Panjang x Lebar x Tinggi"
+        datetime packing_date "Tanggal packing"
+        boolean carrier_assigned "Flag carrier assigned"
+    }
+
+    Shipment {
+        bigint id PK "Primary Key"
+        string shipment_number UK "Nomor pengiriman"
+        bigint company_id FK "Company ID"
+        bigint packing_id FK "Packing reference"
+        user carrier "Carrier"
+        string tracking_number "Tracking number"
+        text manifest "Shipping manifest"
+        datetime shipment_date "Tanggal kirim"
+        enum status "DRAFT/IN_TRANSIT/DELIVERED/CLOSED"
+    }
+
+    Carrier {
+        bigint id PK "Primary Key"
+        string carrier_name "Nama carrier"
+        string api_key "API key integration"
+        decimal service_fee "Biaya per pengiriman"
+    }
+
+    %% TRANSACTION LEDGER
+    Transaction {
+        bigint id PK "Primary Key"
+        string txn_number UK "Nomor transaksi"
+        bigint company_id FK "Company ID"
+        enum txn_type "INBOUND|OUTBOUND|TRANSFER|ADJUSTMENT"
+        datetime txn_date "Tanggal"
+        string source_location "Lokasi asal"
+        string dest_location "Lokasi tujuan"
+        string reference_number "PO#/SO#/PR#"
+        enum reference_type "PO|SO|TRANSFER"
+        enum status "COMPLETED/REVERSED"
+        decimal total_amount "Nilai total"
+    }
+
+    TransactionItem {
+        bigint id PK "Primary Key"
+        bigint transaction_id FK "Transaction ID"
+        bigint product_id FK "Product ID"
+        decimal quantity "Qty per transaksi"
+        decimal unit_price "Harga satuan"
+        decimal total_price "Qty × Unit Price"
+        string lot_batch "Batch/Lot number"
+    }
+
+    %% RELATIONSHIPS
+    Company ||--o{ Department : "has_many_departments"
+    Department ||--o{ Department : "parent-child"
+    %% ParameterLookup --|| Company : "configures_system_wide"
+    
+    Supplier ||--o{ ProductSupplier : "supplies_products"
+    Supplier ||--o{ SupplierContact : "has_contacts"
+    Supplier ||--o{ SupplierAddress : "has_addresses"
+    ProductSupplier ||--|{ Product : "maps_to_product"
+    ProductSupplier ||--|{ Supplier : "maps_to_supplier"
+    
+    Customer ||--o{ ContactPersonCustomer : "has_contacts"
+    Warehouse ||--o{ Zone : "contains_zones"
+    Zone ||--o{ Rack : "contains_racks"
+    Rack ||--o{ Location : "contains_locations"
+    
+    BudgetType ||--o{ Budget : "defines_types"
+    Budget ||--o{ BudgetDetail : "has_details"
+    Budget ||--o{ Requisition : "budget_control"
+    Budget ||--o{ PurchaseOrder : "budget_commitment"
+    
+    Approval ||--o{ Requisition : "approves"
+    Approval ||--o{ Quotation : "approves"
+    Approval ||--o{ Transfer : "approves"
+    Approval ||--o| Company : "company_budget"
+    Approval ||--o| Department : "dept_budget"
+    
+    Requisition ||--o{ RequisitionLine : "contains_lines"
+    Quotation ||--o{ QuotationLine : "contains_lines"
+    PurchaseOrder ||--o{ PurchaseOrderLine : "contains_lines"
+    
+    Transfer ||--o{ TransferLine : "contains_lines"
+    
+    Receiving ||--o{ ReceivingLine : "contains_lines"
+    QualityInspection ||--o{ QualityInspectionLine : "inspects_lines"
+    Labelling ||--o| Receiving : "labels_from_receiving"
+    Putaway ||--o| Receiving : "putaways_from_receiving"
+    ReturnToVendor ||--o| PurchaseOrder : "returns_from_po"
+    ReturnToVendor ||--o| Receiving : "returns_from_receiving"
+    ReturnToVendor ||--o{ ReturnLine : "contains_returns"
+    
+    InventoryItem ||--o{ SalesOrder : "reserved_for_sales"
+    InventoryItem ||--o{ PurchaseOrder : "received_from_purchase"
+    InventoryItem ||--o{ Requisition : "allocated_to_requisition"
+    
+    SalesOrder ||--o{ SalesOrderLine : "contains_lines"
+    SalesOrder ||--o{ PickingTask : "generates_picking"
+    PickingTask ||--o{ Packing : "packed_from_picking"
+    Packing ||--o{ Shipment : "shipped_from_packing"
+    
+    Transaction ||--o| Receiving : "inbound_receipts"
+    Transaction ||--o| OutboundShipment : "outbound_shipments"
+    Transaction ||--o| Transfer : "internal_transfers"
+    Transaction ||--o{ TransactionItem : "contains_items"
+    Transaction ||--o| Supplier : "supplier_transactions"
+    Transaction ||--o| Customer : "customer_transactions"
+    
+    User ||--|| Company : "company_manager"
+    User ||--|| Department : "dept_manager"
+    User ||--|| Warehouse : "warehouse_manager"
