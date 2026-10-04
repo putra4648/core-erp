@@ -18,12 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "transfer_request")
 public class Transfer extends BaseEntity {
-
-    @Id
-    private Long id;
-
     @Column(name = "title")
     private String title;
 
@@ -79,14 +74,8 @@ public class Transfer extends BaseEntity {
         this.filename = filename;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    
     public String getTitle() {
         return title;
     }

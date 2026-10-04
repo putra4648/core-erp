@@ -86,7 +86,7 @@ public class RequisitionListView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("PR Number").setAutoWidth(true);
+        grid.addColumn(r -> r.id != null ? r.id : "-").setHeader("PR Number").setAutoWidth(true);
         grid.addColumn(r -> r.getTitle() != null ? r.getTitle() : "-").setHeader("Title").setFlexGrow(2);
         grid.addColumn(r -> r.getDepartment() != null ? r.getDepartment().getName() : "-").setHeader("Department")
                 .setFlexGrow(1);
@@ -117,12 +117,12 @@ public class RequisitionListView extends VerticalLayout {
 
         grid.addComponentColumn(r -> {
             Button viewBtn = new Button("View / Edit", VaadinIcon.EYE.create(),
-                    e -> UI.getCurrent().navigate(RequisitionFormView.class, r.getId().toString()));
+                    e -> UI.getCurrent().navigate(RequisitionFormView.class, r.id.toString()));
             viewBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
             Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> {
                 if ("DRAFT".equalsIgnoreCase(r.getStatus()) || "REJECT".equalsIgnoreCase(r.getStatus())) {
-                    requisitionRepo.deleteById(r.getId());
+                    requisitionRepo.deleteById(r.id);
                     Notification.show("Requisition deleted", 2000, Notification.Position.TOP_CENTER);
                     refreshGrid();
                 } else {

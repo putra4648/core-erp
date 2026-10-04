@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.inbound.model;
 
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,10 +11,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class QualityInspection {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class QualityInspection extends BaseEntity{
+   
     private String result;
     private String remarks;
 
@@ -21,14 +20,9 @@ public class QualityInspection {
     @JoinColumn(name = "receiving_line_id")
     private ReceivingLine receivingLine;
 
-    public Long getId() {
-        return id;
-    }
+   
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    
     public String getResult() {
         return result;
     }

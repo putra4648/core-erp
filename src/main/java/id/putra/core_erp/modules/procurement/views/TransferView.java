@@ -68,7 +68,7 @@ public class TransferView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(t -> t.getId() != null ? t.getId() : "-").setHeader("Transfer Number").setAutoWidth(true);
+        grid.addColumn(t -> t.id != null ? t.id : "-").setHeader("Transfer Number").setAutoWidth(true);
         grid.addColumn(t -> t.getTitle() != null ? t.getTitle() : "-").setHeader("Title").setFlexGrow(2);
         grid.addColumn(t -> t.getDepartment() != null ? t.getDepartment().getName() : "-").setHeader("Department")
                 .setFlexGrow(1);

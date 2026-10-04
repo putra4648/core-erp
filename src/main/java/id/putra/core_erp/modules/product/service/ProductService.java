@@ -20,7 +20,7 @@ public class ProductService implements BaseService<Product> {
     }
 
     public Product getProduct(Product dto) {
-        return productRepository.findById(dto.getId());
+        return productRepository.findById(dto.id);
     }
 
     public void save(Product dto) {

@@ -40,334 +40,391 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class WarehouseView extends VerticalLayout {
 
-    private final WarehouseService warehouseService;
-    private final ZoneCoreService zoneService;
-    private final RackCoreService rackService;
-    private final LocationCoreService locationService;
+	private final WarehouseService warehouseService;
+	private final ZoneCoreService zoneService;
+	private final RackCoreService rackService;
+	private final LocationCoreService locationService;
 
-    private final VerticalLayout contentArea = new VerticalLayout();
-    private final Tabs tabs = new Tabs();
-    private final Tab tabWarehouses = new Tab("Warehouses");
-    private final Tab tabZones = new Tab("Zones");
-    private final Tab tabRacks = new Tab("Racks");
-    private final Tab tabLocations = new Tab("Locations");
+	private final VerticalLayout contentArea = new VerticalLayout();
+	private final Tabs tabs = new Tabs();
+	private final Tab tabWarehouses = new Tab("Warehouses");
+	private final Tab tabZones = new Tab("Zones");
+	private final Tab tabRacks = new Tab("Racks");
+	private final Tab tabLocations = new Tab("Locations");
 
-    public WarehouseView(WarehouseService warehouseService, ZoneCoreService zoneService,
-            RackCoreService rackService, LocationCoreService locationService) {
-        this.warehouseService = warehouseService;
-        this.zoneService = zoneService;
-        this.rackService = rackService;
-        this.locationService = locationService;
+	public WarehouseView(WarehouseService warehouseService, ZoneCoreService zoneService, RackCoreService rackService,
+			LocationCoreService locationService) {
+		this.warehouseService = warehouseService;
+		this.zoneService = zoneService;
+		this.rackService = rackService;
+		this.locationService = locationService;
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        addHeader();
-        configureTabs();
+		addHeader();
+		configureTabs();
 
-        contentArea.setSizeFull();
-        contentArea.setPadding(false);
-        add(tabs, contentArea);
+		contentArea.setSizeFull();
+		contentArea.setPadding(false);
+		add(tabs, contentArea);
 
-        showWarehousesPanel();
-    }
+		showWarehousesPanel();
+	}
 
-    private void addHeader() {
-        H2 title = new H2("Warehouse Management");
-        title.addClassNames("m-0", "text-xl", "font-bold");
-        Paragraph desc = new Paragraph("Manage physical facilities, zones, storage racks, and location bin numbers.");
-        desc.addClassNames("text-secondary", "m-0");
-        add(title, desc);
-    }
+	private void addHeader() {
+		H2 title = new H2("Warehouse Management");
+		title.addClassNames("m-0", "text-xl", "font-bold");
+		Paragraph desc = new Paragraph("Manage physical facilities, zones, storage racks, and location bin numbers.");
+		desc.addClassNames("text-secondary", "m-0");
+		add(title, desc);
+	}
 
-    private void configureTabs() {
-        tabs.add(tabWarehouses, tabZones, tabRacks, tabLocations);
-        tabs.addSelectedChangeListener(event -> {
-            contentArea.removeAll();
-            Tab selected = tabs.getSelectedTab();
-            if (selected.equals(tabWarehouses)) {
-                showWarehousesPanel();
-            } else if (selected.equals(tabZones)) {
-                showZonesPanel();
-            } else if (selected.equals(tabRacks)) {
-                showRacksPanel();
-            } else if (selected.equals(tabLocations)) {
-                showLocationsPanel();
-            }
-        });
-    }
+	private void configureTabs() {
+		tabs.add(tabWarehouses, tabZones, tabRacks, tabLocations);
+		tabs.addSelectedChangeListener(event -> {
+			contentArea.removeAll();
+			Tab selected = tabs.getSelectedTab();
+			if (selected.equals(tabWarehouses)) {
+				showWarehousesPanel();
+			} else if (selected.equals(tabZones)) {
+				showZonesPanel();
+			} else if (selected.equals(tabRacks)) {
+				showRacksPanel();
+			} else if (selected.equals(tabLocations)) {
+				showLocationsPanel();
+			}
+		});
+	}
 
-    // --- Warehouses Panel ---
-    private void showWarehousesPanel() {
-        Grid<Warehouse> grid = new Grid<>();
-        TextField search = new TextField();
-        search.setPlaceholder("Search warehouses...");
-        search.setPrefixComponent(VaadinIcon.SEARCH.create());
-        search.setClearButtonVisible(true);
+	// --- Warehouses Panel ---
+	private void showWarehousesPanel() {
+		Grid<Warehouse> grid = new Grid<>();
+		TextField search = new TextField();
+		search.setPlaceholder("Search warehouses...");
+		search.setPrefixComponent(VaadinIcon.SEARCH.create());
+		search.setClearButtonVisible(true);
 
-        Runnable refresh = () -> {
-            Warehouse param = new Warehouse();
-            param.setName(search.getValue());
-            grid.setItems(warehouseService.getWarehouses(param, Page.ofSize(100)));
-        };
-        search.addValueChangeListener(e -> refresh.run());
+		Runnable refresh = () -> {
+			Warehouse param = new Warehouse();
+			param.setName(search.getValue());
+			grid.setItems(warehouseService.getWarehouses(param, Page.ofSize(100)));
+		};
+		search.addValueChangeListener(e -> refresh.run());
 
-        Button addBtn = new Button("Add Warehouse", VaadinIcon.PLUS.create(),
-                e -> openWarehouseDialog(new Warehouse(), refresh));
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button addBtn = new Button("Add Warehouse", VaadinIcon.PLUS.create(),
+				e -> openWarehouseDialog(new Warehouse(), refresh));
+		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
-        toolbar.setWidthFull();
-        toolbar.setFlexGrow(1, search);
+		HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
+		toolbar.setWidthFull();
+		toolbar.setFlexGrow(1, search);
 
-        grid.setSizeFull();
-        grid.addColumn(w -> w.getId() != null ? w.getId().toString() : "").setHeader("ID").setAutoWidth(true);
-        grid.addColumn(w -> w.getName() != null ? w.getName() : "").setHeader("Warehouse Name").setFlexGrow(1);
-        grid.addColumn(w -> w.getLocation() != null ? w.getLocation() : "").setHeader("Location/Address")
-                .setFlexGrow(1);
-        grid.addColumn(w -> w.getArea() != null ? w.getArea() + " m²" : "-").setHeader("Area").setAutoWidth(true);
+		grid.setSizeFull();
+		grid.addColumn(w -> w.id != null ? w.id.toString() : "").setHeader("ID").setAutoWidth(true);
+		grid.addColumn(w -> w.getName() != null ? w.getName() : "").setHeader("Warehouse Name").setFlexGrow(1);
+		grid.addColumn(w -> w.getLocation() != null ? w.getLocation() : "").setHeader("Location/Address")
+				.setFlexGrow(1);
+		grid.addColumn(w -> w.getArea() != null ? w.getArea() + " m²" : "-").setHeader("Area").setAutoWidth(true);
 
-        grid.addComponentColumn(wh -> {
-            boolean active = Boolean.TRUE.equals(wh.getIsActive());
-            Span badge = new Span(active ? "Active" : "Inactive");
-            badge.getElement().getThemeList().add("badge " + (active ? "success" : "error"));
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
+		grid.addComponentColumn(wh -> {
+			boolean active = Boolean.TRUE.equals(wh.getIsActive());
+			Span badge = new Span(active ? "Active" : "Inactive");
+			badge.getElement().getThemeList().add("badge " + (active ? "success" : "error"));
+			return badge;
+		}).setHeader("Status").setAutoWidth(true);
 
-        grid.addComponentColumn(wh -> {
-            Button edit = new Button(VaadinIcon.EDIT.create(), e -> openWarehouseDialog(wh, refresh));
-            edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
-                try {
-                    warehouseService.delete(List.of(wh.getId()));
-                    Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
-                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    refresh.run();
-                } catch (Exception ex) {
-                    Notification.show("Delete failed: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
-                }
-            });
-            delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-            return new HorizontalLayout(edit, delete);
-        }).setHeader("Actions").setAutoWidth(true);
+		grid.addComponentColumn(wh -> {
+			Button edit = new Button(VaadinIcon.EDIT.create(), e -> openWarehouseDialog(wh, refresh));
+			edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
+				try {
+					warehouseService.delete(List.of(wh.id));
+					Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					refresh.run();
+				} catch (Exception ex) {
+					Notification.show("Delete failed: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				}
+			});
+			delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+			return new HorizontalLayout(edit, delete);
+		}).setHeader("Actions").setAutoWidth(true);
 
-        contentArea.add(toolbar, grid);
-        refresh.run();
-    }
+		contentArea.add(toolbar, grid);
+		refresh.run();
+	}
 
-    private void openWarehouseDialog(Warehouse warehouse, Runnable onSave) {
-        boolean isEdit = warehouse.getId() != null;
-        Dialog dialog = new Dialog(isEdit ? "Edit Warehouse" : "Add Warehouse");
+	private void openWarehouseDialog(Warehouse warehouse, Runnable onSave) {
+		boolean isEdit = warehouse.id != null;
+		Dialog dialog = new Dialog(isEdit ? "Edit Warehouse" : "Add Warehouse");
 
-        TextField nameField = new TextField("Name");
-        TextField locationField = new TextField("Location");
-        NumberField areaField = new NumberField("Area (m²)");
-        Checkbox activeCheck = new Checkbox("Is Active");
+		TextField nameField = new TextField("Name");
+		TextField locationField = new TextField("Location");
+		NumberField areaField = new NumberField("Area (m²)");
+		Checkbox activeCheck = new Checkbox("Is Active");
 
-        nameField.setValue(warehouse.getName() != null ? warehouse.getName() : "");
-        locationField.setValue(warehouse.getLocation() != null ? warehouse.getLocation() : "");
-        areaField.setValue(warehouse.getArea() != null ? warehouse.getArea() : 0.0);
-        activeCheck.setValue(warehouse.getIsActive() != null ? warehouse.getIsActive() : true);
+		nameField.setValue(warehouse.getName() != null ? warehouse.getName() : "");
+		locationField.setValue(warehouse.getLocation() != null ? warehouse.getLocation() : "");
+		areaField.setValue(warehouse.getArea() != null ? warehouse.getArea() : 0.0);
+		activeCheck.setValue(warehouse.getIsActive() != null ? warehouse.getIsActive() : true);
 
-        FormLayout form = new FormLayout(nameField, locationField, areaField, activeCheck);
-        dialog.add(form);
+		FormLayout form = new FormLayout(nameField, locationField, areaField, activeCheck);
+		dialog.add(form);
 
-        Button save = new Button("Save", e -> {
-            Warehouse dto = new Warehouse();
-            dto.setId(warehouse.getId());
-            dto.setName(nameField.getValue());
-            dto.setLocation(locationField.getValue());
-            dto.setArea(areaField.getValue());
-            dto.setIsActive(activeCheck.getValue());
+		Button save = new Button("Save", e -> {
+			Warehouse dto = new Warehouse();
+			dto.setName(nameField.getValue());
+			dto.setLocation(locationField.getValue());
+			dto.setArea(areaField.getValue());
+			dto.setIsActive(activeCheck.getValue());
 
-            try {
-                if (isEdit) {
-                    warehouseService.update(List.of(dto));
-                } else {
-                    warehouseService.save(List.of(dto));
-                }
-                Notification.show("Warehouse saved", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                dialog.close();
-                onSave.run();
-            } catch (Exception ex) {
-                Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
-        dialog.open();
-    }
+			try {
+				if (isEdit) {
+					warehouseService.update(List.of(dto));
+				} else {
+					warehouseService.save(List.of(dto));
+				}
+				Notification.show("Warehouse saved", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				dialog.close();
+				onSave.run();
+			} catch (Exception ex) {
+				Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
+		dialog.open();
+	}
 
-    // --- Zones Panel ---
-    private void showZonesPanel() {
-        Grid<Zone> grid = new Grid<>();
-        TextField search = new TextField();
-        search.setPlaceholder("Search zones...");
-        search.setPrefixComponent(VaadinIcon.SEARCH.create());
+	// --- Zones Panel ---
+	private void showZonesPanel() {
+		Grid<Zone> grid = new Grid<>();
+		TextField search = new TextField();
+		search.setPlaceholder("Search zones...");
+		search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
-        Runnable refresh = () -> {
-            Zone param = new Zone();
-            param.setName(search.getValue());
-            grid.setItems(zoneService.getZones(param, Page.ofSize(100)));
-        };
-        search.addValueChangeListener(e -> refresh.run());
+		Runnable refresh = () -> {
+			Zone param = new Zone();
+			param.setName(search.getValue());
+			grid.setItems(zoneService.getZones(param, Page.ofSize(100)));
+		};
+		search.addValueChangeListener(e -> refresh.run());
 
-        Button addBtn = new Button("Add Zone", VaadinIcon.PLUS.create(),
-                e -> openZoneDialog(new Zone(), refresh));
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button addBtn = new Button("Add Zone", VaadinIcon.PLUS.create(), e -> openZoneDialog(new Zone(), refresh));
+		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
-        toolbar.setWidthFull();
-        toolbar.setFlexGrow(1, search);
+		HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
+		toolbar.setWidthFull();
+		toolbar.setFlexGrow(1, search);
 
-        grid.setSizeFull();
-        grid.addColumn(z -> z.getCode() != null ? z.getCode() : "").setHeader("Zone Code").setAutoWidth(true);
-        grid.addColumn(z -> z.getName() != null ? z.getName() : "").setHeader("Zone Name").setFlexGrow(1);
-        grid.addColumn(z -> z.getType() != null ? z.getType() : "").setHeader("Type").setAutoWidth(true);
+		grid.setSizeFull();
+		grid.addColumn(z -> z.getCode() != null ? z.getCode() : "").setHeader("Zone Code").setAutoWidth(true);
+		grid.addColumn(z -> z.getName() != null ? z.getName() : "").setHeader("Zone Name").setFlexGrow(1);
+		grid.addColumn(z -> z.getType() != null ? z.getType() : "").setHeader("Type").setAutoWidth(true);
 
-        grid.addComponentColumn(z -> {
-            Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
-                zoneService.delete(List.of(z));
-                refresh.run();
-            });
-            delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-            return delete;
-        }).setHeader("Actions").setAutoWidth(true);
+		grid.addComponentColumn(zone -> {
+			Button edit = new Button(VaadinIcon.EDIT.create(), e -> openZoneDialog(zone, refresh));
+			edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
+				try {
+					zoneService.delete(zone.id);
+					Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					refresh.run();
+				} catch (Exception ex) {
+					Notification.show("Delete failed: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				}
+			});
+			delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+			return new HorizontalLayout(edit, delete);
+		}).setHeader("Actions").setAutoWidth(true);
 
-        contentArea.add(toolbar, grid);
-        refresh.run();
-    }
+		contentArea.add(toolbar, grid);
+		refresh.run();
+	}
 
-    private void openZoneDialog(Zone zone, Runnable onSave) {
-        Dialog dialog = new Dialog("Add Zone");
-        TextField code = new TextField("Zone Code");
-        TextField name = new TextField("Zone Name");
-        TextField type = new TextField("Zone Type");
-        dialog.add(new FormLayout(code, name, type));
+	private void openZoneDialog(Zone zone, Runnable onSave) {
+		Dialog dialog = new Dialog("Add Zone");
+		TextField code = new TextField("Zone Code");
+		TextField name = new TextField("Zone Name");
+		TextField type = new TextField("Zone Type");
 
-        Button save = new Button("Save", e -> {
-            Zone dto = new Zone();
-            dto.setCode(code.getValue());
-            dto.setName(name.getValue());
-            dto.setType(type.getValue());
-            dto.setIsActive(true);
-            zoneService.add(List.of(dto));
-            dialog.close();
-            onSave.run();
-        });
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
-        dialog.open();
-    }
+		code.setValue(zone.getCode() != null ? zone.getCode() : "");
+		name.setValue(zone.getName() != null ? zone.getName() : "");
+		type.setValue(zone.getType() != null ? zone.getType() : "");
 
-    // --- Racks Panel ---
-    private void showRacksPanel() {
-        Grid<Rack> grid = new Grid<>();
-        TextField search = new TextField();
-        search.setPlaceholder("Search racks...");
-        search.setPrefixComponent(VaadinIcon.SEARCH.create());
+		dialog.add(new FormLayout(code, name, type));
 
-        Runnable refresh = () -> {
-            Rack param = new Rack();
-            param.setName(search.getValue());
-            grid.setItems(rackService.getRacks(param, Page.ofSize(100)));
-        };
-        search.addValueChangeListener(e -> refresh.run());
+		Button save = new Button("Save", e -> {
+			Zone dto = new Zone();
+			dto.setCode(code.getValue());
+			dto.setName(name.getValue());
+			dto.setType(type.getValue());
+			dto.setIsActive(true);
+			zoneService.add(List.of(dto));
+			dialog.close();
+			onSave.run();
+		});
+		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
+		dialog.open();
+	}
 
-        Button addBtn = new Button("Add Rack", VaadinIcon.PLUS.create(),
-                e -> openRackDialog(new Rack(), refresh));
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+	// --- Racks Panel ---
+	private void showRacksPanel() {
+		Grid<Rack> grid = new Grid<>();
+		TextField search = new TextField();
+		search.setPlaceholder("Search racks...");
+		search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
-        HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
-        toolbar.setWidthFull();
-        toolbar.setFlexGrow(1, search);
+		Runnable refresh = () -> {
+			Rack param = new Rack();
+			param.setName(search.getValue());
+			grid.setItems(rackService.getRacks(param, Page.ofSize(100)));
+		};
+		search.addValueChangeListener(e -> refresh.run());
 
-        grid.setSizeFull();
-        grid.addColumn(r -> r.getName() != null ? r.getName() : "").setHeader("Rack Name").setFlexGrow(1);
-        grid.addColumn(r -> r.getRows() != null ? r.getRows().toString() : "").setHeader("Rows").setAutoWidth(true);
-        grid.addColumn(r -> r.getCols() != null ? r.getCols().toString() : "").setHeader("Columns").setAutoWidth(true);
+		Button addBtn = new Button("Add Rack", VaadinIcon.PLUS.create(), e -> openRackDialog(new Rack(), refresh));
+		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        contentArea.add(toolbar, grid);
-        refresh.run();
-    }
+		HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
+		toolbar.setWidthFull();
+		toolbar.setFlexGrow(1, search);
 
-    private void openRackDialog(Rack rack, Runnable onSave) {
-        Dialog dialog = new Dialog("Add Rack");
-        TextField name = new TextField("Rack Name");
-        NumberField rows = new NumberField("Rows");
-        NumberField cols = new NumberField("Columns");
-        dialog.add(new FormLayout(name, rows, cols));
+		grid.setSizeFull();
+		grid.addColumn(r -> r.getName() != null ? r.getName() : "").setHeader("Rack Name").setFlexGrow(1);
+		grid.addColumn(r -> r.getRows() != null ? r.getRows().toString() : "").setHeader("Rows").setAutoWidth(true);
+		grid.addColumn(r -> r.getCols() != null ? r.getCols().toString() : "").setHeader("Columns").setAutoWidth(true);
 
-        Button save = new Button("Save", e -> {
-            Rack dto = new Rack();
-            dto.setName(name.getValue());
-            dto.setRows(rows.getValue() != null ? rows.getValue().longValue() : 1L);
-            dto.setCols(cols.getValue() != null ? cols.getValue().longValue() : 1L);
-            dto.setIsActive(true);
-            rackService.add(List.of(dto));
-            dialog.close();
-            onSave.run();
-        });
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
-        dialog.open();
-    }
+		grid.addComponentColumn(rack -> {
+			Button edit = new Button(VaadinIcon.EDIT.create(), e -> openRackDialog(rack, refresh));
+			edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
+				try {
+					rackService.delete(rack.id);
+					Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					refresh.run();
+				} catch (Exception ex) {
+					Notification.show("Delete failed: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				}
+			});
+			delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+			return new HorizontalLayout(edit, delete);
+		}).setHeader("Actions").setAutoWidth(true);
 
-    // --- Locations Panel ---
-    private void showLocationsPanel() {
-        Grid<Location> grid = new Grid<>();
-        TextField search = new TextField();
-        search.setPlaceholder("Search locations / bin numbers...");
-        search.setPrefixComponent(VaadinIcon.SEARCH.create());
+		contentArea.add(toolbar, grid);
+		refresh.run();
+	}
 
-        Runnable refresh = () -> {
-            Location param = new Location();
-            param.setName(search.getValue());
-            grid.setItems(locationService.getLocations(param, Page.ofSize(100)));
-        };
-        search.addValueChangeListener(e -> refresh.run());
+	private void openRackDialog(Rack rack, Runnable onSave) {
+		Dialog dialog = new Dialog("Add Rack");
+		TextField name = new TextField("Rack Name");
+		NumberField rows = new NumberField("Rows");
+		NumberField cols = new NumberField("Columns");
 
-        Button addBtn = new Button("Add Location", VaadinIcon.PLUS.create(),
-                e -> openLocationDialog(new Location(), refresh));
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		name.setValue(rack.getName() != null ? rack.getName() : "");
+		rows.setValue(rack.getCols() != null ? rack.getCols() : 0.0);
+		cols.setValue(rack.getCols() != null ? rack.getCols() : 0.0);
 
-        HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
-        toolbar.setWidthFull();
-        toolbar.setFlexGrow(1, search);
+		dialog.add(new FormLayout(name, rows, cols));
 
-        grid.setSizeFull();
-        grid.addColumn(l -> l.getName() != null ? l.getName() : "").setHeader("Location Name").setFlexGrow(1);
-        grid.addColumn(l -> l.getBinNumber() != null ? l.getBinNumber() : "").setHeader("Bin Number")
-                .setAutoWidth(true);
-        grid.addColumn(l -> l.getType() != null ? l.getType() : "").setHeader("Type").setAutoWidth(true);
+		Button save = new Button("Save", e -> {
+			Rack dto = new Rack();
+			dto.setName(name.getValue());
+			dto.setRows(rows.getValue() != null ? rows.getValue().longValue() : 1L);
+			dto.setCols(cols.getValue() != null ? cols.getValue().longValue() : 1L);
+			dto.setIsActive(true);
+			rackService.add(List.of(dto));
+			dialog.close();
+			onSave.run();
+		});
+		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
+		dialog.open();
+	}
 
-        contentArea.add(toolbar, grid);
-        refresh.run();
-    }
+	// --- Locations Panel ---
+	private void showLocationsPanel() {
+		Grid<Location> grid = new Grid<>();
+		TextField search = new TextField();
+		search.setPlaceholder("Search locations / bin numbers...");
+		search.setPrefixComponent(VaadinIcon.SEARCH.create());
 
-    private void openLocationDialog(Location location, Runnable onSave) {
-        Dialog dialog = new Dialog("Add Location");
-        TextField name = new TextField("Location Name");
-        TextField bin = new TextField("Bin Number");
-        TextField type = new TextField("Location Type");
-        dialog.add(new FormLayout(name, bin, type));
+		Runnable refresh = () -> {
+			Location param = new Location();
+			param.setName(search.getValue());
+			grid.setItems(locationService.getLocations(param, Page.ofSize(100)));
+		};
+		search.addValueChangeListener(e -> refresh.run());
 
-        Button save = new Button("Save", e -> {
-            Location dto = new Location();
-            dto.setName(name.getValue());
-            dto.setBinNumber(bin.getValue());
-            dto.setType(type.getValue());
-            dto.setIsActive(true);
-            locationService.add(List.of(dto));
-            dialog.close();
-            onSave.run();
-        });
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
-        dialog.open();
-    }
+		Button addBtn = new Button("Add Location", VaadinIcon.PLUS.create(),
+				e -> openLocationDialog(new Location(), refresh));
+		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+		HorizontalLayout toolbar = new HorizontalLayout(search, addBtn);
+		toolbar.setWidthFull();
+		toolbar.setFlexGrow(1, search);
+
+		grid.setSizeFull();
+		grid.addColumn(l -> l.getName() != null ? l.getName() : "").setHeader("Location Name").setFlexGrow(1);
+		grid.addColumn(l -> l.getBinNumber() != null ? l.getBinNumber() : "").setHeader("Bin Number")
+				.setAutoWidth(true);
+		grid.addColumn(l -> l.getType() != null ? l.getType() : "").setHeader("Type").setAutoWidth(true);
+
+		grid.addComponentColumn(location -> {
+			Button edit = new Button(VaadinIcon.EDIT.create(), e -> openLocationDialog(location, refresh));
+			edit.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+			Button delete = new Button(VaadinIcon.TRASH.create(), e -> {
+				try {
+					locationService.delete(location.id);
+					Notification.show("Warehouse deleted", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					refresh.run();
+				} catch (Exception ex) {
+					Notification.show("Delete failed: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				}
+			});
+			delete.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+			return new HorizontalLayout(edit, delete);
+		}).setHeader("Actions").setAutoWidth(true);
+
+		contentArea.add(toolbar, grid);
+		refresh.run();
+	}
+
+	private void openLocationDialog(Location location, Runnable onSave) {
+		Dialog dialog = new Dialog("Add Location");
+		TextField name = new TextField("Location Name");
+		TextField bin = new TextField("Bin Number");
+		TextField type = new TextField("Location Type");
+
+		name.setValue(location.getName() != null ? location.getName() : "");
+		bin.setValue(location.getBinNumber() != null ? location.getBinNumber() : "");
+		type.setValue(location.getType() != null ? location.getType() : "");
+
+		dialog.add(new FormLayout(name, bin, type));
+
+		Button save = new Button("Save", e -> {
+			Location dto = new Location();
+			dto.setName(name.getValue());
+			dto.setBinNumber(bin.getValue());
+			dto.setType(type.getValue());
+			dto.setIsActive(true);
+			locationService.add(List.of(dto));
+			dialog.close();
+			onSave.run();
+		});
+		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
+		dialog.open();
+	}
 }

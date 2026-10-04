@@ -29,7 +29,7 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class QuotationView extends VerticalLayout {
 
-    private final QuotationService rfqService;
+    private final QuotationService quotationService;
 
     private final TextField searchField = new TextField();
     private final Grid<Quotation> grid = new Grid<>();
@@ -37,7 +37,7 @@ public class QuotationView extends VerticalLayout {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public QuotationView(QuotationService rfqService) {
-        this.rfqService = rfqService;
+        this.quotationService = rfqService;
 
         setSizeFull();
         setPadding(true);
@@ -65,7 +65,7 @@ public class QuotationView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("RFQ Number").setAutoWidth(true);
+        grid.addColumn(r -> r.id != null ? r.id : "-").setHeader("RFQ Number").setAutoWidth(true);
         grid.addColumn(r -> r.getDueDate() != null ? dateFormat.format(r.getDueDate()) : "-").setHeader("Due Date")
                 .setAutoWidth(true);
         grid.addColumn(r -> r.getNote() != null ? r.getNote() : "-").setHeader("Notes").setFlexGrow(2);
@@ -87,7 +87,7 @@ public class QuotationView extends VerticalLayout {
         try {
             Quotation params = new Quotation();
 
-            List<Quotation> res = rfqService.findAll(params);
+            List<Quotation> res = quotationService.findAll(params);
             rfqList.clear();
             if (res != null) {
                 rfqList.addAll(res);

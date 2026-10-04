@@ -2,6 +2,7 @@ package id.putra.core_erp.modules.outbound.model;
 
 import java.sql.Date;
 
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,10 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class Shipment {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class Shipment extends BaseEntity{
   private String shipmentNumber;
   private Date shipDate;
   private String status;
@@ -28,13 +26,8 @@ public class Shipment {
   @JoinColumn(name = "carrier_id")
   private Carrier carrier;
 
-  public Long getId() {
-    return id;
-  }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+  
 
   public String getShipmentNumber() {
     return shipmentNumber;

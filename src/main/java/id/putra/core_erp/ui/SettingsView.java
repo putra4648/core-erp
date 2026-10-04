@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -11,19 +12,20 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import id.putra.core_erp.modules.department.model.Department;
+import id.putra.core_erp.modules.department.service.DepartmentService;
 import id.putra.core_erp.modules.parameter.model.ParameterLookup;
 import id.putra.core_erp.modules.parameter.service.ParameterLookupService;
 import io.quarkus.panache.common.Page;
@@ -41,29 +43,28 @@ public class SettingsView extends VerticalLayout {
     Validator validator;
 
     private final ParameterLookupService parameterLookupService;
-    private final Tab parameterTabs = new Tab(VaadinIcon.COG.create(), new Span("System Parameters"));
-    private final Tabs tabs = new Tabs(this.parameterTabs);
-    private final VerticalLayout contentArea = new VerticalLayout();
-    private final Grid<ParameterLookup> parameterGrid = new Grid<>();
-    private final TextField searchField = new TextField();
+    private final DepartmentService departmentService;
+    private final TabSheet tabs = new TabSheet();
+    private final Grid<ParameterLookup> gridParameterLookup = new Grid<>();
+    private final Grid<Department> gridDepartment = new Grid<>();
 
-    public SettingsView(ParameterLookupService parameterLookupService) {
+    public SettingsView(ParameterLookupService parameterLookupService, DepartmentService departmentService) {
         this.parameterLookupService = parameterLookupService;
+        this.departmentService = departmentService;
 
         setSizeFull();
         setPadding(true);
         setSpacing(true);
 
         addHeader();
+        add(tabs);
+        initTab();
+    }
 
-        tabs.addSelectedChangeListener(e -> updateContent(e.getSelectedTab()));
-        contentArea.setSizeFull();
-        contentArea.setPadding(false);
-
-        add(tabs, contentArea);
-
-        configureParameterGrid();
-        updateContent(parameterTabs);
+    private void initTab() {
+    	this.tabs.setSizeFull();
+        this.tabs.add("System Parameter", parameterComponent());
+        this.tabs.add("Department", departmentComponent());
     }
 
     private void addHeader() {
@@ -74,48 +75,34 @@ public class SettingsView extends VerticalLayout {
         add(title, desc);
     }
 
-    private void updateContent(Tab selectedTab) {
-        contentArea.removeAll();
-        if (selectedTab.equals(parameterTabs)) {
-            configureParameterSection();
-            refreshData();
+    private void refreshData(TextField searchField, Object entity) throws Exception {
+        String searchTerm = searchField.getValue() != null ? searchField.getValue() : "";
+
+        if (entity instanceof ParameterLookup parsedEntity) {
+            parsedEntity.setKey(searchTerm);
+
+            List<ParameterLookup> result = new ArrayList<>();
+            parameterLookupService.findAll(parsedEntity, Page.ofSize(100)).forEach(result::add);
+            this.gridParameterLookup.setItems(result);
+
+        } else if (entity instanceof Department parsedEntity) {
+            parsedEntity.setName(searchTerm);
+
+            List<Department> result = new ArrayList<>();
+            departmentService.findAll(parsedEntity, Page.ofSize(100)).forEach(result::add);
+            this.gridDepartment.setItems(result);
+        } else {
+            throw new Exception("Entity is not defined");
         }
     }
 
-    private void configureParameterSection() {
-        searchField.setPlaceholder("Search parameters...");
-        searchField.setClearButtonVisible(true);
-        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        searchField.setWidth("280px");
-        searchField.addValueChangeListener(e -> refreshData());
+    private Component parameterComponent() {
+        gridParameterLookup.setSizeFull();
+        gridParameterLookup.addColumn(ParameterLookup::getKey).setHeader("Key").setKey("key").setSortable(true).setAutoWidth(true);
+        gridParameterLookup.addColumn(ParameterLookup::getValue).setHeader("Value").setKey("value").setSortable(true).setAutoWidth(true);
+        gridParameterLookup.addColumn(ParameterLookup::getDescription).setHeader("Description").setKey("description").setSortable(true).setFlexGrow(1);
 
-        VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
-        layout.setPadding(false);
-        layout.setSpacing(true);
-
-        Button addBtn = new Button("Add Parameter", VaadinIcon.PLUS.create(), e -> openParameterDialog(new ParameterLookup()));
-        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> {
-            searchField.clear();
-            refreshData();
-        });
-
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, addBtn, refreshBtn);
-        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
-
-        layout.add(toolbar, parameterGrid);
-        contentArea.add(layout);
-    }
-
-    private void configureParameterGrid() {
-        parameterGrid.setSizeFull();
-        parameterGrid.addColumn(ParameterLookup::getKey).setHeader("Key").setKey("key").setSortable(true).setAutoWidth(true);
-        parameterGrid.addColumn(ParameterLookup::getValue).setHeader("Value").setKey("value").setSortable(true).setAutoWidth(true);
-        parameterGrid.addColumn(ParameterLookup::getDescription).setHeader("Description").setKey("description").setSortable(true).setFlexGrow(1);
-
-        parameterGrid.addComponentColumn(param -> {
+        gridParameterLookup.addComponentColumn(param -> {
             Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openParameterDialog(param));
             editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
@@ -124,23 +111,107 @@ public class SettingsView extends VerticalLayout {
 
             return new HorizontalLayout(editBtn, deleteBtn);
         }).setHeader("Actions").setAutoWidth(true);
+
+        TextField searchField = new TextField();
+        searchField.setPlaceholder("Search parameters...");
+        searchField.setClearButtonVisible(true);
+        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        searchField.setWidth("280px");
+        searchField.setValueChangeMode(ValueChangeMode.LAZY);
+        searchField.addValueChangeListener(e -> loadParameterData(searchField));
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.setPadding(false);
+        layout.setSpacing(true);
+
+        Button addBtn = new Button("Add", VaadinIcon.PLUS.create(), e -> openParameterDialog(new ParameterLookup()));
+        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> {
+            searchField.clear();
+            loadParameterData(searchField);
+        });
+
+        HorizontalLayout toolbar = new HorizontalLayout(searchField, addBtn, refreshBtn);
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.add(toolbar, gridParameterLookup);
+
+        // Load data awal
+        loadParameterData(searchField);
+
+        return layout;
     }
 
-    private void refreshData() {
-        ParameterLookup search = new ParameterLookup();
-        String searchTerm = searchField.getValue();
-        if (searchTerm != null && !searchTerm.isBlank()) {
-            search.setKey(searchTerm.trim());
-        }
+    private Component departmentComponent() {
+        gridDepartment.setSizeFull();
+        gridDepartment.addColumn(Department::getCode).setHeader("Code").setKey("code").setSortable(true).setAutoWidth(true);
+        gridDepartment.addColumn(Department::getName).setHeader("Name").setKey("name").setSortable(true).setAutoWidth(true);
 
-        List<ParameterLookup> result = new ArrayList<>();
-        parameterLookupService.findAll(search, Page.ofSize(100)).forEach(result::add);
-        parameterGrid.setItems(result);
+        gridDepartment.addComponentColumn(param -> {
+            Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDepartmentDialog(param));
+            editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+            Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(param));
+            deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+
+            return new HorizontalLayout(editBtn, deleteBtn);
+        }).setHeader("Actions").setAutoWidth(true);
+
+        TextField searchField = new TextField();
+        searchField.setPlaceholder("Search department...");
+        searchField.setClearButtonVisible(true);
+        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        searchField.setWidth("280px");
+        searchField.setValueChangeMode(ValueChangeMode.LAZY);
+        searchField.addValueChangeListener(e -> loadDepartmentData(searchField));
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.setPadding(false);
+        layout.setSpacing(true);
+
+        Button addBtn = new Button("Add", VaadinIcon.PLUS.create(), e -> openDepartmentDialog(new Department()));
+        addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> {
+            searchField.clear();
+            loadDepartmentData(searchField);
+        });
+
+        HorizontalLayout toolbar = new HorizontalLayout(searchField, addBtn, refreshBtn);
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.add(toolbar, gridDepartment);
+
+        // Load data awal
+        loadDepartmentData(searchField);
+
+        return layout;
+    }
+
+    private void loadParameterData(TextField searchField) {
+        try {
+            refreshData(searchField, new ParameterLookup());
+        } catch (Exception ex) {
+            Notification.show(ex.getMessage(), 4000, Notification.Position.TOP_END)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
+    }
+
+    private void loadDepartmentData(TextField searchField) {
+        try {
+            refreshData(searchField, new Department());
+        } catch (Exception ex) {
+            Notification.show(ex.getMessage(), 4000, Notification.Position.TOP_END)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
     }
 
     private void openParameterDialog(ParameterLookup parameter) {
-        boolean isEdit = parameter.getId() != null;
-        Dialog dialog = new Dialog(isEdit ? "Edit Parameter" : "Add Parameter");
+        boolean isEdit = parameter.id != null;
+        Dialog dialog = new Dialog("Parameter");
 
         FormLayout parameterForm = new FormLayout();
 
@@ -187,7 +258,7 @@ public class SettingsView extends VerticalLayout {
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 }
                 dialog.close();
-                refreshData();
+                gridParameterLookup.getDataProvider().refreshAll();
             } catch (Exception ex) {
                 Notification.show("Failed to save parameter: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -201,19 +272,85 @@ public class SettingsView extends VerticalLayout {
         dialog.open();
     }
 
-    private void confirmDelete(ParameterLookup parameter) {
-        Dialog confirmDialog = new Dialog("Delete Parameter");
-        confirmDialog.add(new Paragraph("Are you sure you want to delete parameter '" + parameter.getKey() + "'?"));
+    private void openDepartmentDialog(Department dept) {
+        boolean isEdit = dept.id != null;
+        Dialog dialog = new Dialog("Department");
+
+        FormLayout deptForm = new FormLayout();
+
+        TextField codeField = new TextField("Code");
+        codeField.setRequired(true);
+        codeField.setValue(dept.getCode() != null ? dept.getCode() : "");
+
+        TextField nameField = new TextField("Name");
+        nameField.setRequired(true);
+        nameField.setValue(dept.getName() != null ? dept.getName() : "");
+
+        deptForm.add(codeField, nameField);
+        dialog.add(deptForm);
+
+        Button saveBtn = new Button("Save", e -> {
+            dept.setCode(codeField.getValue());
+            dept.setName(nameField.getValue());
+
+            Set<ConstraintViolation<Department>> violations = validator.validate(dept);
+            if (!violations.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (ConstraintViolation<Department> violation : violations) {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(violation.getPropertyPath()).append(" ").append(violation.getMessage());
+                }
+                Notification.show("Validation failed: " + sb, 4000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                return;
+            }
+
+            try {
+                if (isEdit) {
+                    departmentService.update(dept);
+                    Notification.show("Department updated successfully", 3000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                } else {
+                    departmentService.save(dept);
+                    Notification.show("Department created successfully", 3000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                }
+                dialog.close();
+                gridDepartment.getDataProvider().refreshAll();
+            } catch (Exception ex) {
+                Notification.show("Failed to save Department: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button cancelBtn = new Button("Cancel", e -> dialog.close());
+
+        dialog.getFooter().add(cancelBtn, saveBtn);
+        dialog.open();
+    }
+
+    private void confirmDelete(Object parameter) {
+        Dialog confirmDialog = new Dialog("Delete");
+        confirmDialog.add(new Paragraph("Are you sure you want to delete this data?"));
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                parameterLookupService.delete(parameter.getId());
-                Notification.show("Parameter deleted successfully", 3000, Notification.Position.TOP_END)
+                String message = "";
+                if (parameter instanceof ParameterLookup param) {
+                    parameterLookupService.delete(param.id);
+                    message = "Parameter";
+                } else if (parameter instanceof Department dept) {
+                    departmentService.delete(dept.id);
+                    message = "Department";
+                } else {
+                    throw new Exception("Object is not defined");
+                }
+                Notification.show(message + " deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();
-                refreshData();
             } catch (Exception ex) {
-                Notification.show("Failed to delete parameter: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+                Notification.show("Failed to delete: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });

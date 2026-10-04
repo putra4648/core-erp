@@ -21,11 +21,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "requisition")
+@Table
 public class Requisition extends BaseEntity {
-    @Id
-    private Long id;
-
+    
     @Column(name = "title")
     private String title;
 
@@ -89,13 +87,6 @@ public class Requisition extends BaseEntity {
     @OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RequisitionDetail> details;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

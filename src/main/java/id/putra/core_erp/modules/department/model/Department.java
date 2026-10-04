@@ -10,17 +10,16 @@ import id.putra.core_erp.modules.procurement.model.Requisition;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "mst_depts")
+@Table
 public class Department extends BaseEntity {
-
-    @Id
-    private Long id;
-
+	
     @Column(name = "dept_number", nullable = false)
     private String code;
 
@@ -51,23 +50,6 @@ public class Department extends BaseEntity {
     @OneToMany(mappedBy = "department")
     private List<Requisition> requisitions;
 
-    public Department() {
-
-    }
-
-    public Department(Long id, String code, String name) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getCode() {
         return code;

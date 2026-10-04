@@ -13,11 +13,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name = "customers")
+@Table
 public class Customer extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  
 
     @NotBlank
     private String code;
@@ -32,13 +30,7 @@ public class Customer extends BaseEntity {
     @NotEmpty
     private ContactPersonCustomer contactPerson;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+  
 
     public String getCode() {
         return code;

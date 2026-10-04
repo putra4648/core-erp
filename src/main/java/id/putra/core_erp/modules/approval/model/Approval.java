@@ -14,9 +14,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "approval")
 public class Approval extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
     private String users;
 
@@ -30,14 +27,6 @@ public class Approval extends BaseEntity {
 
     private Boolean isApprovalPermanent;
     private Boolean isBypassPermanent;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getUsers() {
         return users;

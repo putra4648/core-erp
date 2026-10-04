@@ -28,19 +28,18 @@ public class DepartmentRepoTest {
 
     @Test
     public void testFindAllByName() throws Throwable {
-        var dept1 = new Department(1L, "HR", "Human Resources");
-        var dept2 = new Department(2L, "IT", "Information Technology");
+        var dept1 = new Department();
+        dept1.setName("HR");
 
         var list = new ArrayList<Department>();
         list.add(dept1);
-        list.add(dept2);
 
         var page = Page.ofSize(10);
         var sort = Sort.by("name");
-        Mockito.when(departmentRepo.findAllByNameAndStatus("Human Resources", Status.ACTIVE,
+        Mockito.when(departmentRepo.findAllByNameAndStatus("HR", Status.ACTIVE,
                 page, sort)).thenReturn(list);
         Assertions.assertEquals(list,
-                departmentRepo.findAllByNameAndStatus("Human Resources", Status.ACTIVE,
+                departmentRepo.findAllByNameAndStatus("HR", Status.ACTIVE,
                         page, sort));
         Mockito.verify(departmentRepo, Mockito.times(1)).findAllByNameAndStatus("Human Resources", Status.ACTIVE,
                 page, sort);
@@ -48,15 +47,15 @@ public class DepartmentRepoTest {
 
     @Test
     public void testFindByDeptNumber() throws Throwable {
-        var dept = Optional.ofNullable(new Department(1L, "HR", "Human Resources"));
+    	 var dept1 = new Department();
+         dept1.setName("HR");
         var budgets = new ArrayList<Budget>();
 
         var budget = new Budget();
-        budget.setDepartment(dept.get());
+        budget.setDepartment(dept1);
 
         var budgetDetails = new ArrayList<BudgetDetail>();
         var budgetDetail = new BudgetDetail();
-        budgetDetail.setBudget(budget);
         budgetDetail.setName("Budget 1");
         budgetDetail.setType(BudgetType.INVESTMENT);
         budgetDetail.setTotalBudget(new BigInteger("1000000"));
@@ -78,7 +77,7 @@ public class DepartmentRepoTest {
         budgets.add(budget);
 
         // Budget -> Budget Detail -> Budget Allocation
-        Mockito.when(departmentRepo.findByDeptNumber("HR")).thenReturn(dept);
+        Mockito.when(departmentRepo.findByDeptNumber("HR")).thenReturn(Optional.of(dept1));
         var result = departmentRepo.findByDeptNumber("HR");
         Assertions.assertTrue(result.isPresent());
 

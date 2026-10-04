@@ -23,7 +23,7 @@ public class WarehouseService implements BaseService<Warehouse> {
     }
 
     public Warehouse getWarehouse(Warehouse dto) {
-        return warehouseRepository.findById(dto.getId());
+        return warehouseRepository.findById(dto.id);
     }
 
     public void save(Warehouse entity) {

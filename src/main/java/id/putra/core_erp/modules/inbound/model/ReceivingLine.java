@@ -3,6 +3,7 @@ package id.putra.core_erp.modules.inbound.model;
 import java.math.BigDecimal;
 import java.sql.Date;
 
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.product.model.Product;
 import id.putra.core_erp.modules.warehouse.model.Location;
 import jakarta.persistence.Column;
@@ -16,10 +17,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class ReceivingLine {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ReceivingLine extends BaseEntity{
+    
     private Date receivedDate;
     private String status;
     private String lotBatch;
@@ -43,13 +42,7 @@ public class ReceivingLine {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+   
 
     public Date getReceivedDate() {
         return receivedDate;

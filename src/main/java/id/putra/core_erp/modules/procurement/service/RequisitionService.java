@@ -43,7 +43,7 @@ public class RequisitionService implements BaseService<Requisition> {
     }
 
     public Boolean checkApprovalFlow(Requisition dto) {
-        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
+        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.id);
         String nrp = "";
 
         if (reqOpt.isPresent()) {
@@ -67,7 +67,7 @@ public class RequisitionService implements BaseService<Requisition> {
     public ApprovalStatus checkStatusApprovalIsPermanent(Requisition dto) {
         String nrp = "";
 
-        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
+        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.id);
         if (reqOpt.isPresent()) {
             ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
             List<Approval> approvals = new ArrayList<>();
@@ -109,7 +109,7 @@ public class RequisitionService implements BaseService<Requisition> {
             }
             return result;
         } else {
-            throw new ModuleException("Requisition ID " + dto.getId() + " not found");
+            throw new ModuleException("Requisition ID " + dto.id + " not found");
         }
     }
 

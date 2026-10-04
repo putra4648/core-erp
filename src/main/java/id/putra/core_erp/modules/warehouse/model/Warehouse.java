@@ -12,14 +12,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-@Table(name = "warehouses")
+@Table
 @Entity
-
 public class Warehouse extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private String name;
 
@@ -34,17 +30,7 @@ public class Warehouse extends BaseEntity {
     @OneToMany(mappedBy = "warehouse", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private List<Zone> zones;
 
-    @ManyToOne
-    @JoinColumn(name = "contact_person_id", referencedColumnName = "id")
-    private ContactPersonWarehouse contactPersonWarehouse;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -94,12 +80,6 @@ public class Warehouse extends BaseEntity {
         this.zones = zones;
     }
 
-    public ContactPersonWarehouse getContactPersonWarehouse() {
-        return contactPersonWarehouse;
-    }
-
-    public void setContactPersonWarehouse(ContactPersonWarehouse contactPersonWarehouse) {
-        this.contactPersonWarehouse = contactPersonWarehouse;
-    }
+   
 
 }

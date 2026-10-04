@@ -8,6 +8,8 @@ import id.putra.core_erp.modules.department.model.Department;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,9 +20,6 @@ import jakarta.persistence.Table;
 @Table(name = "budget")
 public class Budget extends BaseEntity {
 
-    @Id
-    private String id;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "department", referencedColumnName = "dept_number")
     private Department department;
@@ -28,16 +27,9 @@ public class Budget extends BaseEntity {
     @Column(name = "fy")
     private Date fiscalYear;
 
-    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BudgetDetail> details;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public Department getDepartment() {
         return department;

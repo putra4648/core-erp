@@ -3,6 +3,7 @@ package id.putra.core_erp.modules.inbound.model;
 import java.sql.Date;
 import java.util.List;
 
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.enums.OrderStatus;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import jakarta.persistence.CascadeType;
@@ -19,10 +20,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class PurchaseOrder {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PurchaseOrder extends BaseEntity{
+    
+	
     private String poNumber;
 
     @Enumerated(EnumType.STRING)
@@ -40,13 +40,8 @@ public class PurchaseOrder {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+   
+    
 
     public String getPoNumber() {
         return poNumber;

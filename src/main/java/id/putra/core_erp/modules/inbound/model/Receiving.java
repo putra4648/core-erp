@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.enums.OrderStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -19,10 +20,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class Receiving {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Receiving extends BaseEntity{
 
     private String receivingNumber = UUID.randomUUID().toString();
     private Date receivedDate;
@@ -39,13 +37,9 @@ public class Receiving {
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+   
+    
+     
 
     public String getReceivingNumber() {
         return receivingNumber;

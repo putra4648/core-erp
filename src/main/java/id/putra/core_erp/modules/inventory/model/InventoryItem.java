@@ -15,10 +15,6 @@ import jakarta.persistence.Table;
 @Table(name = "inventory_item")
 @Entity
 public class InventoryItem extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String name;
     private Long reservedQty;
     private String lotNumber;
@@ -30,14 +26,6 @@ public class InventoryItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "product_sku")
     private Product product;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

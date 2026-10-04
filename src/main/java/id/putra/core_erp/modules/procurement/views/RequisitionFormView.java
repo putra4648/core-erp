@@ -245,7 +245,6 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
             }
 
             RequisitionDetail item = new RequisitionDetail();
-            item.setId(String.valueOf(lineItems.size() + 1));
             item.setName(nameField.getValue());
             item.setItemNumber(itemNumberField.getValue());
             item.setUom(uomField.getValue());
@@ -292,12 +291,12 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
 
         try {
             Requisition r = requisitionService.findById(id);
-            if (r != null && r.getId() != null) {
+            if (r != null && r.id != null) {
                 this.currentStatus = r.getStatus() != null ? r.getStatus() : "DRAFT";
                 titleField.setValue(r.getTitle() != null ? r.getTitle() : "");
                 noteField.setValue(r.getNote() != null ? r.getNote() : "");
                 if (r.getBudget() != null) {
-                    budgetDetailIdField.setValue(String.valueOf(r.getBudget().getId()));
+                    budgetDetailIdField.setValue(String.valueOf(r.getBudget().id));
                 }
                 // if (r.getDueDate() != null) {
                 // dueDatePicker.setValue(r.getDueDate());
@@ -344,7 +343,6 @@ public class RequisitionFormView extends VerticalLayout implements HasUrlParamet
         }
 
         Requisition params = new Requisition();
-        params.setId(requisitionId != null ? requisitionId : null);
         params.setTitle(titleField.getValue());
         params.setNote(noteField.getValue());
         params.setStatus(status);

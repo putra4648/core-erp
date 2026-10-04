@@ -20,9 +20,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "transactions")
 public class Transaction extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    
 
     @ManyToOne
     @JoinColumn(name = "supplier_id")
@@ -47,13 +45,6 @@ public class Transaction extends BaseEntity {
     @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
     private List<TransactionItem> items;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Supplier getSupplier() {
         return supplier;

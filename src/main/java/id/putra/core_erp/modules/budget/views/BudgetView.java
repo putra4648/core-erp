@@ -87,7 +87,7 @@ public class BudgetView extends VerticalLayout {
 
     private void configureGrid() {
         grid.setSizeFull();
-        grid.addColumn(b -> b.getId() != null ? b.getId() : "-").setHeader("Budget No")
+        grid.addColumn(b -> b.id != null ? b.id : "-").setHeader("Budget No")
                 .setAutoWidth(true);
         grid.addColumn(b -> b.getName() != null ? b.getName() : "-").setHeader("Budget Title / Description")
                 .setFlexGrow(2);
@@ -105,18 +105,18 @@ public class BudgetView extends VerticalLayout {
         if (dept == null || year == null)
             return;
 
-        try {
-            List<BudgetDetail> res = budgetService.getBudgetsDetail(dept.getCode(), year);
-            if (res != null) {
-                budgetDetails.clear();
-                budgetDetails.addAll(res);
-                grid.setItems(budgetDetails);
-            } else {
-                grid.setItems(List.of());
-            }
-        } catch (Exception ex) {
-            grid.setItems(List.of());
-        }
+//        try {
+//            List<BudgetDetail> res = budgetService.findById(1L);
+//            if (res != null) {
+//                budgetDetails.clear();
+//                budgetDetails.addAll(res);
+//                grid.setItems(budgetDetails);
+//            } else {
+//                grid.setItems(List.of());
+//            }
+//        } catch (Exception ex) {
+//            grid.setItems(List.of());
+//        }
     }
 
     private void openAddBudgetDialog() {
@@ -131,8 +131,6 @@ public class BudgetView extends VerticalLayout {
         dialog.setWidth("500px");
 
         FormLayout form = new FormLayout();
-        TextField budgetNoField = new TextField("Budget Code");
-        budgetNoField.setRequired(true);
         TextField nameField = new TextField("Budget Name");
         nameField.setRequired(true);
         ComboBox<BudgetType> typeCombo = new ComboBox<>("Budget Type");
@@ -141,37 +139,36 @@ public class BudgetView extends VerticalLayout {
         NumberField amountField = new NumberField("Annual Allocation (Total)");
         TextArea noteField = new TextArea("Notes");
 
-        form.add(budgetNoField, nameField, typeCombo, amountField, noteField);
+        form.add( nameField, typeCombo, amountField, noteField);
 
         Button saveBtn = new Button("Save", e -> {
-            if (budgetNoField.getValue().isBlank() || nameField.getValue().isBlank()) {
-                Notification.show("Code and Name are required", 3000, Notification.Position.TOP_CENTER);
-                return;
-            }
+        	try {
+                Budget dto = new Budget();
+                Department deptDto = new Department();
+                deptDto.id = deptCombo.getValue().id;
+                dto.setDepartment(deptDto);
 
-            Budget dto = new Budget();
-            Department deptDto = new Department();
-            deptDto.setCode(dept.getCode());
-            deptDto.setName(dept.getName());
-            dto.setDepartment(deptDto);
-            // dto.setFiscalYear(Date.parse(yearCombo.getValue()));
+                BudgetDetail dtl = new BudgetDetail();
+                
+                // Parse ID dengan aman
+                dtl.setName(nameField.getValue());
+                dtl.setType(typeCombo.getValue());
+                
+                // Konversi Double ke BigInteger dengan aman
+                long amountAsLong = amountField.getValue().longValue();
+                dtl.setTotalBudget(BigInteger.valueOf(amountAsLong));
+               dtl.setNote(noteField.getValue());
+                dto.setDetails(List.of(dtl));
+                
 
-            BudgetDetail dtl = new BudgetDetail();
-            dtl.setId(Long.parseLong(budgetNoField.getValue()));
-            dtl.setName(nameField.getValue());
-            dtl.setType(typeCombo.getValue());
-            dtl.setTotalBudget(new BigInteger(amountField.getValue().toString()));
-            dtl.setNote(noteField.getValue());
-            dto.setDetails(List.of(dtl));
-
-            try {
-                budgetService.addOrUpdateBudget(dto);
-                Notification.show("Budget saved successfully", 3000, Notification.Position.TOP_CENTER)
+                budgetService.save(dto);
+                Notification.show("Budget saved successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();
                 refreshBudgets();
+
             } catch (Exception ex) {
-                Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
+                Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });

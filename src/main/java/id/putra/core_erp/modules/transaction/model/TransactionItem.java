@@ -14,12 +14,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "transaction_items")
+@Table
 public class TransactionItem extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne
     @JoinColumn(name = "transaction_id", nullable = false)
     private Transaction transaction;
@@ -43,13 +39,7 @@ public class TransactionItem extends BaseEntity {
     private String serialNumber;
     private String notes;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+  
 
     public Transaction getTransaction() {
         return transaction;

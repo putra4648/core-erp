@@ -23,7 +23,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.modules.supplier.model.SupplierContact;
 import id.putra.core_erp.modules.supplier.service.SupplierService;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
@@ -89,18 +88,9 @@ public class SupplierView extends VerticalLayout {
         grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(1)
                 .setSortable(true);
 
+      
         grid.addColumn(s -> {
-            if (s.getContacts() != null && !s.getContacts().isEmpty()) {
-                return s.getContacts().get(0).getName();
-            }
-            return "-";
-        }).setHeader("Contact Person").setFlexGrow(1);
-
-        grid.addColumn(s -> {
-            if (s.getContacts() != null && !s.getContacts().isEmpty()) {
-                return s.getContacts().get(0).getEmail();
-            }
-            return "-";
+            return s.getEmail() ;
         }).setHeader("Email").setFlexGrow(1);
 
         grid.addComponentColumn(supplier -> {
@@ -126,53 +116,29 @@ public class SupplierView extends VerticalLayout {
     }
 
     private void openSupplierDialog(Supplier supplier) {
-        boolean isEdit = supplier.getId() != null;
+        boolean isEdit = supplier.id != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Supplier" : "Add Supplier");
 
-        if (supplier.getContacts() == null) {
-            supplier.setContacts(new ArrayList<>());
-        }
-        SupplierContact cp = supplier.getContacts().isEmpty() ? new SupplierContact()
-                : supplier.getContacts().get(0);
+      
 
         TextField codeField = new TextField("Supplier Code");
         TextField nameField = new TextField("Supplier Name");
         Checkbox activeCheck = new Checkbox("Is Active");
-
-        TextField cpNameField = new TextField("Contact Name");
         TextField cpEmailField = new TextField("Email");
-        TextField cpPhoneField = new TextField("Phone");
-        TextArea cpAddressField = new TextArea("Address");
 
         codeField.setValue(supplier.getCode() != null ? supplier.getCode() : "");
         nameField.setValue(supplier.getName() != null ? supplier.getName() : "");
         activeCheck.setValue(supplier.getIsActive() != null ? supplier.getIsActive() : true);
+        cpEmailField.setValue(supplier.getEmail() != null ? supplier.getEmail() : "");
 
-        cpNameField.setValue(cp.getName() != null ? cp.getName() : "");
-        cpEmailField.setValue(cp.getEmail() != null ? cp.getEmail() : "");
-        cpPhoneField.setValue(cp.getPhone() != null ? cp.getPhone() : "");
-        // cpAddressField.setValue(cp.ge() != null ? cp.getAddress() : "");
-
-        FormLayout formLayout = new FormLayout(codeField, nameField, activeCheck, cpNameField, cpEmailField,
-                cpPhoneField, cpAddressField);
+        FormLayout formLayout = new FormLayout(codeField, nameField, activeCheck, cpEmailField);
         dialog.add(formLayout);
 
         Button saveBtn = new Button("Save", e -> {
             if (validator.validate(supplier).isEmpty()) {
-                cp.setName(cpNameField.getValue());
-                cp.setEmail(cpEmailField.getValue());
-                cp.setPhone(cpPhoneField.getValue());
-                // cp.setAddress(cpAddressField.getValue());
-
-                if (supplier.getContacts().isEmpty()) {
-                    supplier.getContacts().add(cp);
-                } else {
-                    supplier.getContacts().set(0, cp);
-                }
-
                 try {
                     if (isEdit) {
-                        supplierService.update(supplier.getId(), supplier);
+                        supplierService.update(supplier.id, supplier);
                         Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_END)
                                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     } else {
@@ -203,7 +169,7 @@ public class SupplierView extends VerticalLayout {
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                supplierService.delete(supplier.getId());
+                supplierService.delete(supplier.id);
                 Notification.show("Supplier deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();

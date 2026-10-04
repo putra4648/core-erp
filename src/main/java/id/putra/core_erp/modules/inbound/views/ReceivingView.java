@@ -105,7 +105,7 @@ public class ReceivingView extends VerticalLayout {
     }
 
     private void openReceivingDialog(Receiving receiving) {
-        boolean isEdit = receiving.getId() != null;
+        boolean isEdit = receiving.id != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Goods Receipt" : "New Goods Receipt");
 
         TextField recNumField = new TextField("Receiving Number");
@@ -144,7 +144,7 @@ public class ReceivingView extends VerticalLayout {
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                receivingOrderService.delete(receiving.getId());
+                receivingOrderService.delete(receiving.id);
                 Notification.show("Receiving deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();

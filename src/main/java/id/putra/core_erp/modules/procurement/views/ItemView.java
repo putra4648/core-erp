@@ -88,8 +88,6 @@ public class ItemView extends VerticalLayout {
     private void configureGrid() {
         grid.setSizeFull();
 
-        grid.addColumn(i -> i.getItemNumber() != null ? i.getItemNumber() : "-").setHeader("Item Code")
-                .setAutoWidth(true);
         grid.addColumn(i -> i.getName() != null ? i.getName() : "-").setHeader("Item Name").setFlexGrow(2);
         // grid.addColumn(i -> i.getCategory() != null ? i.getCategory() :
         // "-").setHeader("Category").setFlexGrow(1);
@@ -121,7 +119,8 @@ public class ItemView extends VerticalLayout {
             String search = searchField.getValue() != null ? searchField.getValue() : "";
             String status = statusFilter.getValue() != null ? statusFilter.getValue() : "ACTIVE";
 
-            List<Item> items = itemService.getItems(search, status, "", 1, 100, "name", "asc");
+            List<Item> items = new ArrayList<>();
+//            List<Item> items = itemService.getItems(search, status, "", 1, 100, "name", "asc");
             itemList.clear();
             if (items != null) {
                 itemList.addAll(items);
@@ -139,8 +138,6 @@ public class ItemView extends VerticalLayout {
         dialog.setWidth("600px");
 
         FormLayout form = new FormLayout();
-        TextField itemNumberField = new TextField("Item Number / Code");
-        itemNumberField.setRequired(true);
         TextField nameField = new TextField("Item Name");
         nameField.setRequired(true);
         TextField priceField = new TextField("Estimated Price");
@@ -160,8 +157,6 @@ public class ItemView extends VerticalLayout {
         }
 
         if (editItem != null) {
-            itemNumberField.setValue(editItem.getItemNumber() != null ? editItem.getItemNumber() : "");
-            itemNumberField.setReadOnly(true);
             nameField.setValue(editItem.getName() != null ? editItem.getName() : "");
             priceField.setValue(editItem.getPrice() != null ? editItem.getPrice().toString() : "0");
             unitField.setValue(editItem.getUnit() != null ? editItem.getUnit() : "PCS");
@@ -173,18 +168,13 @@ public class ItemView extends VerticalLayout {
             }
         }
 
-        form.add(itemNumberField, nameField, supplierCombo, priceField, unitField, glAccField,
+        form.add( nameField, supplierCombo, priceField, unitField, glAccField,
                 descField);
         form.setColspan(descField, 2);
 
         Button saveBtn = new Button("Save", e -> {
-            if (nameField.getValue().isBlank() || itemNumberField.getValue().isBlank()) {
-                Notification.show("Item Number and Name are required", 3000, Notification.Position.TOP_CENTER);
-                return;
-            }
 
             Item dto = new Item();
-            dto.setItemNumber(itemNumberField.getValue());
             dto.setName(nameField.getValue());
             // dto.setCategory(categoryCombo.getValue());
             if (supplierCombo.getValue() != null) {
@@ -202,11 +192,11 @@ public class ItemView extends VerticalLayout {
 
             try {
                 if (editItem == null) {
-                    itemService.addItem(dto, null, null);
+                    itemService.save(dto);
                     Notification.show("Item added successfully", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 } else {
-                    itemService.updateItem(dto, null, null);
+                    itemService.update(dto);
                     Notification.show("Item updated successfully", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 }

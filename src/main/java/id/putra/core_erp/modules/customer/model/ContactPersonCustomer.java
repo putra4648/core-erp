@@ -11,11 +11,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "contact_person_customer")
+@Table
 public class ContactPersonCustomer extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String name;
     private String email;
     private String phone;
@@ -25,13 +22,6 @@ public class ContactPersonCustomer extends BaseEntity {
     @JoinColumn(name = "customer_id")
     private Department customer;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

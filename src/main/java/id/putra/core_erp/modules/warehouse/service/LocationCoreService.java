@@ -23,7 +23,7 @@ public class LocationCoreService implements BaseService<Location> {
     }
 
     public Location getLocation(Location dto) {
-        return locationRepository.findById(dto.getId());
+        return locationRepository.findById(dto.id);
     }
 
     public void save(Location entity) {
@@ -51,7 +51,7 @@ public class LocationCoreService implements BaseService<Location> {
     }
 
     public void delete(List<Location> dtos) {
-        dtos.forEach(dto -> locationRepository.deleteById(dto.getId()));
+        dtos.forEach(dto -> locationRepository.deleteById(dto.id));
     }
 
     public void delete(Long id) {

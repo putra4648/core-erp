@@ -110,7 +110,7 @@ public class DepartmentView extends VerticalLayout {
     }
 
     private void openDepartmentDialog(Department dept) {
-        boolean isEdit = dept.getId() != null;
+        boolean isEdit = dept.id != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Customer" : "Add Customer");
 
         TextField codeField = new TextField("Customer Code", val -> {
@@ -161,7 +161,7 @@ public class DepartmentView extends VerticalLayout {
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                departmentService.delete(customer.getId());
+                departmentService.delete(customer.id);
                 Notification.show("Customer deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();

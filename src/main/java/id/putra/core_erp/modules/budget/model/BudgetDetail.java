@@ -10,6 +10,8 @@ import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.enums.BudgetType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,9 +20,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "budget_detail")
 public class BudgetDetail extends BaseEntity {
-
-    @Id
-    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -35,9 +34,6 @@ public class BudgetDetail extends BaseEntity {
     @Column(name = "note")
     private String note;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "budget_id", referencedColumnName = "id")
-    private Budget budget;
 
     private BigInteger totalBudget;
 
@@ -49,13 +45,6 @@ public class BudgetDetail extends BaseEntity {
         this.totalBudget = totalBudget;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -89,11 +78,5 @@ public class BudgetDetail extends BaseEntity {
         this.note = note;
     }
 
-    public Budget getBudget() {
-        return budget;
-    }
-
-    public void setBudget(Budget budget) {
-        this.budget = budget;
-    }
+   
 }

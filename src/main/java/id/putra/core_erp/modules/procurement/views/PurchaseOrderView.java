@@ -78,7 +78,7 @@ public class PurchaseOrderView extends VerticalLayout {
                 .setSortable(true);
         grid.addColumn(p -> p.getOrderDate() != null ? p.getOrderDate().toString() : "-").setHeader("Order Date")
                 .setAutoWidth(true);
-        grid.addColumn(p -> p.getSupplier() != null ? "Supplier #" + p.getSupplier().getId() : "-")
+        grid.addColumn(p -> p.getSupplier() != null ? "Supplier #" + p.getSupplier().id : "-")
                 .setHeader("Supplier")
                 .setFlexGrow(1);
 
@@ -152,7 +152,7 @@ public class PurchaseOrderView extends VerticalLayout {
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                purchaseOrderService.delete(po.getId());
+                purchaseOrderService.delete(po.id);
                 Notification.show("PO deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();

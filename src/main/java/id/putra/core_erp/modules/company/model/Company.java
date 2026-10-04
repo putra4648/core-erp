@@ -14,11 +14,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "company")
 public class Company extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
+ 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
@@ -46,13 +42,7 @@ public class Company extends BaseEntity {
     @Column(nullable = false)
     private Boolean needAutoCloseOrder;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long compId) {
-        this.id = compId;
-    }
+  
 
     public String getName() {
         return name;

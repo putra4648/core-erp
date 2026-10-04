@@ -116,7 +116,7 @@ public class ProductView extends VerticalLayout {
     }
 
     private void openProductDialog(Product product) {
-        boolean isEdit = product.getId() != null;
+        boolean isEdit = product.id != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Product" : "Add Product");
 
         TextField skuField = new TextField("SKU", val -> {
@@ -191,7 +191,7 @@ public class ProductView extends VerticalLayout {
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                productService.delete(product.getId());
+                productService.delete(product.id);
                 Notification.show("Product deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();

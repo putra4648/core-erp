@@ -23,7 +23,7 @@ public class RackCoreService implements BaseService<Rack> {
     }
 
     public Rack getRack(Rack rackDto) {
-        return rackRepository.findById(rackDto.getId());
+        return rackRepository.findById(rackDto.id);
     }
 
     public void save(Rack entity) {
@@ -51,7 +51,7 @@ public class RackCoreService implements BaseService<Rack> {
     }
 
     public void delete(List<Rack> dtos) {
-        dtos.forEach(dto -> rackRepository.deleteById(dto.getId()));
+        dtos.forEach(dto -> rackRepository.deleteById(dto.id));
     }
 
     public void delete(Long id) {

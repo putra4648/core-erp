@@ -84,7 +84,6 @@ public class SupplierView extends VerticalLayout {
     private void configureGrid() {
         grid.setSizeFull();
 
-        grid.addColumn(s -> s.getAccNo() != null ? s.getAccNo() : "-").setHeader("Account No").setAutoWidth(true);
         grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(2);
         grid.addColumn(s -> s.getPhone() != null ? s.getPhone() : "-").setHeader("Phone").setFlexGrow(1);
         grid.addColumn(s -> s.getCurrency() != null ? s.getCurrency() : "-").setHeader("Currency").setAutoWidth(true);
@@ -132,7 +131,7 @@ public class SupplierView extends VerticalLayout {
     private void toggleStatus(Supplier s) {
         try {
             Map<String, Object> body = new HashMap<>();
-            body.put("id", s.getId());
+            body.put("id", s.id);
             supplierService.updateSupplierStatus(body);
             refreshGrid();
             Notification.show("Status updated", 2000, Notification.Position.TOP_CENTER);
@@ -152,7 +151,7 @@ public class SupplierView extends VerticalLayout {
         TextField accNoField = new TextField("Account No");
         TextField phoneField = new TextField("Phone");
         TextField faxField = new TextField("Fax");
-        TextField websiteField = new TextField("Website");
+        TextField emailField = new TextField("Website");
         TextField npwpField = new TextField("NPWP");
         TextField accBankField = new TextField("Bank Account");
         TextField currField = new TextField("Currency");
@@ -161,17 +160,16 @@ public class SupplierView extends VerticalLayout {
 
         if (editSupplier != null) {
             nameField.setValue(editSupplier.getName() != null ? editSupplier.getName() : "");
-            accNoField.setValue(editSupplier.getAccNo() != null ? editSupplier.getAccNo() : "");
             phoneField.setValue(editSupplier.getPhone() != null ? editSupplier.getPhone() : "");
             faxField.setValue(editSupplier.getFax() != null ? editSupplier.getFax() : "");
-            websiteField.setValue(editSupplier.getWebsite() != null ? editSupplier.getWebsite() : "");
+            emailField.setValue(editSupplier.getEmail() != null ? editSupplier.getEmail() : "");
             npwpField.setValue(editSupplier.getNpwp() != null ? editSupplier.getNpwp() : "");
             accBankField.setValue(editSupplier.getAccBank() != null ? editSupplier.getAccBank() : "");
             currField.setValue(editSupplier.getCurrency() != null ? editSupplier.getCurrency() : "IDR");
             notesField.setValue(editSupplier.getNotes() != null ? editSupplier.getNotes() : "");
         }
 
-        form.add(nameField, accNoField, phoneField, faxField, websiteField, npwpField, accBankField, currField,
+        form.add(nameField, accNoField, phoneField, faxField, emailField, npwpField, accBankField, currField,
                 notesField);
         form.setColspan(notesField, 2);
 
@@ -183,10 +181,9 @@ public class SupplierView extends VerticalLayout {
 
             Supplier dto = new Supplier();
             dto.setName(nameField.getValue());
-            dto.setAccNo(accNoField.getValue());
             dto.setPhone(phoneField.getValue());
             dto.setFax(faxField.getValue());
-            dto.setWebsite(websiteField.getValue());
+            dto.setEmail(emailField.getValue());
             dto.setNpwp(npwpField.getValue());
             dto.setAccBank(accBankField.getValue());
             dto.setCurrency(currField.getValue());
@@ -200,7 +197,7 @@ public class SupplierView extends VerticalLayout {
                     Notification.show("Supplier added successfully", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 } else {
-                    dto.setId(editSupplier.getId());
+                    dto.id = editSupplier.id;
                     supplierService.updateSupplier(dto, null);
                     Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);

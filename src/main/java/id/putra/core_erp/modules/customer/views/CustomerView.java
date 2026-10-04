@@ -126,7 +126,7 @@ public class CustomerView extends VerticalLayout {
     }
 
     private void openCustomerDialog(Customer customer) {
-        boolean isEdit = customer.getId() != null;
+        boolean isEdit = customer.id != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Customer" : "Add Customer");
 
         if (customer.getContactPerson() == null) {
@@ -213,7 +213,7 @@ public class CustomerView extends VerticalLayout {
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                customerService.delete(customer.getId());
+                customerService.delete(customer.id);
                 Notification.show("Customer deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();

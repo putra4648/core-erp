@@ -44,12 +44,10 @@ public class SupplierService {
 
     public void addSupplier(Supplier body, FileUpload logoFile)
             throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
+        Optional<Supplier> supplier = supplierRepo.findByIdOptional(body.id);
         if (!supplier.isPresent()) {
             Supplier entity = new Supplier();
-            entity.setAccNo(body.getAccNo());
             entity.setName(body.getName());
-            entity.setWebsite(body.getWebsite());
             entity.setStatus(body.getStatus());
             entity.setPhone(body.getPhone());
             entity.setFax(body.getFax());
@@ -59,14 +57,14 @@ public class SupplierService {
             entity.setNotes(body.getNotes());
             entity.setType(body.getType());
 
-            if (logoFile != null) {
-                Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
-                        logoFile);
-                entity.setSupplierLogoPath(path.toString());
-            }
+//            if (logoFile != null) {
+//                Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
+//                        logoFile);
+//                entity.setSupplierLogoPath(path.toString());
+//            }
             supplierRepo.persist(entity);
         } else {
-            String message = MessageFormat.format(MessageConstant.EXIST, "Supplier ", body.getAccNo());
+            String message = MessageFormat.format(MessageConstant.EXIST, "Supplier ", body.id);
             throw new IllegalArgumentException(message);
         }
     }
@@ -95,26 +93,25 @@ public class SupplierService {
 
     public void updateSupplier(Supplier body, FileUpload logoFile)
             throws Exception {
-        Optional<Supplier> supplier = supplierRepo.findByAccNo(body.getAccNo());
+        Optional<Supplier> supplier = supplierRepo.findByIdOptional(body.id);
         if (supplier.isPresent()) {
             Supplier entity = supplier.get();
 
-            if (logoFile != null) {
-                if (entity.getSupplierLogoPath() != null) {
-                    Path path = AppFileUtil.recreateFileFromFileUpload(entity.getAccNo(), logoFile,
-                            AppFileUtil.SUPPLIER_FOLDER,
-                            entity.getSupplierLogoPath());
-                    entity.setSupplierLogoPath(path.toString());
-                } else {
-                    Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
-                            logoFile);
-                    entity.setSupplierLogoPath(path.toString());
-                }
-            }
+//            if (logoFile != null) {
+//                if (entity.getSupplierLogoPath() != null) {
+//                    Path path = AppFileUtil.recreateFileFromFileUpload(entity.getAccNo(), logoFile,
+//                            AppFileUtil.SUPPLIER_FOLDER,
+//                            entity.getSupplierLogoPath());
+//                    entity.setSupplierLogoPath(path.toString());
+//                } else {
+//                    Path path = AppFileUtil.createFileFromFileUpload(entity.getAccNo(), AppFileUtil.SUPPLIER_FOLDER,
+//                            logoFile);
+//                    entity.setSupplierLogoPath(path.toString());
+//                }
+//            }
 
             entity.setName(body.getName());
-            entity.setAccNo(body.getAccNo());
-            entity.setWebsite(body.getWebsite());
+            entity.setEmail(body.getEmail());
             entity.setStatus(body.getStatus());
             entity.setPhone(body.getPhone());
             entity.setFax(body.getFax());
@@ -127,7 +124,7 @@ public class SupplierService {
             Supplier updatedEntity = entity;
             supplierRepo.persist(updatedEntity);
         } else {
-            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + body.getAccNo());
+            String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Supplier " + body.id);
             throw new IllegalArgumentException(message);
         }
     }
@@ -189,9 +186,8 @@ public class SupplierService {
         try {
             Supplier supplier = new Supplier();
 
-            supplier.setAccNo(getCellValueAsString(row.getCell(0)));
             supplier.setName(getCellValueAsString(row.getCell(1)));
-            supplier.setWebsite(getCellValueAsString(row.getCell(2)));
+            supplier.setEmail(getCellValueAsString(row.getCell(2)));
             supplier.setStatus(Status.valueOf(getCellValueAsString(row.getCell(3))));
             supplier.setPhone(getCellValueAsString(row.getCell(4)));
             supplier.setFax(getCellValueAsString(row.getCell(5)));
@@ -200,7 +196,7 @@ public class SupplierService {
             supplier.setAccBank(getCellValueAsString(row.getCell(8)));
             supplier.setNotes(getCellValueAsString(row.getCell(9)));
 
-            if (supplier.getAccNo().isEmpty() || supplier.getName().isEmpty()) {
+            if ( supplier.getName().isEmpty()) {
                 return null;
             }
 
@@ -275,11 +271,9 @@ public class SupplierService {
                 cell0.setCellValue(supplier.getName() != null ? supplier.getName() : "");
                 cell0.setCellStyle(cellStyle);
 
-                Cell cell1 = row.createCell(1);
-                cell1.setCellValue(supplier.getMainContact() != null ? supplier.getMainContact() : "");
-                cell1.setCellStyle(cellStyle);
+              
 
-                Cell cell2 = row.createCell(2);
+                Cell cell2 = row.createCell(1);
                 cell2.setCellValue(supplier.getPhone() != null ? supplier.getPhone() : "");
                 cell2.setCellStyle(cellStyle);
 

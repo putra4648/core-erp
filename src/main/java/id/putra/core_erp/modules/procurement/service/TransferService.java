@@ -40,8 +40,8 @@ public class TransferService implements BaseService<Transfer> {
                 && !dto.getStatus().isBlank())
                         ? dto.getStatus()
                         : "%%";
-        String id = (dto != null && dto != null && dto.getId() != null)
-                ? dto.getId().toString()
+        String id = (dto != null && dto != null && dto.id != null)
+                ? dto.id.toString()
                 : "%%";
 
         return transferRequestRepo.findByStatusLikeAndIdLike(status, id);
@@ -56,11 +56,11 @@ public class TransferService implements BaseService<Transfer> {
     }
 
     public Transfer getById(Transfer dto) {
-        return transferRequestRepo.findById(dto.getId());
+        return transferRequestRepo.findById(dto.id);
     }
 
     public Boolean checkApprovalFlow(Transfer dto) {
-        Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.getId());
+        Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.id);
         String nrp = "";
 
         if (reqOpt.isPresent()) {
@@ -86,7 +86,7 @@ public class TransferService implements BaseService<Transfer> {
         Transfer params = dto;
         String nrp = "";
 
-        Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(params.getId());
+        Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(params.id);
         if (reqOpt.isPresent()) {
             ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
             List<Approval> approvals = new ArrayList<>();
@@ -127,7 +127,7 @@ public class TransferService implements BaseService<Transfer> {
             }
             return result;
         } else {
-            throw new ModuleException("TransferRequest ID " + params.getId() + " not found");
+            throw new ModuleException("TransferRequest ID " + params.id + " not found");
         }
     }
 

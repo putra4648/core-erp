@@ -23,12 +23,7 @@ import jakarta.persistence.Table;
 @Table(name = "suppliers")
 public class Supplier extends BaseEntity {
 
-    @Id
-    @Column(name = "acc_no", nullable = false)
-    private String accNo;
-
-    @Column(name = "id")
-    private Long id;
+   
 
     @Column(name = "code")
     private String code;
@@ -36,8 +31,8 @@ public class Supplier extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "website")
-    private String website;
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -74,17 +69,7 @@ public class Supplier extends BaseEntity {
     @Column(name = "supplier_logo_name")
     private String supplierLogoName;
 
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_po_address_id", referencedColumnName = "id")
-    private SupplierPOAddress supplierPOAddress;
-
-    @OneToOne(optional = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "supplier_address_id", referencedColumnName = "id")
-    private SupplierAddress supplierAddress;
-
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SupplierContact> contacts = new ArrayList<>();
-
+  
     private String filename;
 
     public String getFilename() {
@@ -95,9 +80,7 @@ public class Supplier extends BaseEntity {
         this.filename = filename;
     }
 
-    public String getMainContact() {
-        return (contacts != null && !contacts.isEmpty()) ? contacts.get(0).getContactName() : "";
-    }
+   
 
     public Instant getCreatedDate() {
         return null;
@@ -107,21 +90,8 @@ public class Supplier extends BaseEntity {
         return null;
     }
 
-    public String getAccNo() {
-        return accNo;
-    }
 
-    public void setAccNo(String accNo) {
-        this.accNo = accNo;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+   
 
     public String getCode() {
         return code;
@@ -139,12 +109,12 @@ public class Supplier extends BaseEntity {
         this.name = name;
     }
 
-    public String getWebsite() {
-        return website;
+    public String getEmail() {
+        return email;
     }
 
-    public void setWebsite(String website) {
-        this.website = website;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Status getStatus() {
@@ -235,27 +205,5 @@ public class Supplier extends BaseEntity {
         this.supplierLogoName = supplierLogoName;
     }
 
-    public SupplierPOAddress getSupplierPOAddress() {
-        return supplierPOAddress;
-    }
-
-    public void setSupplierPOAddress(SupplierPOAddress supplierPOAddress) {
-        this.supplierPOAddress = supplierPOAddress;
-    }
-
-    public SupplierAddress getSupplierAddress() {
-        return supplierAddress;
-    }
-
-    public void setSupplierAddress(SupplierAddress supplierAddress) {
-        this.supplierAddress = supplierAddress;
-    }
-
-    public List<SupplierContact> getContacts() {
-        return contacts;
-    }
-
-    public void setContacts(List<SupplierContact> contacts) {
-        this.contacts = contacts;
-    }
+    
 }

@@ -23,135 +23,132 @@ import jakarta.persistence.PersistenceContext;
 @ApplicationScoped
 public class QuotationService implements BaseService<Quotation> {
 
-    private final QuotationRepo quotationRepository;
+	private final QuotationRepo quotationRepository;
 
-    public QuotationService(QuotationRepo rfqRepository) {
-        this.quotationRepository = rfqRepository;
-    }
+	public QuotationService(QuotationRepo rfqRepository) {
+		this.quotationRepository = rfqRepository;
+	}
 
-    @PersistenceContext
-    private EntityManager entityManager;
+	@PersistenceContext
+	private EntityManager entityManager;
 
-    public void add(Quotation dto) {
-        quotationRepository.persist(dto);
-    }
+	public void add(Quotation dto) {
+		quotationRepository.persist(dto);
+	}
 
-    public List<Quotation> findAll(Quotation params) {
-        return quotationRepository.find("id like ?1", params.getId()).list();
-    }
+	public List<Quotation> findAll(Quotation params) {
+		return quotationRepository.find("CAST(id AS text) like ?1", params.id != null ? params.id.toString() : "").list();
+	}
 
-    public void save(Quotation entity) {
-        quotationRepository.persist(entity);
-    }
+	public void save(Quotation entity) {
+		quotationRepository.persist(entity);
+	}
 
-    public Quotation findById(Long id) {
-        return quotationRepository.findById(id);
-    }
+	public Quotation findById(Long id) {
+		return quotationRepository.findById(id);
+	}
 
-    public Iterable<Quotation> findAll(Quotation quotation, Page p) {
-        return quotationRepository.findAll().list();
-    }
+	public Iterable<Quotation> findAll(Quotation quotation, Page p) {
+		return quotationRepository.findAll().list();
+	}
 
-    public Quotation getById(Long id) {
-        return quotationRepository.findByIdOptional(id).get();
-    }
+	public Quotation getById(Long id) {
+		return quotationRepository.findByIdOptional(id).get();
+	}
 
-    public Boolean checkApprovalFlow(Quotation dto) {
-        Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
-        if (rfqOpt.isPresent()) {
-            // Optional<Users> userOpt = userRepo
-            // .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
-            // "");
-            // String userNrp = userOpt.map(u -> u).orElse("");
-            // if (rfqOpt.get().getTemApprovals() != null) {
-            // return rfqOpt.get().getTemApprovals().stream()
-            // .anyMatch(aprv -> aprv.getUsers() != null && aprv.getUsers() != null
-            // && aprv.getUsers().equalsIgnoreCase(userNrp));
-            // }
-            return false;
-        } else {
-            throw new ModuleException("RFQ " + dto.getId() + " not found");
-        }
-    }
+	public Boolean checkApprovalFlow(Quotation dto) {
+		Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.id);
+		if (rfqOpt.isPresent()) {
+			// Optional<Users> userOpt = userRepo
+			// .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
+			// "");
+			// String userNrp = userOpt.map(u -> u).orElse("");
+			// if (rfqOpt.get().getTemApprovals() != null) {
+			// return rfqOpt.get().getTemApprovals().stream()
+			// .anyMatch(aprv -> aprv.getUsers() != null && aprv.getUsers() != null
+			// && aprv.getUsers().equalsIgnoreCase(userNrp));
+			// }
+			return false;
+		} else {
+			throw new ModuleException("RFQ " + dto.id + " not found");
+		}
+	}
 
-    public ApprovalStatus checkStatusApprovalIsPermanent(Quotation dto) {
-        String nrp = "";
+	public ApprovalStatus checkStatusApprovalIsPermanent(Quotation dto) {
+		String nrp = "";
 
-        Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
-        if (rfqOpt.isPresent()) {
-            ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
-            List<Approval> approvals = new ArrayList<>();
-            rfqOpt.ifPresent(data -> {
-                if (data.getTemApprovals() != null) {
-                    approvals.addAll(data.getTemApprovals());
-                }
-            });
-            if (nrp != null) {
-                int index = 0;
-                for (int i = 0; i < approvals.size(); i++) {
-                    if (approvals.get(i).getUsers() != null
-                            && nrp.equalsIgnoreCase(approvals.get(i).getUsers())) {
-                        index = i;
-                    }
-                }
-                if (approvals.stream().anyMatch(
-                        data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers()))) {
+		Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.id);
+		if (rfqOpt.isPresent()) {
+			ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
+			List<Approval> approvals = new ArrayList<>();
+			rfqOpt.ifPresent(data -> {
+				if (data.getTemApprovals() != null) {
+					approvals.addAll(data.getTemApprovals());
+				}
+			});
+			if (nrp != null) {
+				int index = 0;
+				for (int i = 0; i < approvals.size(); i++) {
+					if (approvals.get(i).getUsers() != null && nrp.equalsIgnoreCase(approvals.get(i).getUsers())) {
+						index = i;
+					}
+				}
+				if (approvals.stream()
+						.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers()))) {
 
-                    if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
-                        if (approvals.stream().anyMatch(
-                                data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
-                                        && Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
-                            result = ApprovalStatus.ALREADY_APPROVED;
-                        }
+					if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
+						if (approvals.stream()
+								.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
+										&& Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
+							result = ApprovalStatus.ALREADY_APPROVED;
+						}
 
-                        if (approvals.stream().anyMatch(
-                                data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
-                                        && !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
-                                && index == (rfqOpt.get().getCurrentApprovalStage() != null
-                                        ? rfqOpt.get().getCurrentApprovalStage()
-                                        : 0)) {
-                            result = ApprovalStatus.NEED_APPROVAL;
-                        }
+						if (approvals.stream()
+								.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
+										&& !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
+								&& index == (rfqOpt.get().getCurrentApprovalStage() != null
+										? rfqOpt.get().getCurrentApprovalStage()
+										: 0)) {
+							result = ApprovalStatus.NEED_APPROVAL;
+						}
 
-                    }
-                }
-            }
+					}
+				}
+			}
 
-            return result;
-        } else {
-            throw new ModuleException("RFQ " + dto.getId() + " not found");
-        }
-    }
+			return result;
+		} else {
+			throw new ModuleException("RFQ " + dto.id + " not found");
+		}
+	}
 
-    public byte[] download(Quotation dto) throws Exception {
+	public byte[] download(Quotation dto) throws Exception {
 
-        Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
-        if (rfqOpt.isPresent()) {
-            try {
-                Supplier supplier = rfqOpt.get().getSuppliers().stream()
-                        .filter(data -> data.getAccNo() != null)
-                        .findFirst().orElse(null);
-                if (supplier != null) {
-                    Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq",
-                            supplier.getFilename());
-                    return Files.readAllBytes(path);
-                }
-                return null;
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Error reading file", e);
-            }
-        } else {
-            throw new ModuleException("File ID " + dto.getId() + " not found");
-        }
-    }
+		Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.id);
+		if (rfqOpt.isPresent()) {
+			try {
+				Supplier supplier = rfqOpt.get().getSuppliers().stream()
+						.findFirst().orElse(null);
+				if (supplier != null) {
+					Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq", supplier.getFilename());
+					return Files.readAllBytes(path);
+				}
+				return null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("Error reading file", e);
+			}
+		} else {
+			throw new ModuleException("File ID " + dto.id + " not found");
+		}
+	}
 
-    public void update(Quotation entity) {
-        quotationRepository.persist(entity);
-    }
+	public void update(Quotation entity) {
+		quotationRepository.persist(entity);
+	}
 
-    public void delete(Long id) {
-        quotationRepository.deleteById(id);
-    }
+	public void delete(Long id) {
+		quotationRepository.deleteById(id);
+	}
 
 }

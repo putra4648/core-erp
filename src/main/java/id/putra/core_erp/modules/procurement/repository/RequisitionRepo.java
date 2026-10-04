@@ -92,24 +92,6 @@ public class RequisitionRepo implements PanacheRepository<Requisition> {
                                                         """, title, status, deptIds);
         }
 
-        // public List<Map<String, Object>> getAllSpender(String deptId) {
-        // return find("""
-        // select
-        // date_trunc('year',current_date) + (n * '1 month'::interval) as month_name,
-        // count(r.title) as total
-        // from
-        // generate_series(3,
-        // 14) as n
-        // left join requisition r on
-        // r.budget_date = date_trunc('year',current_date) + (n * '1 month'::interval)
-        // and
-        // r.dept_id = ?1
-        // group by
-        // n.n
-        // ORDER BY
-        // n.n
-        // """, deptId)
-        // .list();
-        // }
+      
 
 }

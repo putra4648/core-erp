@@ -18,8 +18,6 @@ import jakarta.persistence.Table;
 @Table
 public class Quotation extends BaseEntity {
 
-    @Id
-    private Long id;
 
     @Column(name = "due_date")
     private Date dueDate;
@@ -54,13 +52,6 @@ public class Quotation extends BaseEntity {
     @Column(name = "temp_approvals", columnDefinition = "jsonb")
     private List<Approval> temApprovals;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Date getDueDate() {
         return dueDate;

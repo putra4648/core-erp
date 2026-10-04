@@ -3,6 +3,7 @@ package id.putra.core_erp.modules.outbound.model;
 import java.sql.Date;
 import java.util.List;
 
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.department.model.Department;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,10 +16,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class SalesOrder {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class SalesOrder extends BaseEntity{
   private String soNumber;
   private Date orderDate;
   private String status;
@@ -30,13 +28,8 @@ public class SalesOrder {
   @JoinColumn(name = "customer_id")
   private Department customer;
 
-  public Long getId() {
-    return id;
-  }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+  
 
   public String getSoNumber() {
     return soNumber;

@@ -15,10 +15,7 @@ import jakarta.persistence.Table;
 @Table(name = "warehouse_racks")
 @Entity
 public class Rack extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+  
     private String name;
 
     private Long rows;
@@ -34,13 +31,7 @@ public class Rack extends BaseEntity {
     @JoinColumn(name = "zone_id")
     private Zone zone;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
 
     public String getName() {
         return name;

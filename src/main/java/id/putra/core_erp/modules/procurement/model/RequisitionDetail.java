@@ -19,10 +19,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "requisition_detail")
 public class RequisitionDetail extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
+   
     @Column(name = "name")
     private String name;
 
@@ -69,13 +66,7 @@ public class RequisitionDetail extends BaseEntity {
     @JoinColumn(name = "rfq_id", referencedColumnName = "id")
     private Quotation rfq;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+   
 
     public String getName() {
         return name;

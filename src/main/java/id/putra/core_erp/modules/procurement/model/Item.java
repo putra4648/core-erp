@@ -17,9 +17,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "items")
 public class Item extends BaseEntity {
-    @Id
-    @Column(name = "item_number", nullable = false)
-    private String itemNumber;
+  
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -67,13 +65,7 @@ public class Item extends BaseEntity {
         return this.docsPath;
     }
 
-    public String getItemNumber() {
-        return itemNumber;
-    }
-
-    public void setItemNumber(String itemNumber) {
-        this.itemNumber = itemNumber;
-    }
+  
 
     public String getName() {
         return name;

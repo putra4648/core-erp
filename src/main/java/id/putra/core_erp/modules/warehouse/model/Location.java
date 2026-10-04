@@ -17,9 +17,7 @@ import jakarta.persistence.Table;
 @Table(name = "warehouse_locations")
 @Entity
 public class Location extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    
 
     private String name;
 
@@ -36,13 +34,7 @@ public class Location extends BaseEntity {
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     private List<ReceivingLine> receivingLines;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+  
 
     public String getName() {
         return name;

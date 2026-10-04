@@ -27,7 +27,6 @@ public class CompanyView extends VerticalLayout {
 
     private final CompanyService companyService;
 
-    private Long companyId = 1L;
     private final TextField nameField = new TextField("Company Name");
     private final TextField telpField = new TextField("Telephone");
     private final TextField npwpField = new TextField("NPWP");
@@ -82,9 +81,8 @@ public class CompanyView extends VerticalLayout {
 
     private void loadCompanyData() {
         try {
-            Company dto = companyService.getProfile();
+            Company dto = companyService.findById(1L);
             if (dto != null) {
-                companyId = dto.getId() != null ? dto.getId() : 1;
                 nameField.setValue(dto.getName() != null ? dto.getName() : "");
                 telpField.setValue(dto.getTelp() != null ? dto.getTelp() : "");
                 npwpField.setValue(dto.getNpwp() != null ? dto.getNpwp() : "");
@@ -109,7 +107,6 @@ public class CompanyView extends VerticalLayout {
 
     private void handleSave() {
         Company dto = new Company();
-        dto.setId(companyId);
         dto.setName(nameField.getValue());
         dto.setTelp(telpField.getValue());
         dto.setNpwp(npwpField.getValue());
@@ -126,7 +123,7 @@ public class CompanyView extends VerticalLayout {
         // dto.setIsRegisterApproval(registerApprovalBox.getValue());
 
         try {
-            companyService.handleCompany(dto, null);
+            companyService.save(dto);
             Notification.show("Company profile updated successfully", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (Exception ex) {

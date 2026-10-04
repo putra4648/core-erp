@@ -15,9 +15,6 @@ public class SupplierRepo implements PanacheRepository<Supplier> {
         return list("status", status);
     }
 
-    public Optional<Supplier> findByAccNo(String accNo) {
-        return find("accNo = ?1", accNo).singleResultOptional();
-    }
 
     public int countByNameContainingIgnoreCase(String name) {
         return (int) count("name ilike ?1", "%" + name + "%");
@@ -27,8 +24,4 @@ public class SupplierRepo implements PanacheRepository<Supplier> {
         return list("status", status);
     }
 
-    //
-    // findAllByNameContainingIgnoreCaseAndStatusStartingWithIgnoreCase(String name,
-    // String status,
-    // Pageable pageable);
 }

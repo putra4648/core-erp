@@ -78,7 +78,7 @@ public class OutboundView extends VerticalLayout {
                 .setSortable(true);
         grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date")
                 .setAutoWidth(true);
-        grid.addColumn(so -> so.getCustomer().getId() != null ? "Customer #" + so.getCustomer().getId() : "-")
+        grid.addColumn(so -> so.getCustomer().id != null ? "Customer #" + so.getCustomer().id : "-")
                 .setHeader("Customer").setFlexGrow(1);
 
         grid.addComponentColumn(so -> {
@@ -104,7 +104,7 @@ public class OutboundView extends VerticalLayout {
     }
 
     private void openOrderDialog(SalesOrder order) {
-        boolean isEdit = order.getId() != null;
+        boolean isEdit = order.id != null;
         Dialog dialog = new Dialog(isEdit ? "Edit Outbound Order" : "New Outbound Order");
 
         TextField soNumField = new TextField("Sales Order Number");
@@ -142,7 +142,7 @@ public class OutboundView extends VerticalLayout {
 
         Button deleteBtn = new Button("Delete", e -> {
             try {
-                salesOrderService.delete(order.getId());
+                salesOrderService.delete(order.id);
                 Notification.show("Sales order deleted successfully", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 confirmDialog.close();

@@ -23,7 +23,7 @@ public class ZoneCoreService implements BaseService<Zone> {
     }
 
     public Zone getZone(Zone zoneDto) {
-        return zoneRepository.findById(zoneDto.getId());
+        return zoneRepository.findById(zoneDto.id);
     }
 
     public void save(Zone entity) {
@@ -51,7 +51,7 @@ public class ZoneCoreService implements BaseService<Zone> {
     }
 
     public void delete(List<Zone> dtos) {
-        dtos.forEach(dto -> zoneRepository.deleteById(dto.getId()));
+        dtos.forEach(dto -> zoneRepository.deleteById(dto.id));
     }
 
     public void delete(Long id) {

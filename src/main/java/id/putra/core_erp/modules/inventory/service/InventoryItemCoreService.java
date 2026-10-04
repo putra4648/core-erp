@@ -22,7 +22,7 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
     }
 
     public InventoryItem getInventoryItem(InventoryItem item) {
-        return inventoryItemRepository.findById(item.getId());
+        return inventoryItemRepository.findById(item.id);
     }
 
     public InventoryItem findById(Long id) {
@@ -50,7 +50,7 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
     }
 
     public void delete(List<InventoryItem> dtos) {
-        dtos.forEach(item -> inventoryItemRepository.deleteById(item.getId()));
+        dtos.forEach(item -> inventoryItemRepository.deleteById(item.id));
     }
 
     public void delete(Long id) {

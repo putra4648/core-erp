@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.parameter.model;
 
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,11 +11,8 @@ import jakarta.validation.constraints.NotBlank;
 @Entity
 @Table(name = "parameter_lookup")
 
-public class ParameterLookup {
+public class ParameterLookup extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private String module;
 
@@ -29,14 +27,7 @@ public class ParameterLookup {
 
     private Boolean isActive;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+   
     public String getModule() {
         return module;
     }

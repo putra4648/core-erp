@@ -2,6 +2,7 @@ package id.putra.core_erp.modules.inbound.model;
 
 import java.math.BigDecimal;
 
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.product.model.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,11 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class PurchaseOrderLine {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class PurchaseOrderLine extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -29,13 +26,7 @@ public class PurchaseOrderLine {
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
 
     public Product getProduct() {
         return product;

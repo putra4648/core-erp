@@ -2,6 +2,7 @@ package id.putra.core_erp.modules.inbound.model;
 
 import java.math.BigDecimal;
 
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,10 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class ReturnToVendor {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class ReturnToVendor extends BaseEntity{
   private String reason;
   @Column(precision = 12, scale = 2)
   private BigDecimal qty;
@@ -25,13 +23,6 @@ public class ReturnToVendor {
   @JoinColumn(name = "receiving_line_id")
   private ReceivingLine receivingLine;
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
 
   public String getReason() {
     return reason;

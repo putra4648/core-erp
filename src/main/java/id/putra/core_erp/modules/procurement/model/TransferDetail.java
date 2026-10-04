@@ -3,8 +3,13 @@ package id.putra.core_erp.modules.procurement.model;
 import java.math.BigInteger;
 import java.util.List;
 
-public class TransferDetail {
-    private String id;
+import id.putra.core_erp.entity.BaseEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table
+public class TransferDetail extends BaseEntity{
     private String item_name;
     private String item_number;
     private String item_description;
@@ -20,13 +25,6 @@ public class TransferDetail {
     private BigInteger item_price;
     private BigInteger item_subtotal;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getItem_name() {
         return item_name;
