@@ -8,11 +8,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class InventoryRepo implements PanacheRepository<Inventory> {
-    public Optional<Inventory> findByItemNumber(String itemNumber) {
-        return find("itemNumber = ?1", itemNumber).firstResultOptional();
-    }
+	public Optional<Inventory> findByItemNumber(String itemNumber) {
+		return find("itemNumber = ?1", itemNumber).firstResultOptional();
+	}
 
-    public Inventory findByPartNumber(String partNumber) {
-        return find("partNumber = ?1", partNumber).firstResult();
-    }
+	public Inventory findByPartNumber(String partNumber) {
+		return find("partNumber = ?1", partNumber).firstResult();
+	}
 }

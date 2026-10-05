@@ -10,9 +10,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -20,74 +17,70 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class PurchaseOrder extends BaseEntity{
-    
-	
-    private String poNumber;
+public class PurchaseOrder extends BaseEntity {
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+	private String poNumber;
 
-    private Date orderDate;
+	@Enumerated(EnumType.STRING)
+	private OrderStatus status;
 
-    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PurchaseOrderLine> purchaseOrderLines;
+	private Date orderDate;
 
-    @OneToMany(mappedBy = "purchaseOrder")
-    private List<Receiving> receivings;
+	@OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<PurchaseOrderLine> purchaseOrderLines;
 
-    @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
+	@OneToMany(mappedBy = "purchaseOrder")
+	private List<Receiving> receivings;
 
-   
-    
+	@ManyToOne
+	@JoinColumn(name = "supplier_id")
+	private Supplier supplier;
 
-    public String getPoNumber() {
-        return poNumber;
-    }
+	public String getPoNumber() {
+		return poNumber;
+	}
 
-    public void setPoNumber(String poNumber) {
-        this.poNumber = poNumber;
-    }
+	public void setPoNumber(String poNumber) {
+		this.poNumber = poNumber;
+	}
 
-    public OrderStatus getStatus() {
-        return status;
-    }
+	public OrderStatus getStatus() {
+		return status;
+	}
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
+	public void setStatus(OrderStatus status) {
+		this.status = status;
+	}
 
-    public Date getOrderDate() {
-        return orderDate;
-    }
+	public Date getOrderDate() {
+		return orderDate;
+	}
 
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
 
-    public List<PurchaseOrderLine> getPurchaseOrderLines() {
-        return purchaseOrderLines;
-    }
+	public List<PurchaseOrderLine> getPurchaseOrderLines() {
+		return purchaseOrderLines;
+	}
 
-    public void setPurchaseOrderLines(List<PurchaseOrderLine> purchaseOrderLines) {
-        this.purchaseOrderLines = purchaseOrderLines;
-    }
+	public void setPurchaseOrderLines(List<PurchaseOrderLine> purchaseOrderLines) {
+		this.purchaseOrderLines = purchaseOrderLines;
+	}
 
-    public List<Receiving> getReceivings() {
-        return receivings;
-    }
+	public List<Receiving> getReceivings() {
+		return receivings;
+	}
 
-    public void setReceivings(List<Receiving> receivings) {
-        this.receivings = receivings;
-    }
+	public void setReceivings(List<Receiving> receivings) {
+		this.receivings = receivings;
+	}
 
-    public Supplier getSupplier() {
-        return supplier;
-    }
+	public Supplier getSupplier() {
+		return supplier;
+	}
 
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
-    }
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
+	}
 }

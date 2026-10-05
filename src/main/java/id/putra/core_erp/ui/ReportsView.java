@@ -29,64 +29,64 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class ReportsView extends VerticalLayout {
 
-    public ReportsView() {
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+	public ReportsView() {
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        addHeader();
-        addReportGeneratorSection();
-    }
+		addHeader();
+		addReportGeneratorSection();
+	}
 
-    private void addHeader() {
-        H2 title = new H2("Reports & Analytics");
-        title.addClassNames("m-0", "text-xl", "font-bold");
-        Paragraph desc = new Paragraph("Generate and download warehouse inventory and order fulfillment reports.");
-        desc.addClassNames("text-secondary", "m-0");
-        add(title, desc);
-    }
+	private void addHeader() {
+		H2 title = new H2("Reports & Analytics");
+		title.addClassNames("m-0", "text-xl", "font-bold");
+		Paragraph desc = new Paragraph("Generate and download warehouse inventory and order fulfillment reports.");
+		desc.addClassNames("text-secondary", "m-0");
+		add(title, desc);
+	}
 
-    private void addReportGeneratorSection() {
-        ComboBox<String> reportType = new ComboBox<>("Report Type");
-        reportType.setItems("Inventory Stock Valuation", "Inbound Receipts Summary", "Outbound Fulfillment Rate",
-                "Stock Audit History");
-        reportType.setValue("Inventory Stock Valuation");
-        reportType.setRequired(true);
+	private void addReportGeneratorSection() {
+		ComboBox<String> reportType = new ComboBox<>("Report Type");
+		reportType.setItems("Inventory Stock Valuation", "Inbound Receipts Summary", "Outbound Fulfillment Rate",
+				"Stock Audit History");
+		reportType.setValue("Inventory Stock Valuation");
+		reportType.setRequired(true);
 
-        DatePicker startDate = new DatePicker("Start Date", LocalDate.now().minusDays(30));
-        DatePicker endDate = new DatePicker("End Date", LocalDate.now());
+		DatePicker startDate = new DatePicker("Start Date", LocalDate.now().minusDays(30));
+		DatePicker endDate = new DatePicker("End Date", LocalDate.now());
 
-        FormLayout form = new FormLayout(reportType, startDate, endDate);
-        form.setMaxWidth("600px");
+		FormLayout form = new FormLayout(reportType, startDate, endDate);
+		form.setMaxWidth("600px");
 
-        Button generateBtn = new Button("Generate Preview", VaadinIcon.FILE_TEXT.create(), e -> {
-            Notification.show("Generated preview for " + reportType.getValue(), 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        });
-        generateBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button generateBtn = new Button("Generate Preview", VaadinIcon.FILE_TEXT.create(), e -> {
+			Notification.show("Generated preview for " + reportType.getValue(), 3000, Notification.Position.TOP_END)
+					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+		});
+		generateBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        DownloadHandler downloadHandler = DownloadHandler.fromInputStream((event) -> {
-            String csvContent = "Report Type,Start Date,End Date,Generated At\n" +
-                    "\"" + reportType.getValue() + "\",\"" + startDate.getValue() + "\",\"" + endDate.getValue()
-                    + "\",\"" + LocalDate.now() + "\"\n";
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-                    csvContent.getBytes(StandardCharsets.UTF_8));
-            return new DownloadResponse(byteArrayInputStream, "wms_report.csv", "text/csv", -1);
-        });
+		DownloadHandler downloadHandler = DownloadHandler.fromInputStream((event) -> {
+			String csvContent = "Report Type,Start Date,End Date,Generated At\n" + "\"" + reportType.getValue()
+					+ "\",\"" + startDate.getValue() + "\",\"" + endDate.getValue() + "\",\"" + LocalDate.now()
+					+ "\"\n";
+			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+					csvContent.getBytes(StandardCharsets.UTF_8));
+			return new DownloadResponse(byteArrayInputStream, "wms_report.csv", "text/csv", -1);
+		});
 
-        Anchor downloadLink = new Anchor(downloadHandler, "Export CSV");
-        downloadLink.getElement().setAttribute("download", true);
-        Button downloadBtn = new Button("Export CSV", VaadinIcon.DOWNLOAD.create());
-        downloadLink.removeAll();
-        downloadLink.add(downloadBtn);
+		Anchor downloadLink = new Anchor(downloadHandler, "Export CSV");
+		downloadLink.getElement().setAttribute("download", true);
+		Button downloadBtn = new Button("Export CSV", VaadinIcon.DOWNLOAD.create());
+		downloadLink.removeAll();
+		downloadLink.add(downloadBtn);
 
-        HorizontalLayout actions = new HorizontalLayout(generateBtn, downloadLink);
-        actions.setAlignItems(Alignment.CENTER);
+		HorizontalLayout actions = new HorizontalLayout(generateBtn, downloadLink);
+		actions.setAlignItems(Alignment.CENTER);
 
-        VerticalLayout container = new VerticalLayout(form, actions);
-        container.addClassNames("border", "rounded-l", "p-l", "bg-base");
-        container.setMaxWidth("650px");
+		VerticalLayout container = new VerticalLayout(form, actions);
+		container.addClassNames("border", "rounded-l", "p-l", "bg-base");
+		container.setMaxWidth("650px");
 
-        add(container);
-    }
+		add(container);
+	}
 }

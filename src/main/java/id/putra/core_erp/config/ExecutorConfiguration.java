@@ -14,22 +14,19 @@ import jakarta.ws.rs.Produces;
 @ApplicationScoped
 public class ExecutorConfiguration {
 
-    @Produces
-    @Singleton
-    @VaadinServiceEnabled
-    public Executor vaadinTaskExecutor() {
-        ThreadPoolExecutor customExecutor = new ThreadPoolExecutor(
-                16, // Core pool size
-                32, // Maximum pool size
-                120, // Keep-alive time
-                TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(),
-                r -> {
-                    Thread thread = new Thread(r, "CustomVaadinExecutor-" + r.hashCode());
-                    thread.setDaemon(true);
-                    return thread;
-                });
-        customExecutor.allowCoreThreadTimeOut(true);
-        return customExecutor;
-    }
+	@Produces
+	@Singleton
+	@VaadinServiceEnabled
+	public Executor vaadinTaskExecutor() {
+		ThreadPoolExecutor customExecutor = new ThreadPoolExecutor(16, // Core pool size
+				32, // Maximum pool size
+				120, // Keep-alive time
+				TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
+					Thread thread = new Thread(r, "CustomVaadinExecutor-" + r.hashCode());
+					thread.setDaemon(true);
+					return thread;
+				});
+		customExecutor.allowCoreThreadTimeOut(true);
+		return customExecutor;
+	}
 }

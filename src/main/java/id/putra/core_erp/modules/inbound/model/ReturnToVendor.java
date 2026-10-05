@@ -5,46 +5,42 @@ import java.math.BigDecimal;
 import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class ReturnToVendor extends BaseEntity{
-  private String reason;
-  @Column(precision = 12, scale = 2)
-  private BigDecimal qty;
+public class ReturnToVendor extends BaseEntity {
+	private String reason;
+	@Column(precision = 12, scale = 2)
+	private BigDecimal qty;
 
-  @ManyToOne
-  @JoinColumn(name = "receiving_line_id")
-  private ReceivingLine receivingLine;
+	@ManyToOne
+	@JoinColumn(name = "receiving_line_id")
+	private ReceivingLine receivingLine;
 
+	public String getReason() {
+		return reason;
+	}
 
-  public String getReason() {
-    return reason;
-  }
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
 
-  public void setReason(String reason) {
-    this.reason = reason;
-  }
+	public BigDecimal getQty() {
+		return qty;
+	}
 
-  public BigDecimal getQty() {
-    return qty;
-  }
+	public void setQty(BigDecimal qty) {
+		this.qty = qty;
+	}
 
-  public void setQty(BigDecimal qty) {
-    this.qty = qty;
-  }
+	public ReceivingLine getReceivingLine() {
+		return receivingLine;
+	}
 
-  public ReceivingLine getReceivingLine() {
-    return receivingLine;
-  }
-
-  public void setReceivingLine(ReceivingLine receivingLine) {
-    this.receivingLine = receivingLine;
-  }
+	public void setReceivingLine(ReceivingLine receivingLine) {
+		this.receivingLine = receivingLine;
+	}
 }

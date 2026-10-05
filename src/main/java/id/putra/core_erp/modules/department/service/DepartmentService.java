@@ -1,11 +1,9 @@
 package id.putra.core_erp.modules.department.service;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import id.putra.core_erp.constant.MessageConstant;
 import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.department.repo.DepartmentRepo;
@@ -25,25 +23,19 @@ public class DepartmentService implements BaseService<Department> {
 	}
 
 	@Override
-	public void save(Department body) {
-		departmentRepo.persist(body);
+	public void save(Department entity) {
+		departmentRepo.persist(entity);
 	}
 
 	@Override
-	public void update(Department body) {
-		Optional<Department> dept = departmentRepo.findByDeptNumber(body.getCode());
-		if (dept.isPresent()) {
-			departmentRepo.persist(body);
-		} else {
-			String message = MessageFormat.format(MessageConstant.NOT_FOUND, "Department " + body.getCode());
-			throw new IllegalArgumentException(message);
-		}
+	public void update(Department entity) {
+		departmentRepo.getEntityManager().merge(entity);
 	}
 
-	public List<Approval> getDeptApprovals(Long deptId) {
+	public List<Approval> getDeptApprovals(Long id) {
 		List<Approval> dtos = new ArrayList<>();
 
-		departmentRepo.findByIdOptional(deptId).ifPresent(value -> {
+		departmentRepo.findByIdOptional(id).ifPresent(value -> {
 			if (value.getApprovals() != null) {
 				dtos.addAll(value.getApprovals().stream().map(apr -> {
 					Approval dto = new Approval();

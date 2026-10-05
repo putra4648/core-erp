@@ -1,10 +1,9 @@
 package id.putra.core_erp.modules.outbound.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
-
 import id.putra.core_erp.modules.outbound.model.Carrier;
 import id.putra.core_erp.modules.outbound.repository.CarrierRepository;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -12,38 +11,34 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class CarrierService implements BaseService<Carrier> {
 
-    private final CarrierRepository carrierRepository;
+	private final CarrierRepository carrierRepository;
 
-    public CarrierService(CarrierRepository carrierRepository) {
-        this.carrierRepository = carrierRepository;
-    }
+	public CarrierService(CarrierRepository carrierRepository) {
+		this.carrierRepository = carrierRepository;
+	}
 
-    public void save(Carrier entity) {
-        carrierRepository.persist(entity);
-    }
+	@Override
+	public void save(Carrier entity) {
+		carrierRepository.persist(entity);
+	}
 
-    public Carrier create(Carrier dto) {
-        carrierRepository.persist(dto);
-        return dto;
-    }
+	@Override
+	public void update(Carrier dto) {
+		carrierRepository.getEntityManager().merge(dto);
+	}
 
-    public void update(Carrier dto) {
-        carrierRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public void delete(Long id) {
+		carrierRepository.deleteById(id);
+	}
 
-    public void delete(Long id) {
-        carrierRepository.deleteById(id);
-    }
+	@Override
+	public Carrier findById(Long id) {
+		return carrierRepository.findById(id);
+	}
 
-    public Carrier getById(Long id) {
-        return carrierRepository.findById(id);
-    }
-
-    public Carrier findById(Long id) {
-        return carrierRepository.findById(id);
-    }
-
-    public Iterable<Carrier> findAll(Carrier c, Page p) {
-        return carrierRepository.findAll().list();
-    }
+	@Override
+	public Iterable<Carrier> findAll(Carrier c, Page p) {
+		return carrierRepository.findAll().list();
+	}
 }

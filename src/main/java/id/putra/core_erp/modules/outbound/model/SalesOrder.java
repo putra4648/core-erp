@@ -6,9 +6,6 @@ import java.util.List;
 import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.department.model.Department;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -16,58 +13,55 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class SalesOrder extends BaseEntity{
-  private String soNumber;
-  private Date orderDate;
-  private String status;
+public class SalesOrder extends BaseEntity {
+	private String soNumber;
+	private Date orderDate;
+	private String status;
 
-  @OneToMany(mappedBy = "salesOrder")
-  private List<SalesOrderLine> salesOrderLines;
+	@OneToMany(mappedBy = "salesOrder")
+	private List<SalesOrderLine> salesOrderLines;
 
-  @ManyToOne
-  @JoinColumn(name = "customer_id")
-  private Department customer;
+	@ManyToOne
+	@JoinColumn(name = "customer_id")
+	private Department customer;
 
+	public String getSoNumber() {
+		return soNumber;
+	}
 
-  
+	public void setSoNumber(String soNumber) {
+		this.soNumber = soNumber;
+	}
 
-  public String getSoNumber() {
-    return soNumber;
-  }
+	public Date getOrderDate() {
+		return orderDate;
+	}
 
-  public void setSoNumber(String soNumber) {
-    this.soNumber = soNumber;
-  }
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
 
-  public Date getOrderDate() {
-    return orderDate;
-  }
+	public String getStatus() {
+		return status;
+	}
 
-  public void setOrderDate(Date orderDate) {
-    this.orderDate = orderDate;
-  }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-  public String getStatus() {
-    return status;
-  }
+	public List<SalesOrderLine> getSalesOrderLines() {
+		return salesOrderLines;
+	}
 
-  public void setStatus(String status) {
-    this.status = status;
-  }
+	public void setSalesOrderLines(List<SalesOrderLine> salesOrderLines) {
+		this.salesOrderLines = salesOrderLines;
+	}
 
-  public List<SalesOrderLine> getSalesOrderLines() {
-    return salesOrderLines;
-  }
+	public Department getCustomer() {
+		return customer;
+	}
 
-  public void setSalesOrderLines(List<SalesOrderLine> salesOrderLines) {
-    this.salesOrderLines = salesOrderLines;
-  }
-
-  public Department getCustomer() {
-    return customer;
-  }
-
-  public void setCustomer(Department customer) {
-    this.customer = customer;
-  }
+	public void setCustomer(Department customer) {
+		this.customer = customer;
+	}
 }

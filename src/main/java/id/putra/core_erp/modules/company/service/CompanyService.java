@@ -1,29 +1,21 @@
 package id.putra.core_erp.modules.company.service;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.text.ParseException;
-import java.util.Optional;
-
-import org.jboss.resteasy.reactive.multipart.FileUpload;
-
 import id.putra.core_erp.modules.company.model.Company;
 import id.putra.core_erp.modules.company.repository.CompanyRepo;
 import id.putra.core_erp.service.BaseService;
-import id.putra.core_erp.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
-public class CompanyService implements BaseService<Company>{
+public class CompanyService implements BaseService<Company> {
 
-    private final CompanyRepo companyRepo;
+	private final CompanyRepo companyRepo;
 
-    public CompanyService(CompanyRepo companyRepo) {
-        this.companyRepo = companyRepo;
-    }
+	public CompanyService(CompanyRepo companyRepo) {
+		this.companyRepo = companyRepo;
+	}
 
 	@Override
 	public void save(Company entity) {
@@ -38,13 +30,13 @@ public class CompanyService implements BaseService<Company>{
 	@Override
 	public void delete(Long id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void update(Company entity) {
-		// TODO Auto-generated method stub
-		
+		companyRepo.getEntityManager().merge(entity);
+
 	}
 
 	@Override
@@ -52,7 +44,5 @@ public class CompanyService implements BaseService<Company>{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-   
 
 }

@@ -1,8 +1,5 @@
 package id.putra.core_erp.modules.procurement.service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +11,6 @@ import id.putra.core_erp.modules.procurement.model.Quotation;
 import id.putra.core_erp.modules.procurement.repository.QuotationRepo;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.service.BaseService;
-import id.putra.core_erp.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -37,17 +33,21 @@ public class QuotationService implements BaseService<Quotation> {
 	}
 
 	public List<Quotation> findAll(Quotation params) {
-		return quotationRepository.find("CAST(id AS text) like ?1", params.id != null ? params.id.toString() : "").list();
+		return quotationRepository.find("CAST(id AS text) like ?1", params.id != null ? params.id.toString() : "")
+				.list();
 	}
 
+	@Override
 	public void save(Quotation entity) {
 		quotationRepository.persist(entity);
 	}
 
+	@Override
 	public Quotation findById(Long id) {
 		return quotationRepository.findById(id);
 	}
 
+	@Override
 	public Iterable<Quotation> findAll(Quotation quotation, Page p) {
 		return quotationRepository.findAll().list();
 	}
@@ -127,12 +127,8 @@ public class QuotationService implements BaseService<Quotation> {
 		Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.id);
 		if (rfqOpt.isPresent()) {
 			try {
-				Supplier supplier = rfqOpt.get().getSuppliers().stream()
-						.findFirst().orElse(null);
-				if (supplier != null) {
-					Path path = Paths.get(AppFileUtil.getServerPath(), "data", "rfq", supplier.getFilename());
-					return Files.readAllBytes(path);
-				}
+				Supplier supplier = rfqOpt.get().getSuppliers().stream().findFirst().orElse(null);
+
 				return null;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -143,10 +139,12 @@ public class QuotationService implements BaseService<Quotation> {
 		}
 	}
 
+	@Override
 	public void update(Quotation entity) {
-		quotationRepository.persist(entity);
+		quotationRepository.getEntityManager().merge(entity);
 	}
 
+	@Override
 	public void delete(Long id) {
 		quotationRepository.deleteById(id);
 	}

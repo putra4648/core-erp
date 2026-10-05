@@ -25,110 +25,105 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class CompanyView extends VerticalLayout {
 
-    private final CompanyService companyService;
+	private final CompanyService companyService;
 
-    private final TextField nameField = new TextField("Company Name");
-    private final TextField telpField = new TextField("Telephone");
-    private final TextField npwpField = new TextField("NPWP");
-    private final TextField accBankField = new TextField("Bank Account");
-    private final DatePicker endYearPicker = new DatePicker("Financial End Year");
-    private final TextField curr1Field = new TextField("Primary Currency");
-    private final TextField curr2Field = new TextField("Secondary Currency");
-    private final TextField curr3Field = new TextField("Tertiary Currency");
-    private final Checkbox autoCloseOrderBox = new Checkbox("Auto Close Order");
-    private final Checkbox registerApprovalBox = new Checkbox("Require Register Approval");
-    private final Button saveButton = new Button("Save Changes");
+	private final TextField nameField = new TextField("Company Name");
+	private final TextField telpField = new TextField("Telephone");
+	private final TextField npwpField = new TextField("NPWP");
+	private final TextField accBankField = new TextField("Bank Account");
+	private final DatePicker endYearPicker = new DatePicker("Financial End Year");
+	private final TextField curr1Field = new TextField("Primary Currency");
+	private final TextField curr2Field = new TextField("Secondary Currency");
+	private final TextField curr3Field = new TextField("Tertiary Currency");
+	private final Checkbox autoCloseOrderBox = new Checkbox("Auto Close Order");
+	private final Checkbox registerApprovalBox = new Checkbox("Require Register Approval");
+	private final Button saveButton = new Button("Save Changes");
 
-    public CompanyView(CompanyService companyService) {
-        this.companyService = companyService;
+	public CompanyView(CompanyService companyService) {
+		this.companyService = companyService;
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        H2 header = new H2("Company Profile & Settings");
-        header.addClassNames(LumoUtility.FontSize.XLARGE);
+		H2 header = new H2("Company Profile & Settings");
+		header.addClassNames(LumoUtility.FontSize.XLARGE);
 
-        VerticalLayout card = new VerticalLayout();
-        card.setMaxWidth("800px");
-        card.setPadding(true);
-        card.getStyle()
-                .set("background", "#ffffff")
-                .set("border-radius", "12px")
-                .set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)")
-                .set("border", "1px solid #e2e8f0");
+		VerticalLayout card = new VerticalLayout();
+		card.setMaxWidth("800px");
+		card.setPadding(true);
+		card.getStyle().set("background", "#ffffff").set("border-radius", "12px")
+				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)").set("border", "1px solid #e2e8f0");
 
-        FormLayout form = new FormLayout();
-        form.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("500px", 2));
+		FormLayout form = new FormLayout();
+		form.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("500px", 2));
 
-        form.add(nameField, telpField, npwpField, accBankField, endYearPicker, curr1Field, curr2Field, curr3Field);
-        form.setColspan(nameField, 2);
+		form.add(nameField, telpField, npwpField, accBankField, endYearPicker, curr1Field, curr2Field, curr3Field);
+		form.setColspan(nameField, 2);
 
-        HorizontalLayout checkboxRow = new HorizontalLayout(autoCloseOrderBox, registerApprovalBox);
-        checkboxRow.setSpacing(true);
-        checkboxRow.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
+		HorizontalLayout checkboxRow = new HorizontalLayout(autoCloseOrderBox, registerApprovalBox);
+		checkboxRow.setSpacing(true);
+		checkboxRow.addClassNames(LumoUtility.Margin.Vertical.MEDIUM);
 
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        saveButton.addClickListener(e -> handleSave());
+		saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		saveButton.addClickListener(e -> handleSave());
 
-        card.add(form, checkboxRow, saveButton);
-        add(header, card);
+		card.add(form, checkboxRow, saveButton);
+		add(header, card);
 
-        loadCompanyData();
-    }
+		loadCompanyData();
+	}
 
-    private void loadCompanyData() {
-        try {
-            Company dto = companyService.findById(1L);
-            if (dto != null) {
-                nameField.setValue(dto.getName() != null ? dto.getName() : "");
-                telpField.setValue(dto.getTelp() != null ? dto.getTelp() : "");
-                npwpField.setValue(dto.getNpwp() != null ? dto.getNpwp() : "");
-                accBankField.setValue(dto.getAccountBank() != null ? dto.getAccountBank() : "");
-                if (dto.getFinancialEndYear() != null) {
-                    try {
-                        endYearPicker.setValue(dto.getFinancialEndYear().toInstant()
-                                .atZone(java.time.ZoneId.systemDefault()).toLocalDate());
-                    } catch (Exception ignored) {
-                    }
-                }
-                // curr1Field.setValue(dto.getCurr1() != null ? dto.getCurr1() : "IDR");
-                // curr2Field.setValue(dto.getCurr2() != null ? dto.getCurr2() : "USD");
-                // curr3Field.setValue(dto.getCurr3() != null ? dto.getCurr3() : "EUR");
-                // autoCloseOrderBox.setValue(Boolean.TRUE.equals(dto.getIsAutoCloseOrder()));
-                // registerApprovalBox.setValue(Boolean.TRUE.equals(dto.getIsRegisterApproval()));
-            }
-        } catch (Exception ex) {
-            // handle
-        }
-    }
+	private void loadCompanyData() {
+		try {
+			Company dto = companyService.findById(1L);
+			if (dto != null) {
+				nameField.setValue(dto.getName() != null ? dto.getName() : "");
+				telpField.setValue(dto.getTelp() != null ? dto.getTelp() : "");
+				npwpField.setValue(dto.getNpwp() != null ? dto.getNpwp() : "");
+				accBankField.setValue(dto.getAccountBank() != null ? dto.getAccountBank() : "");
+				if (dto.getFinancialEndYear() != null) {
+					try {
+						endYearPicker.setValue(dto.getFinancialEndYear().toInstant()
+								.atZone(java.time.ZoneId.systemDefault()).toLocalDate());
+					} catch (Exception ignored) {
+					}
+				}
+				// curr1Field.setValue(dto.getCurr1() != null ? dto.getCurr1() : "IDR");
+				// curr2Field.setValue(dto.getCurr2() != null ? dto.getCurr2() : "USD");
+				// curr3Field.setValue(dto.getCurr3() != null ? dto.getCurr3() : "EUR");
+				// autoCloseOrderBox.setValue(Boolean.TRUE.equals(dto.getIsAutoCloseOrder()));
+				// registerApprovalBox.setValue(Boolean.TRUE.equals(dto.getIsRegisterApproval()));
+			}
+		} catch (Exception ex) {
+			// handle
+		}
+	}
 
-    private void handleSave() {
-        Company dto = new Company();
-        dto.setName(nameField.getValue());
-        dto.setTelp(telpField.getValue());
-        dto.setNpwp(npwpField.getValue());
-        dto.setAccountBank(accBankField.getValue());
-        if (endYearPicker.getValue() != null) {
-            // dto.setFinancialEndYear(endYearPicker.getValue());
-        } else {
-            dto.setFinancialEndYear(null);
-        }
-        // dto.setCurr1(curr1Field.getValue());
-        // dto.setCurr2(curr2Field.getValue());
-        // dto.setCurr3(curr3Field.getValue());
-        // dto.setIsAutoCloseOrder(autoCloseOrderBox.getValue());
-        // dto.setIsRegisterApproval(registerApprovalBox.getValue());
+	private void handleSave() {
+		Company dto = new Company();
+		dto.setName(nameField.getValue());
+		dto.setTelp(telpField.getValue());
+		dto.setNpwp(npwpField.getValue());
+		dto.setAccountBank(accBankField.getValue());
+		if (endYearPicker.getValue() != null) {
+			// dto.setFinancialEndYear(endYearPicker.getValue());
+		} else {
+			dto.setFinancialEndYear(null);
+		}
+		// dto.setCurr1(curr1Field.getValue());
+		// dto.setCurr2(curr2Field.getValue());
+		// dto.setCurr3(curr3Field.getValue());
+		// dto.setIsAutoCloseOrder(autoCloseOrderBox.getValue());
+		// dto.setIsRegisterApproval(registerApprovalBox.getValue());
 
-        try {
-            companyService.save(dto);
-            Notification.show("Company profile updated successfully", 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        } catch (Exception ex) {
-            Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
+		try {
+			companyService.save(dto);
+			Notification.show("Company profile updated successfully", 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+		} catch (Exception ex) {
+			Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		}
+	}
 }
