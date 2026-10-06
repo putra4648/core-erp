@@ -1,10 +1,7 @@
 package id.putra.core_erp.modules.outbound.service;
 
-<<<<<<< HEAD
 import java.util.List;
 
-=======
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 import id.putra.core_erp.modules.outbound.model.Packing;
 import id.putra.core_erp.modules.outbound.repository.PackingRepository;
 import id.putra.core_erp.service.BaseService;
@@ -17,14 +14,28 @@ import jakarta.transaction.Transactional;
 public class PackingService implements BaseService<Packing> {
 	private final PackingRepository packingRepository;
 
-<<<<<<< HEAD
 	public PackingService(PackingRepository packingRepository) {
 		this.packingRepository = packingRepository;
 	}
 
 	@Override
+	public void save(Packing dto) {
+		packingRepository.persist(dto);
+	}
+
+	@Override
+	public void update(Packing dto) {
+		packingRepository.getEntityManager().merge(dto);
+	}
+
+	@Override
 	public void delete(Long id) {
 		packingRepository.deleteById(id);
+	}
+
+	@Override
+	public Packing findById(Long id) {
+		return packingRepository.findById(id);
 	}
 
 	@Override
@@ -32,51 +43,4 @@ public class PackingService implements BaseService<Packing> {
 		return packingRepository.findAll().list();
 	}
 
-	@Override
-	public Packing findById(Long id) {
-		return packingRepository.findById(id);
-	}
-
-	@Override
-	public void save(Packing dto) {
-		packingRepository.persist(dto);
-	}
-
-	@Override
-	public void update(Packing dto) {
-		packingRepository.getEntityManager().merge(dto);
-	}
-=======
-	private final PackingRepository packingRepository;
-
-	public PackingService(PackingRepository packingRepository) {
-		this.packingRepository = packingRepository;
-	}
-
-	@Override
-	public void save(Packing dto) {
-		packingRepository.persist(dto);
-	}
-
-	@Override
-	public void update(Packing dto) {
-		packingRepository.getEntityManager().merge(dto);
-	}
-
-	@Override
-	public void delete(Long id) {
-		packingRepository.deleteById(id);
-	}
-
-	@Override
-	public Packing findById(Long id) {
-		return packingRepository.findById(id);
-	}
-
-	@Override
-	public Iterable<Packing> findAll(Packing packing, Page p) {
-		return packingRepository.findAll().list();
-	}
-
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 }

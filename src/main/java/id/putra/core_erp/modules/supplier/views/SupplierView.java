@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -81,28 +82,9 @@ public class SupplierView extends VerticalLayout {
 		grid.addColumn(s -> s.getName() != null ? s.getName() : "-").setHeader("Supplier Name").setFlexGrow(1)
 				.setSortable(true);
 
-<<<<<<< HEAD
-        grid.addColumn(s -> {
-            if (s.getEmail() != null ) {
-                return s.getEmail();
-            }
-            return "-";
-        }).setHeader("Email").setFlexGrow(1);
-
-        grid.addComponentColumn(supplier -> {
-            Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openSupplierDialog(supplier));
-            editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-=======
 		grid.addColumn(s -> {
 			return s.getEmail();
 		}).setHeader("Email").setFlexGrow(1);
-
-		grid.addComponentColumn(supplier -> {
-			boolean active = Boolean.TRUE.equals(supplier.getIsActive());
-			Span badge = new Span(active ? "Active" : "Inactive");
-			badge.getElement().getThemeList().add("badge " + (active ? "success" : "error"));
-			return badge;
-		}).setHeader("Status").setAutoWidth(true);
 
 		grid.addComponentColumn(supplier -> {
 			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openSupplierDialog(supplier));
@@ -110,7 +92,6 @@ public class SupplierView extends VerticalLayout {
 
 			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(supplier));
 			deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 			return new HorizontalLayout(editBtn, deleteBtn);
 		}).setHeader("Actions").setAutoWidth(true);
@@ -127,42 +108,6 @@ public class SupplierView extends VerticalLayout {
 
 	private void openSupplierDialog(Supplier supplier) {
 
-<<<<<<< HEAD
-        TextField codeField = new TextField("Supplier Code");
-        TextField nameField = new TextField("Supplier Name");
-        TextField emailField = new TextField("Email");
-
-        codeField.setValue(supplier.getCode() != null ? supplier.getCode() : "");
-        nameField.setValue(supplier.getName() != null ? supplier.getName() : "");
-        emailField.setValue(supplier.getEmail() != null ? supplier.getEmail() : "");
-
-
-        FormLayout formLayout = new FormLayout(codeField, nameField, emailField);
-        dialog.add(formLayout);
-
-        Button saveBtn = new Button("Save", e -> {
-            if (validator.validate(supplier).isEmpty()) {
-                try {
-                    if (isEdit) {
-                        supplierService.update(supplier.getId(), supplier);
-                        Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_END)
-                                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    } else {
-                        supplierService.create(List.of(supplier));
-                        Notification.show("Supplier created successfully", 3000, Notification.Position.TOP_END)
-                                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    }
-                    dialog.close();
-                    refreshData();
-                } catch (Exception ex) {
-                    Notification
-                            .show("Failed to save supplier: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
-                }
-            }
-        });
-        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-=======
 		Dialog dialog = new Dialog("Supplier");
 
 		TextField codeField = new TextField("Supplier Code");
@@ -179,30 +124,30 @@ public class SupplierView extends VerticalLayout {
 		dialog.add(formLayout);
 
 		Button saveBtn = new Button("Save", e -> {
-				try {
-					var entity = new Supplier();
-					entity.id = supplier.id;
-					entity.setName(nameField.getValue());
-					entity.setCode(codeField.getValue());
-					entity.setIsActive(activeCheck.getValue());
-					entity.setEmail(emailField.getValue());
+			try {
+				var entity = new Supplier();
+				entity.id = supplier.id;
+				entity.setName(nameField.getValue());
+				entity.setCode(codeField.getValue());
+				entity.setIsActive(activeCheck.getValue());
+				entity.setEmail(emailField.getValue());
 
-					if (supplier.id != null) {
-						supplierService.update(entity);
-						Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_END)
-								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-					} else {
-						supplierService.save(entity);
-						Notification.show("Supplier created successfully", 3000, Notification.Position.TOP_END)
-								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-					}
-					dialog.close();
-					refreshData();
-				} catch (Exception ex) {
-					Notification
-							.show("Failed to save supplier: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				if (supplier.id != null) {
+					supplierService.update(entity);
+					Notification.show("Supplier updated successfully", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				} else {
+					supplierService.save(entity);
+					Notification.show("Supplier created successfully", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				}
+				dialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification
+						.show("Failed to save supplier: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
 
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -212,7 +157,6 @@ public class SupplierView extends VerticalLayout {
 		dialog.getFooter().add(cancelBtn, saveBtn);
 		dialog.open();
 	}
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	private void confirmDelete(Supplier supplier) {
 		Dialog confirmDialog = new Dialog("Delete Supplier");

@@ -8,14 +8,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-<<<<<<< HEAD
-public class PickingTask {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-=======
 public class PickingTask extends BaseEntity {
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	@ManyToOne
 	@JoinColumn(name = "sales_order_line_id")
@@ -23,31 +16,6 @@ public class PickingTask extends BaseEntity {
 
 	private String status;
 
-<<<<<<< HEAD
-	public Long getId() {
-		return id;
-	}
-
-	public SalesOrderLine getSalesOrderLine() {
-		return salesOrderLine;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setSalesOrderLine(SalesOrderLine salesOrderLine) {
-		this.salesOrderLine = salesOrderLine;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-=======
 	public String getStatus() {
 		return status;
 	}
@@ -63,6 +31,5 @@ public class PickingTask extends BaseEntity {
 	public void setSalesOrderLine(SalesOrderLine salesOrderLine) {
 		this.salesOrderLine = salesOrderLine;
 	}
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 }

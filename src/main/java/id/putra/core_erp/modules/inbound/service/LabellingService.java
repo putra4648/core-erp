@@ -14,14 +14,28 @@ import jakarta.transaction.Transactional;
 public class LabellingService implements BaseService<Labelling> {
 	private final LabellingRepository labellingRepository;
 
-<<<<<<< HEAD
 	public LabellingService(LabellingRepository labellingRepository) {
 		this.labellingRepository = labellingRepository;
 	}
 
 	@Override
+	public void save(Labelling entity) {
+		labellingRepository.persist(entity);
+	}
+
+	@Override
+	public void update(Labelling dto) {
+		labellingRepository.getEntityManager().merge(dto);
+	}
+
+	@Override
 	public void delete(Long id) {
 		labellingRepository.deleteById(id);
+	}
+
+	@Override
+	public Labelling findById(Long id) {
+		return labellingRepository.findById(id);
 	}
 
 	@Override
@@ -29,62 +43,4 @@ public class LabellingService implements BaseService<Labelling> {
 		return labellingRepository.findAll().list();
 	}
 
-	@Override
-	public Labelling findById(Long id) {
-		return labellingRepository.findById(id);
-	}
-
-	@Override
-	public void save(Labelling entity) {
-		labellingRepository.persist(entity);
-	}
-
-	@Override
-	public void update(Labelling dto) {
-		labellingRepository.getEntityManager().merge(dto);
-=======
-	private final LabellingRepository labellingRepository;
-
-	public LabellingService(LabellingRepository labellingRepository) {
-		this.labellingRepository = labellingRepository;
-	}
-
-	@Override
-	public void save(Labelling entity) {
-		labellingRepository.persist(entity);
-	}
-
-	public Labelling create(Labelling dto) {
-		labellingRepository.persist(dto);
-		return dto;
-	}
-
-	@Override
-	public void update(Labelling dto) {
-		labellingRepository.getEntityManager().merge(dto);
-	}
-
-	@Override
-	public void delete(Long id) {
-		labellingRepository.deleteById(id);
-	}
-
-	@Override
-	public Labelling findById(Long id) {
-		return labellingRepository.findById(id);
-	}
-
-	public Labelling getById(Long id) {
-		return findById(id);
-	}
-
-	@Override
-	public Iterable<Labelling> findAll(Labelling s, Page p) {
-		return labellingRepository.findAll().list();
-	}
-
-	public List<Labelling> getAll(Labelling filter) {
-		return labellingRepository.findAll().list();
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
-	}
 }

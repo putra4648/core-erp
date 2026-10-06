@@ -1,16 +1,10 @@
 package id.putra.core_erp.modules.department.service;
 
-<<<<<<< HEAD
-import java.util.List;
-import java.util.Optional;
-
-=======
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import id.putra.core_erp.modules.approval.model.Approval;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import id.putra.core_erp.service.BaseService;
@@ -29,36 +23,6 @@ public class DepartmentService implements BaseService<Department> {
 	}
 
 	@Override
-<<<<<<< HEAD
-	public void delete(Long id) {
-		departmentRepo.deleteById(id);
-	}
-
-	@Override
-	public List<Department> findAll(Department d, Page page) {
-		return departmentRepo.find("name like ?1", d.getName()).page(page).list();
-	}
-
-	@Override
-	public Department findById(Long id) {
-		return departmentRepo.findById(id);
-	}
-
-	@Override
-	public void save(Department body) {
-		Optional<Department> dept = departmentRepo.findByIdOptional(body.getId());
-		if (dept.isPresent()) {
-			String message = String.format("Department %s already exists with code: %s", " ", body.getCode());
-			throw new IllegalArgumentException(message);
-		} else {
-			departmentRepo.persist(body);
-		}
-	}
-
-	@Override
-	public void update(Department entity) {
-		departmentRepo.update("name = ?1, where id = ?2", entity.getName(), entity.getId());
-=======
 	public void save(Department entity) {
 		departmentRepo.persist(entity);
 	}
@@ -122,9 +86,8 @@ public class DepartmentService implements BaseService<Department> {
 	}
 
 	@Override
-	public Iterable<Department> findAll(Department d, Page page) {
+	public List<Department> findAll(Department d, Page page) {
 		return departmentRepo.find("name like ?1", "%" + d.getName() + "%").page(page).list();
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

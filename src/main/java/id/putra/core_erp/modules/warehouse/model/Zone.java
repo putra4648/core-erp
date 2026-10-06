@@ -14,25 +14,12 @@ import jakarta.persistence.Table;
 @Table
 @Entity
 public class Zone extends BaseEntity {
-<<<<<<< HEAD
-	private String code;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	private String name;
-
-	@OneToMany(mappedBy = "zone", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Rack> racks;
-=======
 
 	private String code;
 
 	private String name;
 
 	private Boolean isActive;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	private String type;
 
@@ -40,54 +27,6 @@ public class Zone extends BaseEntity {
 	@JoinColumn(name = "warehouse_id", referencedColumnName = "id")
 	private Warehouse warehouse;
 
-<<<<<<< HEAD
-	public String getCode() {
-		return code;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public List<Rack> getRacks() {
-		return racks;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public Warehouse getWarehouse() {
-		return warehouse;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setRacks(List<Rack> racks) {
-		this.racks = racks;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public void setWarehouse(Warehouse warehouse) {
-		this.warehouse = warehouse;
-=======
 	@OneToMany(mappedBy = "zone", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Rack> racks;
 
@@ -156,7 +95,6 @@ public class Zone extends BaseEntity {
 		return Objects.equals(code, other.code) && Objects.equals(isActive, other.isActive)
 				&& Objects.equals(name, other.name) && Objects.equals(racks, other.racks)
 				&& Objects.equals(type, other.type) && Objects.equals(warehouse, other.warehouse);
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

@@ -19,7 +19,20 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
 		this.parameterLookupRepository = parameterLookupRepository;
 	}
 
-<<<<<<< HEAD
+	public ParameterLookup getParameterLookupByIdOrKey(Long parameterId, String parameterKey) {
+		return parameterLookupRepository.findByIdOrKey(parameterId, parameterKey);
+	}
+
+	@Override
+	public void save(ParameterLookup parameterLookup) {
+		parameterLookupRepository.persist(parameterLookup);
+	}
+
+	@Override
+	public void update(ParameterLookup parameterLookup) {
+		parameterLookupRepository.persist(parameterLookup);
+	}
+
 	@Override
 	public void delete(Long id) {
 		parameterLookupRepository.deleteById(id);
@@ -27,10 +40,6 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
 
 	@Override
 	public List<ParameterLookup> findAll(ParameterLookup entity, Page page) {
-		if (entity == null || entity.getKey() == null || entity.getKey().isBlank()) {
-			return parameterLookupRepository.findAll().page(page).list();
-		}
-
 		String pattern = "%" + entity.getKey().toLowerCase() + "%";
 		return parameterLookupRepository
 				.find("lower(key) like ?1 or lower(value) like ?1 or lower(description) like ?1", pattern).page(page)
@@ -40,57 +49,6 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
 	@Override
 	public ParameterLookup findById(Long id) {
 		return parameterLookupRepository.findById(id);
-	}
-
-	public ParameterLookup getParameterLookupByIdOrKey(Long parameterId, String parameterKey) {
-		return parameterLookupRepository.findByIdOrKey(parameterId, parameterKey);
-	}
-
-	@Override
-	public void save(ParameterLookup parameterLookup) {
-		parameterLookupRepository.persist(parameterLookup);
-	}
-
-	@Override
-	public void update(ParameterLookup parameterLookup) {
-		parameterLookupRepository.persist(parameterLookup);
-=======
-	public ParameterLookup getParameterLookupByIdOrKey(Long parameterId, String parameterKey) {
-		return parameterLookupRepository.findByIdOrKey(parameterId, parameterKey);
-	}
-
-	@Override
-	public void save(ParameterLookup parameterLookup) {
-		parameterLookupRepository.persist(parameterLookup);
-	}
-
-	@Override
-	public void update(ParameterLookup parameterLookup) {
-		parameterLookupRepository.persist(parameterLookup);
-	}
-
-	@Override
-	public void delete(Long id) {
-		parameterLookupRepository.deleteById(id);
-	}
-
-	@Override
-	public Iterable<ParameterLookup> findAll(ParameterLookup entity, Page page) {
-		if (entity == null || entity.getKey() == null || entity.getKey().isBlank()) {
-			return parameterLookupRepository.findAll().page(page).list();
-		}
-
-		String pattern = "%" + entity.getKey().toLowerCase() + "%";
-		return parameterLookupRepository
-				.find("lower(key) like ?1 or lower(value) like ?1 or lower(description) like ?1", pattern).page(page)
-				.list();
-	}
-
-	@Override
-	public ParameterLookup findById(Long id) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'findById'");
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

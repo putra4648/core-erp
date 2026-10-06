@@ -13,21 +13,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class DepartmentRepo implements PanacheRepository<Department> {
 
-<<<<<<< HEAD
-	public List<Department> findAllByNameAndStatus(String deptName, Status status, Page page, Sort sort) {
-		return find("deptName like ?1% and status = ?2 ", sort, deptName, status).page(page).list();
-	}
-
-	public Optional<Department> findByDeptNumber(String deptNumber) {
-		return find("deptNumber = ?1", deptNumber).firstResultOptional();
-=======
 	public Optional<Department> findByDeptNumber(String deptNumber) {
 		return find("deptNumber = ?1", deptNumber).firstResultOptional();
 	}
 
 	public List<Department> findAllByNameAndStatus(String deptName, Status status, Page page, Sort sort) {
 		return find("deptName like ?1% and status = ?2 ", sort, deptName, status).page(page).list();
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

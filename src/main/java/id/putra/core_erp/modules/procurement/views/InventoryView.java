@@ -29,21 +29,12 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class InventoryView extends VerticalLayout {
 
-<<<<<<< HEAD
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-	private final Grid<Inventory> grid = new Grid<>();
-	private final List<Inventory> inventoryList = new ArrayList<>();
-	private final InventoryService inventoryService;
-	private final TextField searchField = new TextField();
-=======
 	private final InventoryService inventoryService;
 
 	private final TextField searchField = new TextField();
 	private final Grid<Inventory> grid = new Grid<>();
 	private final List<Inventory> inventoryList = new ArrayList<>();
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	public InventoryView(InventoryService inventoryService) {
 		this.inventoryService = inventoryService;
@@ -75,11 +66,6 @@ public class InventoryView extends VerticalLayout {
 	private void configureGrid() {
 		grid.setSizeFull();
 		grid.addColumn(i -> i.getPoNumber() != null ? i.getPoNumber() : "-").setHeader("PO Number").setAutoWidth(true);
-<<<<<<< HEAD
-		grid.addColumn(i -> i.getPartNumber() != null ? i.getPartNumber() : "-").setHeader("Part Number")
-				.setAutoWidth(true);
-=======
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		grid.addColumn(i -> i.getPartName() != null ? i.getPartName() : "-").setHeader("Part Name").setFlexGrow(2);
 		grid.addColumn(
 				i -> (i.getArea() != null ? i.getArea() : "-") + " / " + (i.getShelf() != null ? i.getShelf() : "-"))

@@ -1,16 +1,17 @@
 package id.putra.core_erp.modules.inbound.service;
 
-import com.vaadin.flow.data.provider.DataProvider;
+import java.util.List;
 
 import id.putra.core_erp.modules.inbound.model.Receiving;
 import id.putra.core_erp.modules.inbound.repository.ReceivingRepository;
+import id.putra.core_erp.service.BaseService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
-public class ReceivingOrderService {
+public class ReceivingOrderService implements BaseService<Receiving> {
 
 	private final ReceivingRepository receivingRepository;
 
@@ -18,34 +19,29 @@ public class ReceivingOrderService {
 		this.receivingRepository = receivingRepository;
 	}
 
-	public Receiving create(Receiving dto) {
-		receivingRepository.persist(dto);
-		return dto;
+	@Override
+	public void save(Receiving entity) {
+		receivingRepository.persist(entity);
 	}
 
-<<<<<<< HEAD
-=======
-	public Receiving update(Receiving dto) {
-		return receivingRepository.getEntityManager().merge(dto);
+	@Override
+	public Receiving findById(Long id) {
+		return receivingRepository.findById(id);
 	}
 
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
-	public Boolean delete(Long id) {
-		return receivingRepository.deleteById(id);
+	@Override
+	public void delete(Long id) {
+		receivingRepository.deleteById(id);
 	}
 
-	public DataProvider<Receiving, Void> getAll(String value, Page page) {
-		return DataProvider.fromCallbacks(
-				query -> receivingRepository.findAll()
-						.page(Page.of(query.getOffset() / query.getLimit(), query.getLimit())).list().stream(),
-				query -> Math.toIntExact(receivingRepository.count()));
+	@Override
+	public void update(Receiving entity) {
+		receivingRepository.getEntityManager().merge(entity);
 	}
-<<<<<<< HEAD
 
-	public Receiving update(Receiving dto) {
-		return receivingRepository.getEntityManager().merge(dto);
+	@Override
+	public List<Receiving> findAll(Receiving entity, Page page) {
+		return receivingRepository.findAll().page(page).list();
 	}
-=======
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 }

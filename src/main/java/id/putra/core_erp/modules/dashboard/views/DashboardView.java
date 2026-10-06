@@ -1,5 +1,8 @@
 package id.putra.core_erp.modules.dashboard.views;
 
+import java.util.List;
+
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
@@ -48,64 +51,6 @@ public class DashboardView extends VerticalLayout {
 		long totalProducts = 0;
 		long totalWarehouses = 0;
 
-<<<<<<< HEAD
-		// try {
-		// totalProducts = productService.countGetProducts(new Product(),
-		// Page.ofSize(0));
-		// } catch (Exception ignored) {
-		// }
-
-		// try {
-		// totalWarehouses = warehouseService.countGetWarehouses(new Warehouse(),
-		// Page.ofSize(1));
-		// } catch (Exception ignored) {
-		// }
-
-		HorizontalLayout cardsLayout = new HorizontalLayout();
-		cardsLayout.setWidthFull();
-		cardsLayout.setSpacing(true);
-
-		cardsLayout.add(createKpiCard("Inbound Today", "12", VaadinIcon.DOWNLOAD.create(), "text-primary"),
-				createKpiCard("Outbound Today", "8", VaadinIcon.UPLOAD.create(), "text-warning"),
-				createKpiCard("Total Products", String.valueOf(totalProducts), VaadinIcon.PACKAGE.create(),
-						"text-success"),
-				createKpiCard("Total Warehouses", String.valueOf(totalWarehouses), VaadinIcon.BUILDING.create(),
-						"text-info"));
-
-		add(cardsLayout);
-	}
-
-	private void addRecentActivitySection() {
-		H3 header = new H3("Recent Operational Activity");
-		header.addClassNames("mt-l", "mb-s", "text-l", "font-semibold");
-
-		Grid activityGrid = new Grid<>();
-		activityGrid.setWidthFull();
-		activityGrid.setAllRowsVisible(true);
-
-		VerticalLayout section = new VerticalLayout(header, activityGrid);
-		section.setPadding(false);
-		section.setWidthFull();
-
-		add(section);
-	}
-
-	private VerticalLayout createKpiCard(String title, String value, com.vaadin.flow.component.icon.Icon icon,
-			String iconColorClass) {
-		VerticalLayout card = new VerticalLayout();
-		card.addClassNames("border", "rounded-l", "p-m", "bg-base");
-		card.setWidthFull();
-
-		HorizontalLayout header = new HorizontalLayout(icon, new Span(title));
-		header.setAlignItems(FlexComponent.Alignment.CENTER);
-		header.addClassNames("text-secondary", "text-s");
-
-		H3 val = new H3(value);
-		val.addClassNames("m-0", "text-2xl", "font-bold");
-
-		card.add(header, val);
-		return card;
-=======
 		HorizontalLayout cardsLayout = new HorizontalLayout();
 		cardsLayout.setWidthFull();
 		cardsLayout.setSpacing(true);
@@ -184,6 +129,5 @@ public class DashboardView extends VerticalLayout {
 	}
 
 	public static record ActivityItem(String type, String title, String time, int quantity) {
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 }

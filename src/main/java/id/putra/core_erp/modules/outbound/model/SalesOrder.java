@@ -13,29 +13,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-<<<<<<< HEAD
-public class SalesOrder {
-	@ManyToOne
-	@JoinColumn(name = "customer_id")
-	private Department customer;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private Date orderDate;
-	@OneToMany(mappedBy = "salesOrder")
-	private List<SalesOrderLine> salesOrderLines;
-
-	private String soNumber;
-
-	private String status;
-
-	public Department getCustomer() {
-		return customer;
-	}
-
-	public Long getId() {
-		return id;
-=======
 public class SalesOrder extends BaseEntity {
 	private String soNumber;
 	private Date orderDate;
@@ -54,49 +31,12 @@ public class SalesOrder extends BaseEntity {
 
 	public void setSoNumber(String soNumber) {
 		this.soNumber = soNumber;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 	public Date getOrderDate() {
 		return orderDate;
 	}
 
-<<<<<<< HEAD
-	public List<SalesOrderLine> getSalesOrderLines() {
-		return salesOrderLines;
-	}
-
-	public String getSoNumber() {
-		return soNumber;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setCustomer(Department customer) {
-		this.customer = customer;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setOrderDate(Date orderDate) {
-		this.orderDate = orderDate;
-	}
-
-	public void setSalesOrderLines(List<SalesOrderLine> salesOrderLines) {
-		this.salesOrderLines = salesOrderLines;
-	}
-
-	public void setSoNumber(String soNumber) {
-		this.soNumber = soNumber;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-=======
 	public void setOrderDate(Date orderDate) {
 		this.orderDate = orderDate;
 	}
@@ -123,6 +63,5 @@ public class SalesOrder extends BaseEntity {
 
 	public void setCustomer(Department customer) {
 		this.customer = customer;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 }

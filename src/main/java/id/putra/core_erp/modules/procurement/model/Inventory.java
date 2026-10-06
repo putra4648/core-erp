@@ -12,64 +12,15 @@ import jakarta.persistence.Table;
 @Table(name = "inventory")
 public class Inventory extends BaseEntity {
 
-<<<<<<< HEAD
-	@Column(name = "area")
-	private String area;
-
-	@Column(name = "date")
-	private Date date;
-=======
 	@Column(name = "po_number")
 	private String poNumber;
 
 	@Column(name = "part_name")
 	private String partName;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	@Column(name = "description")
 	private String description;
 
-<<<<<<< HEAD
-	@Id
-	private Long id;
-
-	@Column(name = "item_area")
-	private String itemArea;
-
-	@Column(name = "location")
-	private String location;
-
-	@Column(name = "part_name")
-	private String partName;
-
-	@Column(name = "part_number")
-	private String partNumber;
-
-	@Column(name = "po_number")
-	private String poNumber;
-
-	@Column(name = "qty")
-	private BigInteger qty;
-
-	@Column(name = "shelf")
-	private String shelf;
-
-	@Column(name = "supplier")
-	private String supplier;
-
-	@Column(name = "unit")
-	private String unit;
-
-	@Column(name = "uom")
-	private String uom;
-
-	public String getArea() {
-		return area;
-	}
-
-	public Date getDate() {
-		return date;
-=======
 	@Column(name = "area")
 	private String area;
 
@@ -111,77 +62,12 @@ public class Inventory extends BaseEntity {
 
 	public void setPartName(String partName) {
 		this.partName = partName;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-<<<<<<< HEAD
-	public Long getId() {
-		return id;
-	}
-
-	public String getItemArea() {
-		return itemArea;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public String getPartName() {
-		return partName;
-	}
-
-	public String getPartNumber() {
-		return partNumber;
-	}
-
-	public String getPoNumber() {
-		return poNumber;
-	}
-
-	public BigInteger getQty() {
-		return qty;
-	}
-
-	public String getShelf() {
-		return shelf;
-	}
-
-	public String getSupplier() {
-		return supplier;
-	}
-
-	public String getUnit() {
-		return unit;
-	}
-
-	public String getUom() {
-		return uom;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setItemArea(String itemArea) {
-		this.itemArea = itemArea;
-=======
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -244,48 +130,16 @@ public class Inventory extends BaseEntity {
 
 	public String getLocation() {
 		return location;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 	public void setLocation(String location) {
 		this.location = location;
 	}
 
-<<<<<<< HEAD
-	public void setPartName(String partName) {
-		this.partName = partName;
-	}
-
-	public void setPartNumber(String partNumber) {
-		this.partNumber = partNumber;
-	}
-
-	public void setPoNumber(String poNumber) {
-		this.poNumber = poNumber;
-	}
-
-	public void setQty(BigInteger qty) {
-		this.qty = qty;
-	}
-
-	public void setShelf(String shelf) {
-		this.shelf = shelf;
-	}
-
-	public void setSupplier(String supplier) {
-		this.supplier = supplier;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
-
-=======
 	public String getUom() {
 		return uom;
 	}
 
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	public void setUom(String uom) {
 		this.uom = uom;
 	}

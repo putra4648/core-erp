@@ -17,21 +17,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-<<<<<<< HEAD
-public class Receiving {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	@ManyToOne
-	@JoinColumn(name = "purchase_order_id")
-	private PurchaseOrder purchaseOrder;
-	private Date receivedDate;
-	@OneToMany(mappedBy = "receiving", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ReceivingLine> receivingLines;
-
-	private String receivingNumber = UUID.randomUUID().toString();
-=======
 public class Receiving extends BaseEntity {
 
 	private String receivingNumber = UUID.randomUUID().toString();
@@ -41,22 +26,10 @@ public class Receiving extends BaseEntity {
 
 	@OneToMany(mappedBy = "receiving", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ReceivingLine> receivingLines;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	// @CreatedBy
 	// private String receivedBy;
 
-<<<<<<< HEAD
-	@Enumerated(EnumType.STRING)
-	private OrderStatus status;
-
-	public Long getId() {
-		return id;
-	}
-
-	public PurchaseOrder getPurchaseOrder() {
-		return purchaseOrder;
-=======
 	@ManyToOne
 	@JoinColumn(name = "purchase_order_id")
 	private PurchaseOrder purchaseOrder;
@@ -67,49 +40,12 @@ public class Receiving extends BaseEntity {
 
 	public void setReceivingNumber(String receivingNumber) {
 		this.receivingNumber = receivingNumber;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 	public Date getReceivedDate() {
 		return receivedDate;
 	}
 
-<<<<<<< HEAD
-	public List<ReceivingLine> getReceivingLines() {
-		return receivingLines;
-	}
-
-	public String getReceivingNumber() {
-		return receivingNumber;
-	}
-
-	public OrderStatus getStatus() {
-		return status;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-		this.purchaseOrder = purchaseOrder;
-	}
-
-	public void setReceivedDate(Date receivedDate) {
-		this.receivedDate = receivedDate;
-	}
-
-	public void setReceivingLines(List<ReceivingLine> receivingLines) {
-		this.receivingLines = receivingLines;
-	}
-
-	public void setReceivingNumber(String receivingNumber) {
-		this.receivingNumber = receivingNumber;
-	}
-
-	public void setStatus(OrderStatus status) {
-		this.status = status;
-=======
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
 	}
@@ -136,6 +72,5 @@ public class Receiving extends BaseEntity {
 
 	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
 		this.purchaseOrder = purchaseOrder;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 }

@@ -29,21 +29,6 @@ public class DepartmentRepoTest {
 
 	@Test
 	public void testFindAllByName() throws Throwable {
-<<<<<<< HEAD
-		var dept1 = new Department(1L, "HR", "Human Resources");
-		var dept2 = new Department(2L, "IT", "Information Technology");
-
-		var list = new ArrayList<Department>();
-		list.add(dept1);
-		list.add(dept2);
-
-		var page = Page.ofSize(10);
-		var sort = Sort.by("name");
-		Mockito.when(departmentRepo.findAllByNameAndStatus("Human Resources", Status.ACTIVE, page, sort))
-				.thenReturn(list);
-		Assertions.assertEquals(list,
-				departmentRepo.findAllByNameAndStatus("Human Resources", Status.ACTIVE, page, sort));
-=======
 		var dept1 = new Department();
 		dept1.setName("HR");
 
@@ -54,27 +39,12 @@ public class DepartmentRepoTest {
 		var sort = Sort.by("name");
 		Mockito.when(departmentRepo.findAllByNameAndStatus("HR", Status.ACTIVE, page, sort)).thenReturn(list);
 		Assertions.assertEquals(list, departmentRepo.findAllByNameAndStatus("HR", Status.ACTIVE, page, sort));
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		Mockito.verify(departmentRepo, Mockito.times(1)).findAllByNameAndStatus("Human Resources", Status.ACTIVE, page,
 				sort);
 	}
 
 	@Test
 	public void testFindByDeptNumber() throws Throwable {
-<<<<<<< HEAD
-		var dept = Optional.ofNullable(new Department(1L, "HR", "Human Resources"));
-		var budgets = new ArrayList<Budget>();
-
-		var budget = new Budget();
-		budget.setDepartment(dept.get());
-
-		var budgetDetails = new ArrayList<BudgetDetail>();
-		var budgetDetail = new BudgetDetail();
-		budgetDetail.setBudget(budget);
-		budgetDetail.setName("Budget 1");
-		budgetDetail.setType(BudgetType.INVESTMENT);
-		budgetDetail.setTotalBudget(new BigInteger("1000000"));
-=======
 		var dept1 = new Department();
 		dept1.setName("HR");
 		var budgets = new ArrayList<Budget>();
@@ -86,7 +56,6 @@ public class DepartmentRepoTest {
 		var budgetDetail = new BudgetDetail();
 		budgetDetail.setName("Budget 1");
 		budgetDetail.setType(BudgetType.INVESTMENT);
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 		var budgetAllocs = new ArrayList<BudgetAllocation>();
 
@@ -96,10 +65,6 @@ public class DepartmentRepoTest {
 		budgetAlloc.setPlan(new BigInteger("100000"));
 
 		budgetAllocs.add(budgetAlloc);
-<<<<<<< HEAD
-		budgetDetail.setAllocations(budgetAllocs);
-=======
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 		budgetDetails.add(budgetDetail);
 
@@ -108,11 +73,7 @@ public class DepartmentRepoTest {
 		budgets.add(budget);
 
 		// Budget -> Budget Detail -> Budget Allocation
-<<<<<<< HEAD
-		Mockito.when(departmentRepo.findByDeptNumber("HR")).thenReturn(dept);
-=======
 		Mockito.when(departmentRepo.findByDeptNumber("HR")).thenReturn(Optional.of(dept1));
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		var result = departmentRepo.findByDeptNumber("HR");
 		Assertions.assertTrue(result.isPresent());
 

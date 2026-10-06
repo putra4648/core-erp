@@ -29,13 +29,8 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class ReceivingView extends VerticalLayout {
 
-<<<<<<< HEAD
-	private final Grid<Receiving> grid = new Grid<>();
-	private final ReceivingOrderService receivingOrderService;
-=======
 	private final ReceivingOrderService receivingOrderService;
 	private final Grid<Receiving> grid = new Grid<>();
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	private final TextField searchField = new TextField();
 
 	public ReceivingView(ReceivingOrderService receivingOrderService) {
@@ -105,68 +100,10 @@ public class ReceivingView extends VerticalLayout {
 		}).setHeader("Actions").setAutoWidth(true);
 	}
 
-<<<<<<< HEAD
-	private void confirmDelete(Receiving receiving) {
-		Dialog confirmDialog = new Dialog("Delete Receiving");
-		confirmDialog.add(new Paragraph(
-				"Are you sure you want to delete receiving record '" + receiving.getReceivingNumber() + "'?"));
-
-		Button deleteBtn = new Button("Delete", e -> {
-			try {
-				receivingOrderService.delete(receiving.getId());
-				Notification.show("Receiving deleted successfully", 3000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-				confirmDialog.close();
-				refreshData();
-			} catch (Exception ex) {
-				Notification.show("Failed to delete receiving: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_ERROR);
-			}
-		});
-		deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
-
-		confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
-		confirmDialog.open();
-	}
-
-	private void openReceivingDialog(Receiving receiving) {
-		boolean isEdit = receiving.getId() != null;
-		Dialog dialog = new Dialog(isEdit ? "Edit Goods Receipt" : "New Goods Receipt");
-
-		TextField recNumField = new TextField("Receiving Number");
-		recNumField.setValue(receiving.getReceivingNumber() != null ? receiving.getReceivingNumber() : "");
-
-		FormLayout form = new FormLayout(recNumField);
-		dialog.add(form);
-
-		Button saveBtn = new Button("Save", e -> {
-			receiving.setReceivingNumber(recNumField.getValue());
-			try {
-				if (isEdit) {
-					receivingOrderService.update(receiving);
-				} else {
-					receivingOrderService.create(receiving);
-				}
-				Notification.show("Receiving record saved successfully", 3000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-				dialog.close();
-				refreshData();
-			} catch (Exception ex) {
-				Notification.show("Failed to save receiving: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_ERROR);
-			}
-		});
-		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), saveBtn);
-		dialog.open();
-	}
-
 	private void refreshData() {
-		grid.setItems(receivingOrderService.getAll(searchField.getValue(), Page.ofSize(100)));
-=======
-	private void refreshData() {
-		grid.setItems(receivingOrderService.getAll(searchField.getValue(), Page.ofSize(100)));
+		var entity = new Receiving();
+		entity.setReceivingNumber(searchField.getValue());
+		grid.setItems(receivingOrderService.findAll(entity, Page.ofSize(100)));
 	}
 
 	private void openReceivingDialog(Receiving receiving) {
@@ -185,7 +122,7 @@ public class ReceivingView extends VerticalLayout {
 				if (isEdit) {
 					receivingOrderService.update(receiving);
 				} else {
-					receivingOrderService.create(receiving);
+					receivingOrderService.save(receiving);
 				}
 				Notification.show("Receiving record saved successfully", 3000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -223,6 +160,5 @@ public class ReceivingView extends VerticalLayout {
 
 		confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
 		confirmDialog.open();
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 }

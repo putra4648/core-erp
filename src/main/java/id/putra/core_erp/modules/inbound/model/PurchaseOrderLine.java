@@ -13,70 +13,16 @@ import jakarta.persistence.Table;
 @Table
 public class PurchaseOrderLine extends BaseEntity {
 
-<<<<<<< HEAD
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	private BigDecimal price;
-	@ManyToOne
-	@JoinColumn(name = "product_id")
-	private Product product;
-=======
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
 	private Integer quantity;
 	private BigDecimal price;
 
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	@ManyToOne
 	@JoinColumn(name = "purchase_order_id")
 	private PurchaseOrder purchaseOrder;
 
-<<<<<<< HEAD
-	private Integer quantity;
-
-	public Long getId() {
-		return id;
-	}
-
-	public BigDecimal getPrice() {
-		return price;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public PurchaseOrder getPurchaseOrder() {
-		return purchaseOrder;
-	}
-
-	public Integer getQuantity() {
-		return quantity;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-		this.purchaseOrder = purchaseOrder;
-	}
-
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
-=======
 	public Product getProduct() {
 		return product;
 	}
@@ -108,5 +54,4 @@ public class PurchaseOrderLine extends BaseEntity {
 	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
 		this.purchaseOrder = purchaseOrder;
 	}
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 }

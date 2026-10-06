@@ -19,16 +19,6 @@ import jakarta.persistence.PersistenceContext;
 @ApplicationScoped
 public class QuotationService implements BaseService<Quotation> {
 
-<<<<<<< HEAD
-	@PersistenceContext
-	private EntityManager entityManager;
-
-	private final QuotationRepo quotationRepository;
-
-	public QuotationService(QuotationRepo rfqRepository) {
-		this.quotationRepository = rfqRepository;
-	}
-=======
 	private final QuotationRepo quotationRepository;
 
 	public QuotationService(QuotationRepo rfqRepository) {
@@ -37,111 +27,11 @@ public class QuotationService implements BaseService<Quotation> {
 
 	@PersistenceContext
 	private EntityManager entityManager;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	public void add(Quotation dto) {
 		quotationRepository.persist(dto);
 	}
 
-<<<<<<< HEAD
-	public Boolean checkApprovalFlow(Quotation dto) {
-		Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
-		if (rfqOpt.isPresent()) {
-			// Optional<Users> userOpt = userRepo
-			// .findByUsernameIgnoreCase(authentication != null ? authentication.getName() :
-			// "");
-			// String userNrp = userOpt.map(u -> u).orElse("");
-			// if (rfqOpt.get().getTemApprovals() != null) {
-			// return rfqOpt.get().getTemApprovals().stream()
-			// .anyMatch(aprv -> aprv.getUsers() != null && aprv.getUsers() != null
-			// && aprv.getUsers().equalsIgnoreCase(userNrp));
-			// }
-			return false;
-		} else {
-			throw new ModuleException("RFQ " + dto.getId() + " not found");
-		}
-	}
-
-	public ApprovalStatus checkStatusApprovalIsPermanent(Quotation dto) {
-		String nrp = "";
-
-		Optional<Quotation> rfqOpt = quotationRepository.findByIdOptional(dto.getId());
-		if (rfqOpt.isPresent()) {
-			ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
-			List<Approval> approvals = new ArrayList<>();
-			rfqOpt.ifPresent(data -> {
-				if (data.getTemApprovals() != null) {
-					approvals.addAll(data.getTemApprovals());
-				}
-			});
-			if (nrp != null) {
-				int index = 0;
-				for (int i = 0; i < approvals.size(); i++) {
-					if (approvals.get(i).getUsers() != null && nrp.equalsIgnoreCase(approvals.get(i).getUsers())) {
-						index = i;
-					}
-				}
-				if (approvals.stream()
-						.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers()))) {
-
-					if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
-						if (approvals.stream()
-								.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
-										&& Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
-							result = ApprovalStatus.ALREADY_APPROVED;
-						}
-
-						if (approvals.stream()
-								.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
-										&& !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
-								&& index == (rfqOpt.get().getCurrentApprovalStage() != null
-										? rfqOpt.get().getCurrentApprovalStage()
-										: 0)) {
-							result = ApprovalStatus.NEED_APPROVAL;
-						}
-
-					}
-				}
-			}
-
-			return result;
-		} else {
-			throw new ModuleException("RFQ " + dto.getId() + " not found");
-		}
-	}
-
-	@Override
-	public void delete(Long id) {
-		quotationRepository.deleteById(id);
-	}
-
-	public List<Quotation> findAll(Quotation params) {
-		return quotationRepository.find("id like ?1", params.getId()).list();
-	}
-
-	@Override
-	public List<Quotation> findAll(Quotation quotation, Page p) {
-		return quotationRepository.findAll().list();
-	}
-
-	@Override
-	public Quotation findById(Long id) {
-		return quotationRepository.findById(id);
-	}
-
-	public Quotation getById(Long id) {
-		return quotationRepository.findByIdOptional(id).get();
-	}
-
-	@Override
-	public void save(Quotation entity) {
-		quotationRepository.persist(entity);
-	}
-
-	@Override
-	public void update(Quotation entity) {
-		quotationRepository.persist(entity);
-=======
 	public List<Quotation> findAll(Quotation params) {
 		return quotationRepository.find("CAST(id AS text) like ?1", params.id != null ? params.id.toString() : "")
 				.list();
@@ -158,7 +48,7 @@ public class QuotationService implements BaseService<Quotation> {
 	}
 
 	@Override
-	public Iterable<Quotation> findAll(Quotation quotation, Page p) {
+	public List<Quotation> findAll(Quotation quotation, Page p) {
 		return quotationRepository.findAll().list();
 	}
 
@@ -206,23 +96,6 @@ public class QuotationService implements BaseService<Quotation> {
 				if (approvals.stream()
 						.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers()))) {
 
-					if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
-						if (approvals.stream()
-								.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
-										&& Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
-							result = ApprovalStatus.ALREADY_APPROVED;
-						}
-
-						if (approvals.stream()
-								.anyMatch(data -> data.getUsers() != null && nrp.equalsIgnoreCase(data.getUsers())
-										&& !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
-								&& index == (rfqOpt.get().getCurrentApprovalStage() != null
-										? rfqOpt.get().getCurrentApprovalStage()
-										: 0)) {
-							result = ApprovalStatus.NEED_APPROVAL;
-						}
-
-					}
 				}
 			}
 
@@ -257,7 +130,6 @@ public class QuotationService implements BaseService<Quotation> {
 	@Override
 	public void delete(Long id) {
 		quotationRepository.deleteById(id);
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

@@ -11,39 +11,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "approval")
 public class Approval extends BaseEntity {
-<<<<<<< HEAD
-	@ManyToOne
-	@JoinColumn(name = "approval_dept_id", referencedColumnName = "dept_number", insertable = false, updatable = false)
-	private Department department;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
-
-	private Boolean isApprovalPermanent;
-
-	private Boolean isBypassPermanent;
-
-	@ManyToOne
-	@JoinColumn(name = "requisition_id", referencedColumnName = "id", insertable = false, updatable = false)
-	private Requisition requisition;
-	private String users;
-
-	public Department getDepartment() {
-		return department;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public Boolean getIsApprovalPermanent() {
-		return isApprovalPermanent;
-	}
-
-	public Boolean getIsBypassPermanent() {
-		return isBypassPermanent;
-=======
 
 	private String users;
 
@@ -54,32 +21,11 @@ public class Approval extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "requisition_id", referencedColumnName = "id", insertable = false, updatable = false)
 	private Requisition requisition;
-
-	private Boolean isApprovalPermanent;
-	private Boolean isBypassPermanent;
-
-	public String getUsers() {
-		return users;
-	}
-
-	public void setUsers(String users) {
-		this.users = users;
-	}
-
-	public Department getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(Department department) {
-		this.department = department;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
-	}
 
 	public Requisition getRequisition() {
 		return requisition;
 	}
 
-<<<<<<< HEAD
 	public String getUsers() {
 		return users;
 	}
@@ -88,35 +34,6 @@ public class Approval extends BaseEntity {
 		this.department = department;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public void setIsApprovalPermanent(Boolean isApprovalPermanent) {
-		this.isApprovalPermanent = isApprovalPermanent;
-=======
-	public void setRequisition(Requisition requisition) {
-		this.requisition = requisition;
-	}
-
-	public Boolean getIsApprovalPermanent() {
-		return isApprovalPermanent;
-	}
-
-	public void setIsApprovalPermanent(Boolean isApprovalPermanent) {
-		this.isApprovalPermanent = isApprovalPermanent;
-	}
-
-	public Boolean getIsBypassPermanent() {
-		return isBypassPermanent;
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
-	}
-
-	public void setIsBypassPermanent(Boolean isBypassPermanent) {
-		this.isBypassPermanent = isBypassPermanent;
-	}
-<<<<<<< HEAD
-
 	public void setRequisition(Requisition requisition) {
 		this.requisition = requisition;
 	}
@@ -124,7 +41,5 @@ public class Approval extends BaseEntity {
 	public void setUsers(String users) {
 		this.users = users;
 	}
-=======
->>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 }
