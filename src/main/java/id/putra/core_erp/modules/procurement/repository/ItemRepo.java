@@ -29,12 +29,21 @@ public class ItemRepo implements PanacheRepository<Item> {
 		return count("name ilike ?1", name);
 	}
 
+<<<<<<< HEAD
 	public Optional<Item> findByItemNumber(String name) {
 		return find("itemNumber ilike ?1", name).firstResultOptional();
 	}
 
 	public Optional<Item> findByNameEqualsIgnoreCase(String name) {
 		return find("name ilike ?1", name).firstResultOptional();
+=======
+	public Optional<Item> findByNameEqualsIgnoreCase(String name) {
+		return find("name ilike ?1", name).firstResultOptional();
+	}
+
+	public Optional<Item> findByItemNumber(String name) {
+		return find("itemNumber ilike ?1", name).firstResultOptional();
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

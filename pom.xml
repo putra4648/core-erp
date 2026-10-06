@@ -47,6 +47,7 @@
 
 		<!-- Quarkus always pulls in slf4j-jboss-logmanager
         into target/lib; don't use slf4j-simple -->
+<<<<<<< HEAD
 		<dependency>
 			<groupId>org.jboss.slf4j</groupId>
 			<artifactId>slf4j-jboss-logmanager</artifactId>
@@ -65,6 +66,23 @@
 			<artifactId>quarkus-junit-mockito</artifactId>
 			<scope>test</scope>
 		</dependency>
+=======
+        <dependency>
+            <groupId>org.jboss.slf4j</groupId>
+            <artifactId>slf4j-jboss-logmanager</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>
+        <!-- Hibernate ORM specific dependencies -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 		<!-- JDBC driver dependencies -->
 		<dependency>

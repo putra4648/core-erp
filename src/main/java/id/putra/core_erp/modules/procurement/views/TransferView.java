@@ -30,6 +30,7 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class TransferView extends VerticalLayout {
 
+<<<<<<< HEAD
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private final DepartmentRepo departmentRepo;
 
@@ -37,6 +38,15 @@ public class TransferView extends VerticalLayout {
 	private final TextField searchField = new TextField();
 	private final List<Transfer> transferList = new ArrayList<>();
 	private final TransferService transferService;
+=======
+	private final TransferService transferService;
+	private final DepartmentRepo departmentRepo;
+
+	private final TextField searchField = new TextField();
+	private final Grid<Transfer> grid = new Grid<>();
+	private final List<Transfer> transferList = new ArrayList<>();
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	public TransferView(TransferService transferService, DepartmentRepo departmentRepo) {
 		this.transferService = transferService;
@@ -68,7 +78,11 @@ public class TransferView extends VerticalLayout {
 
 	private void configureGrid() {
 		grid.setSizeFull();
+<<<<<<< HEAD
 		grid.addColumn(t -> t.getId() != null ? t.getId() : "-").setHeader("Transfer Number").setAutoWidth(true);
+=======
+		grid.addColumn(t -> t.id != null ? t.id : "-").setHeader("Transfer Number").setAutoWidth(true);
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		grid.addColumn(t -> t.getTitle() != null ? t.getTitle() : "-").setHeader("Title").setFlexGrow(2);
 		grid.addColumn(t -> t.getDepartment() != null ? t.getDepartment().getName() : "-").setHeader("Department")
 				.setFlexGrow(1);

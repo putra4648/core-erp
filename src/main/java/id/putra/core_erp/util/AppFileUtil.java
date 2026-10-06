@@ -1,22 +1,12 @@
 package id.putra.core_erp.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Base64;
-
-import org.jboss.resteasy.reactive.multipart.FileUpload;
-
-import id.putra.core_erp.modules.procurement.model.AppFile;
-
 public class AppFileUtil {
 
 	private static String serverPath;
 
 	public static final String SUPPLIER_FOLDER = "supplier";
 
+<<<<<<< HEAD
 	public static Path createFileFromBase64(String fileId, String folder, AppFile file) throws IOException {
 		Path path = Paths.get(serverPath, "data", folder);
 		if (!path.toFile().exists()) {
@@ -108,5 +98,15 @@ public class AppFileUtil {
 	public void setServerPath(String path) {
 		AppFileUtil.serverPath = path;
 	}
+=======
+	// @Value("${app.server.path}")
+	public void setServerPath(String path) {
+		AppFileUtil.serverPath = path;
+	}
+
+	public static String getServerPath() {
+		return serverPath;
+	}
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 }

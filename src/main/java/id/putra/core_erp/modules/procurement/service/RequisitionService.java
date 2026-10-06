@@ -27,10 +27,17 @@ import jakarta.transaction.Transactional;
 @Transactional(rollbackOn = { Exception.class })
 public class RequisitionService implements BaseService<Requisition> {
 
+<<<<<<< HEAD
 	private final BudgetDetailRepo budgetDetailRepo;
 	private final DepartmentRepo departmentRepo;
 	private final RequisitionRepo requisitionRepo;
 	private final TransferRequestRepo transferRequestRepo;
+=======
+	private final TransferRequestRepo transferRequestRepo;
+	private final RequisitionRepo requisitionRepo;
+	private final DepartmentRepo departmentRepo;
+	private final BudgetDetailRepo budgetDetailRepo;
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	private final Vertx vertx;
 
 	public RequisitionService(TransferRequestRepo transferRequestRepo, RequisitionRepo requisitionRepo,
@@ -42,6 +49,7 @@ public class RequisitionService implements BaseService<Requisition> {
 		this.vertx = vertx;
 	}
 
+<<<<<<< HEAD
 	public void add(Requisition entity) {
 		requisitionRepo.persist(entity);
 	}
@@ -149,6 +157,107 @@ public class RequisitionService implements BaseService<Requisition> {
 	@Override
 	public void update(Requisition entity) {
 		requisitionRepo.persist(entity);
+=======
+	public Boolean checkApprovalFlow(Requisition dto) {
+		Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.id);
+		String nrp = "";
+
+		if (reqOpt.isPresent()) {
+			boolean result = false;
+			if (reqOpt.get().getApprovals() != null) {
+				result = reqOpt.get().getApprovals().stream().anyMatch(usr -> usr.getUsers() != null
+						&& usr.getUsers() != null && usr.getUsers().equalsIgnoreCase(nrp));
+			}
+
+			if (reqOpt.get().getApproval() != null && reqOpt.get().getApproval().getUsers() != null) {
+				result = !reqOpt.get().getApproval().getUsers().equalsIgnoreCase(nrp);
+			}
+			return result;
+		} else {
+			return false;
+		}
+	}
+
+	public ApprovalStatus checkStatusApprovalIsPermanent(Requisition dto) {
+		String nrp = "";
+
+		Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.id);
+		if (reqOpt.isPresent()) {
+			ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
+			List<Approval> approvals = new ArrayList<>();
+			if (reqOpt.get().getApprovals() != null) {
+				approvals.addAll(reqOpt.get().getApprovals());
+			}
+			if (reqOpt.get().getApproval() != null) {
+				approvals.add(reqOpt.get().getApproval());
+			}
+			int index = 0;
+			for (int i = 0; i < approvals.size(); i++) {
+				if (approvals.get(i).getUsers() != null && approvals.get(i).getUsers() != null
+						&& approvals.get(i).getUsers().equalsIgnoreCase(nrp)) {
+					index = i;
+				}
+			}
+			if (approvals.stream().anyMatch(data -> data.getUsers() != null && data.getUsers() != null
+					&& data.getUsers().equalsIgnoreCase(nrp))) {
+				if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
+					if (approvals.stream()
+							.anyMatch(data -> data.getUsers() != null && data.getUsers() != null
+									&& data.getUsers().equalsIgnoreCase(nrp)
+									&& Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
+						result = ApprovalStatus.ALREADY_APPROVED;
+					}
+
+					if (approvals.stream()
+							.anyMatch(data -> data.getUsers() != null && data.getUsers() != null
+									&& data.getUsers().equalsIgnoreCase(nrp)
+									&& !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
+							&& index == (reqOpt.get().getCurrentApprovalStage() != null
+									? reqOpt.get().getCurrentApprovalStage()
+									: 0)) {
+						result = ApprovalStatus.NEED_APPROVAL;
+					}
+
+				}
+			}
+			return result;
+		} else {
+			throw new ModuleException("Requisition ID " + dto.id + " not found");
+		}
+	}
+
+	public byte[] download(Requisition dto) throws IOException {
+		String filename = "";
+
+		Path path = Paths.get(AppFileUtil.getServerPath(), "data", "requisitions", filename);
+		return Files.readAllBytes(path);
+
+	}
+
+	@Override
+	public void save(Requisition entity) {
+		requisitionRepo.persist(entity);
+	}
+
+	@Override
+	public void update(Requisition entity) {
+		requisitionRepo.getEntityManager().merge(entity);
+	}
+
+	@Override
+	public void delete(Long id) {
+		requisitionRepo.deleteById(id);
+	}
+
+	@Override
+	public Requisition findById(Long id) {
+		return requisitionRepo.findById(id);
+	}
+
+	@Override
+	public List<Requisition> findAll(Requisition r, Page p) {
+		return requisitionRepo.findAll().list();
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

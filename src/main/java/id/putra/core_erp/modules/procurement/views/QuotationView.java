@@ -29,6 +29,7 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class QuotationView extends VerticalLayout {
 
+<<<<<<< HEAD
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private final Grid<Quotation> grid = new Grid<>();
@@ -38,6 +39,17 @@ public class QuotationView extends VerticalLayout {
 
 	public QuotationView(QuotationService rfqService) {
 		this.rfqService = rfqService;
+=======
+	private final QuotationService quotationService;
+
+	private final TextField searchField = new TextField();
+	private final Grid<Quotation> grid = new Grid<>();
+	private final List<Quotation> rfqList = new ArrayList<>();
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+	public QuotationView(QuotationService rfqService) {
+		this.quotationService = rfqService;
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 		setSizeFull();
 		setPadding(true);
@@ -65,7 +77,11 @@ public class QuotationView extends VerticalLayout {
 
 	private void configureGrid() {
 		grid.setSizeFull();
+<<<<<<< HEAD
 		grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("RFQ Number").setAutoWidth(true);
+=======
+		grid.addColumn(r -> r.id != null ? r.id : "-").setHeader("RFQ Number").setAutoWidth(true);
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		grid.addColumn(r -> r.getDueDate() != null ? dateFormat.format(r.getDueDate()) : "-").setHeader("Due Date")
 				.setAutoWidth(true);
 		grid.addColumn(r -> r.getNote() != null ? r.getNote() : "-").setHeader("Notes").setFlexGrow(2);
@@ -87,7 +103,11 @@ public class QuotationView extends VerticalLayout {
 		try {
 			Quotation params = new Quotation();
 
+<<<<<<< HEAD
 			List<Quotation> res = rfqService.findAll(params);
+=======
+			List<Quotation> res = quotationService.findAll(params);
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 			rfqList.clear();
 			if (res != null) {
 				rfqList.addAll(res);

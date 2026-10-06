@@ -31,6 +31,7 @@ public class TransferService implements BaseService<Transfer> {
 		transferRequestRepo.persist(dto);
 	}
 
+<<<<<<< HEAD
 	public Boolean checkApprovalFlow(Transfer dto) {
 		Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.getId());
 		String nrp = "";
@@ -143,6 +144,120 @@ public class TransferService implements BaseService<Transfer> {
 	@Override
 	public void update(Transfer dto) {
 		transferRequestRepo.persist(dto);
+=======
+	@Override
+	public void save(Transfer entity) {
+		transferRequestRepo.persist(entity);
+	}
+
+	public List<Transfer> findAll(Transfer dto) {
+		String status = (dto != null && dto != null && dto.getStatus() != null && !dto.getStatus().isBlank())
+				? dto.getStatus()
+				: "%%";
+		String id = (dto != null && dto != null && dto.id != null) ? dto.id.toString() : "%%";
+
+		return transferRequestRepo.findByStatusLikeAndIdLike(status, id);
+	}
+
+	@Override
+	public Iterable<Transfer> findAll(Transfer transfer, Page p) {
+		return transferRequestRepo.findAll().list();
+	}
+
+	@Override
+	public Transfer findById(Long id) {
+		return transferRequestRepo.findById(id);
+	}
+
+	public Transfer getById(Transfer dto) {
+		return transferRequestRepo.findById(dto.id);
+	}
+
+	public Boolean checkApprovalFlow(Transfer dto) {
+		Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.id);
+		String nrp = "";
+
+		if (reqOpt.isPresent()) {
+			boolean result = false;
+			if (reqOpt.get().getTemApprovals() != null) {
+				result = reqOpt.get().getTemApprovals().stream().anyMatch(usr -> usr.getUsers() != null
+						&& usr.getUsers() != null && usr.getUsers().equalsIgnoreCase(nrp));
+			}
+
+			if (reqOpt.get().getTempPurchaserApproval() != null
+					&& reqOpt.get().getTempPurchaserApproval().getUsers() != null) {
+				result = !reqOpt.get().getTempPurchaserApproval().getUsers().equalsIgnoreCase(nrp);
+			}
+			return result;
+		} else {
+			return false;
+		}
+	}
+
+	public ApprovalStatus checkStatusApprovalIsPermanent(Transfer dto) {
+		Transfer params = dto;
+		String nrp = "";
+
+		Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(params.id);
+		if (reqOpt.isPresent()) {
+			ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
+			List<Approval> approvals = new ArrayList<>();
+			if (reqOpt.get().getTemApprovals() != null) {
+				approvals.addAll(reqOpt.get().getTemApprovals());
+			}
+			if (reqOpt.get().getTempPurchaserApproval() != null) {
+				approvals.add(reqOpt.get().getTempPurchaserApproval());
+			}
+			int index = 0;
+			for (int i = 0; i < approvals.size(); i++) {
+				if (approvals.get(i).getUsers() != null && approvals.get(i).getUsers() != null
+						&& approvals.get(i).getUsers().equalsIgnoreCase(nrp)) {
+					index = i;
+				}
+			}
+			if (approvals.stream().anyMatch(data -> data.getUsers() != null && data.getUsers() != null
+					&& data.getUsers().equalsIgnoreCase(nrp))) {
+				if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
+					if (approvals.stream()
+							.anyMatch(data -> data.getUsers() != null && data.getUsers() != null
+									&& data.getUsers().equalsIgnoreCase(nrp)
+									&& Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
+						result = ApprovalStatus.ALREADY_APPROVED;
+					}
+
+					if (approvals.stream()
+							.anyMatch(data -> data.getUsers() != null && data.getUsers() != null
+									&& data.getUsers().equalsIgnoreCase(nrp)
+									&& !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
+							&& index == (reqOpt.get().getCurrentApprovalStage() != null
+									? reqOpt.get().getCurrentApprovalStage()
+									: 0)) {
+						result = ApprovalStatus.NEED_APPROVAL;
+					}
+
+				}
+			}
+			return result;
+		} else {
+			throw new ModuleException("TransferRequest ID " + params.id + " not found");
+		}
+	}
+
+	public byte[] download(Transfer dto) throws Exception {
+		Path path = Paths.get(AppFileUtil.getServerPath(), "data", dto.getFilename());
+		return Files.readAllBytes(path);
+
+	}
+
+	@Override
+	public void update(Transfer dto) {
+		transferRequestRepo.persist(dto);
+	}
+
+	@Override
+	public void delete(Long id) {
+		transferRequestRepo.deleteById(id);
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

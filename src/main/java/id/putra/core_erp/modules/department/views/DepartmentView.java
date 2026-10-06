@@ -23,13 +23,12 @@ import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.department.service.DepartmentService;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
-import jakarta.inject.Inject;
-import jakarta.validation.Validator;
 
 @Route("department")
 @PageTitle(value = "Master Department")
 @Authenticated
 public class DepartmentView extends VerticalLayout {
+<<<<<<< HEAD
 	private final DepartmentService departmentService;
 
 	private final Department form;
@@ -37,6 +36,13 @@ public class DepartmentView extends VerticalLayout {
 	private final TextField searchField = new TextField();
 	@Inject
 	Validator validator;
+=======
+
+	private final DepartmentService departmentService;
+	private final Grid<Department> grid = new Grid<>();
+	private final TextField searchField = new TextField();
+	private final Department form;
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	public DepartmentView(DepartmentService departmentService) {
 		this.departmentService = departmentService;
@@ -98,6 +104,7 @@ public class DepartmentView extends VerticalLayout {
 		}).setHeader("Actions").setAutoWidth(true);
 	}
 
+<<<<<<< HEAD
 	private void confirmDelete(Department customer) {
 		Dialog confirmDialog = new Dialog("Delete Customer");
 		confirmDialog.add(new Paragraph("Are you sure you want to delete customer '" + customer.getName() + "'?"));
@@ -159,6 +166,53 @@ public class DepartmentView extends VerticalLayout {
 							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
 			}
+=======
+	private void refreshData() {
+		var dept = new Department();
+		dept.setName(searchField.getValue());
+
+		List<Department> result = new ArrayList<>();
+		departmentService.findAll(dept, Page.ofSize(100)).forEach(result::add);
+		grid.setItems(page -> result.stream(), count -> 0);
+	}
+
+	private void openDepartmentDialog(Department dept) {
+		boolean isEdit = dept.id != null;
+		Dialog dialog = new Dialog(isEdit ? "Edit Customer" : "Add Customer");
+
+		TextField codeField = new TextField("Customer Code", val -> {
+			this.form.setCode(val.getValue());
+		});
+		TextField nameField = new TextField("Customer Name", val -> {
+			this.form.setName(val.getValue());
+		});
+
+		codeField.setValue(dept.getCode() != null ? dept.getCode() : "");
+		nameField.setValue(dept.getName() != null ? dept.getName() : "");
+
+		FormLayout formLayout = new FormLayout(codeField, nameField);
+		dialog.add(formLayout);
+
+		Button saveBtn = new Button("Save", e -> {
+
+			try {
+				if (isEdit) {
+					departmentService.update(dept);
+					Notification.show("Customer updated successfully", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				} else {
+					departmentService.save(dept);
+					Notification.show("Customer created successfully", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				}
+				dialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to save customer: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -168,6 +222,7 @@ public class DepartmentView extends VerticalLayout {
 		dialog.open();
 	}
 
+<<<<<<< HEAD
 	private void refreshData() {
 		var dept = new Department();
 		dept.setName(searchField.getValue());
@@ -175,5 +230,29 @@ public class DepartmentView extends VerticalLayout {
 		List<Department> result = new ArrayList<>();
 		departmentService.findAll(dept, Page.ofSize(100)).forEach(result::add);
 		grid.setItems(page -> result.stream(), count -> 0);
+=======
+	private void confirmDelete(Department customer) {
+		Dialog confirmDialog = new Dialog("Delete Customer");
+		confirmDialog.add(new Paragraph("Are you sure you want to delete customer '" + customer.getName() + "'?"));
+
+		Button deleteBtn = new Button("Delete", e -> {
+			try {
+				departmentService.delete(customer.id);
+				Notification.show("Customer deleted successfully", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				confirmDialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to delete customer: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+
+		Button cancelBtn = new Button("Cancel", e -> confirmDialog.close());
+
+		confirmDialog.getFooter().add(cancelBtn, deleteBtn);
+		confirmDialog.open();
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 }

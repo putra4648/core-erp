@@ -34,6 +34,7 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class RequisitionListView extends VerticalLayout {
 
+<<<<<<< HEAD
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private final DepartmentRepo departmentRepo;
 	private final Grid<Requisition> grid = new Grid<>();
@@ -43,6 +44,17 @@ public class RequisitionListView extends VerticalLayout {
 	private final RequisitionService requisitionService;
 	private final TextField searchField = new TextField();
 	private final ComboBox<String> statusFilter = new ComboBox<>();
+=======
+	private final RequisitionService requisitionService;
+	private final RequisitionRepo requisitionRepo;
+	private final DepartmentRepo departmentRepo;
+
+	private final TextField searchField = new TextField();
+	private final ComboBox<String> statusFilter = new ComboBox<>();
+	private final Grid<Requisition> grid = new Grid<>();
+	private final List<Requisition> reqList = new ArrayList<>();
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	public RequisitionListView(RequisitionService requisitionService, RequisitionRepo requisitionRepo,
 			DepartmentRepo departmentRepo) {
@@ -85,7 +97,11 @@ public class RequisitionListView extends VerticalLayout {
 
 	private void configureGrid() {
 		grid.setSizeFull();
+<<<<<<< HEAD
 		grid.addColumn(r -> r.getId() != null ? r.getId() : "-").setHeader("PR Number").setAutoWidth(true);
+=======
+		grid.addColumn(r -> r.id != null ? r.id : "-").setHeader("PR Number").setAutoWidth(true);
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		grid.addColumn(r -> r.getTitle() != null ? r.getTitle() : "-").setHeader("Title").setFlexGrow(2);
 		grid.addColumn(r -> r.getDepartment() != null ? r.getDepartment().getName() : "-").setHeader("Department")
 				.setFlexGrow(1);
@@ -116,12 +132,20 @@ public class RequisitionListView extends VerticalLayout {
 
 		grid.addComponentColumn(r -> {
 			Button viewBtn = new Button("View / Edit", VaadinIcon.EYE.create(),
+<<<<<<< HEAD
 					e -> UI.getCurrent().navigate(RequisitionFormView.class, r.getId().toString()));
+=======
+					e -> UI.getCurrent().navigate(RequisitionFormView.class, r.id.toString()));
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 			viewBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
 			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> {
 				if ("DRAFT".equalsIgnoreCase(r.getStatus()) || "REJECT".equalsIgnoreCase(r.getStatus())) {
+<<<<<<< HEAD
 					requisitionRepo.deleteById(r.getId());
+=======
+					requisitionRepo.deleteById(r.id);
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 					Notification.show("Requisition deleted", 2000, Notification.Position.TOP_CENTER);
 					refreshGrid();
 				} else {

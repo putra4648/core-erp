@@ -7,7 +7,6 @@ import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -15,9 +14,12 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "items")
 public class Item extends BaseEntity {
+<<<<<<< HEAD
 	@Id
 	@Column(name = "item_number", nullable = false)
 	private String itemNumber;
+=======
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -33,6 +35,7 @@ public class Item extends BaseEntity {
 
 	private String unit;
 
+<<<<<<< HEAD
 	@Column(name = "gl_acc")
 	private String glAcc;
 
@@ -130,6 +133,116 @@ public class Item extends BaseEntity {
 		return unit;
 	}
 
+=======
+	@Column(name = "other_supplier")
+	private String otherSupplier;
+
+	@Column(name = "gl_acc")
+	private String glAcc;
+
+	@Column(name = "item_image_path")
+	private String itemImagePath;
+
+	@Column(name = "docs_path")
+	private List<String> docsPath;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "measurement_id", referencedColumnName = "id")
+	private ItemMeasurement measurement;
+
+	// @ManyToOne
+	// @JoinColumn(name = "category_id", referencedColumnName = "id")
+	// private Category category;
+
+	public String getImagePath() {
+		return this.itemImagePath;
+	}
+
+	public List<String> getDocsPath() {
+		return this.docsPath;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public BigInteger getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigInteger price) {
+		this.price = price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getOtherSupplier() {
+		return otherSupplier;
+	}
+
+	public void setOtherSupplier(String otherSupplier) {
+		this.otherSupplier = otherSupplier;
+	}
+
+	public String getGlAcc() {
+		return glAcc;
+	}
+
+	public void setGlAcc(String glAcc) {
+		this.glAcc = glAcc;
+	}
+
+	public String getItemImagePath() {
+		return itemImagePath;
+	}
+
+	public void setItemImagePath(String itemImagePath) {
+		this.itemImagePath = itemImagePath;
+	}
+
+	public void setDocsPath(List<String> docsPath) {
+		this.docsPath = docsPath;
+	}
+
+	public ItemMeasurement getMeasurement() {
+		return measurement;
+	}
+
+	public void setMeasurement(ItemMeasurement measurement) {
+		this.measurement = measurement;
+	}
+
+	// public Category getCategory() {
+	// return category;
+	// }
+
+	// public void setCategory(Category category) {
+	// this.category = category;
+	// }
+
+	public String getUnit() {
+		return unit;
+	}
+
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	public void setUnit(String unit) {
 		this.unit = unit;
 	}

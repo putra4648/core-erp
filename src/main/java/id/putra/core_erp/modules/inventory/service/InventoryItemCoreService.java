@@ -1,9 +1,12 @@
 package id.putra.core_erp.modules.inventory.service;
 
+<<<<<<< HEAD
 import java.util.List;
 
 import com.vaadin.flow.data.provider.DataProvider;
 
+=======
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 import id.putra.core_erp.modules.inventory.model.InventoryItem;
 import id.putra.core_erp.modules.inventory.repository.InventoryItemRepository;
 import id.putra.core_erp.service.BaseService;
@@ -20,6 +23,7 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
 		this.inventoryItemRepository = inventoryItemRepository;
 	}
 
+<<<<<<< HEAD
 	public void delete(List<InventoryItem> dtos) {
 		dtos.forEach(item -> inventoryItemRepository.deleteById(item.getId()));
 	}
@@ -31,10 +35,25 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
 
 	@Override
 	public List<InventoryItem> findAll(InventoryItem item, Page p) {
+=======
+	@Override
+	public InventoryItem findById(Long id) {
+		return inventoryItemRepository.findById(id);
+	}
+
+	@Override
+	public void save(InventoryItem entity) {
+		inventoryItemRepository.persist(entity);
+	}
+
+	@Override
+	public Iterable<InventoryItem> findAll(InventoryItem item, Page p) {
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		return inventoryItemRepository.findAll().list();
 	}
 
 	@Override
+<<<<<<< HEAD
 	public InventoryItem findById(Long id) {
 		return inventoryItemRepository.findById(id);
 	}
@@ -67,6 +86,15 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
 
 	public void update(List<InventoryItem> dtos) {
 		dtos.forEach(item -> inventoryItemRepository.getEntityManager().merge(item));
+=======
+	public void update(InventoryItem entity) {
+		inventoryItemRepository.getEntityManager().merge(entity);
+	}
+
+	@Override
+	public void delete(Long id) {
+		inventoryItemRepository.deleteById(id);
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 
 }

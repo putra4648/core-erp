@@ -19,16 +19,26 @@ public class CustomerService implements BaseService<Customer> {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public void delete(Long id) {
 		customerRepository.deleteById(id);
 	}
 
 	@Override
 	public List<Customer> findAll(Customer c, Page page) {
+=======
+	public void save(Customer customer) {
+		customerRepository.persist(customer);
+	}
+
+	@Override
+	public Iterable<Customer> findAll(Customer c, Page page) {
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 		return customerRepository.findAll().list();
 	}
 
 	@Override
+<<<<<<< HEAD
 	public Customer findById(Long id) {
 		return customerRepository.findById(id);
 	}
@@ -43,4 +53,20 @@ public class CustomerService implements BaseService<Customer> {
 		customerRepository.update("code = ?1, name = ?2 WHERE id = ?3", customer.getCode(), customer.getName(),
 				customer.getId());
 	}
+=======
+	public void update(Customer customer) {
+		customerRepository.getEntityManager().merge(customer);
+	}
+
+	@Override
+	public Customer findById(Long id) {
+		return customerRepository.findById(id);
+	}
+
+	@Override
+	public void delete(Long id) {
+		customerRepository.deleteById(id);
+	}
+
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 }

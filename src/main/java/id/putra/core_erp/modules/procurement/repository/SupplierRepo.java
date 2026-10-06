@@ -1,7 +1,6 @@
 package id.putra.core_erp.modules.procurement.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import id.putra.core_erp.enums.Status;
 import id.putra.core_erp.modules.supplier.model.Supplier;
@@ -11,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class SupplierRepo implements PanacheRepository<Supplier> {
 
+<<<<<<< HEAD
 	public int countByNameContainingIgnoreCase(String name) {
 		return (int) count("name ilike ?1", "%" + name + "%");
 	}
@@ -31,4 +31,18 @@ public class SupplierRepo implements PanacheRepository<Supplier> {
 	// findAllByNameContainingIgnoreCaseAndStatusStartingWithIgnoreCase(String name,
 	// String status,
 	// Pageable pageable);
+=======
+	public List<Supplier> findAllByStatus(String status) {
+		return list("status", status);
+	}
+
+	public int countByNameContainingIgnoreCase(String name) {
+		return (int) count("name ilike ?1", "%" + name + "%");
+	}
+
+	public List<Supplier> findByStatus(Status status) {
+		return list("status", status);
+	}
+
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 }

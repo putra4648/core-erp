@@ -23,6 +23,13 @@ public class ReceivingOrderService {
 		return dto;
 	}
 
+<<<<<<< HEAD
+=======
+	public Receiving update(Receiving dto) {
+		return receivingRepository.getEntityManager().merge(dto);
+	}
+
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	public Boolean delete(Long id) {
 		return receivingRepository.deleteById(id);
 	}
@@ -33,9 +40,12 @@ public class ReceivingOrderService {
 						.page(Page.of(query.getOffset() / query.getLimit(), query.getLimit())).list().stream(),
 				query -> Math.toIntExact(receivingRepository.count()));
 	}
+<<<<<<< HEAD
 
 	public Receiving update(Receiving dto) {
 		return receivingRepository.getEntityManager().merge(dto);
 	}
+=======
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 
 }

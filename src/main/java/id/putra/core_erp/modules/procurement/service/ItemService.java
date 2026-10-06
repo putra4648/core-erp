@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.procurement.service;
 
+<<<<<<< HEAD
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -30,14 +31,21 @@ import id.putra.core_erp.modules.procurement.model.Item;
 import id.putra.core_erp.modules.procurement.repository.ItemRepo;
 import id.putra.core_erp.modules.procurement.repository.SupplierRepo;
 import id.putra.core_erp.util.AppFileUtil;
+=======
+import id.putra.core_erp.modules.procurement.model.Item;
+import id.putra.core_erp.modules.procurement.repository.ItemRepo;
+import id.putra.core_erp.modules.procurement.repository.SupplierRepo;
+import id.putra.core_erp.service.BaseService;
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class ItemService {
+@Transactional
+public class ItemService implements BaseService<Item> {
 
+<<<<<<< HEAD
 	@PersistenceContext
 	private EntityManager entityManager;
 	private final ItemRepo itemRepo;
@@ -280,4 +288,44 @@ public class ItemService {
 			}
 		}
 	}
+=======
+	private final ItemRepo itemRepo;
+	private final SupplierRepo supplierRepo;
+
+	public ItemService(ItemRepo itemRepo, SupplierRepo supplierRepo) {
+		this.itemRepo = itemRepo;
+		this.supplierRepo = supplierRepo;
+	}
+
+	@Override
+	public void save(Item entity) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Item findById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void delete(Long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void update(Item entity) {
+		itemRepo.getEntityManager().merge(entity);
+
+	}
+
+	@Override
+	public Iterable<Item> findAll(Item entity, Page page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 }

@@ -31,8 +31,13 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class OutboundView extends VerticalLayout {
 
+<<<<<<< HEAD
 	private final Grid<SalesOrder> grid = new Grid<>();
 	private final SalesOrderService salesOrderService;
+=======
+	private final SalesOrderService salesOrderService;
+	private final Grid<SalesOrder> grid = new Grid<>();
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	private final TextField searchField = new TextField();
 
 	public OutboundView(SalesOrderService salesOrderService) {
@@ -81,7 +86,11 @@ public class OutboundView extends VerticalLayout {
 				.setSortable(true);
 		grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date")
 				.setAutoWidth(true);
+<<<<<<< HEAD
 		grid.addColumn(so -> so.getCustomer().getId() != null ? "Customer #" + so.getCustomer().getId() : "-")
+=======
+		grid.addColumn(so -> so.getCustomer().id != null ? "Customer #" + so.getCustomer().id : "-")
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 				.setHeader("Customer").setFlexGrow(1);
 
 		grid.addComponentColumn(so -> {
@@ -102,6 +111,7 @@ public class OutboundView extends VerticalLayout {
 		}).setHeader("Actions").setAutoWidth(true);
 	}
 
+<<<<<<< HEAD
 	private void confirmDelete(SalesOrder order) {
 		Dialog confirmDialog = new Dialog("Delete Outbound Order");
 		confirmDialog.add(new Paragraph("Are you sure you want to delete sales order '" + order.getSoNumber() + "'?"));
@@ -163,5 +173,69 @@ public class OutboundView extends VerticalLayout {
 		List<SalesOrder> results = new ArrayList<>();
 		salesOrderService.findAll(params, Page.ofSize(100)).forEach(results::add);
 		grid.setItems(results);
+=======
+	private void refreshData() {
+		SalesOrder entity = new SalesOrder();
+		entity.setSoNumber(searchField.getValue());
+		List<SalesOrder> res = new ArrayList<>();
+		salesOrderService.findAll(entity, Page.ofSize(100)).forEach(res::add);
+
+		grid.setItems(res);
+	}
+
+	private void openOrderDialog(SalesOrder order) {
+		boolean isEdit = order.id != null;
+		Dialog dialog = new Dialog(isEdit ? "Edit Outbound Order" : "New Outbound Order");
+
+		TextField soNumField = new TextField("Sales Order Number");
+		soNumField.setValue(order.getSoNumber() != null ? order.getSoNumber() : "");
+
+		FormLayout form = new FormLayout(soNumField);
+		dialog.add(form);
+
+		Button saveBtn = new Button("Save Order", e -> {
+			order.setSoNumber(soNumField.getValue());
+			try {
+				if (isEdit) {
+					salesOrderService.update(order);
+				} else {
+					salesOrderService.save(order);
+				}
+				Notification.show("Sales order saved successfully", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				dialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to save order: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), saveBtn);
+		dialog.open();
+	}
+
+	private void confirmDelete(SalesOrder order) {
+		Dialog confirmDialog = new Dialog("Delete Outbound Order");
+		confirmDialog.add(new Paragraph("Are you sure you want to delete sales order '" + order.getSoNumber() + "'?"));
+
+		Button deleteBtn = new Button("Delete", e -> {
+			try {
+				salesOrderService.delete(order.id);
+				Notification.show("Sales order deleted successfully", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				confirmDialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to delete order: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+
+		confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
+		confirmDialog.open();
+>>>>>>> 345b3544f6af463202f967db0e990de1c0726cd9
 	}
 }
