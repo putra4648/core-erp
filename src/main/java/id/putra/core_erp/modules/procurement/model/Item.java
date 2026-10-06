@@ -3,14 +3,12 @@ package id.putra.core_erp.modules.procurement.model;
 import java.math.BigInteger;
 import java.util.List;
 
-import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
