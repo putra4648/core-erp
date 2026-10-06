@@ -12,43 +12,35 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class InspectionService implements BaseService<QualityInspection> {
+	private final QualityInspectionRepository qualityInspectionRepository;
 
-    private final QualityInspectionRepository qualityInspectionRepository;
+	public InspectionService(QualityInspectionRepository qualityInspectionRepository) {
+		this.qualityInspectionRepository = qualityInspectionRepository;
+	}
 
-    public InspectionService(QualityInspectionRepository qualityInspectionRepository) {
-        this.qualityInspectionRepository = qualityInspectionRepository;
-    }
+	@Override
+	public void save(QualityInspection entity) {
+		qualityInspectionRepository.persist(entity);
+	}
 
-    public void save(QualityInspection entity) {
-        qualityInspectionRepository.persist(entity);
-    }
+	@Override
+	public void update(QualityInspection dto) {
+		qualityInspectionRepository.getEntityManager().merge(dto);
+	}
 
-    public QualityInspection create(QualityInspection dto) {
-        qualityInspectionRepository.persist(dto);
-        return dto;
-    }
+	@Override
+	public void delete(Long id) {
+		qualityInspectionRepository.deleteById(id);
+	}
 
-    public void update(QualityInspection dto) {
-        qualityInspectionRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public QualityInspection findById(Long id) {
+		return qualityInspectionRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        qualityInspectionRepository.deleteById(id);
-    }
+	@Override
+	public List<QualityInspection> findAll(QualityInspection qi, Page page) {
+		return qualityInspectionRepository.findAll().list();
+	}
 
-    public QualityInspection findById(Long id) {
-        return qualityInspectionRepository.findById(id);
-    }
-
-    public QualityInspection getById(Long id) {
-        return findById(id);
-    }
-
-    public Iterable<QualityInspection> findAll(QualityInspection qi, Page page) {
-        return qualityInspectionRepository.findAll().list();
-    }
-
-    public List<QualityInspection> getAll(QualityInspection filter) {
-        return qualityInspectionRepository.findAll().list();
-    }
 }

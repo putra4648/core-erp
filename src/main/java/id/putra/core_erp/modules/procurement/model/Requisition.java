@@ -14,247 +14,236 @@ import id.putra.core_erp.modules.department.model.Department;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "requisition")
+@Table
 public class Requisition extends BaseEntity {
-    @Id
-    private Long id;
 
-    @Column(name = "title")
-    private String title;
+	@Column(name = "title")
+	private String title;
 
-    @Column(name = "note")
-    private String note;
+	@Column(name = "note")
+	private String note;
 
-    @Column(name = "reject_note")
-    private String rejectNote;
+	@Column(name = "reject_note")
+	private String rejectNote;
 
-    @Column(name = "currency")
-    private BigInteger currency;
+	@Column(name = "currency")
+	private BigInteger currency;
 
-    @Column(name = "due_date")
-    private Date dueDate;
+	@Column(name = "due_date")
+	private Date dueDate;
 
-    @Column(name = "investment_id")
-    private String investmentId;
+	@Column(name = "investment_id")
+	private String investmentId;
 
-    @Column(name = "unit_price")
-    private BigInteger unitPrice;
+	@Column(name = "unit_price")
+	private BigInteger unitPrice;
 
-    @Column(name = "status")
-    private String status;
+	@Column(name = "status")
+	private String status;
 
-    @Column(name = "budget_detail_id")
-    private Long budgetDetailId;
+	@Column(name = "budget_detail_id")
+	private Long budgetDetailId;
 
-    @Column(name = "budget_date")
-    private Date budgetDate;
+	@Column(name = "budget_date")
+	private Date budgetDate;
 
-    @Column(name = "current_approval_stage", columnDefinition = "integer default 0")
-    private Integer currentApprovalStage;
+	@Column(name = "current_approval_stage", columnDefinition = "integer default 0")
+	private Integer currentApprovalStage;
 
-    @Column(name = "total_approval_stage")
-    private Integer totalApprovalStage;
+	@Column(name = "total_approval_stage")
+	private Integer totalApprovalStage;
 
-    @Column(name = "last_approved")
-    private String lastApproved;
+	@Column(name = "last_approved")
+	private String lastApproved;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "temp_approvals", columnDefinition = "jsonb")
-    private List<Approval> approvals;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "temp_approvals", columnDefinition = "jsonb")
+	private List<Approval> approvals;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
-    private Approval approval;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
+	private Approval approval;
 
-    private Approval purchaser;
+	private Approval purchaser;
 
-    @Column(name = "next_approvals")
-    private List<String> nextApprovals;
+	@Column(name = "next_approvals")
+	private List<String> nextApprovals;
 
-    @ManyToOne
-    @JoinColumn(name = "budget_id", referencedColumnName = "id")
-    private Budget budget;
+	@ManyToOne
+	@JoinColumn(name = "budget_id", referencedColumnName = "id")
+	private Budget budget;
 
-    @ManyToOne
-    @JoinColumn(name = "dept_id", referencedColumnName = "dept_number")
-    private Department department;
+	@ManyToOne
+	@JoinColumn(name = "dept_id", referencedColumnName = "dept_number")
+	private Department department;
 
-    @OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RequisitionDetail> details;
+	@OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<RequisitionDetail> details;
 
-    public Long getId() {
-        return id;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public String getNote() {
+		return note;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setNote(String note) {
+		this.note = note;
+	}
 
-    public String getNote() {
-        return note;
-    }
+	public String getRejectNote() {
+		return rejectNote;
+	}
 
-    public void setNote(String note) {
-        this.note = note;
-    }
+	public void setRejectNote(String rejectNote) {
+		this.rejectNote = rejectNote;
+	}
 
-    public String getRejectNote() {
-        return rejectNote;
-    }
+	public BigInteger getCurrency() {
+		return currency;
+	}
 
-    public void setRejectNote(String rejectNote) {
-        this.rejectNote = rejectNote;
-    }
+	public void setCurrency(BigInteger currency) {
+		this.currency = currency;
+	}
 
-    public BigInteger getCurrency() {
-        return currency;
-    }
+	public Date getDueDate() {
+		return dueDate;
+	}
 
-    public void setCurrency(BigInteger currency) {
-        this.currency = currency;
-    }
+	public void setDueDate(Date dueDate) {
+		this.dueDate = dueDate;
+	}
 
-    public Date getDueDate() {
-        return dueDate;
-    }
+	public String getInvestmentId() {
+		return investmentId;
+	}
 
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
+	public void setInvestmentId(String investmentId) {
+		this.investmentId = investmentId;
+	}
 
-    public String getInvestmentId() {
-        return investmentId;
-    }
+	public BigInteger getUnitPrice() {
+		return unitPrice;
+	}
 
-    public void setInvestmentId(String investmentId) {
-        this.investmentId = investmentId;
-    }
+	public void setUnitPrice(BigInteger unitPrice) {
+		this.unitPrice = unitPrice;
+	}
 
-    public BigInteger getUnitPrice() {
-        return unitPrice;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setUnitPrice(BigInteger unitPrice) {
-        this.unitPrice = unitPrice;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public Long getBudgetDetailId() {
+		return budgetDetailId;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setBudgetDetailId(Long budgetDetailId) {
+		this.budgetDetailId = budgetDetailId;
+	}
 
-    public Long getBudgetDetailId() {
-        return budgetDetailId;
-    }
+	public Date getBudgetDate() {
+		return budgetDate;
+	}
 
-    public void setBudgetDetailId(Long budgetDetailId) {
-        this.budgetDetailId = budgetDetailId;
-    }
+	public void setBudgetDate(Date budgetDate) {
+		this.budgetDate = budgetDate;
+	}
 
-    public Date getBudgetDate() {
-        return budgetDate;
-    }
+	public Integer getCurrentApprovalStage() {
+		return currentApprovalStage;
+	}
 
-    public void setBudgetDate(Date budgetDate) {
-        this.budgetDate = budgetDate;
-    }
+	public void setCurrentApprovalStage(Integer currentApprovalStage) {
+		this.currentApprovalStage = currentApprovalStage;
+	}
 
-    public Integer getCurrentApprovalStage() {
-        return currentApprovalStage;
-    }
+	public Integer getTotalApprovalStage() {
+		return totalApprovalStage;
+	}
 
-    public void setCurrentApprovalStage(Integer currentApprovalStage) {
-        this.currentApprovalStage = currentApprovalStage;
-    }
+	public void setTotalApprovalStage(Integer totalApprovalStage) {
+		this.totalApprovalStage = totalApprovalStage;
+	}
 
-    public Integer getTotalApprovalStage() {
-        return totalApprovalStage;
-    }
+	public String getLastApproved() {
+		return lastApproved;
+	}
 
-    public void setTotalApprovalStage(Integer totalApprovalStage) {
-        this.totalApprovalStage = totalApprovalStage;
-    }
+	public void setLastApproved(String lastApproved) {
+		this.lastApproved = lastApproved;
+	}
 
-    public String getLastApproved() {
-        return lastApproved;
-    }
+	public List<Approval> getApprovals() {
+		return approvals;
+	}
 
-    public void setLastApproved(String lastApproved) {
-        this.lastApproved = lastApproved;
-    }
+	public void setApprovals(List<Approval> temApprovalDtos) {
+		this.approvals = temApprovalDtos;
+	}
 
-    public List<Approval> getApprovals() {
-        return approvals;
-    }
+	public Approval getApproval() {
+		return approval;
+	}
 
-    public void setApprovals(List<Approval> temApprovalDtos) {
-        this.approvals = temApprovalDtos;
-    }
+	public void setApproval(Approval tempPurchaserApprovalDto) {
+		this.approval = tempPurchaserApprovalDto;
+	}
 
-    public Approval getApproval() {
-        return approval;
-    }
+	public Budget getBudget() {
+		return budget;
+	}
 
-    public void setApproval(Approval tempPurchaserApprovalDto) {
-        this.approval = tempPurchaserApprovalDto;
-    }
+	public void setBudget(Budget budget) {
+		this.budget = budget;
+	}
 
-    public Budget getBudget() {
-        return budget;
-    }
+	public Department getDepartment() {
+		return department;
+	}
 
-    public void setBudget(Budget budget) {
-        this.budget = budget;
-    }
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
 
-    public Department getDepartment() {
-        return department;
-    }
+	public List<RequisitionDetail> getDetails() {
+		return details;
+	}
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
+	public void setDetails(List<RequisitionDetail> details) {
+		this.details = details;
+	}
 
-    public List<RequisitionDetail> getDetails() {
-        return details;
-    }
+	public List<String> getNextApprovals() {
+		return nextApprovals;
+	}
 
-    public void setDetails(List<RequisitionDetail> details) {
-        this.details = details;
-    }
+	public void setNextApprovals(List<String> nextApprovals) {
+		this.nextApprovals = nextApprovals;
+	}
 
-    public List<String> getNextApprovals() {
-        return nextApprovals;
-    }
+	public Approval getPurchaser() {
+		return purchaser;
+	}
 
-    public void setNextApprovals(List<String> nextApprovals) {
-        this.nextApprovals = nextApprovals;
-    }
-
-    public Approval getPurchaser() {
-        return purchaser;
-    }
-
-    public void setPurchaser(Approval purchaser) {
-        this.purchaser = purchaser;
-    }
+	public void setPurchaser(Approval purchaser) {
+		this.purchaser = purchaser;
+	}
 
 }

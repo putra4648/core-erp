@@ -3,167 +3,141 @@ package id.putra.core_erp.modules.procurement.model;
 import java.math.BigInteger;
 import java.util.List;
 
-import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "items")
 public class Item extends BaseEntity {
-    @Id
-    @Column(name = "item_number", nullable = false)
-    private String itemNumber;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 
-    @Column(name = "price")
-    private BigInteger price;
+	@Column(name = "price")
+	private BigInteger price;
 
-    @Column(name = "description")
-    private String description;
+	@Column(name = "description")
+	private String description;
 
-    @Column(name = "status")
-    private String status;
+	@Column(name = "status")
+	private String status;
 
-    private String unit;
+	private String unit;
 
-    @ManyToOne
-    @JoinColumn(name = "supplier_id", referencedColumnName = "acc_no")
-    private Supplier supplier;
+	@Column(name = "other_supplier")
+	private String otherSupplier;
 
-    @Column(name = "other_supplier")
-    private String otherSupplier;
+	@Column(name = "gl_acc")
+	private String glAcc;
 
-    @Column(name = "gl_acc")
-    private String glAcc;
+	@Column(name = "item_image_path")
+	private String itemImagePath;
 
-    @Column(name = "item_image_path")
-    private String itemImagePath;
+	@Column(name = "docs_path")
+	private List<String> docsPath;
 
-    @Column(name = "docs_path")
-    private List<String> docsPath;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "measurement_id", referencedColumnName = "id")
+	private ItemMeasurement measurement;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "measurement_id", referencedColumnName = "id")
-    private ItemMeasurement measurement;
+	// @ManyToOne
+	// @JoinColumn(name = "category_id", referencedColumnName = "id")
+	// private Category category;
 
-    // @ManyToOne
-    // @JoinColumn(name = "category_id", referencedColumnName = "id")
-    // private Category category;
+	public String getImagePath() {
+		return this.itemImagePath;
+	}
 
-    public String getImagePath() {
-        return this.itemImagePath;
-    }
+	public List<String> getDocsPath() {
+		return this.docsPath;
+	}
 
-    public List<String> getDocsPath() {
-        return this.docsPath;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getItemNumber() {
-        return itemNumber;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setItemNumber(String itemNumber) {
-        this.itemNumber = itemNumber;
-    }
+	public BigInteger getPrice() {
+		return price;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setPrice(BigInteger price) {
+		this.price = price;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public BigInteger getPrice() {
-        return price;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setPrice(BigInteger price) {
-        this.price = price;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public String getOtherSupplier() {
+		return otherSupplier;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public void setOtherSupplier(String otherSupplier) {
+		this.otherSupplier = otherSupplier;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public String getGlAcc() {
+		return glAcc;
+	}
 
-    public Supplier getSupplier() {
-        return supplier;
-    }
+	public void setGlAcc(String glAcc) {
+		this.glAcc = glAcc;
+	}
 
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
-    }
+	public String getItemImagePath() {
+		return itemImagePath;
+	}
 
-    public String getOtherSupplier() {
-        return otherSupplier;
-    }
+	public void setItemImagePath(String itemImagePath) {
+		this.itemImagePath = itemImagePath;
+	}
 
-    public void setOtherSupplier(String otherSupplier) {
-        this.otherSupplier = otherSupplier;
-    }
+	public void setDocsPath(List<String> docsPath) {
+		this.docsPath = docsPath;
+	}
 
-    public String getGlAcc() {
-        return glAcc;
-    }
+	public ItemMeasurement getMeasurement() {
+		return measurement;
+	}
 
-    public void setGlAcc(String glAcc) {
-        this.glAcc = glAcc;
-    }
+	public void setMeasurement(ItemMeasurement measurement) {
+		this.measurement = measurement;
+	}
 
-    public String getItemImagePath() {
-        return itemImagePath;
-    }
+	// public Category getCategory() {
+	// return category;
+	// }
 
-    public void setItemImagePath(String itemImagePath) {
-        this.itemImagePath = itemImagePath;
-    }
+	// public void setCategory(Category category) {
+	// this.category = category;
+	// }
 
-    public void setDocsPath(List<String> docsPath) {
-        this.docsPath = docsPath;
-    }
+	public String getUnit() {
+		return unit;
+	}
 
-    public ItemMeasurement getMeasurement() {
-        return measurement;
-    }
-
-    public void setMeasurement(ItemMeasurement measurement) {
-        this.measurement = measurement;
-    }
-
-    // public Category getCategory() {
-    // return category;
-    // }
-
-    // public void setCategory(Category category) {
-    // this.category = category;
-    // }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 }

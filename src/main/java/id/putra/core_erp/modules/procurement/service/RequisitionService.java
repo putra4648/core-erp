@@ -27,126 +27,102 @@ import jakarta.transaction.Transactional;
 @Transactional(rollbackOn = { Exception.class })
 public class RequisitionService implements BaseService<Requisition> {
 
-    private final TransferRequestRepo transferRequestRepo;
-    private final RequisitionRepo requisitionRepo;
-    private final DepartmentRepo departmentRepo;
-    private final BudgetDetailRepo budgetDetailRepo;
-    private final Vertx vertx;
+	private final TransferRequestRepo transferRequestRepo;
+	private final RequisitionRepo requisitionRepo;
+	private final DepartmentRepo departmentRepo;
+	private final BudgetDetailRepo budgetDetailRepo;
+	private final Vertx vertx;
 
-    public RequisitionService(TransferRequestRepo transferRequestRepo, RequisitionRepo requisitionRepo,
-            DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo, Vertx vertx) {
-        this.transferRequestRepo = transferRequestRepo;
-        this.requisitionRepo = requisitionRepo;
-        this.departmentRepo = departmentRepo;
-        this.budgetDetailRepo = budgetDetailRepo;
-        this.vertx = vertx;
-    }
+	public RequisitionService(TransferRequestRepo transferRequestRepo, RequisitionRepo requisitionRepo,
+			DepartmentRepo departmentRepo, BudgetDetailRepo budgetDetailRepo, Vertx vertx) {
+		this.transferRequestRepo = transferRequestRepo;
+		this.requisitionRepo = requisitionRepo;
+		this.departmentRepo = departmentRepo;
+		this.budgetDetailRepo = budgetDetailRepo;
+		this.vertx = vertx;
+	}
 
-    public Boolean checkApprovalFlow(Requisition dto) {
-        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
-        String nrp = "";
+	public Boolean checkApprovalFlow(Requisition dto) {
+		Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.id);
+		String nrp = "";
 
-        if (reqOpt.isPresent()) {
-            boolean result = false;
-            if (reqOpt.get().getApprovals() != null) {
-                result = reqOpt.get().getApprovals().stream()
-                        .anyMatch(usr -> usr.getUsers() != null && usr.getUsers() != null
-                                && usr.getUsers().equalsIgnoreCase(nrp));
-            }
+		if (reqOpt.isPresent()) {
+			boolean result = false;
+			if (reqOpt.get().getApprovals() != null) {
+				result = reqOpt.get().getApprovals().stream().anyMatch(usr -> usr.getUsers() != null
+						&& usr.getUsers() != null && usr.getUsers().equalsIgnoreCase(nrp));
+			}
 
-            if (reqOpt.get().getApproval() != null
-                    && reqOpt.get().getApproval().getUsers() != null) {
-                result = !reqOpt.get().getApproval().getUsers().equalsIgnoreCase(nrp);
-            }
-            return result;
-        } else {
-            return false;
-        }
-    }
+			if (reqOpt.get().getApproval() != null && reqOpt.get().getApproval().getUsers() != null) {
+				result = !reqOpt.get().getApproval().getUsers().equalsIgnoreCase(nrp);
+			}
+			return result;
+		} else {
+			return false;
+		}
+	}
 
-    public ApprovalStatus checkStatusApprovalIsPermanent(Requisition dto) {
-        String nrp = "";
+	public ApprovalStatus checkStatusApprovalIsPermanent(Requisition dto) {
+		String nrp = "";
 
-        Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.getId());
-        if (reqOpt.isPresent()) {
-            ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
-            List<Approval> approvals = new ArrayList<>();
-            if (reqOpt.get().getApprovals() != null) {
-                approvals.addAll(reqOpt.get().getApprovals());
-            }
-            if (reqOpt.get().getApproval() != null) {
-                approvals.add(reqOpt.get().getApproval());
-            }
-            int index = 0;
-            for (int i = 0; i < approvals.size(); i++) {
-                if (approvals.get(i).getUsers() != null && approvals.get(i).getUsers() != null
-                        && approvals.get(i).getUsers().equalsIgnoreCase(nrp)) {
-                    index = i;
-                }
-            }
-            if (approvals.stream().anyMatch(
-                    data -> data.getUsers() != null && data.getUsers() != null
-                            && data.getUsers().equalsIgnoreCase(nrp))) {
-                if (approvals.stream().anyMatch(aprv -> aprv.getIsApprovalPermanent() != null)) {
-                    if (approvals.stream().anyMatch(
-                            data -> data.getUsers() != null && data.getUsers() != null
-                                    && data.getUsers().equalsIgnoreCase(nrp)
-                                    && Boolean.TRUE.equals(data.getIsApprovalPermanent()))) {
-                        result = ApprovalStatus.ALREADY_APPROVED;
-                    }
+		Optional<Requisition> reqOpt = requisitionRepo.findByIdOptional(dto.id);
+		if (reqOpt.isPresent()) {
+			ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
+			List<Approval> approvals = new ArrayList<>();
+			if (reqOpt.get().getApprovals() != null) {
+				approvals.addAll(reqOpt.get().getApprovals());
+			}
+			if (reqOpt.get().getApproval() != null) {
+				approvals.add(reqOpt.get().getApproval());
+			}
+			int index = 0;
+			for (int i = 0; i < approvals.size(); i++) {
+				if (approvals.get(i).getUsers() != null && approvals.get(i).getUsers() != null
+						&& approvals.get(i).getUsers().equalsIgnoreCase(nrp)) {
+					index = i;
+				}
+			}
+			if (approvals.stream().anyMatch(data -> data.getUsers() != null && data.getUsers() != null
+					&& data.getUsers().equalsIgnoreCase(nrp))) {
 
-                    if (approvals.stream().anyMatch(
-                            data -> data.getUsers() != null && data.getUsers() != null
-                                    && data.getUsers().equalsIgnoreCase(nrp)
-                                    && !Boolean.TRUE.equals(data.getIsApprovalPermanent()))
-                            && index == (reqOpt.get().getCurrentApprovalStage() != null
-                                    ? reqOpt.get().getCurrentApprovalStage()
-                                    : 0)) {
-                        result = ApprovalStatus.NEED_APPROVAL;
-                    }
+			}
+			return result;
+		} else {
+			throw new ModuleException("Requisition ID " + dto.id + " not found");
+		}
+	}
 
-                }
-            }
-            return result;
-        } else {
-            throw new ModuleException("Requisition ID " + dto.getId() + " not found");
-        }
-    }
+	public byte[] download(Requisition dto) throws IOException {
+		String filename = "";
 
-    public byte[] download(Requisition dto) throws IOException {
-        String filename = "";
+		Path path = Paths.get(AppFileUtil.getServerPath(), "data", "requisitions", filename);
+		return Files.readAllBytes(path);
 
-        Path path = Paths.get(AppFileUtil.getServerPath(), "data", "requisitions", filename);
-        return Files.readAllBytes(path);
+	}
 
-    }
+	@Override
+	public void save(Requisition entity) {
+		requisitionRepo.persist(entity);
+	}
 
-    public void add(Requisition entity) {
-        requisitionRepo.persist(entity);
-    }
+	@Override
+	public void update(Requisition entity) {
+		requisitionRepo.getEntityManager().merge(entity);
+	}
 
-    public void save(Requisition entity) {
-        requisitionRepo.persist(entity);
-    }
+	@Override
+	public void delete(Long id) {
+		requisitionRepo.deleteById(id);
+	}
 
-    public void update(Requisition entity) {
-        requisitionRepo.persist(entity);
-    }
+	@Override
+	public Requisition findById(Long id) {
+		return requisitionRepo.findById(id);
+	}
 
-    public void delete(Requisition entity) {
-        requisitionRepo.delete(entity);
-    }
-
-    public void delete(Long id) {
-        requisitionRepo.deleteById(id);
-    }
-
-    public Requisition findById(Long id) {
-        return requisitionRepo.findById(id);
-    }
-
-    public List<Requisition> findAll(Requisition r, Page p) {
-        return requisitionRepo.findAll().list();
-    }
+	@Override
+	public List<Requisition> findAll(Requisition r, Page p) {
+		return requisitionRepo.findAll().list();
+	}
 
 }

@@ -12,41 +12,35 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class PurchaseOrderService implements BaseService<PurchaseOrder> {
+	private final PurchaseOrderRepository purchaseOrderRepository;
 
-    private final PurchaseOrderRepository purchaseOrderRepository;
+	public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository) {
+		this.purchaseOrderRepository = purchaseOrderRepository;
+	}
 
-    public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository) {
-        this.purchaseOrderRepository = purchaseOrderRepository;
-    }
+	@Override
+	public void save(PurchaseOrder entity) {
+		purchaseOrderRepository.persist(entity);
+	}
 
-    public void save(PurchaseOrder entity) {
-        purchaseOrderRepository.persist(entity);
-    }
+	@Override
+	public void update(PurchaseOrder dto) {
+		purchaseOrderRepository.getEntityManager().merge(dto);
+	}
 
-    public PurchaseOrder create(PurchaseOrder dto) {
-        purchaseOrderRepository.persist(dto);
-        return dto;
-    }
+	@Override
+	public void delete(Long id) {
+		purchaseOrderRepository.deleteById(id);
+	}
 
-    public void update(PurchaseOrder dto) {
-        purchaseOrderRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public PurchaseOrder findById(Long id) {
+		return purchaseOrderRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        purchaseOrderRepository.deleteById(id);
-    }
-
-    public PurchaseOrder findById(Long id) {
-        return purchaseOrderRepository.findById(id);
-    }
-
-    public Iterable<PurchaseOrder> findAll(PurchaseOrder po, Page p) {
-        return purchaseOrderRepository.findAll().list();
-    }
-
-    public List<PurchaseOrder> getAll(PurchaseOrder dto, Page page) {
-        String poNumber = dto.getPoNumber() == null ? "" : dto.getPoNumber();
-        return purchaseOrderRepository.find("poNumber LIKE ?1", "%" + poNumber + "%").page(page).list();
-    }
+	@Override
+	public List<PurchaseOrder> findAll(PurchaseOrder po, Page p) {
+		return purchaseOrderRepository.findAll().list();
+	}
 
 }

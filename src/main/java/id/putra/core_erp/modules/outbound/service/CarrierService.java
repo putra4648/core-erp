@@ -1,49 +1,41 @@
 package id.putra.core_erp.modules.outbound.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
+import java.util.List;
 
 import id.putra.core_erp.modules.outbound.model.Carrier;
 import id.putra.core_erp.modules.outbound.repository.CarrierRepository;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 
-@ApplicationScoped
-@Transactional
 public class CarrierService implements BaseService<Carrier> {
+	private final CarrierRepository carrierRepository;
 
-    private final CarrierRepository carrierRepository;
+	public CarrierService(CarrierRepository carrierRepository) {
+		this.carrierRepository = carrierRepository;
+	}
 
-    public CarrierService(CarrierRepository carrierRepository) {
-        this.carrierRepository = carrierRepository;
-    }
+	@Override
+	public void save(Carrier entity) {
+		carrierRepository.persist(entity);
+	}
 
-    public void save(Carrier entity) {
-        carrierRepository.persist(entity);
-    }
+	@Override
+	public void update(Carrier dto) {
+		carrierRepository.getEntityManager().merge(dto);
+	}
 
-    public Carrier create(Carrier dto) {
-        carrierRepository.persist(dto);
-        return dto;
-    }
+	@Override
+	public void delete(Long id) {
+		carrierRepository.deleteById(id);
+	}
 
-    public void update(Carrier dto) {
-        carrierRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public Carrier findById(Long id) {
+		return carrierRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        carrierRepository.deleteById(id);
-    }
-
-    public Carrier getById(Long id) {
-        return carrierRepository.findById(id);
-    }
-
-    public Carrier findById(Long id) {
-        return carrierRepository.findById(id);
-    }
-
-    public Iterable<Carrier> findAll(Carrier c, Page p) {
-        return carrierRepository.findAll().list();
-    }
+	@Override
+	public List<Carrier> findAll(Carrier c, Page p) {
+		return carrierRepository.findAll().list();
+	}
 }

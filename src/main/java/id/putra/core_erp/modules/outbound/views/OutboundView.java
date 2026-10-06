@@ -1,5 +1,8 @@
 package id.putra.core_erp.modules.outbound.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -28,133 +31,138 @@ import io.quarkus.security.Authenticated;
 @Authenticated
 public class OutboundView extends VerticalLayout {
 
-    private final SalesOrderService salesOrderService;
-    private final Grid<SalesOrder> grid = new Grid<>();
-    private final TextField searchField = new TextField();
+	private final SalesOrderService salesOrderService;
+	private final Grid<SalesOrder> grid = new Grid<>();
+	private final TextField searchField = new TextField();
 
-    public OutboundView(SalesOrderService salesOrderService) {
-        this.salesOrderService = salesOrderService;
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+	public OutboundView(SalesOrderService salesOrderService) {
+		this.salesOrderService = salesOrderService;
+		setSizeFull();
+		setPadding(true);
+		setSpacing(true);
 
-        addHeader();
-        addToolbar();
-        configureGrid();
-        add(grid);
+		addHeader();
+		addToolbar();
+		configureGrid();
+		add(grid);
 
-        refreshData();
-    }
+		refreshData();
+	}
 
-    private void addHeader() {
-        H2 title = new H2("Outbound Management");
-        title.addClassNames("m-0", "text-xl", "font-bold");
-        Paragraph desc = new Paragraph("Manage customer sales orders, order picking, packing, and shipping.");
-        desc.addClassNames("text-secondary", "m-0");
-        add(title, desc);
-    }
+	private void addHeader() {
+		H2 title = new H2("Outbound Management");
+		title.addClassNames("m-0", "text-xl", "font-bold");
+		Paragraph desc = new Paragraph("Manage customer sales orders, order picking, packing, and shipping.");
+		desc.addClassNames("text-secondary", "m-0");
+		add(title, desc);
+	}
 
-    private void addToolbar() {
-        searchField.setPlaceholder("Search Sales Order number...");
-        searchField.setClearButtonVisible(true);
-        searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        searchField.addValueChangeListener(e -> refreshData());
+	private void addToolbar() {
+		searchField.setPlaceholder("Search Sales Order number...");
+		searchField.setClearButtonVisible(true);
+		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+		searchField.addValueChangeListener(e -> refreshData());
 
-        Button addButton = new Button("New Outbound Order", VaadinIcon.PLUS.create(),
-                e -> openOrderDialog(new SalesOrder()));
-        addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		Button addButton = new Button("New Outbound Order", VaadinIcon.PLUS.create(),
+				e -> openOrderDialog(new SalesOrder()));
+		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
+		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
 
-        HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
-        toolbar.setWidthFull();
-        toolbar.setFlexGrow(1, searchField);
-        add(toolbar);
-    }
+		HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
+		toolbar.setWidthFull();
+		toolbar.setFlexGrow(1, searchField);
+		add(toolbar);
+	}
 
-    private void configureGrid() {
-        grid.setSizeFull();
-        grid.addColumn(so -> so.getSoNumber() != null ? so.getSoNumber() : "").setHeader("SO Number").setAutoWidth(true)
-                .setSortable(true);
-        grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date")
-                .setAutoWidth(true);
-        grid.addColumn(so -> so.getCustomer().getId() != null ? "Customer #" + so.getCustomer().getId() : "-")
-                .setHeader("Customer").setFlexGrow(1);
+	private void configureGrid() {
+		grid.setSizeFull();
+		grid.addColumn(so -> so.getSoNumber() != null ? so.getSoNumber() : "").setHeader("SO Number").setAutoWidth(true)
+				.setSortable(true);
+		grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date")
+				.setAutoWidth(true);
+		grid.addColumn(so -> so.getCustomer().id != null ? "Customer #" + so.getCustomer().id : "-")
+				.setHeader("Customer").setFlexGrow(1);
 
-        grid.addComponentColumn(so -> {
-            String status = so.getStatus() != null ? so.getStatus() : "PENDING";
-            Span badge = new Span(status);
-            badge.getElement().getThemeList().add("badge " + ("SHIPPED".equals(status) ? "success" : "contrast"));
-            return badge;
-        }).setHeader("Status").setAutoWidth(true);
+		grid.addComponentColumn(so -> {
+			String status = so.getStatus() != null ? so.getStatus() : "PENDING";
+			Span badge = new Span(status);
+			badge.getElement().getThemeList().add("badge " + ("SHIPPED".equals(status) ? "success" : "contrast"));
+			return badge;
+		}).setHeader("Status").setAutoWidth(true);
 
-        grid.addComponentColumn(so -> {
-            Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openOrderDialog(so));
-            editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		grid.addComponentColumn(so -> {
+			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openOrderDialog(so));
+			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-            Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(so));
-            deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(so));
+			deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
 
-            return new HorizontalLayout(editBtn, deleteBtn);
-        }).setHeader("Actions").setAutoWidth(true);
-    }
+			return new HorizontalLayout(editBtn, deleteBtn);
+		}).setHeader("Actions").setAutoWidth(true);
+	}
 
-    private void refreshData() {
-        grid.setItems(salesOrderService.getAll(searchField.getValue(), Page.ofSize(100)));
-    }
+	private void refreshData() {
+		SalesOrder entity = new SalesOrder();
+		entity.setSoNumber(searchField.getValue());
+		List<SalesOrder> res = new ArrayList<>();
+		salesOrderService.findAll(entity, Page.ofSize(100)).forEach(res::add);
 
-    private void openOrderDialog(SalesOrder order) {
-        boolean isEdit = order.getId() != null;
-        Dialog dialog = new Dialog(isEdit ? "Edit Outbound Order" : "New Outbound Order");
+		grid.setItems(res);
+	}
 
-        TextField soNumField = new TextField("Sales Order Number");
-        soNumField.setValue(order.getSoNumber() != null ? order.getSoNumber() : "");
+	private void openOrderDialog(SalesOrder order) {
+		boolean isEdit = order.id != null;
+		Dialog dialog = new Dialog(isEdit ? "Edit Outbound Order" : "New Outbound Order");
 
-        FormLayout form = new FormLayout(soNumField);
-        dialog.add(form);
+		TextField soNumField = new TextField("Sales Order Number");
+		soNumField.setValue(order.getSoNumber() != null ? order.getSoNumber() : "");
 
-        Button saveBtn = new Button("Save Order", e -> {
-            order.setSoNumber(soNumField.getValue());
-            try {
-                if (isEdit) {
-                    salesOrderService.update(order);
-                } else {
-                    salesOrderService.save(order);
-                }
-                Notification.show("Sales order saved successfully", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                dialog.close();
-                refreshData();
-            } catch (Exception ex) {
-                Notification.show("Failed to save order: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+		FormLayout form = new FormLayout(soNumField);
+		dialog.add(form);
 
-        dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), saveBtn);
-        dialog.open();
-    }
+		Button saveBtn = new Button("Save Order", e -> {
+			order.setSoNumber(soNumField.getValue());
+			try {
+				if (isEdit) {
+					salesOrderService.update(order);
+				} else {
+					salesOrderService.save(order);
+				}
+				Notification.show("Sales order saved successfully", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				dialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to save order: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-    private void confirmDelete(SalesOrder order) {
-        Dialog confirmDialog = new Dialog("Delete Outbound Order");
-        confirmDialog.add(new Paragraph("Are you sure you want to delete sales order '" + order.getSoNumber() + "'?"));
+		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), saveBtn);
+		dialog.open();
+	}
 
-        Button deleteBtn = new Button("Delete", e -> {
-            try {
-                salesOrderService.delete(order.getId());
-                Notification.show("Sales order deleted successfully", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                confirmDialog.close();
-                refreshData();
-            } catch (Exception ex) {
-                Notification.show("Failed to delete order: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-        });
-        deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+	private void confirmDelete(SalesOrder order) {
+		Dialog confirmDialog = new Dialog("Delete Outbound Order");
+		confirmDialog.add(new Paragraph("Are you sure you want to delete sales order '" + order.getSoNumber() + "'?"));
 
-        confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
-        confirmDialog.open();
-    }
+		Button deleteBtn = new Button("Delete", e -> {
+			try {
+				salesOrderService.delete(order.id);
+				Notification.show("Sales order deleted successfully", 3000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				confirmDialog.close();
+				refreshData();
+			} catch (Exception ex) {
+				Notification.show("Failed to delete order: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
+		});
+		deleteBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+
+		confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
+		confirmDialog.open();
+	}
 }

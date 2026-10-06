@@ -11,135 +11,123 @@ import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table
 public class Quotation extends BaseEntity {
 
-    @Id
-    private Long id;
+	@Column(name = "due_date")
+	private Date dueDate;
 
-    @Column(name = "due_date")
-    private Date dueDate;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "suppliers", columnDefinition = "jsonb")
+	private List<Supplier> suppliers;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "suppliers", columnDefinition = "jsonb")
-    private List<Supplier> suppliers;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "details", columnDefinition = "jsonb")
+	private List<RequisitionDetail> details;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "details", columnDefinition = "jsonb")
-    private List<RequisitionDetail> details;
+	@Column(name = "note")
+	private String note;
 
-    @Column(name = "note")
-    private String note;
+	@Column(name = "status")
+	private String status;
 
-    @Column(name = "status")
-    private String status;
+	@Column(name = "reject_note")
+	private String rejectNote;
 
-    @Column(name = "reject_note")
-    private String rejectNote;
+	@Column(name = "current_approval_stage", columnDefinition = "integer default 0")
+	private Integer currentApprovalStage;
 
-    @Column(name = "current_approval_stage", columnDefinition = "integer default 0")
-    private Integer currentApprovalStage;
+	@Column(name = "total_approval_stage")
+	private Integer totalApprovalStage;
 
-    @Column(name = "total_approval_stage")
-    private Integer totalApprovalStage;
+	@Column(name = "last_approved")
+	private String lastApproved;
 
-    @Column(name = "last_approved")
-    private String lastApproved;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "temp_approvals", columnDefinition = "jsonb")
+	private List<Approval> temApprovals;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "temp_approvals", columnDefinition = "jsonb")
-    private List<Approval> temApprovals;
+	public Date getDueDate() {
+		return dueDate;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setDueDate(Date dueDate) {
+		this.dueDate = dueDate;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public List<Supplier> getSuppliers() {
+		return suppliers;
+	}
 
-    public Date getDueDate() {
-        return dueDate;
-    }
+	public void setSuppliers(List<Supplier> suppliers) {
+		this.suppliers = suppliers;
+	}
 
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
+	public List<RequisitionDetail> getDetails() {
+		return details;
+	}
 
-    public List<Supplier> getSuppliers() {
-        return suppliers;
-    }
+	public void setDetails(List<RequisitionDetail> details) {
+		this.details = details;
+	}
 
-    public void setSuppliers(List<Supplier> suppliers) {
-        this.suppliers = suppliers;
-    }
+	public String getNote() {
+		return note;
+	}
 
-    public List<RequisitionDetail> getDetails() {
-        return details;
-    }
+	public void setNote(String note) {
+		this.note = note;
+	}
 
-    public void setDetails(List<RequisitionDetail> details) {
-        this.details = details;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public String getNote() {
-        return note;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public void setNote(String note) {
-        this.note = note;
-    }
+	public String getRejectNote() {
+		return rejectNote;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public void setRejectNote(String rejectNote) {
+		this.rejectNote = rejectNote;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public Integer getCurrentApprovalStage() {
+		return currentApprovalStage;
+	}
 
-    public String getRejectNote() {
-        return rejectNote;
-    }
+	public void setCurrentApprovalStage(Integer currentApprovalStage) {
+		this.currentApprovalStage = currentApprovalStage;
+	}
 
-    public void setRejectNote(String rejectNote) {
-        this.rejectNote = rejectNote;
-    }
+	public Integer getTotalApprovalStage() {
+		return totalApprovalStage;
+	}
 
-    public Integer getCurrentApprovalStage() {
-        return currentApprovalStage;
-    }
+	public void setTotalApprovalStage(Integer totalApprovalStage) {
+		this.totalApprovalStage = totalApprovalStage;
+	}
 
-    public void setCurrentApprovalStage(Integer currentApprovalStage) {
-        this.currentApprovalStage = currentApprovalStage;
-    }
+	public String getLastApproved() {
+		return lastApproved;
+	}
 
-    public Integer getTotalApprovalStage() {
-        return totalApprovalStage;
-    }
+	public void setLastApproved(String lastApproved) {
+		this.lastApproved = lastApproved;
+	}
 
-    public void setTotalApprovalStage(Integer totalApprovalStage) {
-        this.totalApprovalStage = totalApprovalStage;
-    }
+	public List<Approval> getTemApprovals() {
+		return temApprovals;
+	}
 
-    public String getLastApproved() {
-        return lastApproved;
-    }
-
-    public void setLastApproved(String lastApproved) {
-        this.lastApproved = lastApproved;
-    }
-
-    public List<Approval> getTemApprovals() {
-        return temApprovals;
-    }
-
-    public void setTemApprovals(List<Approval> temApprovalDtos) {
-        this.temApprovals = temApprovalDtos;
-    }
+	public void setTemApprovals(List<Approval> temApprovalDtos) {
+		this.temApprovals = temApprovalDtos;
+	}
 
 }

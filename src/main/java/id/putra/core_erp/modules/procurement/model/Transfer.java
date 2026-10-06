@@ -12,183 +12,168 @@ import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "transfer_request")
 public class Transfer extends BaseEntity {
+	@Column(name = "title")
+	private String title;
 
-    @Id
-    private Long id;
+	@Column(name = "due_date")
 
-    @Column(name = "title")
-    private String title;
+	private Date dueDate;
 
-    @Column(name = "due_date")
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "suppliers", columnDefinition = "jsonb")
+	private List<Supplier> suppliers;
 
-    private Date dueDate;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "details", columnDefinition = "jsonb")
+	private List<TransferDetail> details;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "suppliers", columnDefinition = "jsonb")
-    private List<Supplier> suppliers;
+	@Column(name = "note")
+	private String note;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "details", columnDefinition = "jsonb")
-    private List<TransferDetail> details;
+	@Column(name = "status")
+	private String status;
 
-    @Column(name = "note")
-    private String note;
+	@Column(name = "reject_note")
+	private String rejectNote;
 
-    @Column(name = "status")
-    private String status;
+	@Column(name = "current_approval_stage", nullable = false, columnDefinition = "integer default 0")
+	private Integer currentApprovalStage;
 
-    @Column(name = "reject_note")
-    private String rejectNote;
+	@Column(name = "total_approval_stage")
+	private Integer totalApprovalStage;
 
-    @Column(name = "current_approval_stage", nullable = false, columnDefinition = "integer default 0")
-    private Integer currentApprovalStage;
+	@Column(name = "last_approved")
+	private String lastApproved;
 
-    @Column(name = "total_approval_stage")
-    private Integer totalApprovalStage;
+	@ManyToOne
+	@JoinColumn(name = "dept_id", referencedColumnName = "dept_number")
+	private Department department;
 
-    @Column(name = "last_approved")
-    private String lastApproved;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "temp_approvals", columnDefinition = "jsonb")
+	private List<Approval> temApprovals;
 
-    @ManyToOne
-    @JoinColumn(name = "dept_id", referencedColumnName = "dept_number")
-    private Department department;
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
+	private Approval tempPurchaserApproval;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "temp_approvals", columnDefinition = "jsonb")
-    private List<Approval> temApprovals;
+	private String filename;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "temp_purchaser_approval", columnDefinition = "jsonb")
-    private Approval tempPurchaserApproval;
+	public String getFilename() {
+		return filename;
+	}
 
-    private String filename;
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 
-    public String getFilename() {
-        return filename;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Date getDueDate() {
+		return dueDate;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setDueDate(Date dueDate) {
+		this.dueDate = dueDate;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public List<Supplier> getSuppliers() {
+		return suppliers;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setSuppliers(List<Supplier> suppliers) {
+		this.suppliers = suppliers;
+	}
 
-    public Date getDueDate() {
-        return dueDate;
-    }
+	public List<TransferDetail> getDetails() {
+		return details;
+	}
 
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
+	public void setDetails(List<TransferDetail> details) {
+		this.details = details;
+	}
 
-    public List<Supplier> getSuppliers() {
-        return suppliers;
-    }
+	public String getNote() {
+		return note;
+	}
 
-    public void setSuppliers(List<Supplier> suppliers) {
-        this.suppliers = suppliers;
-    }
+	public void setNote(String note) {
+		this.note = note;
+	}
 
-    public List<TransferDetail> getDetails() {
-        return details;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setDetails(List<TransferDetail> details) {
-        this.details = details;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public String getNote() {
-        return note;
-    }
+	public String getRejectNote() {
+		return rejectNote;
+	}
 
-    public void setNote(String note) {
-        this.note = note;
-    }
+	public void setRejectNote(String rejectNote) {
+		this.rejectNote = rejectNote;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public Integer getCurrentApprovalStage() {
+		return currentApprovalStage;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setCurrentApprovalStage(Integer currentApprovalStage) {
+		this.currentApprovalStage = currentApprovalStage;
+	}
 
-    public String getRejectNote() {
-        return rejectNote;
-    }
+	public Integer getTotalApprovalStage() {
+		return totalApprovalStage;
+	}
 
-    public void setRejectNote(String rejectNote) {
-        this.rejectNote = rejectNote;
-    }
+	public void setTotalApprovalStage(Integer totalApprovalStage) {
+		this.totalApprovalStage = totalApprovalStage;
+	}
 
-    public Integer getCurrentApprovalStage() {
-        return currentApprovalStage;
-    }
+	public String getLastApproved() {
+		return lastApproved;
+	}
 
-    public void setCurrentApprovalStage(Integer currentApprovalStage) {
-        this.currentApprovalStage = currentApprovalStage;
-    }
+	public void setLastApproved(String lastApproved) {
+		this.lastApproved = lastApproved;
+	}
 
-    public Integer getTotalApprovalStage() {
-        return totalApprovalStage;
-    }
+	public Department getDepartment() {
+		return department;
+	}
 
-    public void setTotalApprovalStage(Integer totalApprovalStage) {
-        this.totalApprovalStage = totalApprovalStage;
-    }
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
 
-    public String getLastApproved() {
-        return lastApproved;
-    }
+	public List<Approval> getTemApprovals() {
+		return temApprovals;
+	}
 
-    public void setLastApproved(String lastApproved) {
-        this.lastApproved = lastApproved;
-    }
+	public void setTemApprovals(List<Approval> temApprovalDtos) {
+		this.temApprovals = temApprovalDtos;
+	}
 
-    public Department getDepartment() {
-        return department;
-    }
+	public Approval getTempPurchaserApproval() {
+		return tempPurchaserApproval;
+	}
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public List<Approval> getTemApprovals() {
-        return temApprovals;
-    }
-
-    public void setTemApprovals(List<Approval> temApprovalDtos) {
-        this.temApprovals = temApprovalDtos;
-    }
-
-    public Approval getTempPurchaserApproval() {
-        return tempPurchaserApproval;
-    }
-
-    public void setTempPurchaserApproval(Approval tempPurchaserApprovalDto) {
-        this.tempPurchaserApproval = tempPurchaserApprovalDto;
-    }
+	public void setTempPurchaserApproval(Approval tempPurchaserApprovalDto) {
+		this.tempPurchaserApproval = tempPurchaserApprovalDto;
+	}
 
 }

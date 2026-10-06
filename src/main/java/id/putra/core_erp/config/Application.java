@@ -10,7 +10,7 @@ import io.quarkus.runtime.annotations.QuarkusMain;
 @StyleSheet(Lumo.STYLESHEET)
 @QuarkusMain
 public class Application implements AppShellConfigurator {
-    public static void main(String... args) {
-        Quarkus.run(args);
-    }
+	public static void main(String... args) {
+		Quarkus.run(args);
+	}
 }

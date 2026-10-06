@@ -10,134 +10,112 @@ import id.putra.core_erp.modules.procurement.model.Requisition;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "mst_depts")
+@Table
 public class Department extends BaseEntity {
 
-    @Id
-    private Long id;
+	@Column(name = "dept_number", nullable = false)
+	private String code;
 
-    @Column(name = "dept_number", nullable = false)
-    private String code;
+	@Column(name = "dept_name", nullable = false)
+	private String name;
 
-    @Column(name = "dept_name", nullable = false)
-    private String name;
+	@Column(name = "status")
+	private Status status;
 
-    @Column(name = "status")
-    private Status status;
+	@Column(name = "dept_manager_nrp")
+	private String deptManager;
 
-    @Column(name = "dept_manager_nrp")
-    private String deptManager;
+	// @Column(name = "other_managers")
+	// private List<String> otherManager;
 
-    // @Column(name = "other_managers")
-    // private List<String> otherManager;
+	@Column(name = "dept_purchaser_nrp")
+	private String deptPurchaser;
 
-    @Column(name = "dept_purchaser_nrp")
-    private String deptPurchaser;
+	@Column(name = "approval_president_nrp")
+	private String approvalPresident;
 
-    @Column(name = "approval_president_nrp")
-    private String approvalPresident;
+	@OneToMany(mappedBy = "department")
+	private List<Budget> budgets;
 
-    @OneToMany(mappedBy = "department")
-    private List<Budget> budgets;
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Approval> approvals;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Approval> approvals;
+	@OneToMany(mappedBy = "department")
+	private List<Requisition> requisitions;
 
-    @OneToMany(mappedBy = "department")
-    private List<Requisition> requisitions;
+	public String getCode() {
+		return code;
+	}
 
-    public Department() {
+	public void setCode(String deptNumber) {
+		this.code = deptNumber;
+	}
 
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Department(Long id, String code, String name) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-    }
+	public void setName(String deptName) {
+		this.name = deptName;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Status getStatus() {
+		return status;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public String getDeptManager() {
+		return deptManager;
+	}
 
-    public void setCode(String deptNumber) {
-        this.code = deptNumber;
-    }
+	public void setDeptManager(String deptManager) {
+		this.deptManager = deptManager;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getDeptPurchaser() {
+		return deptPurchaser;
+	}
 
-    public void setName(String deptName) {
-        this.name = deptName;
-    }
+	public void setDeptPurchaser(String deptPurchaser) {
+		this.deptPurchaser = deptPurchaser;
+	}
 
-    public Status getStatus() {
-        return status;
-    }
+	public String getApprovalPresident() {
+		return approvalPresident;
+	}
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+	public void setApprovalPresident(String approvalPresident) {
+		this.approvalPresident = approvalPresident;
+	}
 
-    public String getDeptManager() {
-        return deptManager;
-    }
+	public List<Budget> getBudgets() {
+		return budgets;
+	}
 
-    public void setDeptManager(String deptManager) {
-        this.deptManager = deptManager;
-    }
+	public void setBudgets(List<Budget> budgets) {
+		this.budgets = budgets;
+	}
 
-    public String getDeptPurchaser() {
-        return deptPurchaser;
-    }
+	public List<Approval> getApprovals() {
+		return approvals;
+	}
 
-    public void setDeptPurchaser(String deptPurchaser) {
-        this.deptPurchaser = deptPurchaser;
-    }
+	public void setApprovals(List<Approval> approvals) {
+		this.approvals = approvals;
+	}
 
-    public String getApprovalPresident() {
-        return approvalPresident;
-    }
+	public List<Requisition> getRequisitions() {
+		return requisitions;
+	}
 
-    public void setApprovalPresident(String approvalPresident) {
-        this.approvalPresident = approvalPresident;
-    }
-
-    public List<Budget> getBudgets() {
-        return budgets;
-    }
-
-    public void setBudgets(List<Budget> budgets) {
-        this.budgets = budgets;
-    }
-
-    public List<Approval> getApprovals() {
-        return approvals;
-    }
-
-    public void setApprovals(List<Approval> approvals) {
-        this.approvals = approvals;
-    }
-
-    public List<Requisition> getRequisitions() {
-        return requisitions;
-    }
-
-    public void setRequisitions(List<Requisition> requisitions) {
-        this.requisitions = requisitions;
-    }
+	public void setRequisitions(List<Requisition> requisitions) {
+		this.requisitions = requisitions;
+	}
 }

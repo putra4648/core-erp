@@ -1,55 +1,46 @@
 package id.putra.core_erp.modules.outbound.service;
 
-import id.putra.core_erp.service.BaseService;
-import io.quarkus.panache.common.Page;
-
 import java.util.List;
 
 import id.putra.core_erp.modules.outbound.model.PickingTask;
 import id.putra.core_erp.modules.outbound.repository.PickingTaskRepository;
+import id.putra.core_erp.service.BaseService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 @Transactional
 public class PickingService implements BaseService<PickingTask> {
+	private final PickingTaskRepository pickingTaskRepository;
 
-    private final PickingTaskRepository pickingTaskRepository;
+	public PickingService(PickingTaskRepository pickingTaskRepository) {
+		this.pickingTaskRepository = pickingTaskRepository;
+	}
 
-    public PickingService(PickingTaskRepository pickingTaskRepository) {
-        this.pickingTaskRepository = pickingTaskRepository;
-    }
+	@Override
+	public void save(PickingTask entity) {
+		pickingTaskRepository.persist(entity);
+	}
 
-    public void save(PickingTask entity) {
-        pickingTaskRepository.persist(entity);
-    }
+	@Override
+	public void update(PickingTask dto) {
+		pickingTaskRepository.getEntityManager().merge(dto);
+	}
 
-    public PickingTask create(PickingTask dto) {
-        pickingTaskRepository.persist(dto);
-        return dto;
-    }
+	@Override
+	public void delete(Long id) {
+		pickingTaskRepository.deleteById(id);
+	}
 
-    public void update(PickingTask dto) {
-        pickingTaskRepository.getEntityManager().merge(dto);
-    }
+	@Override
+	public PickingTask findById(Long id) {
+		return pickingTaskRepository.findById(id);
+	}
 
-    public void delete(Long id) {
-        pickingTaskRepository.deleteById(id);
-    }
+	@Override
+	public List<PickingTask> findAll(PickingTask s, Page p) {
+		return pickingTaskRepository.findAll().list();
+	}
 
-    public PickingTask getById(Long id) {
-        return pickingTaskRepository.findById(id);
-    }
-
-    public PickingTask findById(Long id) {
-        return pickingTaskRepository.findById(id);
-    }
-
-    public Iterable<PickingTask> findAll(PickingTask s, Page p) {
-        return pickingTaskRepository.findAll().list();
-    }
-
-    public List<PickingTask> getAll(PickingTask filter) {
-        return pickingTaskRepository.findAll().list();
-    }
 }

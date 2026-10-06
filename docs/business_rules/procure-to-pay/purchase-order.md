@@ -1,11 +1,30 @@
-| Field                   | Type   | Constraint                    | Business Rule                                        |
-|-------------------------|--------|-------------------------------|-------------------------------------------------------|
-| id                      | Long   | Auto-increment, PK            | Primary identifier                                    |
-| po_number               | String | Unique, Pattern: [A-Z0-9]+    | Nomor PO wajib unik per company                       |
-| supplier_id             | Long   | Required, FK                  | Wajib terkait ke supplier                            |
-| budget_id               | Long   | Nullable, FK                  | Budget line untuk tracking pengeluaran               |
-| status                  | Enum   | Required                      | Status wajib sesuai lifecycle (SENT → DELIVERED → CLOSED)│
+# Business Rules: PurchaseOrder & PurchaseOrderLine
 
-✅ Validation:
-- PO dapat dibuat setelah approval dari requisition
-- Supplier reference harus diisi jika ada PO supplier lain
+## Entity Definition: PurchaseOrder
+Binding commercial agreement issued to a supplier committing purchase of specified products at agreed prices.
+
+| Field                | Type                     | Constraint           | Business Rule                                                                |
+|:---------------------|:-------------------------|:---------------------|:-----------------------------------------------------------------------------|
+| `id`                 | Long                     | PK, Auto-increment   | Primary identifier inherited from `BaseEntity`.                              |
+| `poNumber`           | String                   | Required, Unique     | Generated PO identifier (e.g. `PO-2025-0001`).                               |
+| `orderDate`          | Date                     | Required             | Issuance timestamp.                                                          |
+| `status`             | OrderStatus (Enum)       | Required             | `DRAFT`, `SUBMITTED`, `CONFIRMED`, `PROCESSING`, `SHIPPED`, `DELIVERED`, etc.|
+| `supplier`           | Supplier                 | ManyToOne, Required  | Selected vendor entity.                                                      |
+| `purchaseOrderLines` | List<PurchaseOrderLine>  | OneToMany, Cascade   | Ordered product items and quantities.                                        |
+| `receivings`         | List<Receiving>          | OneToMany            | Inbound warehouse goods receipt records linked to this PO.                   |
+
+## Entity Definition: PurchaseOrderLine
+Line-item quantity and unit cost agreed on the PO.
+
+| Field           | Type          | Constraint         | Business Rule                                            |
+|:----------------|:--------------|:-------------------|:---------------------------------------------------------|
+| `id`            | Long          | PK, Auto-increment | Primary identifier inherited from `BaseEntity`.          |
+| `product`       | Product       | ManyToOne, Required| Master product catalog entity.                           |
+| `quantity`      | Integer       | Min 1, Required    | Ordered units count.                                     |
+| `price`         | BigDecimal    | Min 0.00, Required | Unit purchase price agreed.                              |
+| `purchaseOrder` | PurchaseOrder | ManyToOne          | Parent PO.                                               |
+
+## ✅ Validation & Operational Rules
+- PO cannot be dispatched to a vendor without active supplier and $\ge 1$ line item.
+- Receiving orders validate incoming delivery quantities against `PurchaseOrderLine.quantity`.
+- Once all lines are received, PO transitions to `DELIVERED` or `CLOSED`.

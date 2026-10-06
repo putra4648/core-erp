@@ -3,123 +3,99 @@ package id.putra.core_erp.modules.inbound.model;
 import java.math.BigDecimal;
 import java.sql.Date;
 
+import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.product.model.Product;
-import id.putra.core_erp.modules.warehouse.model.Location;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table
-public class ReceivingLine {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Date receivedDate;
-    private String status;
-    private String lotBatch;
-    private Date expiryDate;
+public class ReceivingLine extends BaseEntity {
 
-    @Column(precision = 12, scale = 2)
-    private BigDecimal qtyReceived;
+	private Date receivedDate;
+	private String status;
+	private String lotBatch;
+	private Date expiryDate;
 
-    @Column(precision = 12, scale = 2, name = "ordered_qty")
-    private BigDecimal qty;
+	@Column(precision = 12, scale = 2)
+	private BigDecimal qtyReceived;
 
-    @ManyToOne
-    @JoinColumn(name = "receiving_id")
-    private Receiving receiving;
+	@Column(precision = 12, scale = 2, name = "ordered_qty")
+	private BigDecimal qty;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+	@ManyToOne
+	@JoinColumn(name = "receiving_id")
+	private Receiving receiving;
 
-    @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Location location;
+	@ManyToOne
+	@JoinColumn(name = "product_id")
+	private Product product;
 
-    public Long getId() {
-        return id;
-    }
+	public Date getReceivedDate() {
+		return receivedDate;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setReceivedDate(Date receivedDate) {
+		this.receivedDate = receivedDate;
+	}
 
-    public Date getReceivedDate() {
-        return receivedDate;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setReceivedDate(Date receivedDate) {
-        this.receivedDate = receivedDate;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getLotBatch() {
+		return lotBatch;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setLotBatch(String lotBatch) {
+		this.lotBatch = lotBatch;
+	}
 
-    public String getLotBatch() {
-        return lotBatch;
-    }
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
 
-    public void setLotBatch(String lotBatch) {
-        this.lotBatch = lotBatch;
-    }
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
+	}
 
-    public Date getExpiryDate() {
-        return expiryDate;
-    }
+	public BigDecimal getQtyReceived() {
+		return qtyReceived;
+	}
 
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
+	public void setQtyReceived(BigDecimal qtyReceived) {
+		this.qtyReceived = qtyReceived;
+	}
 
-    public BigDecimal getQtyReceived() {
-        return qtyReceived;
-    }
+	public BigDecimal getQty() {
+		return qty;
+	}
 
-    public void setQtyReceived(BigDecimal qtyReceived) {
-        this.qtyReceived = qtyReceived;
-    }
+	public void setQty(BigDecimal qty) {
+		this.qty = qty;
+	}
 
-    public BigDecimal getQty() {
-        return qty;
-    }
+	public Receiving getReceiving() {
+		return receiving;
+	}
 
-    public void setQty(BigDecimal qty) {
-        this.qty = qty;
-    }
+	public void setReceiving(Receiving receiving) {
+		this.receiving = receiving;
+	}
 
-    public Receiving getReceiving() {
-        return receiving;
-    }
+	public Product getProduct() {
+		return product;
+	}
 
-    public void setReceiving(Receiving receiving) {
-        this.receiving = receiving;
-    }
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
 }

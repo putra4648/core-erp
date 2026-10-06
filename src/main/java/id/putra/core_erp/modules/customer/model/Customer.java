@@ -1,74 +1,50 @@
 package id.putra.core_erp.modules.customer.model;
 
 import id.putra.core_erp.entity.BaseEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name = "customers")
+@Table
 public class Customer extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @NotBlank
-    private String code;
+	private String name;
 
-    @NotBlank
-    private String name;
+	private Boolean isActive;
 
-    private Boolean isActive;
+	private String email;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "contact_person_id")
-    @NotEmpty
-    private ContactPersonCustomer contactPerson;
+	private String phone;
 
-    public Long getId() {
-        return id;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public Boolean getIsActive() {
+		return isActive;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public ContactPersonCustomer getContactPerson() {
-        return contactPerson;
-    }
-
-    public void setContactPerson(ContactPersonCustomer contactPerson) {
-        this.contactPerson = contactPerson;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 }

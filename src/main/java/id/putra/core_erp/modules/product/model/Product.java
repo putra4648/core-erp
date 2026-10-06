@@ -2,112 +2,80 @@ package id.putra.core_erp.modules.product.model;
 
 import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "product")
 public class Product extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	private String sku;
 
-    @NotBlank
-    private String sku;
+	private String name;
 
-    @NotBlank
-    private String name;
+	private String description;
 
-    private String description;
+	private Long minStock;
 
-    @Min(value = 1)
-    private Long minStock;
+	private Long maxStock;
 
-    private Long maxStock;
+	private Boolean isActive;
 
-    private Boolean isActive;
+	private Long quantity;
 
-    @Min(value = 1)
-    private Long quantity;
+	public String getSku() {
+		return sku;
+	}
 
-    // @ManyToOne
-    // @JoinColumn(name = "category_id")
-    // private Category category;
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getSku() {
-        return sku;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Long getMinStock() {
+		return minStock;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setMinStock(Long minStock) {
+		this.minStock = minStock;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public Long getMaxStock() {
+		return maxStock;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setMaxStock(Long maxStock) {
+		this.maxStock = maxStock;
+	}
 
-    public Long getMinStock() {
-        return minStock;
-    }
+	public Boolean getIsActive() {
+		return isActive;
+	}
 
-    public void setMinStock(Long minStock) {
-        this.minStock = minStock;
-    }
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
-    public Long getMaxStock() {
-        return maxStock;
-    }
+	public Long getQuantity() {
+		return quantity;
+	}
 
-    public void setMaxStock(Long maxStock) {
-        this.maxStock = maxStock;
-    }
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
+	}
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
-
-    // public Category getCategory() {
-    // return category;
-    // }
-
-    // public void setCategory(Category category) {
-    // this.category = category;
-    // }
 }

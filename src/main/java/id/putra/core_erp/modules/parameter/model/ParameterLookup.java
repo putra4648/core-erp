@@ -1,80 +1,62 @@
 package id.putra.core_erp.modules.parameter.model;
 
+import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "parameter_lookup")
 
-public class ParameterLookup {
+public class ParameterLookup extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	private String module;
 
-    private String module;
+	private String key;
 
-    @NotBlank
-    private String key;
+	private String value;
 
-    @NotBlank
-    private String value;
+	private String description;
 
-    @NotBlank
-    private String description;
+	private Boolean isActive;
 
-    private Boolean isActive;
+	public String getModule() {
+		return module;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setModule(String module) {
+		this.module = module;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public String getKey() {
+		return key;
+	}
 
-    public String getModule() {
-        return module;
-    }
+	public void setKey(String key) {
+		this.key = key;
+	}
 
-    public void setModule(String module) {
-        this.module = module;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public String getKey() {
-        return key;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+	public Boolean getIsActive() {
+		return isActive;
+	}
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
 }
