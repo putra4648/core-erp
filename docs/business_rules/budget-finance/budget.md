@@ -1,12 +1,16 @@
-| Field                   | Type   | Constraint                    | Business Rule                                        |
-|-------------------------|--------|-------------------------------|-------------------------------------------------------|
-| id                      | Long   | Auto-increment, PK            | Primary identifier                                    |
-| budget_number           | String | Unique, Pattern: [A-Z0-9]+    | Nomor anggaran wajib unik per company/year            |
-| department_id           | Long   | Required, FK                  | Budget harus terkait ke departemen                   |
-| fiscal_period           | Integer| Min 1, Max 12                 | Periode fiskal antara 1-12                           |
-| total_amount            | Decimal| Min 0.01                      | Total anggaran minimal 0.01                          |
+# Business Rules: Budget
 
-✅ Validation:
-- Budget number wajib diisi
-- Fiscal period tidak boleh melebihi periode tahun saat ini
-- Department dengan budget harus memiliki approved budget dari parent
+## Entity Definition
+Represents annual or periodic departmental spending allocation and fiscal limits.
+
+| Field         | Type               | Constraint           | Business Rule                                                |
+|:--------------|:-------------------|:---------------------|:-------------------------------------------------------------|
+| `id`          | Long               | PK, Auto-increment   | Primary identifier inherited from `BaseEntity`.              |
+| `fiscalYear`  | Date               | Required             | Fiscal year / validity period (e.g. `2025-01-01`).           |
+| `department`  | Department         | ManyToOne, Required  | Owning cost center / organizational unit.                    |
+| `details`     | List<BudgetDetail> | OneToMany, Cascade   | Specific line-item allocations under this master budget.     |
+| `isActive`    | Boolean            | Default true         | Active status flag.                                          |
+
+## ✅ Validation & Operational Rules
+- A department cannot have overlapping budgets for the exact same fiscal year without prior decommission.
+- Purchase Requisitions referencing this `Budget` consume available amounts defined across its `BudgetDetail` lines.

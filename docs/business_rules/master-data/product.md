@@ -1,12 +1,20 @@
-| Field           | Type   | Constraint                       | Business Rule                                              |
-|-----------------|--------|----------------------------------|------------------------------------------------------------|
-| id              | Long   | Auto-increment, PK               | Primary identifier                                          |
-| sku             | String | Unique, Required                 | SKU wajib unik per company (contoh: PROD-001)              |
-| barcode         | String | Nullable                         | Barcode untuk scanner (opsional)                          |
-| unit_cost       | Decimal| Min 0.01, Precision 2           | Harga pokok modal minimal 0.01                             |
-| active          | Boolean| Default true                    | Produk non-aktif tidak bisa diproses transaksi             |
+# Business Rules: Product
 
-✅ Validation:
-- SKU wajib diisi untuk produk aktif
-- Unit of measure harus sesuai standar (PCS, KGS, METERS)
-- Tax code harus valid untuk produk kena pajak
+## Entity Definition
+Represents master items, SKUs, inventory thresholds, and stock levels.
+
+| Field         | Type    | Constraint           | Business Rule                                            |
+|:--------------|:--------|:---------------------|:---------------------------------------------------------|
+| `id`          | Long    | PK, Auto-increment   | Primary identifier inherited from `BaseEntity`.          |
+| `sku`         | String  | Required, Unique     | Stock Keeping Unit (e.g. `SKU-IPHONE15-128`).            |
+| `name`        | String  | Required             | Product commercial name.                                 |
+| `quantity`    | Long    | Min 0, Default 0     | Aggregated on-hand stock quantity.                       |
+| `minStock`    | Long    | Min 0, Default 0     | Reorder point threshold alerting inventory shortages.    |
+| `maxStock`    | Long    | Min 0, Default 0     | Maximum storage capacity threshold.                      |
+| `description` | String  | Nullable             | Product details, specification, or notes.                |
+| `isActive`    | Boolean | Default true         | Inactive products cannot be selected in POs or SOs.      |
+
+## ✅ Validation & Operational Rules
+- `sku` and `name` cannot be blank.
+- `minStock` must be $\le$ `maxStock` when `maxStock > 0`.
+- Stock transactions automatically update the aggregated `quantity` balance.

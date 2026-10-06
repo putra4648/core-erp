@@ -1,11 +1,27 @@
-| Field                   | Type   | Constraint                    | Business Rule                                        |
-|-------------------------|--------|-------------------------------|-------------------------------------------------------|
-| id                      | Long   | Auto-increment, PK            | Primary identifier                                    |
-| so_number               | String | Unique, Pattern: [A-Z0-9]+    | Nomor SO wajib unik per company                       │
-| customer_id             | Long   | Required, FK                  | Customer wajib valid dan active                        │
-| total_amount            | Decimal| Min 0.01                      | Total harga sesuai sum baris item                     │
+# Business Rules: SalesOrder & SalesOrderLine
 
-✅ Validation:
-- Sales rep harus user dari sales department
-- Delivery date tidak boleh sebelum tanggal saat ini
-- Status hanya dapat maju dalam lifecycle (tidak boleh mundur)
+## Entity Definition: SalesOrder
+Represents a confirmed customer purchase order for fulfillment and shipment.
+
+| Field             | Type                 | Constraint           | Business Rule                                                    |
+|:------------------|:---------------------|:---------------------|:-----------------------------------------------------------------|
+| `id`              | Long                 | PK, Auto-increment   | Primary identifier inherited from `BaseEntity`.                  |
+| `soNumber`        | String               | Required, Unique     | Sales order number (e.g. `SO-2025-0010`).                        |
+| `orderDate`       | Date                 | Required             | Date order was placed.                                           |
+| `status`          | String               | Required             | State (`CONFIRMED`, `ALLOCATED`, `PICKED`, `SHIPPED`, `CLOSED`). |
+| `customer`        | Department / Customer| ManyToOne            | Ordering client or internal department.                          |
+| `salesOrderLines` | List<SalesOrderLine> | OneToMany, Cascade   | Detailed items requested.                                        |
+
+## Entity Definition: SalesOrderLine
+Individual line item demanded on the Sales Order.
+
+| Field        | Type       | Constraint         | Business Rule                                   |
+|:-------------|:-----------|:-------------------|:------------------------------------------------|
+| `id`         | Long       | PK, Auto-increment | Primary identifier inherited from `BaseEntity`. |
+| `product`    | Product    | ManyToOne, Required| Master product requested.                       |
+| `salesOrder` | SalesOrder | ManyToOne          | Parent Sales Order.                             |
+
+## ✅ Validation & Operational Rules
+- Order confirmation reserves stock on [`InventoryItem.reservedQty`](file:///d:/Project/core-erp/src/main/java/id/putra/core_erp/modules/inventory/model/InventoryItem.java).
+- Creates linked [`PickingTask`](file:///d:/Project/core-erp/src/main/java/id/putra/core_erp/modules/outbound/model/PickingTask.java) entries for warehouse staff.
+- Once shipped, status transitions to `SHIPPED`, decreasing inventory on hand and creating `OUTBOUND_SHIPMENT` transaction entries.

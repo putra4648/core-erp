@@ -1,9 +1,17 @@
- Field                    Type    Constraint                     Business Rule                                        
------------------------------------------------------------------------------------------------------------------------
- id                       Long    Auto-increment, PK             Primary identifier                                    
- packing_id               Long    Required, FK                   Packing harus valid dan completed                       │
- carrier                  User    Nullable                       Carrier dapat null untuk pengiriman internal          │
+# Business Rules: Shipment
 
-✅ Validation
-- Tracking number wajib diisi jika menggunakan carrier eksternal
-- Status DELIVERED hanya dapat setelah customer confirmation
+## Entity Definition
+Outbound dispatch manifest, carrier handoff, and tracking lifecycle.
+
+| Field            | Type    | Constraint         | Business Rule                                                    |
+|:-----------------|:--------|:-------------------|:-----------------------------------------------------------------|
+| `id`             | Long    | PK, Auto-increment | Primary identifier inherited from `BaseEntity`.                  |
+| `shipmentNumber` | String  | Required, Unique   | Tracking number or Bill of Lading (BOL).                         |
+| `shipDate`       | Date    | Required           | Handoff / dispatch date.                                         |
+| `status`         | String  | Required           | Status (`DISPATCHED`, `IN_TRANSIT`, `DELIVERED`, `RETURNED`).    |
+| `packing`        | Packing | ManyToOne          | Associated physical package.                                     |
+| `carrier`        | Carrier | ManyToOne          | Assigned logistics provider.                                     |
+
+## ✅ Validation & Operational Rules
+- `shipmentNumber` and `shipDate` must be valid.
+- Handoff updates `status = DISPATCHED`, releases inventory allocation, and logs an `OUTBOUND_SHIPMENT` transaction.
