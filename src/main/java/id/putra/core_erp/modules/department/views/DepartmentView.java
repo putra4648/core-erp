@@ -1,8 +1,5 @@
 package id.putra.core_erp.modules.department.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -16,56 +13,71 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.department.service.DepartmentService;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route("department")
 @PageTitle(value = "Master Department")
 @Authenticated
-public class DepartmentView extends VerticalLayout {
+public class DepartmentView extends ViewWithDialog {
 
 	private final DepartmentService departmentService;
 	private final Grid<Department> grid = new Grid<>();
 	private final TextField searchField = new TextField();
-	private final Department form;
+
+	private Binder<Department> binder = new BeanValidationBinder<>(Department.class);
+	private TextField code = new TextField("Department Code");
+	private TextField name = new TextField("Department Name");
 
 	public DepartmentView(DepartmentService departmentService) {
+		super();
 		this.departmentService = departmentService;
-		this.form = new Department();
 
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+		configureValidation();
 
 		addHeader();
 		addToolbar();
 		configureGrid();
 		add(grid);
 
-		refreshData();
 	}
 
-	private void addHeader() {
-		H2 title = new H2("Customer Management");
+	private void configureValidation() {
+		binder.forField(code)
+				.asRequired("Department code is required")
+				.bind("code");
+
+		binder.forField(name)
+				.asRequired("Department name is required")
+				.bind("name");
+	}
+
+	@Override
+	public void addHeader() {
+		H2 title = new H2("Department Management");
 		title.addClassNames("m-0", "text-xl", "font-bold");
-		Paragraph desc = new Paragraph("Manage customer details and contact information.");
+		Paragraph desc = new Paragraph("Manage departments and contact information.");
 		desc.addClassNames("text-secondary", "m-0");
 		add(title, desc);
 	}
 
-	private void addToolbar() {
-		searchField.setPlaceholder("Search customers...");
+	@Override
+	public void addToolbar() {
+		searchField.setPlaceholder("Search departments...");
 		searchField.setClearButtonVisible(true);
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 		searchField.addValueChangeListener(e -> refreshData());
 
-		Button addButton = new Button("Add Customer", VaadinIcon.PLUS.create(),
-				e -> openDepartmentDialog(new Department()));
+		Button addButton = new Button("Add Department", VaadinIcon.PLUS.create(),
+				e -> openDialog(new Department()));
 		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -76,69 +88,67 @@ public class DepartmentView extends VerticalLayout {
 		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
-		grid.addColumn(dept -> dept.getCode() != null ? dept.getCode() : "").setHeader("Code").setAutoWidth(true)
+		grid.addColumn(dept -> dept.code != null ? dept.code : "").setHeader("Code").setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(dept -> dept.getName() != null ? dept.getName() : "").setHeader("Name").setAutoWidth(true)
+		grid.addColumn(dept -> dept.name != null ? dept.name : "").setHeader("Name").setAutoWidth(true)
 				.setSortable(true);
 
-		grid.addComponentColumn(customer -> {
-			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDepartmentDialog(customer));
+		grid.addComponentColumn(department -> {
+			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDialog(department));
 			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(customer));
+			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(department));
 			deleteBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
 
 			return new HorizontalLayout(editBtn, deleteBtn);
 		}).setHeader("Actions").setAutoWidth(true);
+
+		refreshData();
 	}
 
-	private void refreshData() {
+	@Override
+	public void refreshData() {
 		var dept = new Department();
-		dept.setName(searchField.getValue());
-
-		List<Department> result = new ArrayList<>();
-		departmentService.findAll(dept, Page.ofSize(100)).forEach(result::add);
-		grid.setItems(page -> result.stream(), count -> 0);
+		dept.name = searchField.getValue();
+		grid.setItems(departmentService.findAll(dept, Page.ofSize(100)));
 	}
 
-	private void openDepartmentDialog(Department dept) {
-		boolean isEdit = dept.id != null;
-		Dialog dialog = new Dialog(isEdit ? "Edit Customer" : "Add Customer");
+	@Override
+	public void openDialog(Object entity) {
+		Department dept = entity != null ? (Department) entity : new Department();
+		binder.readBean(dept);
 
-		TextField codeField = new TextField("Customer Code", val -> {
-			this.form.setCode(val.getValue());
-		});
-		TextField nameField = new TextField("Customer Name", val -> {
-			this.form.setName(val.getValue());
-		});
+		Dialog dialog = new Dialog(dept.id == null ? "Add Department" : "Edit Department");
+		dialog.setWidth("500px");
 
-		codeField.setValue(dept.getCode() != null ? dept.getCode() : "");
-		nameField.setValue(dept.getName() != null ? dept.getName() : "");
-
-		FormLayout formLayout = new FormLayout(codeField, nameField);
+		FormLayout formLayout = new FormLayout(code, name);
 		dialog.add(formLayout);
 
 		Button saveBtn = new Button("Save", e -> {
-
 			try {
-				if (isEdit) {
-					departmentService.update(dept);
-					Notification.show("Customer updated successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				if (binder.writeBeanIfValid(dept)) {
+					if (dept.id != null) {
+						departmentService.update(dept);
+						Notification.show("Department updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						departmentService.save(dept);
+						Notification.show("Department created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					refreshData();
 				} else {
-					departmentService.save(dept);
-					Notification.show("Customer created successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				dialog.close();
-				refreshData();
 			} catch (Exception ex) {
-				Notification.show("Failed to save customer: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+				Notification.show("Failed to save department: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
-
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -148,13 +158,15 @@ public class DepartmentView extends VerticalLayout {
 		dialog.open();
 	}
 
-	private void confirmDelete(Department customer) {
+	@Override
+	public void confirmDelete(Object entity) {
+		Department department = (Department) entity;
 		Dialog confirmDialog = new Dialog("Delete Customer");
-		confirmDialog.add(new Paragraph("Are you sure you want to delete customer '" + customer.getName() + "'?"));
+		confirmDialog.add(new Paragraph("Are you sure you want to delete customer '" + department.name + "'?"));
 
 		Button deleteBtn = new Button("Delete", e -> {
 			try {
-				departmentService.delete(customer.id);
+				departmentService.delete(department.id);
 				Notification.show("Customer deleted successfully", 3000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				confirmDialog.close();

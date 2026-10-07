@@ -8,59 +8,13 @@ import jakarta.persistence.Table;
 @Table
 public class Putaway extends BaseEntity {
 
-	private String sku;
-	private String lotNumber;
-	private Long inboundId;
-	private String outboundId;
-	private String pickId;
-	private String putaway;
+	public String sku;
+	public String lotNumber;
+	public Long inboundId;
+	public String outboundId;
+	public String pickId;
+	public String putaway;
 
-	public String getSku() {
-		return sku;
-	}
-
-	public void setSku(String sku) {
-		this.sku = sku;
-	}
-
-	public String getLotNumber() {
-		return lotNumber;
-	}
-
-	public void setLotNumber(String lotNumber) {
-		this.lotNumber = lotNumber;
-	}
-
-	public Long getInboundId() {
-		return inboundId;
-	}
-
-	public void setInboundId(Long inboundId) {
-		this.inboundId = inboundId;
-	}
-
-	public String getOutboundId() {
-		return outboundId;
-	}
-
-	public void setOutboundId(String outboundId) {
-		this.outboundId = outboundId;
-	}
-
-	public String getPickId() {
-		return pickId;
-	}
-
-	public void setPickId(String pickId) {
-		this.pickId = pickId;
-	}
-
-	public String getPutaway() {
-		return putaway;
-	}
-
-	public void setPutaway(String putaway) {
-		this.putaway = putaway;
-	}
+	
 
 }

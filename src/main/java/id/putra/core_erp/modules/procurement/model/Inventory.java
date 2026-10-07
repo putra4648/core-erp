@@ -13,135 +13,41 @@ import jakarta.persistence.Table;
 public class Inventory extends BaseEntity {
 
 	@Column(name = "po_number")
-	private String poNumber;
+	public String poNumber;
 
 	@Column(name = "part_name")
-	private String partName;
+	public String partName;
 
 	@Column(name = "description")
-	private String description;
+	public String description;
 
 	@Column(name = "area")
-	private String area;
+	public String area;
 
 	@Column(name = "shelf")
-	private String shelf;
+	public String shelf;
 
 	@Column(name = "supplier")
-	private String supplier;
+	public String supplier;
 
 	@Column(name = "unit")
-	private String unit;
+	public String unit;
 
 	@Column(name = "qty")
-	private BigInteger qty;
+	public BigInteger qty;
 
 	@Column(name = "item_area")
-	private String itemArea;
+	public String itemArea;
 
 	@Column(name = "date")
-	private Date date;
+	public Date date;
 
 	@Column(name = "location")
-	private String location;
+	public String location;
 
 	@Column(name = "uom")
-	private String uom;
+	public String uom;
 
-	public String getPoNumber() {
-		return poNumber;
-	}
-
-	public void setPoNumber(String poNumber) {
-		this.poNumber = poNumber;
-	}
-
-	public String getPartName() {
-		return partName;
-	}
-
-	public void setPartName(String partName) {
-		this.partName = partName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getArea() {
-		return area;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
-	}
-
-	public String getShelf() {
-		return shelf;
-	}
-
-	public void setShelf(String shelf) {
-		this.shelf = shelf;
-	}
-
-	public String getSupplier() {
-		return supplier;
-	}
-
-	public void setSupplier(String supplier) {
-		this.supplier = supplier;
-	}
-
-	public String getUnit() {
-		return unit;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
-
-	public BigInteger getQty() {
-		return qty;
-	}
-
-	public void setQty(BigInteger qty) {
-		this.qty = qty;
-	}
-
-	public String getItemArea() {
-		return itemArea;
-	}
-
-	public void setItemArea(String itemArea) {
-		this.itemArea = itemArea;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public String getUom() {
-		return uom;
-	}
-
-	public void setUom(String uom) {
-		this.uom = uom;
-	}
+	
 
 }

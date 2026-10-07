@@ -1,10 +1,6 @@
 package id.putra.core_erp.modules.department.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.department.model.Department;
 import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import id.putra.core_erp.service.BaseService;
@@ -32,49 +28,6 @@ public class DepartmentService implements BaseService<Department> {
 		departmentRepo.getEntityManager().merge(entity);
 	}
 
-	public List<Approval> getDeptApprovals(Long id) {
-		List<Approval> dtos = new ArrayList<>();
-
-		departmentRepo.findByIdOptional(id).ifPresent(value -> {
-			if (value.getApprovals() != null) {
-				dtos.addAll(value.getApprovals().stream().map(apr -> {
-					Approval dto = new Approval();
-					// dto.setUsers(apr.getUsers());
-
-					/// Set default setting
-					// dto.setIsApprovalChecked(true);
-					// dto.setIsApprovalPermanent(false);
-					// dto.setIsBypassChecked(false);
-					// dto.setIsBypassPermanent(false);
-					return dto;
-				}).toList());
-			}
-		});
-
-		return dtos;
-	}
-
-	public Approval getDeptApprovalPurchaser(Long deptId) {
-		Approval dto = null;
-		Optional<Department> deptOpt = departmentRepo.findByIdOptional(deptId);
-		if (deptOpt.isPresent()) {
-			dto = new Approval();
-			Department dept = deptOpt.get();
-
-			String deptPurchaserUser = dept.getDeptPurchaser();
-			if (deptPurchaserUser != null) {
-				dto.setUsers(deptPurchaserUser);
-			}
-
-			/// Set default setting
-			// dto.setIsApprovalChecked(true);
-			// dto.setIsApprovalPermanent(false);
-			// dto.setIsBypassChecked(false);
-			// dto.setIsBypassPermanent(false);
-		}
-		return dto;
-	}
-
 	@Override
 	public Department findById(Long id) {
 		return departmentRepo.findById(id);
@@ -87,7 +40,7 @@ public class DepartmentService implements BaseService<Department> {
 
 	@Override
 	public List<Department> findAll(Department d, Page page) {
-		return departmentRepo.find("name like ?1", "%" + d.getName() + "%").page(page).list();
+		return departmentRepo.findAll().page(page).list();
 	}
 
 }

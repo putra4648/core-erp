@@ -1,8 +1,5 @@
 package id.putra.core_erp.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -19,6 +16,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -41,6 +40,15 @@ public class SettingsView extends VerticalLayout {
 	private final Grid<ParameterLookup> gridParameterLookup = new Grid<>();
 	private final Grid<Department> gridDepartment = new Grid<>();
 
+	private final Binder<ParameterLookup> parameterBinder = new BeanValidationBinder<>(ParameterLookup.class);
+	private final TextField paramKey = new TextField("Key");
+	private final TextField paramValue = new TextField("Value");
+	private final TextField paramDescription = new TextField("Description");
+
+	private final Binder<Department> departmentBinder = new BeanValidationBinder<>(Department.class);
+	private final TextField deptCode = new TextField("Code");
+	private final TextField deptName = new TextField("Name");
+
 	public SettingsView(ParameterLookupService parameterLookupService, DepartmentService departmentService) {
 		this.parameterLookupService = parameterLookupService;
 		this.departmentService = departmentService;
@@ -49,8 +57,28 @@ public class SettingsView extends VerticalLayout {
 		setPadding(true);
 		setSpacing(true);
 
+		configureValidation();
+
 		addHeader();
 		initTab();
+	}
+
+	private void configureValidation() {
+		parameterBinder.forField(paramKey)
+				.asRequired("Key is required")
+				.bind("key");
+		parameterBinder.forField(paramValue)
+				.asRequired("Value is required")
+				.bind("value");
+		parameterBinder.forField(paramDescription)
+				.bind("description");
+
+		departmentBinder.forField(deptCode)
+				.asRequired("Code is required")
+				.bind("code");
+		departmentBinder.forField(deptName)
+				.asRequired("Name is required")
+				.bind("name");
 	}
 
 	private void initTab() {
@@ -73,18 +101,14 @@ public class SettingsView extends VerticalLayout {
 		String searchTerm = searchField.getValue() != null ? searchField.getValue() : "";
 
 		if (entity instanceof ParameterLookup parsedEntity) {
-			parsedEntity.setKey(searchTerm);
+			parsedEntity.key = searchTerm;
 
-			List<ParameterLookup> result = new ArrayList<>();
-			parameterLookupService.findAll(parsedEntity, Page.ofSize(100)).forEach(result::add);
-			this.gridParameterLookup.setItems(result);
+			this.gridParameterLookup.setItems(parameterLookupService.findAll(parsedEntity, Page.ofSize(100)));
 
 		} else if (entity instanceof Department parsedEntity) {
-			parsedEntity.setName(searchTerm);
+			parsedEntity.name = searchTerm;
 
-			List<Department> result = new ArrayList<>();
-			departmentService.findAll(parsedEntity, Page.ofSize(100)).forEach(result::add);
-			this.gridDepartment.setItems(result);
+			this.gridDepartment.setItems(departmentService.findAll(parsedEntity, Page.ofSize(100)));
 		} else {
 			throw new Exception("Entity is not defined");
 		}
@@ -92,11 +116,10 @@ public class SettingsView extends VerticalLayout {
 
 	private Component parameterComponent() {
 		gridParameterLookup.setSizeFull();
-		gridParameterLookup.addColumn(ParameterLookup::getKey).setHeader("Key").setKey("key").setSortable(true)
+		gridParameterLookup.addColumn(p -> p.key).setHeader("Key").setKey("key").setSortable(true).setAutoWidth(true);
+		gridParameterLookup.addColumn(p -> p.value).setHeader("Value").setKey("value").setSortable(true)
 				.setAutoWidth(true);
-		gridParameterLookup.addColumn(ParameterLookup::getValue).setHeader("Value").setKey("value").setSortable(true)
-				.setAutoWidth(true);
-		gridParameterLookup.addColumn(ParameterLookup::getDescription).setHeader("Description").setKey("description")
+		gridParameterLookup.addColumn(p -> p.description).setHeader("Description").setKey("description")
 				.setSortable(true).setFlexGrow(1);
 
 		gridParameterLookup.addComponentColumn(param -> {
@@ -143,10 +166,8 @@ public class SettingsView extends VerticalLayout {
 
 	private Component departmentComponent() {
 		gridDepartment.setSizeFull();
-		gridDepartment.addColumn(Department::getCode).setHeader("Code").setKey("code").setSortable(true)
-				.setAutoWidth(true);
-		gridDepartment.addColumn(Department::getName).setHeader("Name").setKey("name").setSortable(true)
-				.setAutoWidth(true);
+		gridDepartment.addColumn(d -> d.code).setHeader("Code").setKey("code").setSortable(true).setAutoWidth(true);
+		gridDepartment.addColumn(d -> d.name).setHeader("Name").setKey("name").setSortable(true).setAutoWidth(true);
 
 		gridDepartment.addComponentColumn(param -> {
 			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDepartmentDialog(param));
@@ -209,43 +230,32 @@ public class SettingsView extends VerticalLayout {
 	}
 
 	private void openParameterDialog(ParameterLookup parameter) {
-		boolean isEdit = parameter.id != null;
-		Dialog dialog = new Dialog("Parameter");
+		ParameterLookup p = parameter != null ? parameter : new ParameterLookup();
+		parameterBinder.readBean(p);
+		boolean isEdit = p.id != null;
+		Dialog dialog = new Dialog(isEdit ? "Edit Parameter" : "Add Parameter");
 
-		FormLayout parameterForm = new FormLayout();
-
-		TextField keyField = new TextField("Key");
-		keyField.setRequired(true);
-		keyField.setValue(parameter.getKey() != null ? parameter.getKey() : "");
-
-		TextField valueField = new TextField("Value");
-		valueField.setRequired(true);
-		valueField.setValue(parameter.getValue() != null ? parameter.getValue() : "");
-
-		TextField descriptionField = new TextField("Description");
-		descriptionField.setRequired(true);
-		descriptionField.setValue(parameter.getDescription() != null ? parameter.getDescription() : "");
-
-		parameterForm.add(keyField, valueField, descriptionField);
+		FormLayout parameterForm = new FormLayout(paramKey, paramValue, paramDescription);
 		dialog.add(parameterForm);
 
 		Button saveBtn = new Button("Save", e -> {
-			parameter.setKey(keyField.getValue());
-			parameter.setValue(valueField.getValue());
-			parameter.setDescription(descriptionField.getValue());
-
 			try {
-				if (isEdit) {
-					parameterLookupService.update(parameter);
-					Notification.show("Parameter updated successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				if (parameterBinder.writeBeanIfValid(p)) {
+					if (isEdit) {
+						parameterLookupService.update(p);
+						Notification.show("Parameter updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						parameterLookupService.save(p);
+						Notification.show("Parameter created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					gridParameterLookup.getDataProvider().refreshAll();
 				} else {
-					parameterLookupService.save(parameter);
-					Notification.show("Parameter created successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				dialog.close();
-				gridParameterLookup.getDataProvider().refreshAll();
 			} catch (Exception ex) {
 				Notification.show("Failed to save parameter: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -253,45 +263,39 @@ public class SettingsView extends VerticalLayout {
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		Button cancelBtn = new Button("Cancel", e -> dialog.close());
+		Button cancelBtn = new Button("Cancel", ev -> dialog.close());
 
 		dialog.getFooter().add(cancelBtn, saveBtn);
 		dialog.open();
 	}
 
 	private void openDepartmentDialog(Department dept) {
-		boolean isEdit = dept.id != null;
-		Dialog dialog = new Dialog("Department");
+		Department d = dept != null ? dept : new Department();
+		departmentBinder.readBean(d);
+		boolean isEdit = d.id != null;
+		Dialog dialog = new Dialog(isEdit ? "Edit Department" : "Add Department");
 
-		FormLayout deptForm = new FormLayout();
-
-		TextField codeField = new TextField("Code");
-		codeField.setRequired(true);
-		codeField.setValue(dept.getCode() != null ? dept.getCode() : "");
-
-		TextField nameField = new TextField("Name");
-		nameField.setRequired(true);
-		nameField.setValue(dept.getName() != null ? dept.getName() : "");
-
-		deptForm.add(codeField, nameField);
+		FormLayout deptForm = new FormLayout(deptCode, deptName);
 		dialog.add(deptForm);
 
 		Button saveBtn = new Button("Save", e -> {
-			dept.setCode(codeField.getValue());
-			dept.setName(nameField.getValue());
-
 			try {
-				if (isEdit) {
-					departmentService.update(dept);
-					Notification.show("Department updated successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				if (departmentBinder.writeBeanIfValid(d)) {
+					if (isEdit) {
+						departmentService.update(d);
+						Notification.show("Department updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						departmentService.save(d);
+						Notification.show("Department created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					gridDepartment.getDataProvider().refreshAll();
 				} else {
-					departmentService.save(dept);
-					Notification.show("Department created successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				dialog.close();
-				gridDepartment.getDataProvider().refreshAll();
 			} catch (Exception ex) {
 				Notification.show("Failed to save Department: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -299,7 +303,7 @@ public class SettingsView extends VerticalLayout {
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		Button cancelBtn = new Button("Cancel", e -> dialog.close());
+		Button cancelBtn = new Button("Cancel", ev -> dialog.close());
 
 		dialog.getFooter().add(cancelBtn, saveBtn);
 		dialog.open();

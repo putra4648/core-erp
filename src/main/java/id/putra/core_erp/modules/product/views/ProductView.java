@@ -1,8 +1,5 @@
 package id.putra.core_erp.modules.product.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -15,43 +12,89 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.product.model.Product;
 import id.putra.core_erp.modules.product.service.ProductService;
 import id.putra.core_erp.ui.MainLayout;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "master/products", layout = MainLayout.class)
 @PageTitle("Products")
 @Authenticated
-public class ProductView extends VerticalLayout {
+public class ProductView extends ViewWithDialog {
 
 	private final ProductService productService;
 	private final Grid<Product> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
+	private Binder<Product> binder = new BeanValidationBinder<>(Product.class);
+	private TextField sku = new TextField("SKU");
+	private TextField name = new TextField("Product Name");
+	private TextArea description = new TextArea("Description");
+	private IntegerField quantity = new IntegerField("Quantity");
+	private IntegerField minStock = new IntegerField("Min Stock");
+	private IntegerField maxStock = new IntegerField("Max Stock");
+
 	public ProductView(ProductService productService) {
+		super();
 		this.productService = productService;
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+
+		configureValidation();
 
 		addHeader();
 		addToolbar();
 		configureGrid();
-		add(grid);
 
-		refreshData();
 	}
 
-	private void addHeader() {
+	private void configureValidation() {
+		binder.forField(sku)
+				.asRequired("SKU is required")
+				.bind("sku");
+
+		binder.forField(name)
+				.asRequired("Product name is required")
+				.bind("name");
+
+		binder.forField(description)
+				.bind("description");
+
+		binder.forField(quantity)
+				.asRequired("Quantity is required")
+				.withConverter(
+						intVal -> intVal != null ? intVal.longValue() : 0L,
+						longVal -> longVal != null ? longVal.intValue() : 0,
+						"Invalid Value")
+				.bind("quantity");
+
+		binder.forField(minStock)
+				.asRequired("Min stock is required")
+				.withConverter(
+						intVal -> intVal != null ? intVal.longValue() : 0L,
+						longVal -> longVal != null ? longVal.intValue() : 0,
+						"Invalid Value")
+				.bind("minStock");
+
+		binder.forField(maxStock)
+				.asRequired("Max stock is required")
+				.withConverter(
+						intVal -> intVal != null ? intVal.longValue() : 0L,
+						longVal -> longVal != null ? longVal.intValue() : 0,
+						"Invalid Value")
+				.bind("maxStock");
+	}
+
+	@Override
+	public void addHeader() {
 		H2 title = new H2("Product Catalog");
 		title.addClassNames("m-0", "text-xl", "font-bold");
 		Paragraph desc = new Paragraph("Manage product items, SKU details, and stock thresholds.");
@@ -59,13 +102,14 @@ public class ProductView extends VerticalLayout {
 		add(title, desc);
 	}
 
-	private void addToolbar() {
+	@Override
+	public void addToolbar() {
 		searchField.setPlaceholder("Search products by name or SKU...");
 		searchField.setClearButtonVisible(true);
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 		searchField.addValueChangeListener(e -> refreshData());
 
-		Button addButton = new Button("Add Product", VaadinIcon.PLUS.create(), e -> openProductDialog(new Product()));
+		Button addButton = new Button("Add Product", VaadinIcon.PLUS.create(), e -> openDialog(new Product()));
 		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -73,20 +117,22 @@ public class ProductView extends VerticalLayout {
 		HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
 		toolbar.setWidthFull();
 		toolbar.setFlexGrow(1, searchField);
+
 		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
-		grid.addColumn(p -> p.getSku() != null ? p.getSku() : "").setHeader("SKU").setAutoWidth(true).setSortable(true);
-		grid.addColumn(p -> p.getName() != null ? p.getName() : "").setHeader("Product Name").setFlexGrow(1)
+		grid.addColumn(p -> p.sku != null ? p.sku : "").setHeader("SKU").setAutoWidth(true).setSortable(true);
+		grid.addColumn(p -> p.name != null ? p.name : "").setHeader("Name").setFlexGrow(1)
 				.setSortable(true);
-		grid.addColumn(p -> p.getQuantity() != null ? p.getQuantity() : 0).setHeader("Total Stock").setAutoWidth(true);
-		grid.addColumn(p -> p.getMinStock() != null ? p.getMinStock() : 0).setHeader("Min Stock").setAutoWidth(true);
-		grid.addColumn(p -> p.getMaxStock() != null ? p.getMaxStock() : 0).setHeader("Max Stock").setAutoWidth(true);
+		grid.addColumn(p -> p.quantity != null ? p.quantity : 0).setHeader("Total Stock").setAutoWidth(true);
+		grid.addColumn(p -> p.minStock != null ? p.minStock : 0).setHeader("Min Stock").setAutoWidth(true);
+		grid.addColumn(p -> p.maxStock != null ? p.maxStock : 0).setHeader("Max Stock").setAutoWidth(true);
 
 		grid.addComponentColumn(product -> {
-			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openProductDialog(product));
+			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDialog(product));
 			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(product));
@@ -94,63 +140,50 @@ public class ProductView extends VerticalLayout {
 
 			return new HorizontalLayout(editBtn, deleteBtn);
 		}).setHeader("Actions").setAutoWidth(true);
+
+		add(grid);
+
+		refreshData();
 	}
 
-	private void refreshData() {
+	@Override
+	public void refreshData() {
 		Product entity = new Product();
-		entity.setName(searchField.getValue());
+		entity.name = searchField.getValue();
 
-		List<Product> res = new ArrayList<>();
-		productService.findAll(entity, Page.ofSize(100)).forEach(res::add);
-		grid.setItems(res);
+		grid.setItems(productService.findAll(entity, Page.ofSize(100)));
 	}
 
-	private void openProductDialog(Product product) {
-		Dialog dialog = new Dialog("Product");
+	@Override
+	public void openDialog(Object entity) {
+		Product product = entity != null ? (Product) entity : new Product();
+		binder.readBean(product);
 
-		TextField skuField = new TextField("SKU");
-		TextField nameField = new TextField("Product Name");
-		TextArea descField = new TextArea("Description");
-		IntegerField qtyField = new IntegerField("Quantity");
-		IntegerField minStockField = new IntegerField("Min Stock");
-		IntegerField maxStockField = new IntegerField("Max Stock");
-		Checkbox activeCheck = new Checkbox("Is Active");
+		Dialog dialog = new Dialog(product.id == null ? "Add Product" : "Edit Product");
+		dialog.setWidth("600px");
 
-		skuField.setValue(product.getSku() != null ? product.getSku() : "");
-		nameField.setValue(product.getName() != null ? product.getName() : "");
-		descField.setValue(product.getDescription() != null ? product.getDescription() : "");
-		qtyField.setValue(product.getQuantity() != null ? product.getQuantity().intValue() : 0);
-		minStockField.setValue(product.getMinStock() != null ? product.getMinStock().intValue() : 0);
-		maxStockField.setValue(product.getMaxStock() != null ? product.getMaxStock().intValue() : 0);
-		activeCheck.setValue(product.getIsActive() != null ? product.getIsActive() : true);
-
-		FormLayout formLayout = new FormLayout(skuField, nameField, qtyField, minStockField, maxStockField, activeCheck,
-				descField);
+		FormLayout formLayout = new FormLayout(sku, name, quantity, minStock, maxStock, description);
+		formLayout.setColspan(description, 2);
 		dialog.add(formLayout);
 
 		Button saveBtn = new Button("Save", e -> {
-			var entity = new Product();
-			entity.id = product.id;
-			entity.setSku(skuField.getValue());
-			entity.setName(nameField.getValue());
-			entity.setDescription(descField.getValue());
-			entity.setQuantity(qtyField.getValue() != null ? qtyField.getValue().longValue() : 0L);
-			entity.setMinStock(minStockField.getValue() != null ? minStockField.getValue().longValue() : 0L);
-			entity.setMaxStock(maxStockField.getValue() != null ? maxStockField.getValue().longValue() : 0L);
-			entity.setIsActive(activeCheck.getValue());
-
 			try {
-				if (product.id != null) {
-					productService.update(entity);
-					Notification.show("Product updated successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				if (binder.writeBeanIfValid(product)) {
+					if (product.id != null) {
+						productService.update(product);
+						Notification.show("Product updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						productService.save(product);
+						Notification.show("Product created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					refreshData();
 				} else {
-					productService.save(entity);
-					Notification.show("Product created successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				dialog.close();
-				refreshData();
 			} catch (Exception ex) {
 				Notification.show("Failed to save product: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -165,9 +198,11 @@ public class ProductView extends VerticalLayout {
 		dialog.open();
 	}
 
-	private void confirmDelete(Product product) {
+	@Override
+	public void confirmDelete(Object entity) {
+		Product product = (Product) entity;
 		Dialog confirmDialog = new Dialog("Delete Product");
-		confirmDialog.add(new Paragraph("Are you sure you want to delete product '" + product.getName() + "'?"));
+		confirmDialog.add(new Paragraph("Are you sure you want to delete product '" + product.name + "'?"));
 
 		Button deleteBtn = new Button("Delete", e -> {
 			try {

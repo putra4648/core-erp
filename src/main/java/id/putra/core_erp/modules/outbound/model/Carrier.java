@@ -11,33 +11,11 @@ import jakarta.persistence.Table;
 @Table
 public class Carrier extends BaseEntity {
 
-	private String name;
-	private String serviceType;
+	public String name;
+	public String serviceType;
 
 	@OneToMany(mappedBy = "carrier")
-	private List<Shipment> shipments;
+	public List<Shipment> shipments;
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getServiceType() {
-		return serviceType;
-	}
-
-	public void setServiceType(String serviceType) {
-		this.serviceType = serviceType;
-	}
-
-	public List<Shipment> getShipments() {
-		return shipments;
-	}
-
-	public void setShipments(List<Shipment> shipments) {
-		this.shipments = shipments;
-	}
+	
 }

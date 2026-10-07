@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.inbound.repository;
 
-import id.putra.core_erp.modules.inbound.model.PurchaseOrder;
+import id.putra.core_erp.modules.procurement.model.PurchaseOrder;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 

@@ -2,7 +2,6 @@ package id.putra.core_erp.modules.budget.views;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -14,134 +13,172 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility;
-
 import id.putra.core_erp.enums.BudgetType;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.budget.service.BudgetService;
 import id.putra.core_erp.modules.department.model.Department;
-import id.putra.core_erp.modules.department.repo.DepartmentRepo;
+import id.putra.core_erp.modules.department.service.DepartmentService;
 import id.putra.core_erp.ui.MainLayout;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "budgets", layout = MainLayout.class)
 @PageTitle("Budgets | Purchase Requisition System")
 @Authenticated
-public class BudgetView extends VerticalLayout {
+public class BudgetView extends ViewWithDialog {
 
 	private final BudgetService budgetService;
+	private final DepartmentService departmentService;
+
 	private final Grid<Budget> grid = new Grid<>();
-	private final List<Department> departmentList = new ArrayList<>();
+	private final TextField searchField = new TextField();
 
-	public BudgetView(BudgetService budgetService, DepartmentRepo departmentRepo) {
+	// Binder di-bound ke kelas Budget
+	private Binder<Budget> binder = new BeanValidationBinder<>(Budget.class);
+
+	// PENTING: Nama variabel UI HARUS persis sama dengan nama field di kelas Budget
+	private ComboBox<Department> department = new ComboBox<>("Select Department");
+	private ComboBox<Integer> fiscalYear = new ComboBox<>("Fiscal Year");
+	private TextField name = new TextField("Budget Name");
+	private ComboBox<BudgetType> type = new ComboBox<>("Budget Type");
+	private IntegerField allocated = new IntegerField("Annual Allocation (Total)");
+
+	public BudgetView(BudgetService budgetService, DepartmentService departmentService) {
+		super();
 		this.budgetService = budgetService;
+		this.departmentService = departmentService;
 
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+		// Populasi item untuk ComboBox
+		LocalDate now = LocalDate.now(ZoneId.systemDefault());
+		List<Integer> selectableYears = IntStream.range(now.getYear() - 20, now.getYear() + 1).boxed().toList();
+		fiscalYear.setItems(selectableYears);
 
-		departmentRepo.findAll().list().forEach(departmentList::add);
+		department.setItemLabelGenerator(d -> d.name != null ? d.name : "");
+		department.setItems(departmentService.findAll(null, null)); // Isi items Department jika ada
 
-		H2 header = new H2("Budget Planning & Management");
-		header.addClassNames(LumoUtility.FontSize.XLARGE);
+		type.setItems(BudgetType.values());
 
-		DatePicker.DatePickerI18n datePickerI18n = new DatePicker.DatePickerI18n();
-		datePickerI18n.setDateFormats("yyyy");
+		configureValidation();
 
-		Button addBtn = new Button("Add Budget", VaadinIcon.PLUS.create(), e -> openAddBudgetDialog());
+		addHeader();
+		addToolbar();
+		configureGrid();
+	}
+
+	private void configureValidation() {
+		binder.forField(department)
+				.asRequired("Department is required")
+				.bind("department");
+
+		binder.forField(fiscalYear)
+				.asRequired("Fiscal year is required")
+				.bind("fiscalYear");
+
+		binder.forField(name)
+				.asRequired("Name is required")
+				.bind("name");
+
+		binder.forField(type)
+				.asRequired("Type is required")
+				.bind("type");
+
+		binder.forField(allocated)
+				.asRequired("Amount is required")
+				.withConverter(
+						integerVal -> integerVal != null ? integerVal.longValue() : null, // Integer -> Long
+						longVal -> longVal != null ? longVal.intValue() : null, // Long -> Integer
+						"Invalid Value")
+				.bind("allocated");
+	}
+
+	@Override
+	public void addHeader() {
+		H2 title = new H2("Budget Planning & Management");
+		title.addClassNames("m-0", "text-xl", "font-bold");
+		Paragraph desc = new Paragraph("Manage budget items, and allocation yearly.");
+		desc.addClassNames("text-secondary", "m-0");
+		add(title, desc);
+	}
+
+	@Override
+	public void addToolbar() {
+		searchField.setPlaceholder("Search products by name or SKU...");
+		searchField.setClearButtonVisible(true);
+		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
+		searchField.addValueChangeListener(e -> refreshData());
+
+		Button addBtn = new Button("Add Budget", VaadinIcon.PLUS.create(), e -> openDialog(new Budget()));
 		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshBudgets());
+		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
 
-		HorizontalLayout toolbar = new HorizontalLayout(addBtn, refreshBtn);
-		toolbar.setAlignItems(FlexComponent.Alignment.BASELINE);
+		HorizontalLayout toolbar = new HorizontalLayout(searchField, addBtn, refreshBtn);
+		toolbar.setWidthFull();
+		toolbar.setFlexGrow(1, searchField);
 
-		configureGrid();
-
-		add(header, toolbar, grid);
-
+		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
 		grid.addColumn(b -> b.id != null ? b.id : "-").setHeader("Budget No").setAutoWidth(true);
-		grid.addColumn(b -> b.getDepartment().getName() != null ? b.getDepartment().getName() : "-")
+		grid.addColumn(b -> b.department != null && b.department.name != null ? b.department.name : "-")
 				.setHeader("Department");
-		grid.addColumn(b -> b.getFiscalYear() != null ? b.getFiscalYear() : "").setHeader("Year").setAutoWidth(true);
-		grid.addColumn(b -> b.getAllocated() != null ? b.getAllocated() : "").setHeader("Amount Allocated (Year)")
+		grid.addColumn(b -> b.fiscalYear != null ? b.fiscalYear : "").setHeader("Year").setAutoWidth(true);
+		grid.addColumn(b -> b.allocated != null ? b.allocated : "").setHeader("Amount Allocated (Year)")
 				.setAutoWidth(true);
 
-		refreshBudgets();
+		add(grid);
+
+		refreshData();
 	}
 
-	private void refreshBudgets() {
-		List<Budget> res = new ArrayList<>();
+	@Override
+	public void refreshData() {
 		var budget = new Budget();
-		budgetService.findAll(budget, Page.ofSize(100)).forEach(res::add);
-		grid.setItems(res);
+		grid.setItems(budgetService.findAll(budget, Page.ofSize(100)));
 	}
 
-	private void openAddBudgetDialog() {
+	@Override
+	public void openDialog(Object entity) {
+		Budget budget = (Budget) entity;
+
+		// 1. Masukkan nilai entitas ke dalam komponen UI melalui Binder
+		binder.readBean(budget);
 
 		Dialog dialog = new Dialog();
-		dialog.setHeaderTitle("Add Budget");
+		dialog.setHeaderTitle(budget.id == null ? "Add Budget" : "Edit Budget");
 		dialog.setWidth("500px");
 
 		FormLayout form = new FormLayout();
-
-		ComboBox<Department> deptCombo = new ComboBox<>("Select Department");
-		deptCombo.setWidth("280px");
-		deptCombo.setItemLabelGenerator(d -> d.getCode() + " - " + d.getName());
-		deptCombo.setItems(departmentList);
-		deptCombo.addValueChangeListener(e -> refreshBudgets());
-		deptCombo.setRequired(true);
-
-		LocalDate now = LocalDate.now(ZoneId.systemDefault());
-		ComboBox<Integer> yearCombo = new ComboBox<>("Fiscal Year");
-		List<Integer> selectableYears = IntStream.range(now.getYear() - 20, now.getYear() + 1).boxed().toList();
-		yearCombo.setWidth("140px");
-		yearCombo.setItems(selectableYears);
-		yearCombo.setValue(now.getYear());
-		yearCombo.addValueChangeListener(e -> refreshBudgets());
-		yearCombo.setRequired(true);
-
-		TextField nameField = new TextField("Budget Name");
-		nameField.setRequired(true);
-
-		ComboBox<BudgetType> typeCombo = new ComboBox<>("Budget Type");
-		typeCombo.setItems(BudgetType.values());
-		typeCombo.setValue(BudgetType.EXPENSE);
-
-		NumberField amountField = new NumberField("Annual Allocation (Total)");
-		TextArea noteField = new TextArea("Notes");
-
-		form.add(deptCombo, yearCombo, nameField, typeCombo, amountField, noteField);
+		form.add(department, fiscalYear, name, type, allocated);
 
 		Button saveBtn = new Button("Save", e -> {
 			try {
-				Budget budget = new Budget();
-				budget.setDepartment(deptCombo.getValue());
-				budget.setFiscalYear(yearCombo.getValue().toString());
-				budget.setAllocated(amountField.getValue().longValue());
-
-				budgetService.save(budget);
-				Notification.show("Budget saved successfully", 3000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-				dialog.close();
-				refreshBudgets();
-
+				// 2. Validasi & tulis data secara otomatis dari UI ke objek budget
+				if (binder.writeBeanIfValid(budget)) {
+					budgetService.save(budget);
+					Notification.show("Budget saved successfully", 3000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					dialog.close();
+					refreshData();
+				} else {
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				}
 			} catch (Exception ex) {
 				Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -154,5 +191,10 @@ public class BudgetView extends VerticalLayout {
 		dialog.add(form);
 		dialog.getFooter().add(cancelBtn, saveBtn);
 		dialog.open();
+	}
+
+	@Override
+	public void confirmDelete(Object entity) {
+		throw new UnsupportedOperationException("Unimplemented method 'confirmDelete'");
 	}
 }

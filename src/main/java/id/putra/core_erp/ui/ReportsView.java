@@ -27,18 +27,18 @@ import io.quarkus.security.Authenticated;
 @Route(value = "reports", layout = MainLayout.class)
 @PageTitle("Reports")
 @Authenticated
-public class ReportsView extends VerticalLayout {
+public class ReportsView extends ViewWithDialog {
 
 	public ReportsView() {
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+		super();
 
 		addHeader();
+
 		addReportGeneratorSection();
 	}
 
-	private void addHeader() {
+	@Override
+	public void addHeader() {
 		H2 title = new H2("Reports & Analytics");
 		title.addClassNames("m-0", "text-xl", "font-bold");
 		Paragraph desc = new Paragraph("Generate and download warehouse inventory and order fulfillment reports.");
@@ -88,5 +88,35 @@ public class ReportsView extends VerticalLayout {
 		container.setMaxWidth("650px");
 
 		add(container);
+	}
+
+	@Override
+	public void addToolbar() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'addToolbar'");
+	}
+
+	@Override
+	public void refreshData() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'refreshData'");
+	}
+
+	@Override
+	public void configureGrid() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'configureGrid'");
+	}
+
+	@Override
+	public void openDialog(Object entity) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'openDialog'");
+	}
+
+	@Override
+	public void confirmDelete(Object entity) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'confirmDelete'");
 	}
 }

@@ -3,7 +3,6 @@ package id.putra.core_erp.modules.inbound.views;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
@@ -21,33 +20,31 @@ import id.putra.core_erp.enums.OrderStatus;
 import id.putra.core_erp.modules.inbound.model.Receiving;
 import id.putra.core_erp.modules.inbound.service.ReceivingOrderService;
 import id.putra.core_erp.ui.MainLayout;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "receiving", layout = MainLayout.class)
 @PageTitle("Receiving")
 @Authenticated
-public class ReceivingView extends VerticalLayout {
+public class ReceivingView extends ViewWithDialog {
 
 	private final ReceivingOrderService receivingOrderService;
 	private final Grid<Receiving> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
 	public ReceivingView(ReceivingOrderService receivingOrderService) {
+		super();
 		this.receivingOrderService = receivingOrderService;
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
 
 		addHeader();
 		addToolbar();
 		configureGrid();
-		add(grid);
 
-		refreshData();
 	}
 
-	private void addHeader() {
+	@Override
+	public void addHeader() {
 		H2 title = new H2("Goods Receiving");
 		title.addClassNames("m-0", "text-xl", "font-bold");
 		Paragraph desc = new Paragraph("Process inbound goods receipts and assign storage locations.");
@@ -55,14 +52,15 @@ public class ReceivingView extends VerticalLayout {
 		add(title, desc);
 	}
 
-	private void addToolbar() {
+	@Override
+	public void addToolbar() {
 		searchField.setPlaceholder("Search receiving number...");
 		searchField.setClearButtonVisible(true);
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 		searchField.addValueChangeListener(e -> refreshData());
 
 		Button addButton = new Button("New Goods Receipt", VaadinIcon.PLUS.create(),
-				e -> openReceivingDialog(new Receiving()));
+				e -> openDialog(new Receiving()));
 		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -73,24 +71,23 @@ public class ReceivingView extends VerticalLayout {
 		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
-		grid.addColumn(r -> r.getReceivingNumber() != null ? r.getReceivingNumber() : "").setHeader("Receiving #")
-				.setAutoWidth(true).setSortable(true);
-		grid.addColumn(r -> r.getReceivedDate() != null ? r.getReceivedDate().toString() : "-")
+		grid.addColumn(r -> r.receivedDate != null ? r.receivedDate.toString() : "-")
 				.setHeader("Received Date").setAutoWidth(true);
-		grid.addColumn(r -> r.getPurchaseOrder() != null ? r.getPurchaseOrder().getPoNumber() : "-")
+		grid.addColumn(r -> r.purchaseOrder != null ? r.purchaseOrder.poNumber : "-")
 				.setHeader("PO Number").setFlexGrow(1);
 
 		grid.addComponentColumn(receiving -> {
-			String status = receiving.getStatus() != null ? receiving.getStatus().name() : OrderStatus.COMPLETED.name();
+			String status = receiving.status != null ? receiving.status.name() : OrderStatus.COMPLETED.name();
 			Span badge = new Span(status);
 			badge.getElement().getThemeList().add("badge success");
 			return badge;
 		}).setHeader("Status").setAutoWidth(true);
 
 		grid.addComponentColumn(receiving -> {
-			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openReceivingDialog(receiving));
+			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDialog(receiving));
 			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(receiving));
@@ -98,26 +95,25 @@ public class ReceivingView extends VerticalLayout {
 
 			return new HorizontalLayout(editBtn, deleteBtn);
 		}).setHeader("Actions").setAutoWidth(true);
+
+		add(grid);
+
+		refreshData();
 	}
 
-	private void refreshData() {
+	@Override
+	public void refreshData() {
 		var entity = new Receiving();
-		entity.setReceivingNumber(searchField.getValue());
 		grid.setItems(receivingOrderService.findAll(entity, Page.ofSize(100)));
 	}
 
-	private void openReceivingDialog(Receiving receiving) {
+	@Override
+	public void openDialog(Object entity) {
+		Receiving receiving = (Receiving) entity;
 		boolean isEdit = receiving.id != null;
 		Dialog dialog = new Dialog(isEdit ? "Edit Goods Receipt" : "New Goods Receipt");
 
-		TextField recNumField = new TextField("Receiving Number");
-		recNumField.setValue(receiving.getReceivingNumber() != null ? receiving.getReceivingNumber() : "");
-
-		FormLayout form = new FormLayout(recNumField);
-		dialog.add(form);
-
 		Button saveBtn = new Button("Save", e -> {
-			receiving.setReceivingNumber(recNumField.getValue());
 			try {
 				if (isEdit) {
 					receivingOrderService.update(receiving);
@@ -139,10 +135,12 @@ public class ReceivingView extends VerticalLayout {
 		dialog.open();
 	}
 
-	private void confirmDelete(Receiving receiving) {
+	@Override
+	public void confirmDelete(Object entity) {
+		Receiving receiving = (Receiving) entity;
 		Dialog confirmDialog = new Dialog("Delete Receiving");
 		confirmDialog.add(new Paragraph(
-				"Are you sure you want to delete receiving record '" + receiving.getReceivingNumber() + "'?"));
+				"Are you sure you want to delete receiving record '" + receiving.id + "'?"));
 
 		Button deleteBtn = new Button("Delete", e -> {
 			try {

@@ -1,8 +1,5 @@
 package id.putra.core_erp.modules.warehouse.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -19,8 +16,11 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -49,6 +49,23 @@ public class WarehouseView extends VerticalLayout {
 	private final Grid<Zone> gridZone = new Grid<>();
 	private final Grid<Rack> gridRack = new Grid<>();
 
+	private final Binder<Warehouse> warehouseBinder = new BeanValidationBinder<>(Warehouse.class);
+	private final TextField warehouseName = new TextField("Name");
+	private final TextField warehouseLocation = new TextField("Location");
+	private final NumberField warehouseArea = new NumberField("Area (m²)");
+
+	private final Binder<Zone> zoneBinder = new BeanValidationBinder<>(Zone.class);
+	private final TextField zoneCode = new TextField("Code");
+	private final TextField zoneName = new TextField("Name");
+	private final TextField zoneType = new TextField("Type");
+	private final ComboBox<Warehouse> zoneWarehouse = new ComboBox<>("Warehouse");
+
+	private final Binder<Rack> rackBinder = new BeanValidationBinder<>(Rack.class);
+	private final TextField rackName = new TextField("Rack Name");
+	private final IntegerField rackRows = new IntegerField("Rows");
+	private final IntegerField rackCols = new IntegerField("Columns");
+	private final ComboBox<Zone> rackZone = new ComboBox<>("Zone");
+
 	public WarehouseView(WarehouseService warehouseService, ZoneCoreService zoneService, RackCoreService rackService) {
 		this.warehouseService = warehouseService;
 		this.zoneService = zoneService;
@@ -58,9 +75,54 @@ public class WarehouseView extends VerticalLayout {
 		setPadding(true);
 		setSpacing(true);
 
+		configureValidation();
+
 		addHeader();
 		initTab();
 
+	}
+
+	private void configureValidation() {
+		warehouseBinder.forField(warehouseName)
+				.asRequired("Warehouse name is required")
+				.bind("name");
+		warehouseBinder.forField(warehouseLocation)
+				.bind("location");
+		warehouseBinder.forField(warehouseArea)
+				.bind("area");
+
+		zoneBinder.forField(zoneCode)
+				.asRequired("Zone code is required")
+				.bind("code");
+		zoneBinder.forField(zoneName)
+				.asRequired("Zone name is required")
+				.bind("name");
+		zoneBinder.forField(zoneType)
+				.bind("type");
+		zoneBinder.forField(zoneWarehouse)
+				.asRequired("Warehouse is required")
+				.bind("warehouse");
+
+		rackBinder.forField(rackName)
+				.asRequired("Rack name is required")
+				.bind("name");
+		rackBinder.forField(rackRows)
+				.asRequired("Rows count is required")
+				.withConverter(
+						intVal -> intVal != null ? intVal.longValue() : 1L,
+						longVal -> longVal != null ? longVal.intValue() : 1,
+						"Invalid Value")
+				.bind("rows");
+		rackBinder.forField(rackCols)
+				.asRequired("Columns count is required")
+				.withConverter(
+						intVal -> intVal != null ? intVal.longValue() : 1L,
+						longVal -> longVal != null ? longVal.intValue() : 1,
+						"Invalid Value")
+				.bind("cols");
+		rackBinder.forField(rackZone)
+				.asRequired("Zone is required")
+				.bind("zone");
 	}
 
 	private void initTab() {
@@ -103,10 +165,10 @@ public class WarehouseView extends VerticalLayout {
 
 		gridWarehouse.setSizeFull();
 		gridWarehouse.addColumn(w -> w.id != null ? w.id.toString() : "").setHeader("ID").setAutoWidth(true);
-		gridWarehouse.addColumn(w -> w.getName() != null ? w.getName() : "").setHeader("Name").setFlexGrow(1);
-		gridWarehouse.addColumn(w -> w.getLocation() != null ? w.getLocation() : "").setHeader("Location/Address")
+		gridWarehouse.addColumn(w -> w.name != null ? w.name : "").setHeader("Name").setFlexGrow(1);
+		gridWarehouse.addColumn(w -> w.location != null ? w.location : "").setHeader("Location/Address")
 				.setFlexGrow(1);
-		gridWarehouse.addColumn(w -> w.getArea() != null ? w.getArea() + " m²" : "-").setHeader("Area")
+		gridWarehouse.addColumn(w -> w.area != null ? w.area + " m²" : "-").setHeader("Area")
 				.setAutoWidth(true);
 
 		gridWarehouse.addComponentColumn(wh -> {
@@ -138,52 +200,40 @@ public class WarehouseView extends VerticalLayout {
 	}
 
 	private void openWarehouseDialog(Warehouse warehouse) {
-		Dialog dialog = new Dialog("Warehouse");
+		Warehouse wh = warehouse != null ? warehouse : new Warehouse();
+		warehouseBinder.readBean(wh);
 
-		TextField nameField = new TextField("Name");
-		TextField locationField = new TextField("Location");
-		NumberField areaField = new NumberField("Area (m²)");
-		Checkbox activeCheck = new Checkbox("Is Active");
+		Dialog dialog = new Dialog(wh.id == null ? "Add Warehouse" : "Edit Warehouse");
+		dialog.setWidth("500px");
 
-		nameField.setValue(warehouse.getName() != null ? warehouse.getName() : "");
-		locationField.setValue(warehouse.getLocation() != null ? warehouse.getLocation() : "");
-		areaField.setValue(warehouse.getArea() != null ? warehouse.getArea() : 0.0);
-		activeCheck.setValue(warehouse.getIsActive() != null ? warehouse.getIsActive() : true);
-
-		FormLayout form = new FormLayout(nameField, locationField, areaField, activeCheck);
+		FormLayout form = new FormLayout(warehouseName, warehouseLocation, warehouseArea);
 		dialog.add(form);
 
 		Button save = new Button("Save", e -> {
 			try {
-				if (warehouse.id == null) {
-					Warehouse dto = new Warehouse();
-					dto.setName(nameField.getValue());
-					dto.setLocation(locationField.getValue());
-					dto.setArea(areaField.getValue());
-					dto.setIsActive(activeCheck.getValue());
-
-					warehouseService.save(dto);
+				if (warehouseBinder.writeBeanIfValid(wh)) {
+					if (wh.id == null) {
+						warehouseService.save(wh);
+						Notification.show("Warehouse created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						warehouseService.update(wh);
+						Notification.show("Warehouse updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					gridWarehouse.setItems(warehouseService.findAll(new Warehouse(), Page.ofSize(100)));
 				} else {
-					Warehouse dto = new Warehouse();
-					dto.id = warehouse.id;
-					dto.setName(nameField.getValue());
-					dto.setLocation(locationField.getValue());
-					dto.setArea(areaField.getValue());
-					dto.setIsActive(activeCheck.getValue());
-
-					warehouseService.update(dto);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				Notification.show("Warehouse created successfully", 3000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-				dialog.close();
-
 			} catch (Exception ex) {
 				Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
 		});
 		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
+		dialog.getFooter().add(new Button("Cancel", ev -> dialog.close()), save);
 		dialog.open();
 	}
 
@@ -193,13 +243,10 @@ public class WarehouseView extends VerticalLayout {
 		searchField.setPlaceholder("Search zones...");
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 
-		List<Zone> res = new ArrayList<>();
-
 		Zone param = new Zone();
-		param.setName(searchField.getValue());
+		param.name = searchField.getValue();
 
-		zoneService.findAll(param, Page.ofSize(100)).forEach(res::add);
-		gridZone.setItems(res);
+		gridZone.setItems(zoneService.findAll(param, Page.ofSize(100)));
 
 		Button addBtn = new Button("Add Zone", VaadinIcon.PLUS.create(), e -> openZoneDialog(new Zone()));
 		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -214,9 +261,9 @@ public class WarehouseView extends VerticalLayout {
 		toolbar.setFlexGrow(1, searchField);
 
 		gridZone.setSizeFull();
-		gridZone.addColumn(z -> z.getCode() != null ? z.getCode() : "").setHeader("Code").setAutoWidth(true);
-		gridZone.addColumn(z -> z.getName() != null ? z.getName() : "").setHeader("Name").setFlexGrow(1);
-		gridZone.addColumn(z -> z.getType() != null ? z.getType() : "").setHeader("Type").setAutoWidth(true);
+		gridZone.addColumn(z -> z.code != null ? z.code : "").setHeader("Code").setAutoWidth(true);
+		gridZone.addColumn(z -> z.name != null ? z.name : "").setHeader("Name").setFlexGrow(1);
+		gridZone.addColumn(z -> z.type != null ? z.type : "").setHeader("Type").setAutoWidth(true);
 
 		gridZone.addComponentColumn(zone -> {
 			Button edit = new Button(VaadinIcon.EDIT.create(), e -> openZoneDialog(zone));
@@ -247,51 +294,41 @@ public class WarehouseView extends VerticalLayout {
 	}
 
 	private void openZoneDialog(Zone zone) {
-		Dialog dialog = new Dialog("Add Zone");
-		TextField code = new TextField("Code");
-		TextField name = new TextField("Name");
-		TextField type = new TextField("Type");
-		ComboBox<Warehouse> warehouse = new ComboBox<>("Warehouse");
+		Zone z = zone != null ? zone : new Zone();
+		zoneWarehouse.setItems(warehouseService.findAll(new Warehouse(), null));
+		zoneWarehouse.setItemLabelGenerator(w -> w.name != null ? w.name : "");
+		zoneBinder.readBean(z);
 
-		List<Warehouse> res = new ArrayList<>();
-		warehouseService.findAll(new Warehouse(), null).forEach(res::add);
-		warehouse.setItems(res);
-		warehouse.setItemLabelGenerator(w -> w.getName() != null ? w.getName() : "");
+		Dialog dialog = new Dialog(z.id == null ? "Add Zone" : "Edit Zone");
+		dialog.setWidth("500px");
 
-		code.setValue(zone.getCode() != null ? zone.getCode() : "");
-		name.setValue(zone.getName() != null ? zone.getName() : "");
-		type.setValue(zone.getType() != null ? zone.getType() : "");
-		warehouse.setValue(zone.getWarehouse());
-
-		dialog.add(new FormLayout(code, name, type, warehouse));
+		dialog.add(new FormLayout(zoneCode, zoneName, zoneType, zoneWarehouse));
 
 		Button save = new Button("Save", e -> {
-			if (zone.id == null) {
-				Zone dto = new Zone();
-				dto.setCode(code.getValue());
-				dto.setName(name.getValue());
-				dto.setType(type.getValue());
-				dto.setIsActive(true);
-				dto.setWarehouse(warehouse.getValue());
-
-				zoneService.save(dto);
-			} else {
-				Zone dto = new Zone();
-				dto.id = zone.id;
-				dto.setCode(code.getValue());
-				dto.setName(name.getValue());
-				dto.setType(type.getValue());
-				dto.setIsActive(true);
-				dto.setWarehouse(warehouse.getValue());
-
-				zoneService.update(dto);
+			try {
+				if (zoneBinder.writeBeanIfValid(z)) {
+					if (z.id == null) {
+						zoneService.save(z);
+						Notification.show("Zone created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						zoneService.update(z);
+						Notification.show("Zone updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					gridZone.setItems(zoneService.findAll(new Zone(), Page.ofSize(100)));
+				} else {
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				}
+			} catch (Exception ex) {
+				Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
-			Notification.show("Zone created successfully", 3000, Notification.Position.TOP_END)
-					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-			dialog.close();
 		});
 		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
+		dialog.getFooter().add(new Button("Cancel", ev -> dialog.close()), save);
 		dialog.open();
 	}
 
@@ -315,10 +352,9 @@ public class WarehouseView extends VerticalLayout {
 		toolbar.setFlexGrow(1, searchField);
 
 		gridRack.setSizeFull();
-		gridRack.addColumn(r -> r.getName() != null ? r.getName() : "").setHeader("Name").setFlexGrow(1);
-		gridRack.addColumn(r -> r.getRows() != null ? r.getRows().toString() : "").setHeader("Rows").setAutoWidth(true);
-		gridRack.addColumn(r -> r.getCols() != null ? r.getCols().toString() : "").setHeader("Columns")
-				.setAutoWidth(true);
+		gridRack.addColumn(r -> r.name != null ? r.name : "").setHeader("Name").setFlexGrow(1);
+		gridRack.addColumn(r -> r.rows != null ? r.rows.toString() : "").setHeader("Rows").setAutoWidth(true);
+		gridRack.addColumn(r -> r.cols != null ? r.cols.toString() : "").setHeader("Columns").setAutoWidth(true);
 
 		gridRack.addComponentColumn(rack -> {
 			Button edit = new Button(VaadinIcon.EDIT.create(), e -> openRackDialog(rack));
@@ -349,42 +385,41 @@ public class WarehouseView extends VerticalLayout {
 	}
 
 	private void openRackDialog(Rack rack) {
-		Dialog dialog = new Dialog("Add Rack");
-		TextField name = new TextField("Rack Name");
-		NumberField rows = new NumberField("Rows");
-		NumberField cols = new NumberField("Columns");
-		ComboBox<Zone> zone = new ComboBox<>("Zone");
+		Rack r = rack != null ? rack : new Rack();
+		rackZone.setItems(zoneService.findAll(new Zone(), null));
+		rackZone.setItemLabelGenerator(w -> w.name != null ? w.name : "");
+		rackBinder.readBean(r);
 
-		List<Zone> res = new ArrayList<>();
-		zoneService.findAll(new Zone(), null).forEach(res::add);
-		zone.setItems(res);
-		zone.setItemLabelGenerator(w -> w.getName() != null ? w.getName() : "");
+		Dialog dialog = new Dialog(r.id == null ? "Add Rack" : "Edit Rack");
+		dialog.setWidth("500px");
 
-		name.setValue(rack.getName() != null ? rack.getName() : "");
-		rows.setValue(rack.getCols() != null ? rack.getCols() : 0.0);
-		cols.setValue(rack.getCols() != null ? rack.getCols() : 0.0);
-		zone.setValue(rack.getZone());
-
-		dialog.add(new FormLayout(name, rows, cols, zone));
+		dialog.add(new FormLayout(rackName, rackRows, rackCols, rackZone));
 
 		Button save = new Button("Save", e -> {
-			Rack dto = new Rack();
-			dto.id = rack.id;
-			dto.setName(name.getValue());
-			dto.setRows(rows.getValue() != null ? rows.getValue().longValue() : 1L);
-			dto.setCols(cols.getValue() != null ? cols.getValue().longValue() : 1L);
-			dto.setZone(zone.getValue());
-			dto.setIsActive(true);
-
-			rackService.save(dto);
-
-			Notification.show("Rack created successfully", 3000, Notification.Position.TOP_END)
-					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-
-			dialog.close();
+			try {
+				if (rackBinder.writeBeanIfValid(r)) {
+					if (r.id == null) {
+						rackService.save(r);
+						Notification.show("Rack created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						rackService.update(r);
+						Notification.show("Rack updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					gridRack.setItems(rackService.findAll(new Rack(), Page.ofSize(100)));
+				} else {
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+				}
+			} catch (Exception ex) {
+				Notification.show("Error: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+						.addThemeVariants(NotificationVariant.LUMO_ERROR);
+			}
 		});
 		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), save);
+		dialog.getFooter().add(new Button("Cancel", ev -> dialog.close()), save);
 		dialog.open();
 	}
 
@@ -392,25 +427,19 @@ public class WarehouseView extends VerticalLayout {
 		String searchTerm = searchField.getValue() != null ? searchField.getValue() : "";
 
 		if (entity instanceof Warehouse parsedEntity) {
-			parsedEntity.setName(searchTerm);
+			parsedEntity.name = searchTerm;
 
-			List<Warehouse> result = new ArrayList<>();
-			warehouseService.findAll(parsedEntity, Page.ofSize(100)).forEach(result::add);
-			this.gridWarehouse.setItems(result);
+			this.gridWarehouse.setItems(warehouseService.findAll(parsedEntity, Page.ofSize(100)));
 
 		} else if (entity instanceof Zone parsedEntity) {
-			parsedEntity.setCode(searchTerm);
+			parsedEntity.code = searchTerm;
 
-			List<Zone> result = new ArrayList<>();
-			zoneService.findAll(parsedEntity, Page.ofSize(100)).forEach(result::add);
-			this.gridZone.setItems(result);
+			this.gridZone.setItems(zoneService.findAll(parsedEntity, Page.ofSize(100)));
 
 		} else if (entity instanceof Rack parsedEntity) {
-			parsedEntity.setName(searchTerm);
+			parsedEntity.name = searchTerm;
 
-			List<Rack> result = new ArrayList<>();
-			rackService.findAll(parsedEntity, Page.ofSize(100)).forEach(result::add);
-			this.gridRack.setItems(result);
+			this.gridRack.setItems(rackService.findAll(parsedEntity, Page.ofSize(100)));
 		} else {
 			throw new Exception("Entity is not defined");
 		}

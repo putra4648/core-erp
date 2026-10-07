@@ -94,8 +94,11 @@ public class MainLayout extends AppLayout {
 
 		SideNav procNav = new SideNav();
 		procNav.setLabel("Procurement");
-		procNav.addItem(new SideNavItem("Purchase Requisitions", "pr", VaadinIcon.CLIPBOARD_CHECK.create()));
-		procNav.addItem(new SideNavItem("Request for Quotation", "rfq", VaadinIcon.MONEY.create()));
+		procNav.addItem(
+				new SideNavItem("Dashboard Requisition", "requisition/dashboard", VaadinIcon.CLIPBOARD_CHECK.create()));
+		procNav.addItem(
+				new SideNavItem("Requisition", "requisition", VaadinIcon.CLIPBOARD_CHECK.create()));
+		procNav.addItem(new SideNavItem("Quotation", "quotation", VaadinIcon.MONEY.create()));
 		procNav.addItem(new SideNavItem("Purchase Orders", "po", VaadinIcon.FILE_TEXT.create()));
 		// prNav.addItem(new SideNavItem("Transfer Requests", "transfers",
 		// VaadinIcon.EXCHANGE.create()));

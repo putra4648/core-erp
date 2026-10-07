@@ -6,6 +6,8 @@ import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.enums.BudgetType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -13,46 +15,18 @@ import jakarta.persistence.Table;
 public class BudgetDetail extends BaseEntity {
 
 	@Column(name = "name")
-	private String name;
+	public String name;
 
 	@Column(name = "type")
-	private BudgetType type;
+	public BudgetType type;
 
 	@Column(name = "note")
-	private String note;
+	public String note;
 
-	private BigInteger amount;
+	public BigInteger amount;
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public BudgetType getType() {
-		return type;
-	}
-
-	public void setType(BudgetType type) {
-		this.type = type;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-
-	public BigInteger getAmount() {
-		return amount;
-	}
-
-	public void setAmount(BigInteger amount) {
-		this.amount = amount;
-	}
+	@ManyToOne
+	@JoinColumn(name = "budget_id", nullable = false)
+	public Budget budget;
 
 }

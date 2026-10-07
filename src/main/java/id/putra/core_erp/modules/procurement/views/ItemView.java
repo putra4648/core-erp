@@ -20,6 +20,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -29,73 +31,114 @@ import id.putra.core_erp.modules.procurement.service.ItemService;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import id.putra.core_erp.modules.supplier.service.SupplierService;
 import id.putra.core_erp.ui.MainLayout;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "items", layout = MainLayout.class)
 @PageTitle("Items Catalog | PR System")
 @Authenticated
-public class ItemView extends VerticalLayout {
+public class ItemView extends ViewWithDialog {
 
 	private final ItemService itemService;
-	private final SupplierService supplierService;
 
 	private final Grid<Item> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 	private final ComboBox<String> statusFilter = new ComboBox<>();
 	private final List<Item> itemList = new ArrayList<>();
 
-	public ItemView(ItemService itemService, SupplierService supplierService) {
+	private Binder<Item> binder = new BeanValidationBinder<>(Item.class);
+	private TextField name = new TextField("Item Name");
+	private TextField price = new TextField("Estimated Price");
+	private TextField unit = new TextField("Unit of Measure (UOM)");
+	private TextField glAcc = new TextField("GL Account");
+	private TextArea description = new TextArea("Description");
+	private ComboBox<Supplier> supplierCombo = new ComboBox<>("Supplier");
+
+	public ItemView(ItemService itemService) {
+		super();
 		this.itemService = itemService;
-		this.supplierService = supplierService;
 
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+		configureValidation();
 
-		H2 header = new H2("Item Catalog");
-		header.addClassNames(LumoUtility.FontSize.XLARGE);
-
-		HorizontalLayout toolbar = createToolbar();
+		addHeader();
+		addToolbar();
 		configureGrid();
 
-		add(header, toolbar, grid);
-		refreshGrid();
 	}
 
-	private HorizontalLayout createToolbar() {
+	private void configureValidation() {
+		binder.forField(name)
+				.asRequired("Item name is required")
+				.bind("name");
+
+		binder.forField(price)
+				.asRequired("Price is required")
+				.withConverter(
+						str -> {
+							try {
+								return str != null && !str.isBlank() ? new BigInteger(str.replaceAll("[^0-9]", "")) : BigInteger.ZERO;
+							} catch (Exception e) {
+								return BigInteger.ZERO;
+							}
+						},
+						bigInt -> bigInt != null ? bigInt.toString() : "0",
+						"Invalid Price")
+				.bind("price");
+
+		binder.forField(unit)
+				.asRequired("Unit of measure is required")
+				.bind("unit");
+
+		binder.forField(glAcc)
+				.bind("glAcc");
+
+		binder.forField(description)
+				.bind("description");
+	}
+
+	@Override
+	public void addHeader() {
+		H2 header = new H2("Item Catalog");
+		header.addClassNames(LumoUtility.FontSize.XLARGE);
+		add(header);
+	}
+
+	@Override
+	public void addToolbar() {
 		searchField.setPlaceholder("Search item by name / code...");
 		searchField.setClearButtonVisible(true);
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 		searchField.setWidth("300px");
-		searchField.addValueChangeListener(e -> refreshGrid());
+		searchField.addValueChangeListener(e -> refreshData());
 
 		statusFilter.setPlaceholder("Status");
 		statusFilter.setItems("ACTIVE", "INACTIVE");
 		statusFilter.setValue("ACTIVE");
 		statusFilter.setWidth("140px");
-		statusFilter.addValueChangeListener(e -> refreshGrid());
+		statusFilter.addValueChangeListener(e -> refreshData());
 
-		Button addBtn = new Button("Add Item", VaadinIcon.PLUS.create(), e -> openItemDialog(null));
+		Button addBtn = new Button("Add Item", VaadinIcon.PLUS.create(), e -> openDialog(new Item()));
 		addBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshGrid());
+		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
 
 		HorizontalLayout toolbar = new HorizontalLayout(searchField, statusFilter, addBtn, refreshBtn);
 		toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
-		return toolbar;
+		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
 
-		grid.addColumn(i -> i.getName() != null ? i.getName() : "-").setHeader("Item Name").setFlexGrow(2);
-		grid.addColumn(i -> i.getPrice() != null ? String.format("%,d", i.getPrice()) : "-").setHeader("Price")
+		grid.addColumn(i -> i.name != null ? i.name : "-").setHeader("Item Name").setFlexGrow(2);
+		grid.addColumn(i -> i.price != null ? String.format("%,d", i.price) : "-").setHeader("Price")
 				.setAutoWidth(true);
-		grid.addColumn(i -> i.getUnit() != null ? i.getUnit() : "-").setHeader("UOM").setAutoWidth(true);
+		grid.addColumn(i -> i.unit != null ? i.unit : "-").setHeader("UOM").setAutoWidth(true);
 
 		grid.addComponentColumn(i -> {
-			Span badge = new Span(i.getStatus() != null ? i.getStatus() : "ACTIVE");
-			if ("ACTIVE".equalsIgnoreCase(i.getStatus()) || i.getStatus() == null) {
+			Span badge = new Span(i.status != null ? i.status : "ACTIVE");
+			if ("ACTIVE".equalsIgnoreCase(i.status) || i.status == null) {
 				badge.getElement().getThemeList().add("badge success");
 			} else {
 				badge.getElement().getThemeList().add("badge error");
@@ -104,13 +147,18 @@ public class ItemView extends VerticalLayout {
 		}).setHeader("Status").setAutoWidth(true);
 
 		grid.addComponentColumn(i -> {
-			Button editBtn = new Button("Edit", VaadinIcon.EDIT.create(), e -> openItemDialog(i));
+			Button editBtn = new Button("Edit", VaadinIcon.EDIT.create(), e -> openDialog(i));
 			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 			return editBtn;
 		}).setHeader("Actions").setAutoWidth(true);
+
+		add(grid);
+
+		refreshData();
 	}
 
-	private void refreshGrid() {
+	@Override
+	public void refreshData() {
 		try {
 			String search = searchField.getValue() != null ? searchField.getValue() : "";
 			String status = statusFilter.getValue() != null ? statusFilter.getValue() : "ACTIVE";
@@ -129,62 +177,43 @@ public class ItemView extends VerticalLayout {
 		}
 	}
 
-	private void openItemDialog(Item editItem) {
+	@Override
+	public void openDialog(Object entity) {
+		Item item = entity != null ? (Item) entity : new Item();
+		if (item.unit == null || item.unit.isBlank()) {
+			item.unit = "PCS";
+		}
+		if (item.status == null || item.status.isBlank()) {
+			item.status = "ACTIVE";
+		}
+		binder.readBean(item);
+
 		Dialog dialog = new Dialog();
-		dialog.setHeaderTitle(editItem == null ? "Add Item" : "Edit Item");
+		dialog.setHeaderTitle(item.id == null ? "Add Item" : "Edit Item");
 		dialog.setWidth("600px");
 
 		FormLayout form = new FormLayout();
-		TextField nameField = new TextField("Item Name");
-		nameField.setRequired(true);
-		TextField priceField = new TextField("Estimated Price");
-		TextField unitField = new TextField("Unit of Measure (UOM)");
-		unitField.setValue("PCS");
-		TextField glAccField = new TextField("GL Account");
-		TextArea descField = new TextArea("Description");
-
-		ComboBox<Supplier> supplierCombo = new ComboBox<>("Supplier");
-		// TODO: add supplier
-
-		if (editItem != null) {
-			nameField.setValue(editItem.getName() != null ? editItem.getName() : "");
-			priceField.setValue(editItem.getPrice() != null ? editItem.getPrice().toString() : "0");
-			unitField.setValue(editItem.getUnit() != null ? editItem.getUnit() : "PCS");
-			glAccField.setValue(editItem.getGlAcc() != null ? editItem.getGlAcc() : "");
-			descField.setValue(editItem.getDescription() != null ? editItem.getDescription() : "");
-
-		}
-
-		form.add(nameField, supplierCombo, priceField, unitField, glAccField, descField);
-		form.setColspan(descField, 2);
+		form.add(name, supplierCombo, price, unit, glAcc, description);
+		form.setColspan(description, 2);
 
 		Button saveBtn = new Button("Save", e -> {
-
-			Item dto = new Item();
-			dto.setName(nameField.getValue());
-
 			try {
-				dto.setPrice(new BigInteger(priceField.getValue().replaceAll("[^0-9]", "")));
-			} catch (Exception ignored) {
-				dto.setPrice(BigInteger.ZERO);
-			}
-			dto.setUnit(unitField.getValue());
-			dto.setGlAcc(glAccField.getValue());
-			dto.setDescription(descField.getValue());
-			dto.setStatus("ACTIVE");
-
-			try {
-				if (editItem == null) {
-					itemService.save(dto);
-					Notification.show("Item added successfully", 3000, Notification.Position.TOP_CENTER)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				if (binder.writeBeanIfValid(item)) {
+					if (item.id == null) {
+						itemService.save(item);
+						Notification.show("Item added successfully", 3000, Notification.Position.TOP_CENTER)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						itemService.update(item);
+						Notification.show("Item updated successfully", 3000, Notification.Position.TOP_CENTER)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					refreshData();
 				} else {
-					itemService.update(dto);
-					Notification.show("Item updated successfully", 3000, Notification.Position.TOP_CENTER)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_CENTER)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				dialog.close();
-				refreshGrid();
 			} catch (Exception ex) {
 				Notification.show("Error: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -192,10 +221,16 @@ public class ItemView extends VerticalLayout {
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		Button cancelBtn = new Button("Cancel", e -> dialog.close());
+		Button cancelBtn = new Button("Cancel", ev -> dialog.close());
 
 		dialog.add(form);
 		dialog.getFooter().add(cancelBtn, saveBtn);
 		dialog.open();
+	}
+
+	@Override
+	public void confirmDelete(Object entity) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'confirmDelete'");
 	}
 }

@@ -22,12 +22,13 @@ import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.repository.SupplierRepo;
 import id.putra.core_erp.modules.procurement.service.DashboardService;
 import id.putra.core_erp.ui.MainLayout;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.security.Authenticated;
 
-@Route(value = "pr", layout = MainLayout.class)
+@Route(value = "requisition/dashboard", layout = MainLayout.class)
 @PageTitle("PR Dashboard | CORE ERP")
 @Authenticated
-public class RequisitionDashboardView extends VerticalLayout {
+public class RequisitionDashboardView extends ViewWithDialog {
 
 	private final DashboardService dashboardService;
 	private final RequisitionRepo requisitionRepo;
@@ -37,23 +38,28 @@ public class RequisitionDashboardView extends VerticalLayout {
 
 	public RequisitionDashboardView(DashboardService dashboardService, RequisitionRepo requisitionRepo,
 			QuotationRepo rfqRepo, SupplierRepo supplierRepo, ItemRepo itemRepo) {
+		super();
 		this.dashboardService = dashboardService;
 		this.requisitionRepo = requisitionRepo;
 		this.rfqRepo = rfqRepo;
 		this.supplierRepo = supplierRepo;
 		this.itemRepo = itemRepo;
 
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+		addHeader();
+		addToolbar();
+		// configureGrid();
 
-		H2 header = new H2("Overview Dashboard");
-		header.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Margin.Bottom.MEDIUM);
-
-		add(header, createStatsGrid(), createSpendersSection());
 	}
 
-	private Component createStatsGrid() {
+	@Override
+	public void addHeader() {
+		H2 header = new H2("Overview Dashboard");
+		header.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Margin.Bottom.MEDIUM);
+		add(header);
+	}
+
+	@Override
+	public void addToolbar() {
 		HorizontalLayout stats = new HorizontalLayout();
 		stats.setWidthFull();
 		stats.setSpacing(true);
@@ -71,7 +77,9 @@ public class RequisitionDashboardView extends VerticalLayout {
 						"#fef3c7"),
 				createStatCard("Catalog Items", String.valueOf(itemCount), VaadinIcon.PACKAGE, "#7c3aed", "#ede9fe"));
 
-		return stats;
+		add(stats);
+
+		add(createSpendersSection());
 	}
 
 	private Component createStatCard(String title, String value, VaadinIcon iconType, String iconColor,
@@ -138,5 +146,29 @@ public class RequisitionDashboardView extends VerticalLayout {
 
 		section.add(title, grid);
 		return section;
+	}
+
+	@Override
+	public void refreshData() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'refreshData'");
+	}
+
+	@Override
+	public void configureGrid() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'configureGrid'");
+	}
+
+	@Override
+	public void openDialog(Object entity) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'openDialog'");
+	}
+
+	@Override
+	public void confirmDelete(Object entity) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'confirmDelete'");
 	}
 }

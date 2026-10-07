@@ -1,4 +1,4 @@
-package id.putra.core_erp.modules.inbound.model;
+package id.putra.core_erp.modules.procurement.model;
 
 import java.math.BigDecimal;
 

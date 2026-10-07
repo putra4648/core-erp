@@ -2,8 +2,8 @@ package id.putra.core_erp.modules.inbound.service;
 
 import java.util.List;
 
-import id.putra.core_erp.modules.inbound.model.PurchaseOrder;
 import id.putra.core_erp.modules.inbound.repository.PurchaseOrderRepository;
+import id.putra.core_erp.modules.procurement.model.PurchaseOrder;
 import id.putra.core_erp.service.BaseService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;

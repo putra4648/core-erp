@@ -12,35 +12,13 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class ReturnToVendor extends BaseEntity {
-	private String reason;
+	public String reason;
 	@Column(precision = 12, scale = 2)
-	private BigDecimal qty;
+	public BigDecimal qty;
 
 	@ManyToOne
 	@JoinColumn(name = "receiving_line_id")
-	private ReceivingLine receivingLine;
+	public ReceivingLine receivingLine;
 
-	public String getReason() {
-		return reason;
-	}
-
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-
-	public BigDecimal getQty() {
-		return qty;
-	}
-
-	public void setQty(BigDecimal qty) {
-		this.qty = qty;
-	}
-
-	public ReceivingLine getReceivingLine() {
-		return receivingLine;
-	}
-
-	public void setReceivingLine(ReceivingLine receivingLine) {
-		this.receivingLine = receivingLine;
-	}
+	
 }

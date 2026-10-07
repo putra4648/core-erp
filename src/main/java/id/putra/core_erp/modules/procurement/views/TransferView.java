@@ -1,9 +1,6 @@
 package id.putra.core_erp.modules.procurement.views;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -13,97 +10,104 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.modules.department.repo.DepartmentRepo;
 import id.putra.core_erp.modules.procurement.model.Transfer;
-import id.putra.core_erp.modules.procurement.service.TransferService;
 import id.putra.core_erp.ui.MainLayout;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "transfers", layout = MainLayout.class)
 @PageTitle("Transfers | Purchase Requisition System")
 @Authenticated
-public class TransferView extends VerticalLayout {
-
-	private final TransferService transferService;
-	private final DepartmentRepo departmentRepo;
+public class TransferView extends ViewWithDialog {
 
 	private final TextField searchField = new TextField();
 	private final Grid<Transfer> grid = new Grid<>();
-	private final List<Transfer> transferList = new ArrayList<>();
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-	public TransferView(TransferService transferService, DepartmentRepo departmentRepo) {
-		this.transferService = transferService;
-		this.departmentRepo = departmentRepo;
+	public TransferView() {
+		super();
 
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+		addHeader();
+		addToolbar();
+		configureGrid();
 
+	}
+
+	@Override
+	public void addHeader() {
 		H2 header = new H2("Transfer Requests");
 		header.addClassNames(LumoUtility.FontSize.XLARGE);
+		add(header);
+	}
 
+	@Override
+	public void addToolbar() {
 		searchField.setPlaceholder("Search Transfer ID or Title...");
 		searchField.setClearButtonVisible(true);
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 		searchField.setWidth("280px");
-		searchField.addValueChangeListener(e -> refreshGrid());
+		searchField.addValueChangeListener(e -> refreshData());
 
-		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshGrid());
+		Button refreshBtn = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
 
 		HorizontalLayout toolbar = new HorizontalLayout(searchField, refreshBtn);
 		toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-		configureGrid();
-
-		add(header, toolbar, grid);
-		refreshGrid();
+		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
 		grid.addColumn(t -> t.id != null ? t.id : "-").setHeader("Transfer Number").setAutoWidth(true);
-		grid.addColumn(t -> t.getTitle() != null ? t.getTitle() : "-").setHeader("Title").setFlexGrow(2);
-		grid.addColumn(t -> t.getDepartment() != null ? t.getDepartment().getName() : "-").setHeader("Department")
+		grid.addColumn(t -> t.title != null ? t.title : "-").setHeader("Title").setFlexGrow(2);
+		grid.addColumn(t -> t.department != null ? t.department.name : "-").setHeader("Department")
 				.setFlexGrow(1);
-		grid.addColumn(t -> t.getDueDate() != null ? dateFormat.format(t.getDueDate()) : "-").setHeader("Due Date")
+		grid.addColumn(t -> t.dueDate != null ? dateFormat.format(t.dueDate) : "-").setHeader("Due Date")
 				.setAutoWidth(true);
 
 		grid.addComponentColumn(t -> {
-			Span badge = new Span(t.getStatus() != null ? t.getStatus() : "DRAFT");
-			if ("APPROVED".equalsIgnoreCase(t.getStatus()) || "COMPLETED".equalsIgnoreCase(t.getStatus())) {
+			Span badge = new Span(t.status != null ? t.status : "DRAFT");
+			if ("APPROVED".equalsIgnoreCase(t.status) || "COMPLETED".equalsIgnoreCase(t.status)) {
 				badge.getElement().getThemeList().add("badge success");
-			} else if ("REJECT".equalsIgnoreCase(t.getStatus())) {
+			} else if ("REJECT".equalsIgnoreCase(t.status)) {
 				badge.getElement().getThemeList().add("badge error");
 			} else {
 				badge.getElement().getThemeList().add("badge");
 			}
 			return badge;
 		}).setHeader("Status").setAutoWidth(true);
+
+		add(grid);
+
+		refreshData();
 	}
 
-	private void refreshGrid() {
+	@Override
+	public void refreshData() {
 		try {
 			Transfer params = new Transfer();
 
-			List<String> deptIds = new ArrayList<>();
-			departmentRepo.findAll().list().forEach(d -> deptIds.add(d.getCode()));
-
-			List<Transfer> res = transferService.findAll(params);
-			transferList.clear();
-			if (res != null) {
-				transferList.addAll(res);
-			}
-			grid.setItems(transferList);
 		} catch (Exception ex) {
 			Notification.show("Failed to load transfers: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
 					.addThemeVariants(NotificationVariant.LUMO_ERROR);
 		}
+	}
+
+	@Override
+	public void openDialog(Object entity) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'openDialog'");
+	}
+
+	@Override
+	public void confirmDelete(Object entity) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'confirmDelete'");
 	}
 }
