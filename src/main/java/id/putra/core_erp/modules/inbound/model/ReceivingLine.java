@@ -2,6 +2,7 @@ package id.putra.core_erp.modules.inbound.model;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.product.model.Product;
@@ -15,10 +16,10 @@ import jakarta.persistence.Table;
 @Table
 public class ReceivingLine extends BaseEntity {
 
-	public Date receivedDate;
+	public LocalDateTime receivedDate;
 	public String status;
 	public String lotBatch;
-	public Date expiryDate;
+	public LocalDateTime expiryDate;
 
 	@Column(precision = 12, scale = 2)
 	public BigDecimal qtyReceived;
@@ -33,6 +34,5 @@ public class ReceivingLine extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	public Product product;
-
 
 }

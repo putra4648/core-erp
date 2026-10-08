@@ -52,16 +52,9 @@ public class SupplierView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(code)
-				.asRequired("Supplier code is required")
-				.bind("code");
-
-		binder.forField(name)
-				.asRequired("Supplier name is required")
-				.bind("name");
-
-		binder.forField(email)
-				.bind("email");
+		binder.bind(code, "code");
+		binder.bind(name, "name");
+		binder.bind(email, "email");
 	}
 
 	@Override
@@ -127,7 +120,7 @@ public class SupplierView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		Supplier supplier = entity != null ? (Supplier) entity : new Supplier();
 		binder.readBean(supplier);
 

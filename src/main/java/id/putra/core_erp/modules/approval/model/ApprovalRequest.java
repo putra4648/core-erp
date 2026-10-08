@@ -1,13 +1,17 @@
 package id.putra.core_erp.modules.approval.model;
 
 import java.time.Instant;
-import java.util.UUID;
+import java.util.List;
+import org.hibernate.annotations.CreationTimestamp;
 
+import id.putra.core_erp.enums.ApprovalStatus;
+import id.putra.core_erp.enums.ApprovalType;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,21 +19,27 @@ import jakarta.persistence.Table;
 public class ApprovalRequest extends PanacheEntity {
 
     @Column(name = "entity_type", nullable = false)
-    public String entityType; // Contoh: 'LEAVE_REQUEST', 'PURCHASE_ORDER'
-
-    @Column(name = "entity_id", nullable = false)
-    public UUID entityId; // ID transaksi di modul asal
+    @Enumerated(EnumType.STRING)
+    public ApprovalType requestType;
 
     @Column(name = "current_stage", nullable = false)
     public Integer currentStage = 1;
 
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    public Status status = Status.PENDING;
+    public ApprovalStatus status = ApprovalStatus.PENDING;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     public Instant createdAt = Instant.now();
 
-    public enum Status {
-        PENDING, APPROVED, REJECTED, REVISED
-    }
+    @Column(name = "submit_by", nullable = false)
+    public String submittedBy;
+
+    @CreationTimestamp
+    @Column(name = "submit_at")
+    public Instant submitAt;
+
+    @OneToMany(mappedBy = "request")
+    public List<ApprovalHistory> histories;
+
 }

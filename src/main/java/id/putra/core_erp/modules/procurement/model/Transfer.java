@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.procurement.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Transfer extends BaseEntity {
 
 	@Column(name = "due_date")
 
-	public Date dueDate;
+	public LocalDate dueDate;
 
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "suppliers", columnDefinition = "jsonb")

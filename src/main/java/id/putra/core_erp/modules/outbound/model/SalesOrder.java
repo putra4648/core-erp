@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.outbound.model;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
@@ -18,7 +19,7 @@ public class SalesOrder extends BaseEntity {
 
 	@NotBlank(message = "Sales order number is required")
 	public String soNumber;
-	public Date orderDate;
+	public LocalDateTime orderDate;
 	public String status;
 
 	@OneToMany(mappedBy = "salesOrder")
@@ -28,5 +29,4 @@ public class SalesOrder extends BaseEntity {
 	@JoinColumn(name = "customer_id")
 	public Department customer;
 
-	
 }

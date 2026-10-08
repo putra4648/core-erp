@@ -17,6 +17,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -36,7 +37,7 @@ public class ProductView extends ViewWithDialog {
 	private final Grid<Product> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private Binder<Product> binder = new BeanValidationBinder<>(Product.class);
+	private BeanValidationBinder<Product> binder = new BeanValidationBinder<>(Product.class);
 	private TextField sku = new TextField("SKU");
 	private TextField name = new TextField("Product Name");
 	private TextArea description = new TextArea("Description");
@@ -57,40 +58,12 @@ public class ProductView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(sku)
-				.asRequired("SKU is required")
-				.bind("sku");
-
-		binder.forField(name)
-				.asRequired("Product name is required")
-				.bind("name");
-
-		binder.forField(description)
-				.bind("description");
-
-		binder.forField(quantity)
-				.asRequired("Quantity is required")
-				.withConverter(
-						intVal -> intVal != null ? intVal.longValue() : 0L,
-						longVal -> longVal != null ? longVal.intValue() : 0,
-						"Invalid Value")
-				.bind("quantity");
-
-		binder.forField(minStock)
-				.asRequired("Min stock is required")
-				.withConverter(
-						intVal -> intVal != null ? intVal.longValue() : 0L,
-						longVal -> longVal != null ? longVal.intValue() : 0,
-						"Invalid Value")
-				.bind("minStock");
-
-		binder.forField(maxStock)
-				.asRequired("Max stock is required")
-				.withConverter(
-						intVal -> intVal != null ? intVal.longValue() : 0L,
-						longVal -> longVal != null ? longVal.intValue() : 0,
-						"Invalid Value")
-				.bind("maxStock");
+		binder.bind(sku, "sku");
+		binder.bind(name, "name");
+		binder.bind(description, "description");
+		binder.bind(quantity, "quantity");
+		binder.bind(minStock, "minStock");
+		binder.bind(maxStock, "maxStock");
 	}
 
 	@Override
@@ -150,13 +123,13 @@ public class ProductView extends ViewWithDialog {
 	public void refreshData() {
 		Product entity = new Product();
 		entity.name = searchField.getValue();
-
+		entity.sku = searchField.getValue();
 		grid.setItems(productService.findAll(entity, Page.ofSize(100)));
 	}
 
 	@Override
-	public void openDialog(Object entity) {
-		Product product = entity != null ? (Product) entity : new Product();
+	protected void buildAndShowDialog(Object entity) throws Exception {
+		Product product = (Product) entity;
 		binder.readBean(product);
 
 		Dialog dialog = new Dialog(product.id == null ? "Add Product" : "Edit Product");
@@ -167,28 +140,25 @@ public class ProductView extends ViewWithDialog {
 		dialog.add(formLayout);
 
 		Button saveBtn = new Button("Save", e -> {
-			try {
-				if (binder.writeBeanIfValid(product)) {
-					if (product.id != null) {
-						productService.update(product);
-						Notification.show("Product updated successfully", 3000, Notification.Position.TOP_END)
-								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-					} else {
-						productService.save(product);
-						Notification.show("Product created successfully", 3000, Notification.Position.TOP_END)
-								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-					}
-					dialog.close();
-					refreshData();
+			if (binder.writeBeanIfValid(product)) {
+				if (product.id != null) {
+					productService.update(product);
+					Notification.show("Product updated successfully", 3000,
+							Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				} else {
-					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_ERROR);
+					productService.save(product);
+					Notification.show("Product created successfully", 3000,
+							Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				}
-			} catch (Exception ex) {
-				Notification.show("Failed to save product: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
+				dialog.close();
+				refreshData();
+
+			} else {
+				Notification.show("Periksa kembali inputan Anda", 3000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			}
-
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 

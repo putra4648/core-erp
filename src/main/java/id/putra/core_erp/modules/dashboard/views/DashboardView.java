@@ -48,8 +48,8 @@ public class DashboardView extends VerticalLayout {
 	}
 
 	private void addMetricCards() {
-		long totalProducts = 0;
-		long totalWarehouses = 0;
+		int totalProducts = 0;
+		int totalWarehouses = 0;
 
 		HorizontalLayout cardsLayout = new HorizontalLayout();
 		cardsLayout.setWidthFull();

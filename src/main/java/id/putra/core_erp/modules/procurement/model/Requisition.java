@@ -1,7 +1,10 @@
 package id.putra.core_erp.modules.procurement.model;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+
 import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.department.model.Department;
@@ -9,6 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,9 +33,9 @@ public class Requisition extends BaseEntity {
 
 	@NotNull(message = "Due date is required")
 	@Column(name = "due_date")
-	public Date dueDate;
+	public LocalDate dueDate;
 
-	public Long quantity;
+	public Integer quantity;
 
 	@Column(name = "unit_price")
 	public BigInteger unitPrice;
@@ -39,12 +43,7 @@ public class Requisition extends BaseEntity {
 	@Column(name = "status")
 	public String status;
 
-	@Column(name = "budget_detail_id")
-	public Long budgetDetailId;
-
-	@Column(name = "budget_date")
-	public Date budgetDate;
-
+	@NotNull(message = "Budget is required")
 	@ManyToOne
 	@JoinColumn(name = "budget_id", referencedColumnName = "id")
 	public Budget budget;
@@ -53,6 +52,9 @@ public class Requisition extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "dept_id", referencedColumnName = "dept_number")
 	public Department department;
+
+	@OneToMany(mappedBy = "requisition")
+	public List<RequisitionItem> items;
 
 	// TODO: Add supplier here
 

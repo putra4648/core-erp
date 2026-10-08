@@ -20,11 +20,11 @@ public class Rack extends BaseEntity {
 
 	@NotNull(message = "Rows count is required")
 	@Min(value = 1, message = "Rows must be at least 1")
-	public Long rows;
+	public Integer rows;
 
 	@NotNull(message = "Columns count is required")
 	@Min(value = 1, message = "Columns must be at least 1")
-	public Long cols;
+	public Integer cols;
 
 	@NotNull(message = "Zone is required")
 	@ManyToOne

@@ -1,9 +1,6 @@
 package id.putra.core_erp.modules.procurement.views;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -12,7 +9,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -70,12 +66,7 @@ public class InventoryView extends ViewWithDialog {
 	@Override
 	public void configureGrid() {
 		grid.setSizeFull();
-		grid.addColumn(i -> i.poNumber != null ? i.poNumber : "-").setHeader("PO Number").setAutoWidth(true);
-		grid.addColumn(i -> i.partName != null ? i.partName : "-").setHeader("Part Name").setFlexGrow(2);
-		grid.addColumn(
-				i -> (i.area != null ? i.area : "-") + " / " + (i.shelf != null ? i.shelf : "-"))
-				.setHeader("Area / Shelf").setFlexGrow(1);
-		grid.addColumn(i -> i.supplier != null ? i.supplier : "-").setHeader("Supplier").setFlexGrow(1);
+		grid.addColumn(i -> i.name != null ? i.name : "-").setHeader("Part Name").setFlexGrow(2);
 		grid.addColumn(i -> i.qty != null ? i.qty.toString() : "0").setHeader("Stock Qty").setAutoWidth(true);
 		grid.addColumn(i -> i.date != null ? dateFormat.format(i.date) : "-").setHeader("Last Inbound")
 				.setAutoWidth(true);
@@ -97,7 +88,7 @@ public class InventoryView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'openDialog'");
 	}

@@ -108,7 +108,7 @@ public class ReceivingView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		Receiving receiving = (Receiving) entity;
 		boolean isEdit = receiving.id != null;
 		Dialog dialog = new Dialog(isEdit ? "Edit Goods Receipt" : "New Goods Receipt");

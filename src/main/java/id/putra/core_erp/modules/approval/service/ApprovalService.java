@@ -1,56 +1,38 @@
 package id.putra.core_erp.modules.approval.service;
 
-import java.util.UUID;
-
-import id.putra.core_erp.modules.approval.model.ApprovalEvent;
+import id.putra.core_erp.modules.approval.model.ApprovalHistory;
 import id.putra.core_erp.modules.approval.model.ApprovalRequest;
+import io.quarkus.vertx.ConsumeEvent;
+import id.putra.core_erp.modules.approval.repository.ApprovalHistoryRepo;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Event;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
+@Transactional
 public class ApprovalService {
+    private final ApprovalHistoryRepo approvalHistoryRepo;
 
-    private final Event<ApprovalEvent> statusEventPublisher;
+    public ApprovalService(ApprovalHistoryRepo approvalHistoryRepo) {
+        this.approvalHistoryRepo = approvalHistoryRepo;
+    }
 
-    public ApprovalService(Event<ApprovalEvent> statusEventPublisher) {
-        this.statusEventPublisher = statusEventPublisher;
+    @ConsumeEvent
+    public void approvalLogEvent(ApprovalHistory history) {
+        approvalHistoryRepo.persist(history);
     }
 
     @Transactional
-    public void executeAction(UUID requestId, UUID actorId, String action, String comment) {
-        ApprovalRequest request = ApprovalRequest.findById(requestId);
+    public void submit(ApprovalRequest req) {
 
-        if (request == null) {
-            throw new NotFoundException("Approval request not found");
-        }
-
-        if ("REJECT".equalsIgnoreCase(action)) {
-            request.status = ApprovalRequest.Status.REJECTED;
-
-            // Publish Event bahwa transaksi ditolak
-            statusEventPublisher.fire(new ApprovalEvent(
-                    request.entityId, request.entityType, request.status, request.currentStage));
-            return;
-        }
-
-        // Cek stage berikutnya
-        boolean hasNextStage = checkNextStageExists(request.entityType, request.currentStage);
-
-        if (hasNextStage) {
-            request.currentStage += 1;
-        } else {
-            request.status = ApprovalRequest.Status.APPROVED;
-
-            // Publish Event bahwa transaksi disetujui penuh
-            statusEventPublisher.fire(new ApprovalEvent(
-                    request.entityId, request.entityType, request.status, request.currentStage));
-        }
     }
 
-    private boolean checkNextStageExists(String entityType, int currentStage) {
-        // Logika cek stage lanjutan dari database/config
-        return currentStage < 2;
+    @Transactional
+    public void approve(ApprovalRequest req) {
+
+    }
+
+    @Transactional
+    public void reject(ApprovalRequest req) {
+
     }
 }

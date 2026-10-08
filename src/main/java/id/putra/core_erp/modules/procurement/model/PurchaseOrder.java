@@ -1,6 +1,6 @@
 package id.putra.core_erp.modules.procurement.model;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
@@ -26,7 +26,7 @@ public class PurchaseOrder extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	public OrderStatus status;
 
-	public Date orderDate;
+	public LocalDateTime orderDate;
 
 	@OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, orphanRemoval = true)
 	public List<PurchaseOrderLine> purchaseOrderLines;

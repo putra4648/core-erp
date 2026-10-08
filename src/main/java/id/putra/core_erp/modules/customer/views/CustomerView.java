@@ -2,7 +2,6 @@ package id.putra.core_erp.modules.customer.views;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -12,10 +11,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -35,7 +32,7 @@ public class CustomerView extends ViewWithDialog {
 	private final Grid<Customer> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private Binder<Customer> binder = new BeanValidationBinder<>(Customer.class);
+	private BeanValidationBinder<Customer> binder = new BeanValidationBinder<>(Customer.class);
 	private TextField name = new TextField("Customer Name");
 	private TextField email = new TextField("Email");
 	private TextField phone = new TextField("Phone");
@@ -54,15 +51,9 @@ public class CustomerView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(name)
-				.asRequired("Customer name is required")
-				.bind("name");
-
-		binder.forField(email)
-				.bind("email");
-
-		binder.forField(phone)
-				.bind("phone");
+		binder.bind(name, "name");
+		binder.bind(email, "email");
+		binder.bind(phone, "phone");
 	}
 
 	@Override
@@ -125,7 +116,7 @@ public class CustomerView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		Customer customer = entity != null ? (Customer) entity : new Customer();
 		binder.readBean(customer);
 

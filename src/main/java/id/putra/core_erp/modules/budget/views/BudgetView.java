@@ -8,7 +8,6 @@ import java.util.stream.IntStream;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -18,7 +17,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -45,15 +44,13 @@ public class BudgetView extends ViewWithDialog {
 	private final Grid<Budget> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	// Binder di-bound ke kelas Budget
 	private Binder<Budget> binder = new BeanValidationBinder<>(Budget.class);
 
-	// PENTING: Nama variabel UI HARUS persis sama dengan nama field di kelas Budget
 	private ComboBox<Department> department = new ComboBox<>("Select Department");
 	private ComboBox<Integer> fiscalYear = new ComboBox<>("Fiscal Year");
 	private TextField name = new TextField("Budget Name");
 	private ComboBox<BudgetType> type = new ComboBox<>("Budget Type");
-	private IntegerField allocated = new IntegerField("Annual Allocation (Total)");
+	private BigDecimalField allocated = new BigDecimalField("Annual Allocation (Total)");
 
 	public BudgetView(BudgetService budgetService, DepartmentService departmentService) {
 		super();
@@ -78,29 +75,11 @@ public class BudgetView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(department)
-				.asRequired("Department is required")
-				.bind("department");
-
-		binder.forField(fiscalYear)
-				.asRequired("Fiscal year is required")
-				.bind("fiscalYear");
-
-		binder.forField(name)
-				.asRequired("Name is required")
-				.bind("name");
-
-		binder.forField(type)
-				.asRequired("Type is required")
-				.bind("type");
-
-		binder.forField(allocated)
-				.asRequired("Amount is required")
-				.withConverter(
-						integerVal -> integerVal != null ? integerVal.longValue() : null, // Integer -> Long
-						longVal -> longVal != null ? longVal.intValue() : null, // Long -> Integer
-						"Invalid Value")
-				.bind("allocated");
+		binder.bind(department, "department");
+		binder.bind(fiscalYear, "fiscalYear");
+		binder.bind(name, "name");
+		binder.bind(type, "type");
+		binder.bind(allocated, "allocated");
 	}
 
 	@Override
@@ -153,10 +132,8 @@ public class BudgetView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		Budget budget = (Budget) entity;
-
-		// 1. Masukkan nilai entitas ke dalam komponen UI melalui Binder
 		binder.readBean(budget);
 
 		Dialog dialog = new Dialog();
@@ -168,7 +145,6 @@ public class BudgetView extends ViewWithDialog {
 
 		Button saveBtn = new Button("Save", e -> {
 			try {
-				// 2. Validasi & tulis data secara otomatis dari UI ke objek budget
 				if (binder.writeBeanIfValid(budget)) {
 					budgetService.save(budget);
 					Notification.show("Budget saved successfully", 3000, Notification.Position.TOP_END)

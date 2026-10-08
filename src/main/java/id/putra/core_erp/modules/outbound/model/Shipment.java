@@ -1,6 +1,7 @@
 package id.putra.core_erp.modules.outbound.model;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
@@ -12,7 +13,7 @@ import jakarta.persistence.Table;
 @Table
 public class Shipment extends BaseEntity {
 	public String shipmentNumber;
-	public Date shipDate;
+	public LocalDateTime shipDate;
 	public String status;
 
 	@ManyToOne
@@ -23,5 +24,4 @@ public class Shipment extends BaseEntity {
 	@JoinColumn(name = "carrier_id")
 	public Carrier carrier;
 
-	
 }

@@ -83,46 +83,18 @@ public class WarehouseView extends VerticalLayout {
 	}
 
 	private void configureValidation() {
-		warehouseBinder.forField(warehouseName)
-				.asRequired("Warehouse name is required")
-				.bind("name");
-		warehouseBinder.forField(warehouseLocation)
-				.bind("location");
-		warehouseBinder.forField(warehouseArea)
-				.bind("area");
+		warehouseBinder.bind(warehouseName, "name");
+		warehouseBinder.bind(warehouseLocation, "location");
+		warehouseBinder.bind(warehouseArea, "area");
 
-		zoneBinder.forField(zoneCode)
-				.asRequired("Zone code is required")
-				.bind("code");
-		zoneBinder.forField(zoneName)
-				.asRequired("Zone name is required")
-				.bind("name");
-		zoneBinder.forField(zoneType)
-				.bind("type");
-		zoneBinder.forField(zoneWarehouse)
-				.asRequired("Warehouse is required")
-				.bind("warehouse");
+		zoneBinder.bind(zoneCode, "code");
+		zoneBinder.bind(zoneName, "name");
+		zoneBinder.bind(zoneType, "type");
 
-		rackBinder.forField(rackName)
-				.asRequired("Rack name is required")
-				.bind("name");
-		rackBinder.forField(rackRows)
-				.asRequired("Rows count is required")
-				.withConverter(
-						intVal -> intVal != null ? intVal.longValue() : 1L,
-						longVal -> longVal != null ? longVal.intValue() : 1,
-						"Invalid Value")
-				.bind("rows");
-		rackBinder.forField(rackCols)
-				.asRequired("Columns count is required")
-				.withConverter(
-						intVal -> intVal != null ? intVal.longValue() : 1L,
-						longVal -> longVal != null ? longVal.intValue() : 1,
-						"Invalid Value")
-				.bind("cols");
-		rackBinder.forField(rackZone)
-				.asRequired("Zone is required")
-				.bind("zone");
+		rackBinder.bind(rackName, "name");
+		rackBinder.bind(rackRows, "rows");
+		rackBinder.bind(rackCols, "cols");
+
 	}
 
 	private void initTab() {

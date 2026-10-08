@@ -15,104 +15,25 @@ import jakarta.persistence.Table;
 public class TransactionItem extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "transaction_id", nullable = false)
-	private Transaction transaction;
+	public Transaction transaction;
 
 	@ManyToOne
 	@JoinColumn(name = "product_id", nullable = false)
-	private Product product;
+	public Product product;
 
 	@ManyToOne
 	@JoinColumn(name = "source_inv_item_id")
-	private InventoryItem sourceInventoryItem;
+	public InventoryItem sourceInventoryItem;
 
 	@ManyToOne
 	@JoinColumn(name = "dest_inv_item_id")
-	private InventoryItem destInventoryItem;
+	public InventoryItem destInventoryItem;
 
-	private Long quantity;
-	private BigDecimal unitPrice;
-	private BigDecimal totalPrice;
-	private String lotNumber;
-	private String serialNumber;
-	private String notes;
+	public Integer quantity;
+	public BigDecimal unitPrice;
+	public BigDecimal totalPrice;
+	public String lotNumber;
+	public String serialNumber;
+	public String notes;
 
-	public Transaction getTransaction() {
-		return transaction;
-	}
-
-	public void setTransaction(Transaction transaction) {
-		this.transaction = transaction;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public InventoryItem getSourceInventoryItem() {
-		return sourceInventoryItem;
-	}
-
-	public void setSourceInventoryItem(InventoryItem sourceInventoryItem) {
-		this.sourceInventoryItem = sourceInventoryItem;
-	}
-
-	public InventoryItem getDestInventoryItem() {
-		return destInventoryItem;
-	}
-
-	public void setDestInventoryItem(InventoryItem destInventoryItem) {
-		this.destInventoryItem = destInventoryItem;
-	}
-
-	public Long getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
-
-	public BigDecimal getUnitPrice() {
-		return unitPrice;
-	}
-
-	public void setUnitPrice(BigDecimal unitPrice) {
-		this.unitPrice = unitPrice;
-	}
-
-	public BigDecimal getTotalPrice() {
-		return totalPrice;
-	}
-
-	public void setTotalPrice(BigDecimal totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
-	public String getLotNumber() {
-		return lotNumber;
-	}
-
-	public void setLotNumber(String lotNumber) {
-		this.lotNumber = lotNumber;
-	}
-
-	public String getSerialNumber() {
-		return serialNumber;
-	}
-
-	public void setSerialNumber(String serialNumber) {
-		this.serialNumber = serialNumber;
-	}
-
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
 }

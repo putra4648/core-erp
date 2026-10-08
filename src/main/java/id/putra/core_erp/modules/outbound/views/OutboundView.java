@@ -51,9 +51,7 @@ public class OutboundView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(soNumber)
-				.asRequired("Sales Order Number is required")
-				.bind("soNumber");
+		binder.bind(soNumber, "soNumber");
 	}
 
 	@Override
@@ -123,7 +121,7 @@ public class OutboundView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		SalesOrder order = entity != null ? (SalesOrder) entity : new SalesOrder();
 		binder.readBean(order);
 

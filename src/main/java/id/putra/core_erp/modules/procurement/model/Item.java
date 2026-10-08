@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.procurement.model;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -24,14 +25,11 @@ public class Item extends BaseEntity {
 
 	@NotNull(message = "Price is required")
 	@PositiveOrZero(message = "Price cannot be negative")
-	@Column(name = "price")
-	public BigInteger price;
+	@Column(name = "price", nullable = false)
+	public BigDecimal price;
 
 	@Column(name = "description")
 	public String description;
-
-	@Column(name = "status")
-	public String status;
 
 	@NotBlank(message = "Unit of measure is required")
 	public String unit;
@@ -51,6 +49,5 @@ public class Item extends BaseEntity {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "measurement_id", referencedColumnName = "id")
 	public ItemMeasurement measurement;
-
 
 }

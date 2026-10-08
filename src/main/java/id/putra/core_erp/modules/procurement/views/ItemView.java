@@ -1,6 +1,5 @@
 package id.putra.core_erp.modules.procurement.views;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +10,12 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -29,7 +27,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import id.putra.core_erp.modules.procurement.model.Item;
 import id.putra.core_erp.modules.procurement.service.ItemService;
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import id.putra.core_erp.modules.supplier.service.SupplierService;
 import id.putra.core_erp.ui.MainLayout;
 import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.security.Authenticated;
@@ -48,7 +45,7 @@ public class ItemView extends ViewWithDialog {
 
 	private Binder<Item> binder = new BeanValidationBinder<>(Item.class);
 	private TextField name = new TextField("Item Name");
-	private TextField price = new TextField("Estimated Price");
+	private BigDecimalField price = new BigDecimalField("Estimated Price");
 	private TextField unit = new TextField("Unit of Measure (UOM)");
 	private TextField glAcc = new TextField("GL Account");
 	private TextArea description = new TextArea("Description");
@@ -67,33 +64,11 @@ public class ItemView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(name)
-				.asRequired("Item name is required")
-				.bind("name");
-
-		binder.forField(price)
-				.asRequired("Price is required")
-				.withConverter(
-						str -> {
-							try {
-								return str != null && !str.isBlank() ? new BigInteger(str.replaceAll("[^0-9]", "")) : BigInteger.ZERO;
-							} catch (Exception e) {
-								return BigInteger.ZERO;
-							}
-						},
-						bigInt -> bigInt != null ? bigInt.toString() : "0",
-						"Invalid Price")
-				.bind("price");
-
-		binder.forField(unit)
-				.asRequired("Unit of measure is required")
-				.bind("unit");
-
-		binder.forField(glAcc)
-				.bind("glAcc");
-
-		binder.forField(description)
-				.bind("description");
+		binder.bind(name, "name");
+		binder.bind(price, "price");
+		binder.bind(unit, "unit");
+		binder.bind(glAcc, "glAcc");
+		binder.bind(description, "description");
 	}
 
 	@Override
@@ -137,16 +112,6 @@ public class ItemView extends ViewWithDialog {
 		grid.addColumn(i -> i.unit != null ? i.unit : "-").setHeader("UOM").setAutoWidth(true);
 
 		grid.addComponentColumn(i -> {
-			Span badge = new Span(i.status != null ? i.status : "ACTIVE");
-			if ("ACTIVE".equalsIgnoreCase(i.status) || i.status == null) {
-				badge.getElement().getThemeList().add("badge success");
-			} else {
-				badge.getElement().getThemeList().add("badge error");
-			}
-			return badge;
-		}).setHeader("Status").setAutoWidth(true);
-
-		grid.addComponentColumn(i -> {
 			Button editBtn = new Button("Edit", VaadinIcon.EDIT.create(), e -> openDialog(i));
 			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 			return editBtn;
@@ -178,13 +143,10 @@ public class ItemView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		Item item = entity != null ? (Item) entity : new Item();
 		if (item.unit == null || item.unit.isBlank()) {
 			item.unit = "PCS";
-		}
-		if (item.status == null || item.status.isBlank()) {
-			item.status = "ACTIVE";
 		}
 		binder.readBean(item);
 
@@ -211,7 +173,8 @@ public class ItemView extends ViewWithDialog {
 					dialog.close();
 					refreshData();
 				} else {
-					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_CENTER)
+					Notification
+							.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_CENTER)
 							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
 			} catch (Exception ex) {

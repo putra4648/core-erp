@@ -54,9 +54,7 @@ public class PurchaseOrderView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(poNumber)
-				.asRequired("PO Number is required")
-				.bind("poNumber");
+		binder.bind(poNumber, "poNumber");
 	}
 
 	@Override
@@ -117,8 +115,8 @@ public class PurchaseOrderView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object object) {
-		PurchaseOrder po = object != null ? (PurchaseOrder) object : new PurchaseOrder();
+	protected void buildAndShowDialog(Object entity) throws Exception {
+		PurchaseOrder po = entity != null ? (PurchaseOrder) entity : new PurchaseOrder();
 		binder.readBean(po);
 
 		Dialog dialog = new Dialog(po.id == null ? "New Purchase Order" : "Edit Purchase Order");

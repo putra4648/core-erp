@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.budget.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
@@ -25,19 +26,19 @@ public class Budget extends BaseEntity {
 	public Department department;
 
 	@NotEmpty
+	@Column(name = "name", nullable = false)
 	public String name;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "type", nullable = false)
 	public BudgetType type;
 
 	@NotNull
-	@Column(name = "fiscal_year")
+	@Column(name = "fiscal_year", nullable = false)
 	public Integer fiscalYear;
 
 	@NotNull
-	public Long allocated;
-
-	@OneToMany(mappedBy = "budget")
-	public List<BudgetDetail> details;
+	@Column(name = "allocated", nullable = false)
+	public BigDecimal allocated;
 
 }

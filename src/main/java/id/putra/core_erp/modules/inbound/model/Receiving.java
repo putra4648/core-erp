@@ -1,6 +1,8 @@
 package id.putra.core_erp.modules.inbound.model;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.enums.OrderStatus;
@@ -18,7 +20,7 @@ import jakarta.persistence.Table;
 @Table
 public class Receiving extends BaseEntity {
 
-	public Date receivedDate;
+	public LocalDateTime receivedDate;
 
 	@Enumerated(EnumType.STRING)
 	public OrderStatus status;

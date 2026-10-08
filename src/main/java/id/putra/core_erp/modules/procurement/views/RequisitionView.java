@@ -32,7 +32,7 @@ import io.quarkus.security.Authenticated;
 @Route(value = "requisition", layout = MainLayout.class)
 @PageTitle("Purchase Requisitions | PR System")
 @Authenticated
-public class RequisitionListView extends ViewWithDialog {
+public class RequisitionView extends ViewWithDialog {
 
 	private final RequisitionService requisitionService;
 	private final RequisitionRepo requisitionRepo;
@@ -44,7 +44,7 @@ public class RequisitionListView extends ViewWithDialog {
 	private final List<Requisition> reqList = new ArrayList<>();
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-	public RequisitionListView(RequisitionService requisitionService, RequisitionRepo requisitionRepo,
+	public RequisitionView(RequisitionService requisitionService, RequisitionRepo requisitionRepo,
 			DepartmentRepo departmentRepo) {
 		this.requisitionService = requisitionService;
 		this.requisitionRepo = requisitionRepo;
@@ -66,7 +66,7 @@ public class RequisitionListView extends ViewWithDialog {
 	@Override
 	public void addToolbar() {
 		Button newPrBtn = new Button("Create Requisition", VaadinIcon.PLUS.create(),
-				e -> UI.getCurrent().navigate(RequisitionFormView.class));
+				e -> UI.getCurrent().navigate(CreateRequisitionView.class));
 		newPrBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		searchField.setPlaceholder("Search PR by Title / ID...");
@@ -115,7 +115,7 @@ public class RequisitionListView extends ViewWithDialog {
 
 		grid.addComponentColumn(r -> {
 			Button viewBtn = new Button("View / Edit", VaadinIcon.EYE.create(),
-					e -> UI.getCurrent().navigate(RequisitionFormView.class, r.id.toString()));
+					e -> UI.getCurrent().navigate(CreateRequisitionView.class, r.id.toString()));
 			viewBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
 
 			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> {
@@ -162,7 +162,7 @@ public class RequisitionListView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'openDialog'");
 	}

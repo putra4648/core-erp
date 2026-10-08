@@ -51,13 +51,8 @@ public class DepartmentView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(code)
-				.asRequired("Department code is required")
-				.bind("code");
-
-		binder.forField(name)
-				.asRequired("Department name is required")
-				.bind("name");
+		binder.bind(code, "code");
+		binder.bind(name, "name");
 	}
 
 	@Override
@@ -85,6 +80,7 @@ public class DepartmentView extends ViewWithDialog {
 		HorizontalLayout toolbar = new HorizontalLayout(searchField, addButton, refreshButton);
 		toolbar.setWidthFull();
 		toolbar.setFlexGrow(1, searchField);
+
 		add(toolbar);
 	}
 
@@ -107,6 +103,9 @@ public class DepartmentView extends ViewWithDialog {
 		}).setHeader("Actions").setAutoWidth(true);
 
 		refreshData();
+
+		add(grid);
+
 	}
 
 	@Override
@@ -117,7 +116,7 @@ public class DepartmentView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		Department dept = entity != null ? (Department) entity : new Department();
 		binder.readBean(dept);
 

@@ -109,7 +109,7 @@ public class ReportsView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'openDialog'");
 	}

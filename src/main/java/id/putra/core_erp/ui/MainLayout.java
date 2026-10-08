@@ -100,39 +100,25 @@ public class MainLayout extends AppLayout {
 				new SideNavItem("Requisition", "requisition", VaadinIcon.CLIPBOARD_CHECK.create()));
 		procNav.addItem(new SideNavItem("Quotation", "quotation", VaadinIcon.MONEY.create()));
 		procNav.addItem(new SideNavItem("Purchase Orders", "po", VaadinIcon.FILE_TEXT.create()));
-		// prNav.addItem(new SideNavItem("Transfer Requests", "transfers",
-		// VaadinIcon.EXCHANGE.create()));
 		procNav.setWidthFull();
 
 		SideNav masterNav = new SideNav();
 		masterNav.setLabel("Master Data");
 		masterNav.addItem(new SideNavItem("Products", "master/products", VaadinIcon.RECORDS.create()));
-		// masterNav.addItem(new SideNavItem("Categories", "master/categories",
-		// VaadinIcon.TAGS.create()));
 		masterNav.addItem(new SideNavItem("Suppliers", "master/suppliers", VaadinIcon.TRUCK.create()));
 		masterNav.addItem(new SideNavItem("Customers", "master/customer", VaadinIcon.USERS.create()));
 		masterNav.addItem(new SideNavItem("Warehouses", "master/warehouses", VaadinIcon.BUILDING.create()));
 		masterNav.addItem(new SideNavItem("Budget Planning", "budgets", VaadinIcon.CHART_LINE.create()));
-		// TODO: add PR Items
-		// masterNav.addItem(new SideNavItem("PR Items", "items",
-		// VaadinIcon.LIST.create()));
-		// TODO: add Companies
-		// masterNav.addItem(new SideNavItem("Companies", "company",
-		// VaadinIcon.OFFICE.create()));
+
 		masterNav.setWidthFull();
 
 		SideNav reportsNav = new SideNav();
 		reportsNav.setLabel("Reports & Analytics");
 		reportsNav.addItem(new SideNavItem("WMS Reports", "reports", VaadinIcon.PIE_CHART.create()));
-		// TODO: add PR Dashboard
-		// reportsNav.addItem(new SideNavItem("PR Dashboard", "prc/dashboard",
-		// VaadinIcon.CHART.create()));
 		reportsNav.setWidthFull();
 
 		SideNav adminNav = new SideNav();
 		adminNav.setLabel("Administration");
-		// adminNav.addItem(new SideNavItem("User Management", "users",
-		// VaadinIcon.USER_CHECK.create()));
 		adminNav.addItem(new SideNavItem("System Settings", "settings", VaadinIcon.COG.create()));
 		adminNav.addItem(new SideNavItem("Help & Support", "help", VaadinIcon.QUESTION_CIRCLE.create()));
 		adminNav.setWidthFull();

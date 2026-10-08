@@ -3,7 +3,6 @@ package id.putra.core_erp.modules.department.model;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
-import id.putra.core_erp.enums.Status;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.procurement.model.Requisition;
 import jakarta.persistence.CascadeType;
@@ -24,9 +23,6 @@ public class Department extends BaseEntity {
 	@NotBlank(message = "Department name is required")
 	@Column(name = "dept_name", nullable = false)
 	public String name;
-
-	@Column(name = "status")
-	public Status status;
 
 	@Column(name = "dept_manager_nrp")
 	public String deptManager;

@@ -13,18 +13,18 @@ import jakarta.validation.constraints.NotBlank;
 public class Company extends BaseEntity {
 
 	@NotBlank(message = "Telephone is required")
-	@Column(name = "telp")
+	@Column(name = "telp", nullable = false)
 	public String telp;
 
 	@NotBlank(message = "NPWP is required")
-	@Column(name = "npwp")
+	@Column(name = "npwp", nullable = false)
 	public String npwp;
 
 	@Column(name = "logo_path")
 	public String logoPath;
 
 	@NotBlank(message = "Bank account is required")
-	@Column(nullable = false)
+	@Column(name = "account_bank", nullable = false)
 	public String accountBank;
 
 	@Column(name = "currencies")

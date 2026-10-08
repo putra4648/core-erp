@@ -3,6 +3,7 @@ package id.putra.core_erp.modules.company.views;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
@@ -35,9 +36,7 @@ public class CompanyView extends ViewWithDialog {
 	private final TextField npwp = new TextField("NPWP");
 	private final TextField accountBank = new TextField("Bank Account");
 	private final DatePicker endYearPicker = new DatePicker("Financial End Year");
-	private final TextField curr1Field = new TextField("Primary Currency");
-	private final TextField curr2Field = new TextField("Secondary Currency");
-	private final TextField curr3Field = new TextField("Tertiary Currency");
+	private final ComboBox<String> currency = new ComboBox<>("Currency");
 	private final Checkbox autoCloseOrderBox = new Checkbox("Auto Close Order");
 	private final Checkbox registerApprovalBox = new Checkbox("Require Register Approval");
 	private final Button saveButton = new Button("Save Changes");
@@ -52,17 +51,11 @@ public class CompanyView extends ViewWithDialog {
 	}
 
 	private void configureValidation() {
-		binder.forField(telp)
-				.asRequired("Telephone is required")
-				.bind("telp");
-
-		binder.forField(npwp)
-				.asRequired("NPWP is required")
-				.bind("npwp");
-
-		binder.forField(accountBank)
-				.asRequired("Bank account is required")
-				.bind("accountBank");
+		binder.bind(telp, "telp");
+		binder.bind(npwp, "npwp");
+		binder.bind(accountBank, "accountBank");
+		binder.bind(endYearPicker, "endYear");
+		binder.bind(currency, "currency");
 	}
 
 	@Override
@@ -84,7 +77,9 @@ public class CompanyView extends ViewWithDialog {
 		FormLayout form = new FormLayout();
 		form.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("500px", 2));
 
-		form.add(telp, npwp, accountBank, endYearPicker, curr1Field, curr2Field, curr3Field);
+		currency.setItems("Rp", "$", "€", "¥");
+
+		form.add(telp, npwp, accountBank, endYearPicker, currency);
 
 		HorizontalLayout checkboxRow = new HorizontalLayout(autoCloseOrderBox, registerApprovalBox);
 		checkboxRow.setSpacing(true);
@@ -137,7 +132,7 @@ public class CompanyView extends ViewWithDialog {
 	}
 
 	@Override
-	public void openDialog(Object entity) {
+	protected void buildAndShowDialog(Object entity) throws Exception {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'openDialog'");
 	}
