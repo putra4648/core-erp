@@ -1,7 +1,5 @@
 package id.putra.core_erp.modules.procurement.views;
 
-import java.math.BigInteger;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +9,11 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -30,15 +26,11 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import id.putra.core_erp.modules.approval.model.ApprovalStep;
-import id.putra.core_erp.modules.approval.model.ApprovalWorkflow;
+import id.putra.core_erp.enums.ApprovalStatus;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.budget.service.BudgetService;
 import id.putra.core_erp.modules.department.model.Department;
@@ -48,20 +40,21 @@ import id.putra.core_erp.modules.procurement.model.RequisitionItem;
 import id.putra.core_erp.modules.procurement.service.RequisitionService;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.inject.Inject;
 
 @Route(value = "requisition/create", layout = MainLayout.class)
 @PageTitle("Requisition | PR System")
 @Authenticated
-public class CreateRequisitionView extends VerticalLayout implements HasUrlParameter<String> {
+public class CreateRequisitionView extends VerticalLayout {
+	@Inject
+	SecurityIdentity identity;
 
 	private final RequisitionService requisitionService;
 	private final DepartmentService departmentService;
 	private final BudgetService budgetService;
 
 	private final Grid<RequisitionItem> itemGrid = new Grid<>();
-
-	private Long requisitionId = null;
-	private String currentStatus = "DRAFT";
 
 	private final Binder<Requisition> binder = new BeanValidationBinder<>(Requisition.class);
 	private final Binder<RequisitionItem> binderItem = new BeanValidationBinder<>(RequisitionItem.class);
@@ -73,9 +66,9 @@ public class CreateRequisitionView extends VerticalLayout implements HasUrlParam
 	private final ComboBox<Budget> budgetField = new ComboBox<>("Budget From");
 	private final TextArea noteField = new TextArea("Requisition Notes / Justification");
 
-	private final TextField itemNameField = new TextField("Item Name");
-	private final IntegerField itemQtyField = new IntegerField("Quantity");
-	private final BigDecimalField itemPriceField = new BigDecimalField("Unit Price");
+	private final TextField itemNameField = new TextField();
+	private final IntegerField itemQtyField = new IntegerField();
+	private final BigDecimalField itemPriceField = new BigDecimalField();
 
 	private final Editor<RequisitionItem> itemEditor;
 	private final List<RequisitionItem> itemList = new ArrayList<>();
@@ -116,21 +109,6 @@ public class CreateRequisitionView extends VerticalLayout implements HasUrlParam
 		binderItem.bind(itemNameField, "name");
 		binderItem.bind(itemQtyField, "quantity");
 		binderItem.bind(itemPriceField, "unitPrice");
-	}
-
-	@Override
-	public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
-		if (parameter != null && !parameter.isBlank()) {
-			this.requisitionId = Long.parseLong(parameter);
-			this.titleHeader.setText("Purchase Requisition: " + parameter);
-			loadRequisition(Long.parseLong(parameter));
-		} else {
-			this.requisitionId = null;
-			this.titleHeader.setText("Create Purchase Requisition");
-			Requisition newReq = new Requisition();
-			newReq.dueDate = LocalDate.now().plusDays(14);
-			binder.readBean(newReq);
-		}
 	}
 
 	private Component createFormSection() {
@@ -191,19 +169,9 @@ public class CreateRequisitionView extends VerticalLayout implements HasUrlParam
 
 		Button submitBtn = new Button("Submit", VaadinIcon.CHECK.create());
 		submitBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		submitBtn.addClickListener(e -> saveRequisition("SEND"));
+		submitBtn.addClickListener(e -> saveRequisition());
 
-		Button approveBtn = new Button("Approve", VaadinIcon.THUMBS_UP.create());
-		approveBtn.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
-		approveBtn.addClickListener(e -> handleApproval("APPROVED"));
-		approveBtn.setVisible(false);
-
-		Button rejectBtn = new Button("Reject", VaadinIcon.THUMBS_DOWN.create());
-		rejectBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
-		rejectBtn.addClickListener(e -> openRejectDialog());
-		rejectBtn.setVisible(false);
-
-		actions.add(submitBtn, approveBtn, rejectBtn);
+		actions.add(submitBtn);
 		return actions;
 	}
 
@@ -266,29 +234,7 @@ public class CreateRequisitionView extends VerticalLayout implements HasUrlParam
 
 	}
 
-	private void loadRequisition(Long id) {
-		try {
-			Requisition r = requisitionService.findById(id);
-			if (r != null && r.id != null) {
-				this.currentStatus = r.status != null ? r.status : "DRAFT";
-				binder.readBean(r);
-				// if (r.budget != null) {
-				// budgetDetailIdField.setValue(r.budget);
-				// }
-			}
-		} catch (Exception ex) {
-			Notification.show("Error loading PR: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER)
-					.addThemeVariants(NotificationVariant.LUMO_ERROR);
-		}
-	}
-
-	private void saveRequisition(String status) {
-		Requisition params = new Requisition();
-		if (this.requisitionId != null) {
-			params.id = this.requisitionId;
-		}
-		params.status = status;
-
+	private void saveRequisition() {
 		try {
 			if (itemEditor.isOpen()) {
 				Notification
@@ -307,17 +253,23 @@ public class CreateRequisitionView extends VerticalLayout implements HasUrlParam
 				return;
 			}
 
-			if (binder.writeBeanIfValid(params)) {
-				params.items = new ArrayList<>(itemList.stream().map(item -> {
-					item.requisition = params;
-					return item;
-				}).toList());
+			var params = new Requisition();
+			params.budget = budgetField.getValue();
+			params.status = ApprovalStatus.SUBMIT;
+			params.dueDate = dueDatePicker.getValue();
+			params.department = deptCombo.getValue();
+			params.note = noteField.getValue();
+			params.title = titleField.getValue();
+			params.referenceId = "PR-" + System.currentTimeMillis();
 
-				if (params.id != null) {
-					requisitionService.update(params);
-				} else {
-					requisitionService.save(params);
-				}
+			if (binder.writeBeanIfValid(params)) {
+				// Populate items AFTER binder validation so the binder doesn't clear the list
+				itemList.forEach(item -> {
+					item.requisition = params;
+					params.items.add(item);
+				});
+
+				requisitionService.submit(params, identity);
 				Notification.show("Requisition saved successfully", 3000, Notification.Position.TOP_CENTER)
 						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				UI.getCurrent().navigate(RequisitionView.class);
@@ -331,34 +283,4 @@ public class CreateRequisitionView extends VerticalLayout implements HasUrlParam
 		}
 	}
 
-	private void handleApproval(String status) {
-		saveRequisition(status);
-	}
-
-	private void openRejectDialog() {
-		Dialog dialog = new Dialog();
-		dialog.setHeaderTitle("Reject Purchase Requisition");
-		dialog.setWidth("450px");
-
-		TextArea rejectReason = new TextArea("Rejection Reason");
-		rejectReason.setRequired(true);
-		rejectReason.setWidthFull();
-
-		Button rejectConfirm = new Button("Confirm Rejection", e -> {
-			if (rejectReason.getValue().isBlank()) {
-				Notification.show("Reason is required", 3000, Notification.Position.TOP_CENTER);
-				return;
-			}
-			noteField.setValue(noteField.getValue() + " [REJECT REASON: " + rejectReason.getValue() + "]");
-			dialog.close();
-			saveRequisition("REJECT");
-		});
-		rejectConfirm.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
-
-		Button cancel = new Button("Cancel", e -> dialog.close());
-
-		dialog.add(rejectReason);
-		dialog.getFooter().add(cancel, rejectConfirm);
-		dialog.open();
-	}
 }

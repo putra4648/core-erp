@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table
+@Table(name = "requisition_items")
 public class RequisitionItem extends BaseEntity {
 
 	@Column(name = "name")

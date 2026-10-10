@@ -25,19 +25,22 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
+import jakarta.inject.Inject;
 
 @Authenticated
 public class MainLayout extends AppLayout {
+	@Inject
+	SecurityIdentity securityIdentity;
 
 	public MainLayout(SecurityIdentity securityIdentity) {
 		setPrimarySection(Section.DRAWER);
 
 		var principal = (DefaultJWTCallerPrincipal) securityIdentity.getPrincipal();
-		createHeader(principal.getName(), principal.getClaim("picture"));
-		createDrawer(principal.getName(), principal.getClaim("picture"));
+		createHeader(principal);
+		createDrawer(principal);
 	}
 
-	private void createHeader(String username, String pictureUrl) {
+	private void createHeader(DefaultJWTCallerPrincipal principal) {
 		DrawerToggle toggle = new DrawerToggle();
 		toggle.setAriaLabel("Menu toggle");
 
@@ -58,9 +61,9 @@ public class MainLayout extends AppLayout {
 		themeToggle.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		themeToggle.setAriaLabel("Toggle dark mode");
 
-		Avatar avatar = new Avatar(username);
-		if (pictureUrl != null && !pictureUrl.isBlank()) {
-			avatar.setImage(pictureUrl);
+		Avatar avatar = new Avatar(principal.getName());
+		if (principal.getClaim("picture") != null && !principal.getClaim("picture").toString().isBlank()) {
+			avatar.setImage(principal.getClaim("picture"));
 		}
 		avatar.addClassNames(LumoUtility.Margin.Right.SMALL);
 
@@ -68,6 +71,11 @@ public class MainLayout extends AppLayout {
 		userMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
 		MenuItem userMenuItem = userMenu.addItem(avatar);
 		SubMenu subMenu = userMenuItem.getSubMenu();
+
+		subMenu.addItem("Profile", e -> {
+			System.out.println("Principal: " + principal.getClaimNames());
+			System.out.println("Security Identity: " + securityIdentity.getRoles());
+		});
 		subMenu.addItem("Settings", e -> UI.getCurrent().navigate("settings"));
 		subMenu.addItem("Logout", e -> UI.getCurrent().navigate("logout"));
 
@@ -79,7 +87,7 @@ public class MainLayout extends AppLayout {
 		addToNavbar(header);
 	}
 
-	private void createDrawer(String username, String pictureUrl) {
+	private void createDrawer(DefaultJWTCallerPrincipal principal) {
 		SideNav mainNav = new SideNav();
 		mainNav.setLabel("Main");
 		mainNav.addItem(new SideNavItem("Dashboard", "", VaadinIcon.DASHBOARD.create()));

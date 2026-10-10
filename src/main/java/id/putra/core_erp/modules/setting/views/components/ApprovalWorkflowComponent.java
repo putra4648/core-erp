@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -19,6 +20,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
+import id.putra.core_erp.enums.ApprovalType;
 import id.putra.core_erp.modules.approval.model.ApprovalStep;
 import id.putra.core_erp.modules.approval.model.ApprovalWorkflow;
 import id.putra.core_erp.modules.approval.service.ApprovalWorkflowService;
@@ -33,7 +35,7 @@ public class ApprovalWorkflowComponent extends ViewWithDialog {
     private final BeanValidationBinder<ApprovalStep> stepBinder = new BeanValidationBinder<>(ApprovalStep.class);
 
     private final TextField workflowNameField = new TextField("Workflow Name");
-    private final TextField requestTypeField = new TextField("Request Type");
+    private final ComboBox<ApprovalType> requestTypeField = new ComboBox<>("Request Type");
 
     private final TextField roleField = new TextField();
     private final IntegerField stepOrderField = new IntegerField();
@@ -48,10 +50,12 @@ public class ApprovalWorkflowComponent extends ViewWithDialog {
     public ApprovalWorkflowComponent(ApprovalWorkflowService workflowService) {
         this.workflowService = workflowService;
 
-        // Inisialisasi Editor Step Grid
         this.stepEditor = stepGrid.getEditor();
         this.stepEditor.setBuffered(true);
-        this.stepEditor.setBinder(stepBinder); // Kunci: Binder harus terhubung ke Editor
+        this.stepEditor.setBinder(stepBinder);
+        this.requestTypeField.setItems(ApprovalType.values());
+        this.requestTypeField.setItemLabelGenerator(item -> item.name());
+        this.requestTypeField.setAllowCustomValue(false);
 
         setSizeFull();
         setPadding(false);
@@ -59,7 +63,7 @@ public class ApprovalWorkflowComponent extends ViewWithDialog {
 
         configureValidation();
         configureStepValidation();
-        configureStepGridColumns(); // Konfigurasi struktur kolom Grid CUKUP SEKALI di Constructor
+        configureStepGridColumns();
         addToolbar();
         configureGrid();
     }
@@ -180,7 +184,6 @@ public class ApprovalWorkflowComponent extends ViewWithDialog {
         ApprovalWorkflow entity = new ApprovalWorkflow();
         if (!searchField.isEmpty()) {
             entity.workflowName = "ILIKE %" + searchField.getValue() + "%";
-            entity.requestType = "ILIKE %" + searchField.getValue() + "%";
         }
         List<ApprovalWorkflow> data = workflowService.findAll(entity, Page.of(0, 100));
         grid.setItems(data);
@@ -246,6 +249,8 @@ public class ApprovalWorkflowComponent extends ViewWithDialog {
                     } else {
                         workflowService.save(workflow);
                     }
+                    Notification.show("Workflow berhasil disimpan", 2000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     dialog.close();
                     refreshData();
                 }

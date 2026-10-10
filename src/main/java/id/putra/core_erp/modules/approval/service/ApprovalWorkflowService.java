@@ -2,6 +2,7 @@ package id.putra.core_erp.modules.approval.service;
 
 import java.util.List;
 
+import id.putra.core_erp.enums.ApprovalType;
 import id.putra.core_erp.modules.approval.model.ApprovalWorkflow;
 import id.putra.core_erp.modules.approval.repository.ApprovalWorkflowRepo;
 import id.putra.core_erp.service.BaseService;
@@ -42,6 +43,14 @@ public class ApprovalWorkflowService implements BaseService<ApprovalWorkflow> {
     @Override
     public List<ApprovalWorkflow> findAll(ApprovalWorkflow entity, Page page) {
         return approvalWorkflowRepo.findAll().page(page).list();
+    }
+
+    public ApprovalWorkflow findByRequestType(ApprovalType type) {
+        if (type == null) {
+            throw new RuntimeException("Type cannot be null");
+        }
+
+        return approvalWorkflowRepo.find("requestType", type).firstResult();
     }
 
 }
