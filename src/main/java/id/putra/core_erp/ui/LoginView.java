@@ -23,7 +23,11 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 @PageTitle("Login | CORE ERP")
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
-	public static final String AUTH0_URL = "/oauth2/authorization/auth0";
+	// Quarkus OIDC (web-app) starts the authorization-code flow automatically when an
+	// unauthenticated request reaches a protected path. Redirecting to the protected
+	// root "/" therefore triggers the redirect to Auth0. Quarkus does NOT expose the
+	// Spring Security "/oauth2/authorization/{registrationId}" endpoint.
+	public static final String AUTH0_URL = "/";
 
 	public LoginView() {
 		addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Flex.GROW);

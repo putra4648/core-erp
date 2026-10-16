@@ -1,20 +1,10 @@
 package id.putra.core_erp.modules.procurement.service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import id.putra.core_erp.enums.ApprovalStatus;
-import id.putra.core_erp.exceptions.ModuleException;
-import id.putra.core_erp.modules.approval.model.Approval;
 import id.putra.core_erp.modules.procurement.model.Transfer;
 import id.putra.core_erp.modules.procurement.repository.InventoryRepo;
 import id.putra.core_erp.modules.procurement.repository.TransferRequestRepo;
 import id.putra.core_erp.service.BaseService;
-import id.putra.core_erp.util.AppFileUtil;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -37,8 +27,8 @@ public class TransferService implements BaseService<Transfer> {
 	}
 
 	public List<Transfer> findAll(Transfer dto) {
-		String status = (dto != null && dto != null && dto.getStatus() != null && !dto.getStatus().isBlank())
-				? dto.getStatus()
+		String status = (dto != null && dto != null && dto.status != null && !dto.status.isBlank())
+				? dto.status
 				: "%%";
 		String id = (dto != null && dto != null && dto.id != null) ? dto.id.toString() : "%%";
 
@@ -57,64 +47,6 @@ public class TransferService implements BaseService<Transfer> {
 
 	public Transfer getById(Transfer dto) {
 		return transferRequestRepo.findById(dto.id);
-	}
-
-	public Boolean checkApprovalFlow(Transfer dto) {
-		Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(dto.id);
-		String nrp = "";
-
-		if (reqOpt.isPresent()) {
-			boolean result = false;
-			if (reqOpt.get().getTemApprovals() != null) {
-				result = reqOpt.get().getTemApprovals().stream().anyMatch(usr -> usr.getUsers() != null
-						&& usr.getUsers() != null && usr.getUsers().equalsIgnoreCase(nrp));
-			}
-
-			if (reqOpt.get().getTempPurchaserApproval() != null
-					&& reqOpt.get().getTempPurchaserApproval().getUsers() != null) {
-				result = !reqOpt.get().getTempPurchaserApproval().getUsers().equalsIgnoreCase(nrp);
-			}
-			return result;
-		} else {
-			return false;
-		}
-	}
-
-	public ApprovalStatus checkStatusApprovalIsPermanent(Transfer dto) {
-		Transfer params = dto;
-		String nrp = "";
-
-		Optional<Transfer> reqOpt = transferRequestRepo.findByIdOptional(params.id);
-		if (reqOpt.isPresent()) {
-			ApprovalStatus result = ApprovalStatus.NON_APPROVAL;
-			List<Approval> approvals = new ArrayList<>();
-			if (reqOpt.get().getTemApprovals() != null) {
-				approvals.addAll(reqOpt.get().getTemApprovals());
-			}
-			if (reqOpt.get().getTempPurchaserApproval() != null) {
-				approvals.add(reqOpt.get().getTempPurchaserApproval());
-			}
-			int index = 0;
-			for (int i = 0; i < approvals.size(); i++) {
-				if (approvals.get(i).getUsers() != null && approvals.get(i).getUsers() != null
-						&& approvals.get(i).getUsers().equalsIgnoreCase(nrp)) {
-					index = i;
-				}
-			}
-			if (approvals.stream().anyMatch(data -> data.getUsers() != null && data.getUsers() != null
-					&& data.getUsers().equalsIgnoreCase(nrp))) {
-
-			}
-			return result;
-		} else {
-			throw new ModuleException("TransferRequest ID " + params.id + " not found");
-		}
-	}
-
-	public byte[] download(Transfer dto) throws Exception {
-		Path path = Paths.get(AppFileUtil.getServerPath(), "data", dto.getFilename());
-		return Files.readAllBytes(path);
-
 	}
 
 	@Override

@@ -1,133 +1,78 @@
 package id.putra.core_erp.modules.procurement.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import id.putra.core_erp.entity.BaseEntity;
-import id.putra.core_erp.modules.approval.model.Approval;
+import id.putra.core_erp.enums.ApprovalStatus;
 import id.putra.core_erp.modules.supplier.model.Supplier;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table
 public class Quotation extends BaseEntity {
 
+	@Column(name = "rfq_number")
+	public String rfqNumber;
+
 	@Column(name = "due_date")
-	private Date dueDate;
+	public LocalDate dueDate;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	public ApprovalStatus status;
+
+	@Column(name = "note")
+	public String note;
 
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "suppliers", columnDefinition = "jsonb")
-	private List<Supplier> suppliers;
+	public List<Supplier> suppliers = new ArrayList<>();
 
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "details", columnDefinition = "jsonb")
-	private List<RequisitionDetail> details;
+	/**
+	 * The approved requisition (PR) that triggered this Request for Quotation.
+	 * Establishes the {@code Requisition -> Quotation} link in the P2P flow.
+	 */
+	@ManyToOne
+	@JoinColumn(name = "requisition_id")
+	public Requisition requisition;
 
-	@Column(name = "note")
-	private String note;
+	/**
+	 * The winning supplier selected by the procurement officer after comparing
+	 * the candidate {@link #suppliers} price quotes.
+	 */
+	@ManyToOne
+	@JoinColumn(name = "selected_supplier_id")
+	public Supplier selectedSupplier;
 
-	@Column(name = "status")
-	private String status;
+	/**
+	 * The line items being quoted (product, quantity, unit price). These lines
+	 * are copied into {@link PurchaseOrderLine}s when a PO is generated.
+	 */
+	@OneToMany(mappedBy = "quotation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	public List<QuotationLine> quotationLines = new ArrayList<>();
 
-	@Column(name = "reject_note")
-	private String rejectNote;
-
-	@Column(name = "current_approval_stage", columnDefinition = "integer default 0")
-	private Integer currentApprovalStage;
-
-	@Column(name = "total_approval_stage")
-	private Integer totalApprovalStage;
-
-	@Column(name = "last_approved")
-	private String lastApproved;
-
-	@JdbcTypeCode(SqlTypes.JSON)
-	@Column(name = "temp_approvals", columnDefinition = "jsonb")
-	private List<Approval> temApprovals;
-
-	public Date getDueDate() {
-		return dueDate;
-	}
-
-	public void setDueDate(Date dueDate) {
-		this.dueDate = dueDate;
-	}
-
-	public List<Supplier> getSuppliers() {
-		return suppliers;
-	}
-
-	public void setSuppliers(List<Supplier> suppliers) {
-		this.suppliers = suppliers;
-	}
-
-	public List<RequisitionDetail> getDetails() {
-		return details;
-	}
-
-	public void setDetails(List<RequisitionDetail> details) {
-		this.details = details;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getRejectNote() {
-		return rejectNote;
-	}
-
-	public void setRejectNote(String rejectNote) {
-		this.rejectNote = rejectNote;
-	}
-
-	public Integer getCurrentApprovalStage() {
-		return currentApprovalStage;
-	}
-
-	public void setCurrentApprovalStage(Integer currentApprovalStage) {
-		this.currentApprovalStage = currentApprovalStage;
-	}
-
-	public Integer getTotalApprovalStage() {
-		return totalApprovalStage;
-	}
-
-	public void setTotalApprovalStage(Integer totalApprovalStage) {
-		this.totalApprovalStage = totalApprovalStage;
-	}
-
-	public String getLastApproved() {
-		return lastApproved;
-	}
-
-	public void setLastApproved(String lastApproved) {
-		this.lastApproved = lastApproved;
-	}
-
-	public List<Approval> getTemApprovals() {
-		return temApprovals;
-	}
-
-	public void setTemApprovals(List<Approval> temApprovalDtos) {
-		this.temApprovals = temApprovalDtos;
-	}
+	/**
+	 * The purchase order generated from this quotation once it is approved and
+	 * a winning supplier has been selected. Establishes the
+	 * {@code Quotation -> PurchaseOrder} link in the P2P flow.
+	 */
+	@OneToOne
+	@JoinColumn(name = "purchase_order_id")
+	public PurchaseOrder purchaseOrder;
 
 }

@@ -12,24 +12,9 @@ public class PickingTask extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "sales_order_line_id")
-	private SalesOrderLine salesOrderLine;
+	public SalesOrderLine salesOrderLine;
 
-	private String status;
+	public String status;
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public SalesOrderLine getSalesOrderLine() {
-		return salesOrderLine;
-	}
-
-	public void setSalesOrderLine(SalesOrderLine salesOrderLine) {
-		this.salesOrderLine = salesOrderLine;
-	}
 
 }

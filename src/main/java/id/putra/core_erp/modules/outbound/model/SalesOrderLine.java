@@ -13,25 +13,11 @@ public class SalesOrderLine extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "product_id")
-	private Product product;
+	public Product product;
 
 	@ManyToOne
 	@JoinColumn(name = "sales_order_id")
-	private SalesOrder salesOrder;
+	public SalesOrder salesOrder;
 
-	public Product getProduct() {
-		return product;
-	}
 
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public SalesOrder getSalesOrder() {
-		return salesOrder;
-	}
-
-	public void setSalesOrder(SalesOrder salesOrder) {
-		this.salesOrder = salesOrder;
-	}
 }

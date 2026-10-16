@@ -13,49 +13,18 @@ import jakarta.persistence.Table;
 public class ItemMeasurement extends BaseEntity {
 
 	@Column(name = "unit")
-	private String unit;
+	public String unit;
 
 	// @Column(name = "qty")
-	// private BigInteger qty;
+	// public BigInteger qty;
 
 	@Column(name = "amount")
-	private BigInteger amount;
+	public BigInteger amount;
 
 	@Column(name = "notes")
-	private String notes;
+	public String notes;
 
 	@OneToOne(mappedBy = "measurement")
-	private Item item;
+	public Item item;
 
-	public String getUnit() {
-		return unit;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
-
-	public BigInteger getAmount() {
-		return amount;
-	}
-
-	public void setAmount(BigInteger amount) {
-		this.amount = amount;
-	}
-
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
-
-	public Item getItem() {
-		return item;
-	}
-
-	public void setItem(Item item) {
-		this.item = item;
-	}
 }

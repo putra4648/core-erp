@@ -1,132 +1,44 @@
 package id.putra.core_erp.modules.supplier.model;
 
-import java.time.Instant;
-
 import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "suppliers")
 public class Supplier extends BaseEntity {
 
+	@NotBlank(message = "Supplier code is required")
 	@Column(name = "code")
-	private String code;
+	public String code;
 
+	@NotBlank(message = "Supplier name is required")
 	@Column(name = "name", nullable = false)
-	private String name;
+	public String name;
 
+	@Email(message = "Invalid email format")
 	@Column(name = "email")
-	private String email;
-
-	@Column(name = "is_active")
-	private Boolean isActive = true;
+	public String email;
 
 	@Column(name = "phone")
-	private String phone;
+	public String phone;
 
 	@Column(name = "fax")
-	private String fax;
+	public String fax;
 
 	@Column(name = "currency")
-	private String currency;
+	public String currency;
 
 	@Column(name = "npwp")
-	private String npwp;
+	public String npwp;
 
 	@Column(name = "bank_account")
-	private String bankAccount;
+	public String bankAccount;
 
 	@Column(name = "notes", columnDefinition = "TEXT")
-	private String notes;
-
-	public Instant getCreatedDate() {
-		return null;
-	}
-
-	public Instant getUpdatedDate() {
-		return null;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getFax() {
-		return fax;
-	}
-
-	public void setFax(String fax) {
-		this.fax = fax;
-	}
-
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
-	public String getNpwp() {
-		return npwp;
-	}
-
-	public void setNpwp(String npwp) {
-		this.npwp = npwp;
-	}
-
-	public String getBankAccount() {
-		return bankAccount;
-	}
-
-	public void setBankAccount(String accBank) {
-		this.bankAccount = accBank;
-	}
-
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
+	public String notes;
 
 }

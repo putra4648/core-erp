@@ -1,8 +1,5 @@
 package id.putra.core_erp.modules.outbound.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -15,8 +12,9 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -24,32 +22,39 @@ import id.putra.core_erp.modules.outbound.model.SalesOrder;
 import id.putra.core_erp.modules.outbound.service.SalesOrderService;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "outbound", layout = MainLayout.class)
 @PageTitle("Outbound")
 @Authenticated
-public class OutboundView extends VerticalLayout {
+public class OutboundView extends ViewWithDialog {
 
 	private final SalesOrderService salesOrderService;
 	private final Grid<SalesOrder> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
+	private Binder<SalesOrder> binder = new BeanValidationBinder<>(SalesOrder.class);
+	private TextField soNumber = new TextField("Sales Order Number");
+
 	public OutboundView(SalesOrderService salesOrderService) {
+		super();
 		this.salesOrderService = salesOrderService;
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+
+		configureValidation();
 
 		addHeader();
 		addToolbar();
 		configureGrid();
 		add(grid);
-
-		refreshData();
 	}
 
-	private void addHeader() {
+	private void configureValidation() {
+		binder.bind(soNumber, "soNumber");
+	}
+
+	@Override
+	public void addHeader() {
 		H2 title = new H2("Outbound Management");
 		title.addClassNames("m-0", "text-xl", "font-bold");
 		Paragraph desc = new Paragraph("Manage customer sales orders, order picking, packing, and shipping.");
@@ -57,14 +62,15 @@ public class OutboundView extends VerticalLayout {
 		add(title, desc);
 	}
 
-	private void addToolbar() {
+	@Override
+	public void addToolbar() {
 		searchField.setPlaceholder("Search Sales Order number...");
 		searchField.setClearButtonVisible(true);
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 		searchField.addValueChangeListener(e -> refreshData());
 
 		Button addButton = new Button("New Outbound Order", VaadinIcon.PLUS.create(),
-				e -> openOrderDialog(new SalesOrder()));
+				e -> openDialog(new SalesOrder()));
 		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -75,24 +81,25 @@ public class OutboundView extends VerticalLayout {
 		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
-		grid.addColumn(so -> so.getSoNumber() != null ? so.getSoNumber() : "").setHeader("SO Number").setAutoWidth(true)
+		grid.addColumn(so -> so.soNumber != null ? so.soNumber : "").setHeader("SO Number").setAutoWidth(true)
 				.setSortable(true);
-		grid.addColumn(so -> so.getOrderDate() != null ? so.getOrderDate().toString() : "-").setHeader("Order Date")
+		grid.addColumn(so -> so.orderDate != null ? so.orderDate.toString() : "-").setHeader("Order Date")
 				.setAutoWidth(true);
-		grid.addColumn(so -> so.getCustomer().id != null ? "Customer #" + so.getCustomer().id : "-")
+		grid.addColumn(so -> so.customer != null && so.customer.id != null ? "Customer #" + so.customer.id : "-")
 				.setHeader("Customer").setFlexGrow(1);
 
 		grid.addComponentColumn(so -> {
-			String status = so.getStatus() != null ? so.getStatus() : "PENDING";
+			String status = so.status != null ? so.status : "PENDING";
 			Span badge = new Span(status);
 			badge.getElement().getThemeList().add("badge " + ("SHIPPED".equals(status) ? "success" : "contrast"));
 			return badge;
 		}).setHeader("Status").setAutoWidth(true);
 
 		grid.addComponentColumn(so -> {
-			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openOrderDialog(so));
+			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDialog(so));
 			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(so));
@@ -100,39 +107,47 @@ public class OutboundView extends VerticalLayout {
 
 			return new HorizontalLayout(editBtn, deleteBtn);
 		}).setHeader("Actions").setAutoWidth(true);
+
+		refreshData();
 	}
 
-	private void refreshData() {
-		SalesOrder entity = new SalesOrder();
-		entity.setSoNumber(searchField.getValue());
-		List<SalesOrder> res = new ArrayList<>();
-		salesOrderService.findAll(entity, Page.ofSize(100)).forEach(res::add);
+	@Override
+	public void refreshData() {
+		var entity = new SalesOrder();
+		entity.soNumber = searchField.getValue();
 
-		grid.setItems(res);
+		grid.setItems(salesOrderService.findAll(entity, Page.ofSize(100)));
 	}
 
-	private void openOrderDialog(SalesOrder order) {
-		boolean isEdit = order.id != null;
-		Dialog dialog = new Dialog(isEdit ? "Edit Outbound Order" : "New Outbound Order");
+	@Override
+	protected void buildAndShowDialog(Object entity) throws Exception {
+		SalesOrder order = entity != null ? (SalesOrder) entity : new SalesOrder();
+		binder.readBean(order);
 
-		TextField soNumField = new TextField("Sales Order Number");
-		soNumField.setValue(order.getSoNumber() != null ? order.getSoNumber() : "");
+		Dialog dialog = new Dialog(order.id == null ? "New Outbound Order" : "Edit Outbound Order");
+		dialog.setWidth("500px");
 
-		FormLayout form = new FormLayout(soNumField);
+		FormLayout form = new FormLayout(soNumber);
 		dialog.add(form);
 
 		Button saveBtn = new Button("Save Order", e -> {
-			order.setSoNumber(soNumField.getValue());
 			try {
-				if (isEdit) {
-					salesOrderService.update(order);
+				if (binder.writeBeanIfValid(order)) {
+					if (order.id != null) {
+						salesOrderService.update(order);
+						Notification.show("Sales order updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						salesOrderService.save(order);
+						Notification.show("Sales order saved successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					refreshData();
 				} else {
-					salesOrderService.save(order);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				Notification.show("Sales order saved successfully", 3000, Notification.Position.TOP_END)
-						.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-				dialog.close();
-				refreshData();
 			} catch (Exception ex) {
 				Notification.show("Failed to save order: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -140,13 +155,15 @@ public class OutboundView extends VerticalLayout {
 		});
 		saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		dialog.getFooter().add(new Button("Cancel", e -> dialog.close()), saveBtn);
+		dialog.getFooter().add(new Button("Cancel", ev -> dialog.close()), saveBtn);
 		dialog.open();
 	}
 
-	private void confirmDelete(SalesOrder order) {
+	@Override
+	public void confirmDelete(Object entity) {
+		SalesOrder order = (SalesOrder) entity;
 		Dialog confirmDialog = new Dialog("Delete Outbound Order");
-		confirmDialog.add(new Paragraph("Are you sure you want to delete sales order '" + order.getSoNumber() + "'?"));
+		confirmDialog.add(new Paragraph("Are you sure you want to delete sales order '" + order.soNumber + "'?"));
 
 		Button deleteBtn = new Button("Delete", e -> {
 			try {

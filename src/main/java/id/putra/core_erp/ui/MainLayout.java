@@ -25,19 +25,22 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
+import jakarta.inject.Inject;
 
 @Authenticated
 public class MainLayout extends AppLayout {
+	@Inject
+	SecurityIdentity securityIdentity;
 
 	public MainLayout(SecurityIdentity securityIdentity) {
 		setPrimarySection(Section.DRAWER);
 
 		var principal = (DefaultJWTCallerPrincipal) securityIdentity.getPrincipal();
-		createHeader(principal.getName(), principal.getClaim("picture"));
-		createDrawer(principal.getName(), principal.getClaim("picture"));
+		createHeader(principal);
+		createDrawer(principal);
 	}
 
-	private void createHeader(String username, String pictureUrl) {
+	private void createHeader(DefaultJWTCallerPrincipal principal) {
 		DrawerToggle toggle = new DrawerToggle();
 		toggle.setAriaLabel("Menu toggle");
 
@@ -58,9 +61,9 @@ public class MainLayout extends AppLayout {
 		themeToggle.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 		themeToggle.setAriaLabel("Toggle dark mode");
 
-		Avatar avatar = new Avatar(username);
-		if (pictureUrl != null && !pictureUrl.isBlank()) {
-			avatar.setImage(pictureUrl);
+		Avatar avatar = new Avatar(principal.getName());
+		if (principal.getClaim("picture") != null && !principal.getClaim("picture").toString().isBlank()) {
+			avatar.setImage(principal.getClaim("picture"));
 		}
 		avatar.addClassNames(LumoUtility.Margin.Right.SMALL);
 
@@ -68,8 +71,13 @@ public class MainLayout extends AppLayout {
 		userMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
 		MenuItem userMenuItem = userMenu.addItem(avatar);
 		SubMenu subMenu = userMenuItem.getSubMenu();
+
+		subMenu.addItem("Profile", e -> {
+			System.out.println("Principal: " + principal.getClaimNames());
+			System.out.println("Security Identity: " + securityIdentity.getRoles());
+		});
 		subMenu.addItem("Settings", e -> UI.getCurrent().navigate("settings"));
-		subMenu.addItem("Logout", e -> UI.getCurrent().navigate("logout"));
+		subMenu.addItem("Logout", e -> UI.getCurrent().getPage().setLocation("/logout"));
 
 		HorizontalLayout header = new HorizontalLayout(toggle, title, themeToggle, userMenu);
 		header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
@@ -79,7 +87,7 @@ public class MainLayout extends AppLayout {
 		addToNavbar(header);
 	}
 
-	private void createDrawer(String username, String pictureUrl) {
+	private void createDrawer(DefaultJWTCallerPrincipal principal) {
 		SideNav mainNav = new SideNav();
 		mainNav.setLabel("Main");
 		mainNav.addItem(new SideNavItem("Dashboard", "", VaadinIcon.DASHBOARD.create()));
@@ -94,42 +102,31 @@ public class MainLayout extends AppLayout {
 
 		SideNav procNav = new SideNav();
 		procNav.setLabel("Procurement");
-		procNav.addItem(new SideNavItem("Purchase Requisitions", "pr", VaadinIcon.CLIPBOARD_CHECK.create()));
-		procNav.addItem(new SideNavItem("Request for Quotation", "rfq", VaadinIcon.MONEY.create()));
+		procNav.addItem(
+				new SideNavItem("Dashboard Requisition", "requisition/dashboard", VaadinIcon.CLIPBOARD_CHECK.create()));
+		procNav.addItem(
+				new SideNavItem("Requisition", "requisition", VaadinIcon.CLIPBOARD_CHECK.create()));
+		procNav.addItem(new SideNavItem("Quotation", "quotation", VaadinIcon.MONEY.create()));
 		procNav.addItem(new SideNavItem("Purchase Orders", "po", VaadinIcon.FILE_TEXT.create()));
-		// prNav.addItem(new SideNavItem("Transfer Requests", "transfers",
-		// VaadinIcon.EXCHANGE.create()));
 		procNav.setWidthFull();
 
 		SideNav masterNav = new SideNav();
 		masterNav.setLabel("Master Data");
 		masterNav.addItem(new SideNavItem("Products", "master/products", VaadinIcon.RECORDS.create()));
-		// masterNav.addItem(new SideNavItem("Categories", "master/categories",
-		// VaadinIcon.TAGS.create()));
 		masterNav.addItem(new SideNavItem("Suppliers", "master/suppliers", VaadinIcon.TRUCK.create()));
 		masterNav.addItem(new SideNavItem("Customers", "master/customer", VaadinIcon.USERS.create()));
 		masterNav.addItem(new SideNavItem("Warehouses", "master/warehouses", VaadinIcon.BUILDING.create()));
 		masterNav.addItem(new SideNavItem("Budget Planning", "budgets", VaadinIcon.CHART_LINE.create()));
-		// TODO: add PR Items
-		// masterNav.addItem(new SideNavItem("PR Items", "items",
-		// VaadinIcon.LIST.create()));
-		// TODO: add Companies
-		// masterNav.addItem(new SideNavItem("Companies", "company",
-		// VaadinIcon.OFFICE.create()));
+
 		masterNav.setWidthFull();
 
 		SideNav reportsNav = new SideNav();
 		reportsNav.setLabel("Reports & Analytics");
 		reportsNav.addItem(new SideNavItem("WMS Reports", "reports", VaadinIcon.PIE_CHART.create()));
-		// TODO: add PR Dashboard
-		// reportsNav.addItem(new SideNavItem("PR Dashboard", "prc/dashboard",
-		// VaadinIcon.CHART.create()));
 		reportsNav.setWidthFull();
 
 		SideNav adminNav = new SideNav();
 		adminNav.setLabel("Administration");
-		// adminNav.addItem(new SideNavItem("User Management", "users",
-		// VaadinIcon.USER_CHECK.create()));
 		adminNav.addItem(new SideNavItem("System Settings", "settings", VaadinIcon.COG.create()));
 		adminNav.addItem(new SideNavItem("Help & Support", "help", VaadinIcon.QUESTION_CIRCLE.create()));
 		adminNav.setWidthFull();

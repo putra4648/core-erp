@@ -1,9 +1,10 @@
 package id.putra.core_erp.modules.inbound.model;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.modules.procurement.model.PurchaseOrderLine;
 import id.putra.core_erp.modules.product.model.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,87 +16,32 @@ import jakarta.persistence.Table;
 @Table
 public class ReceivingLine extends BaseEntity {
 
-	private Date receivedDate;
-	private String status;
-	private String lotBatch;
-	private Date expiryDate;
+	public LocalDateTime receivedDate;
+	public String status;
+	public String lotBatch;
+	public LocalDateTime expiryDate;
 
 	@Column(precision = 12, scale = 2)
-	private BigDecimal qtyReceived;
+	public BigDecimal qtyReceived;
 
 	@Column(precision = 12, scale = 2, name = "ordered_qty")
-	private BigDecimal qty;
+	public BigDecimal qty;
 
 	@ManyToOne
 	@JoinColumn(name = "receiving_id")
-	private Receiving receiving;
+	public Receiving receiving;
 
 	@ManyToOne
 	@JoinColumn(name = "product_id")
-	private Product product;
+	public Product product;
 
-	public Date getReceivedDate() {
-		return receivedDate;
-	}
-
-	public void setReceivedDate(Date receivedDate) {
-		this.receivedDate = receivedDate;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getLotBatch() {
-		return lotBatch;
-	}
-
-	public void setLotBatch(String lotBatch) {
-		this.lotBatch = lotBatch;
-	}
-
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
-
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}
-
-	public BigDecimal getQtyReceived() {
-		return qtyReceived;
-	}
-
-	public void setQtyReceived(BigDecimal qtyReceived) {
-		this.qtyReceived = qtyReceived;
-	}
-
-	public BigDecimal getQty() {
-		return qty;
-	}
-
-	public void setQty(BigDecimal qty) {
-		this.qty = qty;
-	}
-
-	public Receiving getReceiving() {
-		return receiving;
-	}
-
-	public void setReceiving(Receiving receiving) {
-		this.receiving = receiving;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
+	/**
+	 * The Purchase Order line this receiving line fulfills, providing full P2P
+	 * traceability from Purchase Order to Goods Receipt. Populated when the
+	 * receiving is generated from a Purchase Order.
+	 */
+	@ManyToOne
+	@JoinColumn(name = "purchase_order_line_id")
+	public PurchaseOrderLine purchaseOrderLine;
 
 }

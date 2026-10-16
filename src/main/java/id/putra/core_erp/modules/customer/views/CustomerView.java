@@ -1,11 +1,7 @@
 package id.putra.core_erp.modules.customer.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -15,8 +11,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -24,33 +20,44 @@ import id.putra.core_erp.modules.customer.model.Customer;
 import id.putra.core_erp.modules.customer.service.CustomerService;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
+import id.putra.core_erp.ui.ViewWithDialog;
 import io.quarkus.security.Authenticated;
 
 @Route(value = "master/customer", layout = MainLayout.class)
 @PageTitle("Customers")
 @Authenticated
-public class CustomerView extends VerticalLayout {
+public class CustomerView extends ViewWithDialog {
 
 	private final CustomerService customerService;
 	private final Grid<Customer> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
+	private BeanValidationBinder<Customer> binder = new BeanValidationBinder<>(Customer.class);
+	private TextField name = new TextField("Customer Name");
+	private TextField email = new TextField("Email");
+	private TextField phone = new TextField("Phone");
+
 	public CustomerView(CustomerService customerService) {
+		super();
 		this.customerService = customerService;
 
-		setSizeFull();
-		setPadding(true);
-		setSpacing(true);
+		configureValidation();
 
 		addHeader();
 		addToolbar();
 		configureGrid();
-		add(grid);
 
 		refreshData();
 	}
 
-	private void addHeader() {
+	private void configureValidation() {
+		binder.bind(name, "name");
+		binder.bind(email, "email");
+		binder.bind(phone, "phone");
+	}
+
+	@Override
+	public void addHeader() {
 		H2 title = new H2("Customer Management");
 		title.addClassNames("m-0", "text-xl", "font-bold");
 		Paragraph desc = new Paragraph("Manage customer details and contact information.");
@@ -58,14 +65,15 @@ public class CustomerView extends VerticalLayout {
 		add(title, desc);
 	}
 
-	private void addToolbar() {
+	@Override
+	public void addToolbar() {
 		searchField.setPlaceholder("Search customers...");
 		searchField.setClearButtonVisible(true);
 		searchField.setPrefixComponent(VaadinIcon.SEARCH.create());
 		searchField.addValueChangeListener(e -> refreshData());
 
 		Button addButton = new Button("Add Customer", VaadinIcon.PLUS.create(),
-				e -> openCustomerDialog(new Customer()));
+				e -> openDialog(new Customer()));
 		addButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 		Button refreshButton = new Button(VaadinIcon.REFRESH.create(), e -> refreshData());
@@ -76,16 +84,17 @@ public class CustomerView extends VerticalLayout {
 		add(toolbar);
 	}
 
-	private void configureGrid() {
+	@Override
+	public void configureGrid() {
 		grid.setSizeFull();
-		grid.addColumn(c -> c.getName() != null ? c.getName() : "").setHeader("Name").setFlexGrow(1).setSortable(true);
-		grid.addColumn(c -> c.getEmail() != null ? c.getEmail() : "-").setHeader("Email").setFlexGrow(1);
-		grid.addColumn(c -> c.getPhone() != null ? c.getPhone() : "-").setHeader("Phone").setAutoWidth(true);
+		grid.addColumn(c -> c.name != null ? c.name : "").setHeader("Name").setFlexGrow(1).setSortable(true);
+		grid.addColumn(c -> c.email != null ? c.email : "-").setHeader("Email").setFlexGrow(1);
+		grid.addColumn(c -> c.phone != null ? c.phone : "-").setHeader("Phone").setAutoWidth(true);
 
 		grid.addComponentColumn(customer ->
 
 		{
-			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openCustomerDialog(customer));
+			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDialog(customer));
 			editBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
 			Button deleteBtn = new Button(VaadinIcon.TRASH.create(), e -> confirmDelete(customer));
@@ -93,53 +102,48 @@ public class CustomerView extends VerticalLayout {
 
 			return new HorizontalLayout(editBtn, deleteBtn);
 		}).setHeader("Actions").setAutoWidth(true);
+
+		add(grid);
+
+		refreshData();
 	}
 
-	private void refreshData() {
+	@Override
+	public void refreshData() {
 		var params = new Customer();
-		params.setName(searchField.getValue());
-		List<Customer> res = new ArrayList<>();
-		customerService.findAll(params, Page.ofSize(100)).forEach(res::add);
-		grid.setItems(res);
+		params.name = (searchField.getValue());
+		grid.setItems(customerService.findAll(params, Page.ofSize(100)));
 	}
 
-	private void openCustomerDialog(Customer customer) {
-		Dialog dialog = new Dialog("Customer");
+	@Override
+	protected void buildAndShowDialog(Object entity) throws Exception {
+		Customer customer = entity != null ? (Customer) entity : new Customer();
+		binder.readBean(customer);
 
-		TextField nameField = new TextField("Customer Name");
-		Checkbox activeCheck = new Checkbox("Is Active");
-		TextField emailField = new TextField("Email");
-		TextField phoneField = new TextField("Phone");
+		Dialog dialog = new Dialog(customer.id == null ? "Add Customer" : "Edit Customer");
+		dialog.setWidth("500px");
 
-		nameField.setRequired(true);
-		nameField.setValue(customer.getName() != null ? customer.getName() : "");
-		emailField.setValue(customer.getEmail() != null ? customer.getEmail() : "");
-		phoneField.setValue(customer.getPhone() != null ? customer.getPhone() : "");
-		activeCheck.setValue(customer.getIsActive() != null ? customer.getIsActive() : true);
-
-		FormLayout formLayout = new FormLayout(nameField, activeCheck, emailField, phoneField);
+		FormLayout formLayout = new FormLayout(name, email, phone);
 		dialog.add(formLayout);
 
 		Button saveBtn = new Button("Save", e -> {
 			try {
-				var entity = new Customer();
-				entity.id = customer.id;
-				entity.setName(nameField.getValue());
-				entity.setPhone(phoneField.getValue());
-				entity.setEmail(emailField.getValue());
-				entity.setIsActive(activeCheck.getValue());
-
-				if (customer.id != null) {
-					customerService.update(entity);
-					Notification.show("Customer updated successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+				if (binder.writeBeanIfValid(customer)) {
+					if (customer.id != null) {
+						customerService.update(customer);
+						Notification.show("Customer updated successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					} else {
+						customerService.save(customer);
+						Notification.show("Customer created successfully", 3000, Notification.Position.TOP_END)
+								.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					}
+					dialog.close();
+					refreshData();
 				} else {
-					customerService.save(entity);
-					Notification.show("Customer created successfully", 3000, Notification.Position.TOP_END)
-							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+					Notification.show("Please fill all required fields correctly", 4000, Notification.Position.TOP_END)
+							.addThemeVariants(NotificationVariant.LUMO_ERROR);
 				}
-				dialog.close();
-				refreshData();
 			} catch (Exception ex) {
 				Notification.show("Failed to save customer: " + ex.getMessage(), 4000, Notification.Position.TOP_END)
 						.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -154,9 +158,11 @@ public class CustomerView extends VerticalLayout {
 		dialog.open();
 	}
 
-	private void confirmDelete(Customer customer) {
+	@Override
+	public void confirmDelete(Object entity) {
+		Customer customer = (Customer) entity;
 		Dialog confirmDialog = new Dialog("Delete Customer");
-		confirmDialog.add(new Paragraph("Are you sure you want to delete customer '" + customer.getName() + "'?"));
+		confirmDialog.add(new Paragraph("Are you sure you want to delete customer '" + customer.name + "'?"));
 
 		Button deleteBtn = new Button("Delete", e -> {
 			try {

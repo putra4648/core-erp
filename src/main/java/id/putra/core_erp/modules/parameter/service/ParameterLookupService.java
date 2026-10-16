@@ -40,10 +40,7 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
 
 	@Override
 	public List<ParameterLookup> findAll(ParameterLookup entity, Page page) {
-		String pattern = "%" + entity.getKey().toLowerCase() + "%";
-		return parameterLookupRepository
-				.find("lower(key) like ?1 or lower(value) like ?1 or lower(description) like ?1", pattern).page(page)
-				.list();
+		return parameterLookupRepository.findAll().page(page).list();
 	}
 
 	@Override

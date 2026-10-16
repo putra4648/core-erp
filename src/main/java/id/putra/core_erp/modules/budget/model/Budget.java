@@ -1,16 +1,18 @@
 package id.putra.core_erp.modules.budget.model;
 
-import java.util.List;
-
+import java.math.BigDecimal;
 import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.enums.BudgetType;
 import id.putra.core_erp.modules.department.model.Department;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "budget")
@@ -18,45 +20,22 @@ public class Budget extends BaseEntity {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "department", referencedColumnName = "dept_number")
-	private Department department;
+	public Department department;
 
-	@Column(name = "fiscal_year")
-	private String fiscalYear;
+	@NotEmpty
+	@Column(name = "name", nullable = false)
+	public String name;
 
-	private Long allocated;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type", nullable = false)
+	public BudgetType type;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<BudgetDetail> details;
+	@NotNull
+	@Column(name = "fiscal_year", nullable = false)
+	public Integer fiscalYear;
 
-	public Department getDepartment() {
-		return department;
-	}
+	@NotNull
+	@Column(name = "allocated", nullable = false)
+	public BigDecimal allocated;
 
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
-
-	public String getFiscalYear() {
-		return fiscalYear;
-	}
-
-	public void setFiscalYear(String fiscalYear) {
-		this.fiscalYear = fiscalYear;
-	}
-
-	public List<BudgetDetail> getDetails() {
-		return details;
-	}
-
-	public void setDetails(List<BudgetDetail> details) {
-		this.details = details;
-	}
-
-	public Long getAllocated() {
-		return allocated;
-	}
-
-	public void setAllocated(Long allocated) {
-		this.allocated = allocated;
-	}
 }
