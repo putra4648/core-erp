@@ -39,8 +39,6 @@ import io.quarkus.security.Authenticated;
 public class BudgetView extends ViewWithDialog {
 
 	private final BudgetService budgetService;
-	private final DepartmentService departmentService;
-
 	private final Grid<Budget> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
@@ -55,8 +53,6 @@ public class BudgetView extends ViewWithDialog {
 	public BudgetView(BudgetService budgetService, DepartmentService departmentService) {
 		super();
 		this.budgetService = budgetService;
-		this.departmentService = departmentService;
-
 		// Populasi item untuk ComboBox
 		LocalDate now = LocalDate.now(ZoneId.systemDefault());
 		List<Integer> selectableYears = IntStream.range(now.getYear() - 20, now.getYear() + 1).boxed().toList();

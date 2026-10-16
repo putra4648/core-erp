@@ -5,7 +5,6 @@ import java.util.List;
 import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.procurement.model.Requisition;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;

@@ -1,10 +1,10 @@
 package id.putra.core_erp.modules.inbound.model;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 import id.putra.core_erp.entity.BaseEntity;
+import id.putra.core_erp.modules.procurement.model.PurchaseOrderLine;
 import id.putra.core_erp.modules.product.model.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,5 +34,14 @@ public class ReceivingLine extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	public Product product;
+
+	/**
+	 * The Purchase Order line this receiving line fulfills, providing full P2P
+	 * traceability from Purchase Order to Goods Receipt. Populated when the
+	 * receiving is generated from a Purchase Order.
+	 */
+	@ManyToOne
+	@JoinColumn(name = "purchase_order_line_id")
+	public PurchaseOrderLine purchaseOrderLine;
 
 }

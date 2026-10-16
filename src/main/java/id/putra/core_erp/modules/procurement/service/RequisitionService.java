@@ -3,6 +3,7 @@ package id.putra.core_erp.modules.procurement.service;
 import java.math.BigDecimal;
 import java.util.List;
 import id.putra.core_erp.enums.ApprovalStatus;
+import id.putra.core_erp.enums.ApprovalType;
 import id.putra.core_erp.modules.approval.service.ApprovalService;
 import id.putra.core_erp.modules.budget.repository.BudgetRepo;
 import id.putra.core_erp.modules.procurement.model.Requisition;
@@ -41,29 +42,29 @@ public class RequisitionService implements BaseService<Requisition> {
 	}
 
 	public void submit(Requisition entity, SecurityIdentity identity) {
-
-		// check budget available
-
-		var budget = entity.budget;
-		if (budget == null) {
-			throw new RuntimeException("Budget not found");
+		// Validate budget availability before entering the approval workflow.
+		// The actual deduction happens only when the final approval step completes,
+		// but this pre-check prevents obviously unaffordable requisitions from
+		// being submitted for approval at all.
+		if (entity.budget == null) {
+			throw new RuntimeException("Budget is required");
 		}
-		BigDecimal totalReq = new BigDecimal(0);
-		for (var item : entity.items) {
-			totalReq = totalReq.add(item.unitPrice.multiply(BigDecimal.valueOf(item.quantity)));
+		BigDecimal totalReq = calculateTotal(entity);
+		if (entity.budget.allocated == null
+				|| entity.budget.allocated.subtract(totalReq).compareTo(BigDecimal.ZERO) < 0) {
+			throw new RuntimeException("Budget not available: required " + totalReq.toPlainString()
+					+ " but only "
+					+ (entity.budget.allocated != null ? entity.budget.allocated.toPlainString() : "0")
+					+ " remaining in budget '" + entity.budget.name + "'");
 		}
-		if (budget.allocated.subtract(totalReq).compareTo(BigDecimal.ZERO) < 0) {
-			throw new RuntimeException("Budget not available");
-		}
-		budget.allocated = budget.allocated.subtract(totalReq);
-		budgetRepo.getEntityManager().merge(budget);
 
-		approvalService.submit(identity, entity.referenceId);
+		approvalService.submit(identity, ApprovalType.REQUISITION, entity.referenceId);
 
 		requisitionRepo.persist(entity);
 	}
 
 	public void approve(Long id, SecurityIdentity identity) {
+
 		var requisition = requisitionRepo.findById(id);
 		if (requisition == null) {
 			throw new RuntimeException("Requisition not found");
@@ -71,12 +72,29 @@ public class RequisitionService implements BaseService<Requisition> {
 		if (requisition.status != ApprovalStatus.SUBMIT) {
 			throw new RuntimeException("Requisition is not in submit status");
 		}
-		approvalService.approve(identity, requisition.referenceId);
-		requisition.status = ApprovalStatus.APPROVED;
+
+		// Advance the approval workflow first. The budget is only deducted when
+		// the final approval step is completed (status == COMPLETED), so that
+		// intermediate approvals do not cut the budget multiple times.
+		var approvalStatus = approvalService.approve(identity, ApprovalType.REQUISITION, requisition.referenceId, null);
+		if (approvalStatus == ApprovalStatus.COMPLETED) {
+			var budget = requisition.budget;
+			if (budget == null) {
+				throw new RuntimeException("Budget not found");
+			}
+			BigDecimal totalReq = calculateTotal(requisition);
+			if (budget.allocated.subtract(totalReq).compareTo(BigDecimal.ZERO) < 0) {
+				throw new RuntimeException("Budget not available");
+			}
+			budget.allocated = budget.allocated.subtract(totalReq);
+			budgetRepo.getEntityManager().merge(budget);
+
+			requisition.status = ApprovalStatus.APPROVED;
+		}
 		requisitionRepo.persist(requisition);
 	}
 
-	public void reject(Long id, SecurityIdentity identity) {
+	public void reject(Long id, SecurityIdentity identity, String comment) {
 		var requisition = requisitionRepo.findById(id);
 		if (requisition == null) {
 			throw new RuntimeException("Requisition not found");
@@ -84,7 +102,7 @@ public class RequisitionService implements BaseService<Requisition> {
 		if (requisition.status != ApprovalStatus.SUBMIT) {
 			throw new RuntimeException("Requisition is not in submit status");
 		}
-		approvalService.reject(identity, requisition.referenceId);
+		approvalService.reject(identity, ApprovalType.REQUISITION, requisition.referenceId, comment);
 		requisition.status = ApprovalStatus.REJECTED;
 		requisitionRepo.persist(requisition);
 	}
@@ -111,6 +129,27 @@ public class RequisitionService implements BaseService<Requisition> {
 
 	public List<RequisitionItem> findAllItem(Long id, Page p) {
 		return requisitionItemRepo.findByRequisitionId(id, p);
+	}
+
+	/**
+	 * Calculates the total monetary value of a requisition by summing
+	 * {@code unitPrice * quantity} across all line items. Used by both
+	 * {@link #submit} (pre-check) and {@link #approve} (final deduction) so the
+	 * total is always computed consistently.
+	 *
+	 * @param requisition the requisition to total
+	 * @return the total amount (never {@code null}; zero if no items)
+	 */
+	private BigDecimal calculateTotal(Requisition requisition) {
+		BigDecimal total = BigDecimal.ZERO;
+		if (requisition.items != null) {
+			for (var item : requisition.items) {
+				if (item.unitPrice != null && item.quantity != null) {
+					total = total.add(item.unitPrice.multiply(BigDecimal.valueOf(item.quantity)));
+				}
+			}
+		}
+		return total;
 	}
 
 }

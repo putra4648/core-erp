@@ -15,11 +15,9 @@ import jakarta.transaction.Transactional;
 public class ItemService implements BaseService<Item> {
 
 	private final ItemRepo itemRepo;
-	private final SupplierRepo supplierRepo;
 
 	public ItemService(ItemRepo itemRepo, SupplierRepo supplierRepo) {
 		this.itemRepo = itemRepo;
-		this.supplierRepo = supplierRepo;
 	}
 
 	@Override

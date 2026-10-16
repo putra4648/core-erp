@@ -49,6 +49,8 @@ public class RequisitionView extends VerticalLayout {
 	private final Grid<Requisition> grid = new Grid<>();
 	private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+	private List<String> approverRoles = List.of();
+
 	public RequisitionView(RequisitionService requisitionService, ApprovalWorkflowService approvalWorkflowService) {
 		this.requisitionService = requisitionService;
 		this.approvalWorkflowService = approvalWorkflowService;
@@ -128,20 +130,25 @@ public class RequisitionView extends VerticalLayout {
 
 			var layout = new HorizontalLayout(viewBtn);
 
-			var approvalWorkflow = approvalWorkflowService.findByRequestType(ApprovalType.REQUISITION);
-
-			if (approvalWorkflow != null) {
-				var roles = approvalWorkflow.steps.stream().map(a -> a.roleRequired).toList();
-				if (roles.stream().anyMatch(a -> identity.hasRole(a))) {
-					layout.add(approveBtn);
-					layout.add(rejectBtn);
-				}
+			boolean canApprove = approverRoles.stream().anyMatch(role -> identity.hasRole(role));
+			if (canApprove) {
+				layout.add(approveBtn);
+				layout.add(rejectBtn);
 			}
 
 			return layout;
 		}).setHeader("Actions").setAutoWidth(true);
 
 		add(grid);
+
+		// Cache the approver roles once so the Actions column does not have to call the
+		// (transactional) service for every rendered row, which would detach the
+		// ApprovalWorkflow entity and trigger a LazyInitializationException on steps.
+		try {
+			approverRoles = approvalWorkflowService.findApproverRoles(ApprovalType.REQUISITION);
+		} catch (Exception ignored) {
+			approverRoles = List.of();
+		}
 
 		refreshData();
 	}
@@ -187,7 +194,7 @@ public class RequisitionView extends VerticalLayout {
 				// rejectReason.getValue() + "]");
 				dialog.close();
 				try {
-					requisitionService.reject(id, identity);
+					requisitionService.reject(id, identity, rejectReason.getValue());
 					Notification.show("Requisition rejected", 3000, Notification.Position.TOP_CENTER)
 							.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 				} catch (Exception ex) {

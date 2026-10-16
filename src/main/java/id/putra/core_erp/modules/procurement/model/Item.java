@@ -1,7 +1,6 @@
 package id.putra.core_erp.modules.procurement.model;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;

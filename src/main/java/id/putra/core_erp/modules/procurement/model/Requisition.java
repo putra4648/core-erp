@@ -3,7 +3,6 @@ package id.putra.core_erp.modules.procurement.model;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
@@ -15,6 +14,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -36,17 +36,12 @@ public class Requisition extends BaseEntity {
 	@Column(name = "note")
 	public String note;
 
-	@Column(name = "currency")
-	public BigInteger currency;
-
 	@NotNull(message = "Due date is required")
 	@Column(name = "due_date")
 	public LocalDate dueDate;
 
-	public Integer quantity;
-
-	@Column(name = "unit_price")
-	public BigInteger unitPrice;
+	@Column(name = "total_amount")
+	public BigInteger totalAmount;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
@@ -62,9 +57,14 @@ public class Requisition extends BaseEntity {
 	@JoinColumn(name = "dept_id")
 	public Department department;
 
-	@OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "requisition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	public List<RequisitionItem> items = new ArrayList<>();
 
-	// TODO: Add supplier here
+	@Override
+	public String toString() {
+		return "Requisition [title=" + title + ", referenceId=" + referenceId + ", note=" + note
+				+ ", dueDate=" + dueDate + ", totalAmount=" + totalAmount
+				+ ", status=" + status + ", budget=" + budget + ", department=" + department + ", items=" + items + "]";
+	}
 
 }

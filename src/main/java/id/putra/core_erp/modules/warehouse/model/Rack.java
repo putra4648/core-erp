@@ -1,7 +1,5 @@
 package id.putra.core_erp.modules.warehouse.model;
 
-import java.util.Objects;
-
 import id.putra.core_erp.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

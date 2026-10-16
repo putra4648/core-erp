@@ -53,4 +53,21 @@ public class ApprovalWorkflowService implements BaseService<ApprovalWorkflow> {
         return approvalWorkflowRepo.find("requestType", type).firstResult();
     }
 
+    /**
+     * Returns the list of role names that are part of the approval workflow for the
+     * given request type. The {@code steps} collection is accessed within this
+     * transactional method so that it is initialized before the entity becomes
+     * detached, avoiding {@code LazyInitializationException} in the caller.
+     */
+    public List<String> findApproverRoles(ApprovalType type) {
+        if (type == null) {
+            return List.of();
+        }
+        ApprovalWorkflow workflow = approvalWorkflowRepo.find("requestType", type).firstResult();
+        if (workflow == null || workflow.steps == null) {
+            return List.of();
+        }
+        return workflow.steps.stream().map(s -> s.roleRequired).toList();
+    }
+
 }

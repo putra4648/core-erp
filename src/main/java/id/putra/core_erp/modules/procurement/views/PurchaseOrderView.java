@@ -1,10 +1,8 @@
 package id.putra.core_erp.modules.procurement.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -15,7 +13,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -23,6 +20,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import id.putra.core_erp.modules.inbound.service.PurchaseOrderService;
+import id.putra.core_erp.modules.inbound.service.ReceivingOrderService;
 import id.putra.core_erp.modules.procurement.model.PurchaseOrder;
 import id.putra.core_erp.ui.MainLayout;
 import id.putra.core_erp.ui.ViewWithDialog;
@@ -35,15 +33,19 @@ import io.quarkus.security.Authenticated;
 public class PurchaseOrderView extends ViewWithDialog {
 
 	private final PurchaseOrderService purchaseOrderService;
+	private final ReceivingOrderService receivingOrderService;
 	private final Grid<PurchaseOrder> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
 	private Binder<PurchaseOrder> binder = new BeanValidationBinder<>(PurchaseOrder.class);
 	private TextField poNumber = new TextField("PO Number");
+	private DatePicker deliveryDate = new DatePicker("Delivery Date");
 
-	public PurchaseOrderView(PurchaseOrderService purchaseOrderService) {
+	public PurchaseOrderView(PurchaseOrderService purchaseOrderService,
+			ReceivingOrderService receivingOrderService) {
 		super();
 		this.purchaseOrderService = purchaseOrderService;
+		this.receivingOrderService = receivingOrderService;
 
 		configureValidation();
 
@@ -92,8 +94,13 @@ public class PurchaseOrderView extends ViewWithDialog {
 				.setSortable(true);
 		grid.addColumn(p -> p.orderDate != null ? p.orderDate.toString() : "-").setHeader("Order Date")
 				.setAutoWidth(true);
-		grid.addColumn(p -> p.supplier != null ? "Supplier #" + p.supplier.id : "-").setHeader("Supplier")
+		grid.addColumn(p -> p.supplier != null ? p.supplier.name : "-").setHeader("Supplier")
 				.setFlexGrow(1);
+		grid.addColumn(p -> p.quotation != null
+				? (p.quotation.rfqNumber != null ? p.quotation.rfqNumber : "RFQ-" + p.quotation.id)
+				: "-").setHeader("Source RFQ").setAutoWidth(true);
+		grid.addColumn(p -> p.deliveryDate != null ? p.deliveryDate.toString() : "-").setHeader("Delivery Date")
+				.setAutoWidth(true);
 
 		grid.addComponentColumn(po -> {
 			String status = po.status != null ? po.status.name() : "DRAFT";
@@ -101,6 +108,16 @@ public class PurchaseOrderView extends ViewWithDialog {
 			badge.getElement().getThemeList().add("badge " + ("APPROVED".equals(status) ? "success" : "neutral"));
 			return badge;
 		}).setHeader("Status").setAutoWidth(true);
+
+		grid.addComponentColumn(po -> {
+			Button receiveBtn = new Button("Receive Goods", VaadinIcon.INBOX.create(), e -> receiveGoods(po));
+			receiveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SMALL);
+			if (po.purchaseOrderLines == null || po.purchaseOrderLines.isEmpty()) {
+				receiveBtn.setEnabled(false);
+				receiveBtn.setText("No Lines");
+			}
+			return receiveBtn;
+		}).setHeader("Action").setAutoWidth(true);
 
 		add(grid);
 
@@ -118,16 +135,21 @@ public class PurchaseOrderView extends ViewWithDialog {
 	protected void buildAndShowDialog(Object entity) throws Exception {
 		PurchaseOrder po = entity != null ? (PurchaseOrder) entity : new PurchaseOrder();
 		binder.readBean(po);
+		deliveryDate.clear();
+		if (po.id != null && po.deliveryDate != null) {
+			deliveryDate.setValue(po.deliveryDate);
+		}
 
 		Dialog dialog = new Dialog(po.id == null ? "New Purchase Order" : "Edit Purchase Order");
 		dialog.setWidth("500px");
 
-		FormLayout form = new FormLayout(poNumber);
+		FormLayout form = new FormLayout(poNumber, deliveryDate);
 		dialog.add(form);
 
 		Button saveBtn = new Button("Save", e -> {
 			try {
 				if (binder.writeBeanIfValid(po)) {
+					po.deliveryDate = deliveryDate.getValue();
 					if (po.id != null) {
 						purchaseOrderService.update(po);
 						Notification.show("PO updated successfully", 3000, Notification.Position.TOP_END)
@@ -175,5 +197,19 @@ public class PurchaseOrderView extends ViewWithDialog {
 
 		confirmDialog.getFooter().add(new Button("Cancel", e -> confirmDialog.close()), deleteBtn);
 		confirmDialog.open();
+	}
+
+	private void receiveGoods(PurchaseOrder po) {
+		try {
+			var receiving = receivingOrderService.generateFromPurchaseOrder(po.id);
+			Notification.show("Goods receipt "
+					+ (receiving.receivingNumber != null ? receiving.receivingNumber : "") + " created from "
+					+ po.poNumber, 4000, Notification.Position.TOP_END)
+					.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+			refreshData();
+		} catch (Exception ex) {
+			Notification.show("Failed to create goods receipt: " + ex.getMessage(), 4000,
+					Notification.Position.TOP_END).addThemeVariants(NotificationVariant.LUMO_ERROR);
+		}
 	}
 }

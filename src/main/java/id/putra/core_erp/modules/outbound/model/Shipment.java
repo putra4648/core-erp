@@ -1,6 +1,5 @@
 package id.putra.core_erp.modules.outbound.model;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 import id.putra.core_erp.entity.BaseEntity;

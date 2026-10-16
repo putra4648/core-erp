@@ -1,7 +1,5 @@
 package id.putra.core_erp.modules.inbound.model;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import id.putra.core_erp.entity.BaseEntity;
@@ -21,6 +19,13 @@ import jakarta.persistence.Table;
 public class Receiving extends BaseEntity {
 
 	public LocalDateTime receivedDate;
+
+	/**
+	 * Inbound receipt tracking number (e.g. {@code REC-2025-001}). Auto-generated
+	 * when a goods receipt is created from a Purchase Order as
+	 * {@code "REC-" + poNumber}.
+	 */
+	public String receivingNumber;
 
 	@Enumerated(EnumType.STRING)
 	public OrderStatus status;

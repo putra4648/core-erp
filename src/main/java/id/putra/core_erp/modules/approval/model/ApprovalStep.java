@@ -1,5 +1,6 @@
 package id.putra.core_erp.modules.approval.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -37,5 +38,5 @@ public class ApprovalStep {
     public Boolean optional = false;
 
     @OneToMany(mappedBy = "step")
-    public List<ApprovalRequest> approvalRequests;
+    public List<ApprovalRequest> approvalRequests = new ArrayList<>();
 }

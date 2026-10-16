@@ -12,7 +12,6 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import id.putra.core_erp.modules.procurement.model.Requisition;
 import id.putra.core_erp.modules.procurement.model.RequisitionItem;
 import id.putra.core_erp.modules.procurement.service.RequisitionService;
 import id.putra.core_erp.ui.MainLayout;

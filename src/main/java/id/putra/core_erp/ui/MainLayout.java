@@ -77,7 +77,7 @@ public class MainLayout extends AppLayout {
 			System.out.println("Security Identity: " + securityIdentity.getRoles());
 		});
 		subMenu.addItem("Settings", e -> UI.getCurrent().navigate("settings"));
-		subMenu.addItem("Logout", e -> UI.getCurrent().navigate("logout"));
+		subMenu.addItem("Logout", e -> UI.getCurrent().getPage().setLocation("/logout"));
 
 		HorizontalLayout header = new HorizontalLayout(toggle, title, themeToggle, userMenu);
 		header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);

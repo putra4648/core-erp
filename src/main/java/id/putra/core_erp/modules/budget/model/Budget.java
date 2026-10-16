@@ -1,8 +1,6 @@
 package id.putra.core_erp.modules.budget.model;
 
 import java.math.BigDecimal;
-import java.util.List;
-
 import id.putra.core_erp.entity.BaseEntity;
 import id.putra.core_erp.enums.BudgetType;
 import id.putra.core_erp.modules.department.model.Department;
@@ -12,7 +10,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

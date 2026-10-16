@@ -36,7 +36,7 @@ public class ApprovalHistory {
     @Column(name = "action", nullable = false)
     public ApprovalStatus action;
 
-    @Column(name = "comment", nullable = false)
+    @Column(name = "comment")
     public String comment;
 
     @Column(name = "acted_by", nullable = false)
