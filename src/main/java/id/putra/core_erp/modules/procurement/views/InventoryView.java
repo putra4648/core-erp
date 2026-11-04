@@ -1,6 +1,9 @@
 package id.putra.core_erp.modules.procurement.views;
 
 import java.text.SimpleDateFormat;
+
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -88,7 +91,7 @@ public class InventoryView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 	}
 
 	@Override

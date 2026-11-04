@@ -12,7 +12,11 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @Transactional
 public class SalesOrderService implements BaseService<SalesOrder> {
-	private SalesOrderRepository salesOrderRepository;
+	private final SalesOrderRepository salesOrderRepository;
+
+	public SalesOrderService(SalesOrderRepository salesOrderRepository) {
+		this.salesOrderRepository = salesOrderRepository;
+	}
 
 	@Override
 	public void save(SalesOrder dto) {

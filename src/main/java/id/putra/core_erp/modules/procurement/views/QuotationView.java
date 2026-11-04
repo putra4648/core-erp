@@ -3,6 +3,8 @@ package id.putra.core_erp.modules.procurement.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -174,7 +176,7 @@ public class QuotationView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 		editing = entity != null ? (Quotation) entity : new Quotation();
 		rfqNumberField.clear();
 		dueDateField.clear();

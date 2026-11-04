@@ -18,6 +18,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import id.putra.core_erp.ui.theme.ThemeController;
+import id.putra.core_erp.ui.theme.ThemeToggleButton;
+
 @AnonymousAllowed
 @Route("login")
 @PageTitle("Login | CORE ERP")
@@ -30,15 +33,20 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 	public static final String AUTH0_URL = "/";
 
 	public LoginView() {
-		addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Flex.GROW);
+		ThemeController.applyStored();
+
+		addClassNames("app-login-shell", LumoUtility.Flex.GROW);
 		setSizeFull();
 		setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 		setAlignItems(FlexComponent.Alignment.CENTER);
 
+		// Colour scheme switch, pinned to the top-right corner of the view
+		ThemeToggleButton themeToggle = new ThemeToggleButton();
+		themeToggle.addClassName("app-login-toggle");
+
 		// Centered Card
 		VerticalLayout card = new VerticalLayout();
-		card.addClassNames(LumoUtility.Background.BASE, LumoUtility.Padding.XLARGE, LumoUtility.BorderRadius.LARGE,
-				LumoUtility.BoxShadow.MEDIUM, LumoUtility.BoxSizing.BORDER);
+		card.addClassNames("app-card", LumoUtility.Padding.XLARGE, LumoUtility.BoxSizing.BORDER);
 		card.setAlignItems(FlexComponent.Alignment.CENTER);
 		card.setMaxWidth("420px");
 		card.setWidth("90%");
@@ -70,7 +78,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 				LumoUtility.Margin.Top.MEDIUM, LumoUtility.Margin.Bottom.NONE);
 
 		card.add(header, subtitle, infoBadge, auth0Button, helperText);
-		add(card);
+		add(card, themeToggle);
 	}
 
 	@Override

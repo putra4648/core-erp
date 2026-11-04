@@ -3,6 +3,8 @@ package id.putra.core_erp.modules.procurement.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -56,8 +58,8 @@ public class CreateRequisitionView extends VerticalLayout {
 
 	private final Grid<RequisitionItem> itemGrid = new Grid<>();
 
-	private final Binder<Requisition> binder = new BeanValidationBinder<>(Requisition.class);
-	private final Binder<RequisitionItem> binderItem = new BeanValidationBinder<>(RequisitionItem.class);
+	private final Binder<@NonNull Requisition> binder = new BeanValidationBinder<>(Requisition.class);
+	private final Binder<@NonNull RequisitionItem> binderItem = new BeanValidationBinder<>(RequisitionItem.class);
 
 	private final H2 titleHeader = new H2("Create Purchase Requisition");
 	private final TextField titleField = new TextField("PR Title");
@@ -82,6 +84,8 @@ public class CreateRequisitionView extends VerticalLayout {
 
 		this.itemEditor = itemGrid.getEditor();
 		this.itemEditor.setBuffered(true);
+
+		assert binderItem != null;
 		this.itemEditor.setBinder(binderItem);
 
 		configureValidation();
@@ -114,7 +118,7 @@ public class CreateRequisitionView extends VerticalLayout {
 	private Component createFormSection() {
 		VerticalLayout card = new VerticalLayout();
 		card.setPadding(true);
-		card.getStyle().set("background", "#ffffff").set("border-radius", "12px").set("border", "1px solid #e2e8f0");
+		card.addClassName("app-card");
 
 		FormLayout form = new FormLayout();
 		titleField.setRequired(true);
@@ -140,7 +144,7 @@ public class CreateRequisitionView extends VerticalLayout {
 	private Component createItemsSection() {
 		VerticalLayout card = new VerticalLayout();
 		card.setPadding(true);
-		card.getStyle().set("background", "#ffffff").set("border-radius", "12px").set("border", "1px solid #e2e8f0");
+		card.addClassName("app-card");
 
 		H3 itemsTitle = new H3("Items");
 		itemsTitle.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);

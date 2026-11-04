@@ -1,0 +1,209 @@
+/* ==========================================================================
+   CORE ERP — global colour scheme (indigo / violet)
+   ==========================================================================
+   Light and dark are driven by the native CSS `color-scheme` property, which
+   Vaadin controls through @ColorScheme on the app shell and
+   Page.setColorScheme(...) at runtime.
+
+   Every custom colour is therefore declared as light-dark(light, dark), so a
+   single declaration covers both schemes — the same technique the Lumo 25
+   theme uses internally.
+
+   Do NOT try to switch schemes with `[theme~="dark"]` selectors: Vaadin only
+   writes that attribute for ColorScheme.Value.DARK and never for the system
+   preference values (LIGHT_DARK / DARK_LIGHT).
+   ========================================================================== */
+
+html {
+  /* ---------------- Brand ramp: indigo / violet ---------------- */
+  --core-primary-100: light-dark(#e0e7ff, #312e81);
+  --core-primary-500: light-dark(#4f46e5, #a78bfa);
+  --core-primary-600: light-dark(#4338ca, #c4b5fd);
+  --core-primary-700: light-dark(#3730a3, #ddd6fe);
+
+  /* ---------------- Surfaces ---------------- */
+  --app-page-bg: light-dark(#f8fafc, #0b1220);
+  --app-surface: light-dark(#ffffff, #0f172a);
+  --app-card-bg: light-dark(#ffffff, #1e293b);
+  --app-header-bg: light-dark(#ffffff, #111c33);
+  --app-border-color: light-dark(#e2e8f0, #334155);
+  --app-shadow: light-dark(0 1px 3px rgb(15 23 42 / 10%), 0 1px 3px rgb(0 0 0 / 45%));
+
+  /* ---------------- Status chip backgrounds ---------------- */
+  --app-chip-info-bg: light-dark(rgb(79 70 229 / 14%), rgb(167 139 250 / 20%));
+  --app-chip-success-bg: light-dark(rgb(5 150 105 / 14%), rgb(52 211 153 / 20%));
+  --app-chip-warning-bg: light-dark(rgb(217 119 6 / 16%), rgb(251 191 36 / 20%));
+  --app-chip-danger-bg: light-dark(rgb(220 38 38 / 14%), rgb(248 113 113 / 20%));
+
+  /* ======================================================================
+     Lumo token overrides — this re-skins every Vaadin component at once.
+     ====================================================================== */
+  --lumo-primary-color: var(--core-primary-500);
+  --lumo-primary-text-color: var(--core-primary-600);
+  --lumo-primary-contrast-color: light-dark(#ffffff, #1e1b4b);
+  --lumo-primary-color-50pct: light-dark(rgb(79 70 229 / 50%), rgb(167 139 250 / 50%));
+  --lumo-primary-color-10pct: light-dark(rgb(79 70 229 / 10%), rgb(167 139 250 / 10%));
+
+  --lumo-base-color: var(--app-surface);
+  --lumo-body-text-color: light-dark(#1e293b, #e2e8f0);
+  --lumo-header-text-color: light-dark(#0f172a, #f8fafc);
+  --lumo-secondary-text-color: light-dark(#475569, #94a3b8);
+  --lumo-tertiary-text-color: light-dark(#64748b, #64748b);
+  --lumo-disabled-text-color: light-dark(#94a3b8, #475569);
+
+  /* --lumo-contrast drives borders, dividers and hover overlays */
+  --lumo-contrast: light-dark(#0f172a, #e2e8f0);
+  --lumo-contrast-5pct: light-dark(rgb(15 23 42 / 5%), rgb(226 232 240 / 5%));
+  --lumo-contrast-10pct: light-dark(rgb(15 23 42 / 10%), rgb(226 232 240 / 10%));
+  --lumo-contrast-20pct: light-dark(rgb(15 23 42 / 20%), rgb(226 232 240 / 20%));
+  --lumo-contrast-30pct: light-dark(rgb(15 23 42 / 30%), rgb(226 232 240 / 30%));
+  --lumo-contrast-40pct: light-dark(rgb(15 23 42 / 40%), rgb(226 232 240 / 40%));
+  --lumo-contrast-50pct: light-dark(rgb(15 23 42 / 50%), rgb(226 232 240 / 50%));
+  --lumo-contrast-60pct: light-dark(rgb(15 23 42 / 60%), rgb(226 232 240 / 60%));
+  --lumo-contrast-70pct: light-dark(rgb(15 23 42 / 70%), rgb(226 232 240 / 70%));
+  --lumo-contrast-80pct: light-dark(rgb(15 23 42 / 80%), rgb(226 232 240 / 80%));
+  --lumo-contrast-90pct: light-dark(rgb(15 23 42 / 90%), rgb(226 232 240 / 90%));
+
+  /* ---------------- Status colours: pills, notifications, validation ------- */
+  --lumo-success-color: light-dark(#059669, #34d399);
+  --lumo-success-color-50pct: light-dark(rgb(5 150 105 / 50%), rgb(52 211 153 / 50%));
+  --lumo-success-color-10pct: light-dark(rgb(5 150 105 / 10%), rgb(52 211 153 / 10%));
+  --lumo-success-text-color: light-dark(#047857, #6ee7b7);
+  --lumo-success-contrast-color: light-dark(#ffffff, #052e16);
+
+  --lumo-warning-color: light-dark(#d97706, #fbbf24);
+  --lumo-warning-text-color: light-dark(#b45309, #fcd34d);
+  --lumo-warning-contrast-color: light-dark(#ffffff, #451a03);
+
+  --lumo-error-color: light-dark(#dc2626, #f87171);
+  --lumo-error-color-50pct: light-dark(rgb(220 38 38 / 50%), rgb(248 113 113 / 50%));
+  --lumo-error-color-10pct: light-dark(rgb(220 38 38 / 10%), rgb(248 113 113 / 10%));
+  --lumo-error-text-color: light-dark(#b91c1c, #fca5a5);
+  --lumo-error-contrast-color: light-dark(#ffffff, #450a0a);
+
+  /* ---------------- Shape and typography ---------------- */
+  --lumo-border-radius-l: 12px;
+  --lumo-border-radius-m: 8px;
+  --lumo-border-radius-s: 6px;
+  --lumo-font-family: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --lumo-box-shadow-s: var(--app-shadow);
+}
+
+/* ==========================================================================
+   Page background
+   ========================================================================== */
+
+body,
+#outlet {
+  background: var(--app-page-bg);
+}
+
+/* ==========================================================================
+   Application shell — navbar, drawer, navigation
+   ========================================================================== */
+
+.app-brand {
+  color: var(--lumo-primary-text-color);
+  letter-spacing: 0.02em;
+}
+
+vaadin-app-layout::part(navbar) {
+  background: var(--app-header-bg);
+  border-bottom: 1px solid var(--app-border-color);
+  box-shadow: none;
+}
+
+vaadin-app-layout::part(drawer) {
+  background: var(--app-surface);
+  border-inline-end: 1px solid var(--app-border-color);
+  box-shadow: none;
+}
+
+vaadin-side-nav-item[active]::part(link) {
+  background: var(--lumo-primary-color-10pct);
+  color: var(--lumo-primary-text-color);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Reusable surfaces
+   ========================================================================== */
+
+.app-card,
+.app-metric-card {
+  background: var(--app-card-bg);
+  border: 1px solid var(--app-border-color);
+  border-radius: var(--lumo-border-radius-l);
+  box-shadow: var(--app-shadow);
+  box-sizing: border-box;
+}
+
+.app-card {
+  width: 100%;
+}
+
+.app-icon-chip {
+  align-items: center;
+  border-radius: var(--lumo-border-radius-m);
+  display: inline-flex;
+  flex: none;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.app-icon-chip vaadin-icon {
+  height: 20px;
+  width: 20px;
+}
+
+.app-icon-chip--info {
+  background: var(--app-chip-info-bg);
+  color: var(--lumo-primary-text-color);
+}
+
+.app-icon-chip--success {
+  background: var(--app-chip-success-bg);
+  color: var(--lumo-success-text-color);
+}
+
+.app-icon-chip--warning {
+  background: var(--app-chip-warning-bg);
+  color: var(--lumo-warning-text-color);
+}
+
+.app-icon-chip--danger {
+  background: var(--app-chip-danger-bg);
+  color: var(--lumo-error-text-color);
+}
+
+/* ==========================================================================
+   Login screen
+   ========================================================================== */
+
+.app-login-shell {
+  background: var(--app-page-bg);
+  position: relative;
+}
+
+.app-login-toggle {
+  inset-block-start: var(--lumo-space-m);
+  inset-inline-end: var(--lumo-space-m);
+  position: absolute;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Data surfaces
+   ========================================================================== */
+
+vaadin-grid {
+  --vaadin-grid-border-color: var(--app-border-color);
+}
+
+vaadin-grid::part(header-cell) {
+  background: var(--lumo-contrast-5pct);
+  color: var(--lumo-secondary-text-color);
+  font-weight: 600;
+}
+

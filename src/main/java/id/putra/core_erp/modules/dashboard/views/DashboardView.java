@@ -94,13 +94,13 @@ public class DashboardView extends VerticalLayout {
 		masterRow.setSpacing(true);
 		masterRow.add(
 				createStatCard("Total Products", String.valueOf(productCount), VaadinIcon.PACKAGE,
-						"#2563eb", "#dbeafe"),
+						"app-icon-chip--info"),
 				createStatCard("Total Warehouses", String.valueOf(warehouseCount), VaadinIcon.BUILDING,
-						"#7c3aed", "#ede9fe"),
+						"app-icon-chip--warning"),
 				createStatCard("Total Suppliers", String.valueOf(supplierCount), VaadinIcon.TRUCK,
-						"#d97706", "#fef3c7"),
+						"app-icon-chip--success"),
 				createStatCard("Total Customers", String.valueOf(customerCount), VaadinIcon.USERS,
-						"#0d9488", "#ccfbf1"));
+						"app-icon-chip--danger"));
 		add(masterRow);
 
 		// --- Transactions ---
@@ -114,24 +114,21 @@ public class DashboardView extends VerticalLayout {
 		txnRow.setSpacing(true);
 		txnRow.add(
 				createStatCard("Total Requisitions", String.valueOf(requisitionCount), VaadinIcon.FILE_TEXT,
-						"#2563eb", "#dbeafe"),
+						"app-icon-chip--info"),
 				createStatCard("Pending Approvals", String.valueOf(pendingCount), VaadinIcon.CLOCK,
-						"#d97706", "#fef3c7"),
+						"app-icon-chip--warning"),
 				createStatCard("Purchase Orders", String.valueOf(poCount), VaadinIcon.CART,
-						"#059669", "#d1fae5"),
+						"app-icon-chip--success"),
 				createStatCard("Sales Orders", String.valueOf(soCount), VaadinIcon.ABACUS,
-						"#dc2626", "#fee2e2"));
+						"app-icon-chip--danger"));
 		add(txnRow);
 	}
 
-	private Component createStatCard(String title, String value, VaadinIcon iconType, String iconColor,
-			String bgColor) {
+	private Component createStatCard(String title, String value, VaadinIcon iconType, String chipClass) {
 		VerticalLayout card = new VerticalLayout();
 		card.setPadding(true);
 		card.setSpacing(false);
-		card.getStyle().set("background", "#ffffff").set("border-radius", "12px")
-				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)")
-				.set("border", "1px solid #e2e8f0");
+		card.addClassName("app-metric-card");
 
 		HorizontalLayout topRow = new HorizontalLayout();
 		topRow.setWidthFull();
@@ -143,14 +140,9 @@ public class DashboardView extends VerticalLayout {
 				LumoUtility.TextColor.SECONDARY);
 
 		Icon icon = iconType.create();
-		icon.setSize("20px");
-		icon.setColor(iconColor);
 
 		HorizontalLayout iconWrapper = new HorizontalLayout(icon);
-		iconWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
-		iconWrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-		iconWrapper.getStyle().set("background", bgColor).set("border-radius", "8px").set("width", "36px")
-				.set("height", "36px");
+		iconWrapper.addClassNames("app-icon-chip", chipClass);
 
 		topRow.add(titleSpan, iconWrapper);
 
@@ -171,8 +163,7 @@ public class DashboardView extends VerticalLayout {
 	private Component createRecentSection() {
 		VerticalLayout section = new VerticalLayout();
 		section.setPadding(true);
-		section.getStyle().set("background", "#ffffff").set("border-radius", "12px")
-				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)").set("border", "1px solid #e2e8f0");
+		section.addClassName("app-card");
 
 		H3 title = new H3("Recent Requisitions");
 		title.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);
@@ -197,8 +188,7 @@ public class DashboardView extends VerticalLayout {
 	private Component createSpendersSection() {
 		VerticalLayout section = new VerticalLayout();
 		section.setPadding(true);
-		section.getStyle().set("background", "#ffffff").set("border-radius", "12px")
-				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)").set("border", "1px solid #e2e8f0");
+		section.addClassName("app-card");
 
 		H3 title = new H3("Top Department Spenders");
 		title.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);
@@ -224,6 +214,7 @@ public class DashboardView extends VerticalLayout {
 			recentGrid.setItems(recent);
 		} catch (Exception ex) {
 			// handle gracefully — grid stays empty
+			ex.printStackTrace();
 		}
 	}
 
@@ -235,6 +226,7 @@ public class DashboardView extends VerticalLayout {
 			}
 		} catch (Exception ex) {
 			// handle gracefully — grid stays empty
+			ex.printStackTrace();
 		}
 	}
 

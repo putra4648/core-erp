@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.procurement.views;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -37,7 +39,7 @@ public class PurchaseOrderView extends ViewWithDialog {
 	private final Grid<PurchaseOrder> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private Binder<PurchaseOrder> binder = new BeanValidationBinder<>(PurchaseOrder.class);
+	private Binder<@NonNull PurchaseOrder> binder = new BeanValidationBinder<>(PurchaseOrder.class);
 	private TextField poNumber = new TextField("PO Number");
 	private DatePicker deliveryDate = new DatePicker("Delivery Date");
 
@@ -132,7 +134,7 @@ public class PurchaseOrderView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 		PurchaseOrder po = entity != null ? (PurchaseOrder) entity : new PurchaseOrder();
 		binder.readBean(po);
 		deliveryDate.clear();

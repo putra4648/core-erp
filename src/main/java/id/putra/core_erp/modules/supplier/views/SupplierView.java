@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.supplier.views;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -33,7 +35,7 @@ public class SupplierView extends ViewWithDialog {
 	private final Grid<Supplier> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private Binder<Supplier> binder = new BeanValidationBinder<>(Supplier.class);
+	private Binder<@NonNull Supplier> binder = new BeanValidationBinder<>(Supplier.class);
 	private TextField code = new TextField("Supplier Code");
 	private TextField name = new TextField("Supplier Name");
 	private TextField email = new TextField("Email");

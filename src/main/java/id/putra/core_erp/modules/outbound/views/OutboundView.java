@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.outbound.views;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -34,7 +36,7 @@ public class OutboundView extends ViewWithDialog {
 	private final Grid<SalesOrder> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private Binder<SalesOrder> binder = new BeanValidationBinder<>(SalesOrder.class);
+	private Binder<@NonNull SalesOrder> binder = new BeanValidationBinder<>(SalesOrder.class);
 	private TextField soNumber = new TextField("Sales Order Number");
 
 	public OutboundView(SalesOrderService salesOrderService) {
@@ -120,7 +122,7 @@ public class OutboundView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 		SalesOrder order = entity != null ? (SalesOrder) entity : new SalesOrder();
 		binder.readBean(order);
 

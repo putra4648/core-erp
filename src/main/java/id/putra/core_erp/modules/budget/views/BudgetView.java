@@ -5,6 +5,8 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -42,7 +44,7 @@ public class BudgetView extends ViewWithDialog {
 	private final Grid<Budget> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private Binder<Budget> binder = new BeanValidationBinder<>(Budget.class);
+	private Binder<@NonNull Budget> binder = new BeanValidationBinder<>(Budget.class);
 
 	private ComboBox<Department> department = new ComboBox<>("Select Department");
 	private ComboBox<Integer> fiscalYear = new ComboBox<>("Fiscal Year");
@@ -128,7 +130,7 @@ public class BudgetView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 		Budget budget = (Budget) entity;
 		binder.readBean(budget);
 
