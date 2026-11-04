@@ -69,13 +69,13 @@ public class RequisitionDashboardView extends ViewWithDialog {
 		stats.setSpacing(true);
 		stats.add(
 				createStatCard("Total Requisitions", String.valueOf(totalCount), VaadinIcon.FILE_TEXT,
-						"#2563eb", "#dbeafe"),
+						"app-icon-chip--info"),
 				createStatCard("Pending Approval", String.valueOf(pendingCount), VaadinIcon.CLOCK,
-						"#d97706", "#fef3c7"),
+						"app-icon-chip--warning"),
 				createStatCard("Approved", String.valueOf(approvedCount), VaadinIcon.CHECK_CIRCLE,
-						"#059669", "#d1fae5"),
+						"app-icon-chip--success"),
 				createStatCard("Rejected", String.valueOf(rejectedCount), VaadinIcon.CLOSE_CIRCLE,
-						"#dc2626", "#fee2e2"));
+						"app-icon-chip--danger"));
 		add(stats);
 
 		// --- Detail sections ---
@@ -83,14 +83,11 @@ public class RequisitionDashboardView extends ViewWithDialog {
 		add(createRecentSection());
 	}
 
-	private Component createStatCard(String title, String value, VaadinIcon iconType, String iconColor,
-			String bgColor) {
+	private Component createStatCard(String title, String value, VaadinIcon iconType, String chipClass) {
 		VerticalLayout card = new VerticalLayout();
 		card.setPadding(true);
 		card.setSpacing(false);
-		card.getStyle().set("background", "#ffffff").set("border-radius", "12px")
-				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)")
-				.set("border", "1px solid #e2e8f0");
+		card.addClassName("app-metric-card");
 
 		HorizontalLayout topRow = new HorizontalLayout();
 		topRow.setWidthFull();
@@ -102,14 +99,9 @@ public class RequisitionDashboardView extends ViewWithDialog {
 				LumoUtility.TextColor.SECONDARY);
 
 		Icon icon = iconType.create();
-		icon.setSize("20px");
-		icon.setColor(iconColor);
 
 		HorizontalLayout iconWrapper = new HorizontalLayout(icon);
-		iconWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
-		iconWrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-		iconWrapper.getStyle().set("background", bgColor).set("border-radius", "8px").set("width", "36px").set("height",
-				"36px");
+		iconWrapper.addClassNames("app-icon-chip", chipClass);
 
 		topRow.add(titleSpan, iconWrapper);
 
@@ -124,8 +116,7 @@ public class RequisitionDashboardView extends ViewWithDialog {
 	private Component createSpendersSection() {
 		VerticalLayout section = new VerticalLayout();
 		section.setPadding(true);
-		section.getStyle().set("background", "#ffffff").set("border-radius", "12px")
-				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)").set("border", "1px solid #e2e8f0");
+		section.addClassName("app-card");
 
 		H3 title = new H3("Top Department Spenders");
 		title.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);
@@ -148,8 +139,7 @@ public class RequisitionDashboardView extends ViewWithDialog {
 	private Component createRecentSection() {
 		VerticalLayout section = new VerticalLayout();
 		section.setPadding(true);
-		section.getStyle().set("background", "#ffffff").set("border-radius", "12px")
-				.set("box-shadow", "0 1px 3px 0 rgba(0, 0, 0, 0.1)").set("border", "1px solid #e2e8f0");
+		section.addClassName("app-card");
 
 		H3 title = new H3("Recent Requisitions");
 		title.addClassNames(LumoUtility.FontSize.MEDIUM, LumoUtility.FontWeight.SEMIBOLD);

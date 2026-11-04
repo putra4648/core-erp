@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.customer.views;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -32,7 +34,7 @@ public class CustomerView extends ViewWithDialog {
 	private final Grid<Customer> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private BeanValidationBinder<Customer> binder = new BeanValidationBinder<>(Customer.class);
+	private BeanValidationBinder<@NonNull Customer> binder = new BeanValidationBinder<>(Customer.class);
 	private TextField name = new TextField("Customer Name");
 	private TextField email = new TextField("Email");
 	private TextField phone = new TextField("Phone");
@@ -116,7 +118,7 @@ public class CustomerView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 		Customer customer = entity != null ? (Customer) entity : new Customer();
 		binder.readBean(customer);
 

@@ -3,6 +3,8 @@ package id.putra.core_erp.modules.setting.views.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -31,8 +33,10 @@ public class ApprovalWorkflowComponent extends ViewWithDialog {
     private final Grid<ApprovalWorkflow> grid = new Grid<>();
     private final Grid<ApprovalStep> stepGrid = new Grid<>();
 
-    private final BeanValidationBinder<ApprovalWorkflow> binder = new BeanValidationBinder<>(ApprovalWorkflow.class);
-    private final BeanValidationBinder<ApprovalStep> stepBinder = new BeanValidationBinder<>(ApprovalStep.class);
+    private final BeanValidationBinder<@NonNull ApprovalWorkflow> binder = new BeanValidationBinder<>(
+            ApprovalWorkflow.class);
+    private final BeanValidationBinder<@NonNull ApprovalStep> stepBinder = new BeanValidationBinder<>(
+            ApprovalStep.class);
 
     private final TextField workflowNameField = new TextField("Workflow Name");
     private final ComboBox<ApprovalType> requestTypeField = new ComboBox<>("Request Type");
@@ -52,6 +56,7 @@ public class ApprovalWorkflowComponent extends ViewWithDialog {
 
         this.stepEditor = stepGrid.getEditor();
         this.stepEditor.setBuffered(true);
+        assert stepBinder != null;
         this.stepEditor.setBinder(stepBinder);
         this.requestTypeField.setItems(ApprovalType.values());
         this.requestTypeField.setItemLabelGenerator(item -> item.name());

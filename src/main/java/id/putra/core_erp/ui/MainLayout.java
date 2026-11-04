@@ -4,8 +4,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.H2;
@@ -18,10 +16,10 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.dom.ThemeList;
-import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import id.putra.core_erp.ui.theme.ThemeController;
+import id.putra.core_erp.ui.theme.ThemeToggleButton;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
@@ -33,6 +31,8 @@ public class MainLayout extends AppLayout {
 	SecurityIdentity securityIdentity;
 
 	public MainLayout(SecurityIdentity securityIdentity) {
+		ThemeController.applyStored();
+
 		setPrimarySection(Section.DRAWER);
 
 		var principal = (DefaultJWTCallerPrincipal) securityIdentity.getPrincipal();
@@ -46,20 +46,11 @@ public class MainLayout extends AppLayout {
 
 		H2 title = new H2("CORE ERP");
 		title.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Margin.NONE);
+		title.addClassName(LumoUtility.FontWeight.BOLD);
+		title.addClassName("app-brand");
 		title.getStyle().setMarginRight("auto");
 
-		Button themeToggle = new Button(VaadinIcon.MOON.create(), click -> {
-			ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-			if (themeList.contains(Lumo.DARK)) {
-				themeList.remove(Lumo.DARK);
-				click.getSource().setIcon(VaadinIcon.MOON.create());
-			} else {
-				themeList.add(Lumo.DARK);
-				click.getSource().setIcon(VaadinIcon.SUN_O.create());
-			}
-		});
-		themeToggle.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-		themeToggle.setAriaLabel("Toggle dark mode");
+		ThemeToggleButton themeToggle = new ThemeToggleButton();
 
 		Avatar avatar = new Avatar(principal.getName());
 		if (principal.getClaim("picture") != null && !principal.getClaim("picture").toString().isBlank()) {
@@ -128,7 +119,8 @@ public class MainLayout extends AppLayout {
 		SideNav adminNav = new SideNav();
 		adminNav.setLabel("Administration");
 		adminNav.addItem(new SideNavItem("System Settings", "settings", VaadinIcon.COG.create()));
-		adminNav.addItem(new SideNavItem("Help & Support", "help", VaadinIcon.QUESTION_CIRCLE.create()));
+		// adminNav.addItem(new SideNavItem("Help & Support", "help",
+		// VaadinIcon.QUESTION_CIRCLE.create()));
 		adminNav.setWidthFull();
 
 		VerticalLayout navContainer = new VerticalLayout(mainNav, warehouseNav, procNav, masterNav, reportsNav,

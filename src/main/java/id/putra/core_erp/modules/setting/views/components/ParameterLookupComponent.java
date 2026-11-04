@@ -2,6 +2,8 @@ package id.putra.core_erp.modules.setting.views.components;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -25,7 +27,7 @@ import io.quarkus.panache.common.Page;
 
 public class ParameterLookupComponent extends ViewWithDialog {
     private final Grid<ParameterLookup> grid = new Grid<>();
-    private final Binder<ParameterLookup> binder = new BeanValidationBinder<>(ParameterLookup.class);
+    private final Binder<@NonNull ParameterLookup> binder = new BeanValidationBinder<>(ParameterLookup.class);
 
     private final TextField searchField = new TextField();
     private final TextField key = new TextField("Key");
@@ -114,7 +116,7 @@ public class ParameterLookupComponent extends ViewWithDialog {
     }
 
     @Override
-    protected void buildAndShowDialog(Object entity) throws Exception {
+    protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
         ParameterLookup parameter = (ParameterLookup) entity;
         binder.readBean(parameter);
         boolean isEdit = parameter.id != null;

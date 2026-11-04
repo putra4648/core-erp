@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.department.views;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -32,7 +34,7 @@ public class DepartmentView extends ViewWithDialog {
 	private final Grid<Department> grid = new Grid<>();
 	private final TextField searchField = new TextField();
 
-	private Binder<Department> binder = new BeanValidationBinder<>(Department.class);
+	private Binder<@NonNull Department> binder = new BeanValidationBinder<>(Department.class);
 	private TextField code = new TextField("Department Code");
 	private TextField name = new TextField("Department Name");
 
@@ -115,7 +117,7 @@ public class DepartmentView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 		Department dept = entity != null ? (Department) entity : new Department();
 		binder.readBean(dept);
 

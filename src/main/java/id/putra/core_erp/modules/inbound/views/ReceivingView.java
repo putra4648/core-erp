@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -99,7 +101,8 @@ public class ReceivingView extends ViewWithDialog {
 		grid.addColumn(r -> r.purchaseOrder != null ? r.purchaseOrder.poNumber : "-")
 				.setHeader("PO Number").setFlexGrow(1);
 		grid.addColumn(r -> r.purchaseOrder != null && r.purchaseOrder.supplier != null
-				? r.purchaseOrder.supplier.name : "-")
+				? r.purchaseOrder.supplier.name
+				: "-")
 				.setHeader("Supplier").setFlexGrow(1);
 		grid.addColumn(r -> r.receivedDate != null ? r.receivedDate.toLocalDate().toString() : "-")
 				.setHeader("Received Date").setAutoWidth(true);
@@ -157,7 +160,7 @@ public class ReceivingView extends ViewWithDialog {
 	}
 
 	@Override
-	protected void buildAndShowDialog(Object entity) throws Exception {
+	protected void buildAndShowDialog(@NonNull Object entity) throws Exception {
 		Receiving receiving = (Receiving) entity;
 		boolean isEdit = receiving.id != null;
 		Dialog dialog = new Dialog(isEdit ? "Edit Goods Receipt" : "New Goods Receipt");
@@ -170,7 +173,8 @@ public class ReceivingView extends ViewWithDialog {
 		TextField poField = new TextField("Purchase Order");
 		poField.setReadOnly(true);
 		poField.setValue(receiving.purchaseOrder != null && receiving.purchaseOrder.poNumber != null
-				? receiving.purchaseOrder.poNumber : "-");
+				? receiving.purchaseOrder.poNumber
+				: "-");
 
 		HorizontalLayout header = new HorizontalLayout(receivingNumberField, poField);
 		header.setWidthFull();

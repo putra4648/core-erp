@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.warehouse.views;
 
+import org.jspecify.annotations.NonNull;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -48,18 +50,18 @@ public class WarehouseView extends VerticalLayout {
 	private final Grid<Zone> gridZone = new Grid<>();
 	private final Grid<Rack> gridRack = new Grid<>();
 
-	private final Binder<Warehouse> warehouseBinder = new BeanValidationBinder<>(Warehouse.class);
+	private final Binder<@NonNull Warehouse> warehouseBinder = new BeanValidationBinder<>(Warehouse.class);
 	private final TextField warehouseName = new TextField("Name");
 	private final TextField warehouseLocation = new TextField("Location");
 	private final NumberField warehouseArea = new NumberField("Area (m²)");
 
-	private final Binder<Zone> zoneBinder = new BeanValidationBinder<>(Zone.class);
+	private final Binder<@NonNull Zone> zoneBinder = new BeanValidationBinder<>(Zone.class);
 	private final TextField zoneCode = new TextField("Code");
 	private final TextField zoneName = new TextField("Name");
 	private final TextField zoneType = new TextField("Type");
 	private final ComboBox<Warehouse> zoneWarehouse = new ComboBox<>("Warehouse");
 
-	private final Binder<Rack> rackBinder = new BeanValidationBinder<>(Rack.class);
+	private final Binder<@NonNull Rack> rackBinder = new BeanValidationBinder<>(Rack.class);
 	private final TextField rackName = new TextField("Rack Name");
 	private final IntegerField rackRows = new IntegerField("Rows");
 	private final IntegerField rackCols = new IntegerField("Columns");
