@@ -39,7 +39,7 @@ public class PurchaseOrderService implements BaseService<PurchaseOrder> {
 
 	@Override
 	public void delete(Long id) {
-		purchaseOrderRepository.deleteById(id);
+		purchaseOrderRepository.softDeleteById(id);
 	}
 
 	@Override

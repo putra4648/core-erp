@@ -30,7 +30,7 @@ public class LabellingService implements BaseService<Labelling> {
 
 	@Override
 	public void delete(Long id) {
-		labellingRepository.deleteById(id);
+		labellingRepository.softDeleteById(id);
 	}
 
 	@Override

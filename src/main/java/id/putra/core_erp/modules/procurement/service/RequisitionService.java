@@ -114,7 +114,7 @@ public class RequisitionService implements BaseService<Requisition> {
 
 	@Override
 	public void delete(Long id) {
-		requisitionRepo.deleteById(id);
+		requisitionRepo.softDeleteById(id);
 	}
 
 	@Override

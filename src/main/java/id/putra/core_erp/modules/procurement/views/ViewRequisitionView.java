@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.procurement.views;
 
+import java.util.List;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -18,7 +20,15 @@ import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.panache.common.Page;
 import io.quarkus.security.Authenticated;
 
-@Route(value = "requisition", layout = MainLayout.class)
+/**
+ * Read-only detail view for a single requisition, reached as
+ * {@code requisition/detail/<id>}.
+ *
+ * <p>Carries its own route segment because {@link RequisitionView} already owns
+ * {@code requisition}. Two views on one path is rejected by Vaadin's route registry, so
+ * the list and the detail must not share a URL.
+ */
+@Route(value = "requisition/detail", layout = MainLayout.class)
 @PageTitle("Detail Requisition | PR System")
 @Authenticated
 public class ViewRequisitionView extends VerticalLayout implements HasUrlParameter<Long> {
@@ -26,46 +36,46 @@ public class ViewRequisitionView extends VerticalLayout implements HasUrlParamet
     private final RequisitionService requisitionService;
     private final Grid<RequisitionItem> itemGrid = new Grid<>();
 
-    @Override
-    public void setParameter(BeforeEvent event, Long parameter) {
-        var list = requisitionService.findAllItem(parameter, Page.ofSize(100));
-        System.out.println("SIZE " + list.size());
-        itemGrid.setItems(list);
-    }
+	@Override
+	public void setParameter(BeforeEvent event, Long parameter) {
+		if (parameter == null) {
+			itemGrid.setItems(List.of());
+			return;
+		}
+		itemGrid.setItems(requisitionService.findAllItem(parameter, Page.ofSize(100)));
+	}
 
-    public ViewRequisitionView(RequisitionService requisitionService) {
-        this.requisitionService = requisitionService;
+	public ViewRequisitionView(RequisitionService requisitionService) {
+		this.requisitionService = requisitionService;
 
-        Button backBtn = new Button("Back", VaadinIcon.ARROW_LEFT.create());
-        backBtn.addClickListener(e -> e.getUI().navigate(RequisitionView.class));
-        backBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+		Button backBtn = new Button("Back", VaadinIcon.ARROW_LEFT.create());
+		backBtn.addClickListener(e -> e.getUI().navigate(RequisitionView.class));
+		backBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        HorizontalLayout topBar = new HorizontalLayout(backBtn, new H2("Requisition Details"));
-        topBar.setAlignItems(FlexComponent.Alignment.CENTER);
+		HorizontalLayout topBar = new HorizontalLayout(backBtn, new H2("Requisition Details"));
+		topBar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        add(topBar);
+		add(topBar);
 
-        configureGrid();
-    }
+		configureGrid();
+	}
 
-    private void configureGrid() {
-        itemGrid.addColumn(s -> s.name)
-                .setHeader("Name")
-                .setKey("name")
-                .setAutoWidth(true);
+	private void configureGrid() {
+		itemGrid.addColumn(s -> s.name)
+				.setHeader("Name")
+				.setKey("name")
+				.setAutoWidth(true);
 
-        itemGrid.addColumn(s -> s.quantity)
-                .setHeader("Quantity")
-                .setKey("quantity")
-                .setAutoWidth(true);
+		itemGrid.addColumn(s -> s.quantity)
+				.setHeader("Quantity")
+				.setKey("quantity")
+				.setAutoWidth(true);
 
-        itemGrid.addColumn(s -> s.unitPrice)
-                .setHeader("Unit Price")
-                .setKey("unitPrice")
-                .setAutoWidth(true);
+		itemGrid.addColumn(s -> s.unitPrice)
+				.setHeader("Unit Price")
+				.setKey("unitPrice")
+				.setAutoWidth(true);
 
-        add(itemGrid);
-
-    }
-
+		add(itemGrid);
+	}
 }

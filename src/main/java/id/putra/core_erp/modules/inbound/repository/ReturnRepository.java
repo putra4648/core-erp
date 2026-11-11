@@ -1,9 +1,9 @@
 package id.putra.core_erp.modules.inbound.repository;
 
 import id.putra.core_erp.modules.inbound.model.Return;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import id.putra.core_erp.repository.SoftDeleteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class ReturnRepository implements PanacheRepository<Return> {
+public class ReturnRepository implements SoftDeleteRepository<Return> {
 }

@@ -26,7 +26,7 @@ public class CarrierService implements BaseService<Carrier> {
 
 	@Override
 	public void delete(Long id) {
-		carrierRepository.deleteById(id);
+		carrierRepository.softDeleteById(id);
 	}
 
 	@Override

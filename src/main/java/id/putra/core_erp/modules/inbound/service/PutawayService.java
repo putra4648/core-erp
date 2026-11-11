@@ -46,7 +46,7 @@ public class PutawayService implements BaseService<Putaway> {
 
 	@Override
 	public void delete(Long id) {
-		putawayRepository.deleteById(id);
+		putawayRepository.softDeleteById(id);
 	}
 
 	@Override

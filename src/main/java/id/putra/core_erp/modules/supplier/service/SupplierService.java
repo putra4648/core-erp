@@ -35,7 +35,7 @@ public class SupplierService implements BaseService<Supplier> {
 
 	@Override
 	public void delete(Long id) {
-		supplierRepository.deleteById(id);
+		supplierRepository.softDeleteById(id);
 	}
 
 	@Override

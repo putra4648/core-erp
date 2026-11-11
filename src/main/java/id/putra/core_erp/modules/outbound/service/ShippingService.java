@@ -30,7 +30,7 @@ public class ShippingService implements BaseService<Shipment> {
 
 	@Override
 	public void delete(Long id) {
-		shipmentRepository.deleteById(id);
+		shipmentRepository.softDeleteById(id);
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class PickingService implements BaseService<PickingTask> {
 
 	@Override
 	public void delete(Long id) {
-		pickingTaskRepository.deleteById(id);
+		pickingTaskRepository.softDeleteById(id);
 	}
 
 	@Override

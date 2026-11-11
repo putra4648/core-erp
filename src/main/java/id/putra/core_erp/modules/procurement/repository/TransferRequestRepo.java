@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import id.putra.core_erp.modules.procurement.model.Transfer;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import id.putra.core_erp.repository.SoftDeleteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class TransferRequestRepo implements PanacheRepository<Transfer> {
+public class TransferRequestRepo implements SoftDeleteRepository<Transfer> {
 
 	public List<Transfer> findByStatusLikeAndIdLike(String status, String id) {
 		return list("status like ?1 and id like ?2", status, id);

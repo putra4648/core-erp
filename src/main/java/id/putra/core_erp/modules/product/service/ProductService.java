@@ -40,7 +40,7 @@ public class ProductService implements BaseService<Product> {
 
 	@Override
 	public void delete(Long id) {
-		productRepository.deleteById(id);
+		productRepository.softDeleteById(id);
 	}
 
 }

@@ -30,7 +30,7 @@ public class ReturnInboundService implements BaseService<Return> {
 
 	@Override
 	public void delete(Long id) {
-		returnRepository.deleteById(id);
+		returnRepository.softDeleteById(id);
 	}
 
 	@Override

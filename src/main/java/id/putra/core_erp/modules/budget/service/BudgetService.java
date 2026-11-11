@@ -31,7 +31,7 @@ public class BudgetService implements BaseService<Budget> {
 
 	@Override
 	public void delete(Long id) {
-		budgetRepo.deleteById(id);
+		budgetRepo.softDeleteById(id);
 	}
 
 	@Override

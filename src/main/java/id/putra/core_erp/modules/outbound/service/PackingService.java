@@ -30,7 +30,7 @@ public class PackingService implements BaseService<Packing> {
 
 	@Override
 	public void delete(Long id) {
-		packingRepository.deleteById(id);
+		packingRepository.softDeleteById(id);
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class ItemService implements BaseService<Item> {
 
 	@Override
 	public void delete(Long id) {
-		itemRepo.deleteById(id);
+		itemRepo.softDeleteById(id);
 
 	}
 

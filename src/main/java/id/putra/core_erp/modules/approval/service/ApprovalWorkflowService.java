@@ -32,7 +32,7 @@ public class ApprovalWorkflowService implements BaseService<ApprovalWorkflow> {
 
     @Override
     public void delete(Long id) {
-        approvalWorkflowRepo.deleteById(id);
+        approvalWorkflowRepo.softDeleteById(id);
     }
 
     @Override

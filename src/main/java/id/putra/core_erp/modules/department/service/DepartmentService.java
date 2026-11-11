@@ -35,7 +35,7 @@ public class DepartmentService implements BaseService<Department> {
 
 	@Override
 	public void delete(Long id) {
-		departmentRepo.deleteById(id);
+		departmentRepo.softDeleteById(id);
 	}
 
 	@Override
