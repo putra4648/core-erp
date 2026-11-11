@@ -27,16 +27,17 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 
 /**
- * Regression guard for the native SQL in {@link RequisitionRepo}.
+ * Guards the requisition search queries against losing their soft delete filter.
  *
- * <p>{@code @SQLRestriction("deleted = false")} only rewrites JPQL and criteria queries.
- * The search methods on {@code RequisitionRepo} are hand-written native SQL, so they only
- * exclude soft-deleted rows because of the explicit {@code r.deleted = false} literals in
- * each WHERE clause. If someone rewrites those queries and drops the guard, this test
- * fails — which is the entire point.
+ * <p>Two classes of query live in {@link RequisitionRepo} and both are covered here:
+ * the JPQL searches, where the filter comes from {@code @SQLRestriction}, and the
+ * purchaser searches, which are native and carry the filter by hand.
+ *
+ * <p>Runs under {@code @QuarkusTest} because it needs a real database — JPQL and native
+ * SQL cannot be validated without a schema. {@code @TestTransaction} rolls back.
  */
 @QuarkusTest
-class RequisitionNativeQuerySoftDeleteTest {
+class RequisitionSearchSoftDeleteTest {
 
 	@Inject
 	RequisitionRepo requisitionRepo;
@@ -91,11 +92,11 @@ class RequisitionNativeQuerySoftDeleteTest {
 
 	@Test
 	@TestTransaction
-	void nativeSearchExcludesSoftDeletedRequisitions() {
+	void searchExcludesSoftDeletedRequisitions() {
 		Department dept = newDepartment("NSD01");
 		Budget budget = newBudget(dept, "Budget NSD01");
-		Requisition live = newRequisition("NativeQueryLiveItem", dept, budget);
-		Requisition dead = newRequisition("NativeQueryDeadItem", dept, budget);
+		Requisition live = newRequisition("SearchLiveItem", dept, budget);
+		Requisition dead = newRequisition("SearchDeadItem", dept, budget);
 		Long liveId = live.id;
 		Long deadId = dead.id;
 		em.flush();
@@ -108,15 +109,44 @@ class RequisitionNativeQuerySoftDeleteTest {
 		Set<String> deptCodes = Set.of("NSD01");
 
 		List<Requisition> hits = requisitionRepo
-				.getTitleContainingIgnoreCaseOrStatusAndDepartmentIn("NativeQuery", "SUBMIT", deptCodes);
+				.getTitleContainingIgnoreCaseOrStatusAndDepartmentIn("Search", "SUBMIT", deptCodes);
 		assertTrue(hits.stream().anyMatch(r -> liveId.equals(r.id)),
-				"live requisition must be found by the native search");
+				"live requisition must be found by the search");
 		assertFalse(hits.stream().anyMatch(r -> deadId.equals(r.id)),
-				"soft-deleted requisition must NOT be returned by the native search");
+				"soft-deleted requisition must NOT be returned by the search");
 
 		Long count = requisitionRepo
-				.countByTitleContainingIgnoreCaseOrStatusAndDepartmentIn("NativeQuery", "SUBMIT", deptCodes);
-		assertEquals(1L, count, "native count must exclude the soft-deleted requisition");
+				.countByTitleContainingIgnoreCaseOrStatusAndDepartmentIn("Search", "SUBMIT", deptCodes);
+		assertEquals(1L, count, "count must exclude the soft-deleted requisition");
+	}
+
+	/**
+	 * Guards the department filter specifically. {@code Requisition.department} joins on
+	 * {@code Department.dept_number}, so a requisition must only be returned for the
+	 * department number it was created under — not for any other, and not for the
+	 * department's surrogate id.
+	 */
+	@Test
+	@TestTransaction
+	void searchFiltersOnDepartmentNumber() {
+		Department mine = newDepartment("NSDF1");
+		Department other = newDepartment("NSDF2");
+		Budget budget = newBudget(mine, "Budget NSDF1");
+		Budget otherBudget = newBudget(other, "Budget NSDF2");
+		Requisition req = newRequisition("FilterMineItem", mine, budget);
+		Requisition otherReq = newRequisition("FilterOtherItem", other, otherBudget);
+		Long mineId = req.id;
+		Long otherId = otherReq.id;
+		em.flush();
+		em.clear();
+
+		List<Requisition> mineOnly = requisitionRepo
+				.getTitleContainingIgnoreCaseOrStatusAndDepartmentIn("Filter", "SUBMIT", Set.of("NSDF1"));
+
+		assertTrue(mineOnly.stream().anyMatch(r -> mineId.equals(r.id)),
+				"requisition of the requested department must be returned");
+		assertFalse(mineOnly.stream().anyMatch(r -> otherId.equals(r.id)),
+				"requisition of another department must not leak into the result");
 	}
 
 	@Test
