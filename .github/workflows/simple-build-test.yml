@@ -43,6 +43,13 @@ jobs:
             --no-transfer-progress \
             -Dquarkus.http.host=0.0.0.0 \
             -Dmaven.compiler.release=25
+      
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/
 
   native-build:
     name: Native build
@@ -69,4 +76,7 @@ jobs:
             --no-transfer-progress \
             -Dquarkus.http.host=0.0.0.0 \
             -Dmaven.compiler.release=25 \
-            -Dquarkus.native.additional-build-args="--enable-monitoring=heapdump"
+            -Dquarkus.native.additional-build-args="--enable-monitoring=heapdump" \
+            -Dquarkus.oidc.auth-server-url=${{ secrets.AUTH0_ISSUER }} \
+            -Dquarkus.oidc.client-id=${{ secrets.AUTH0_CLIENT_ID }} \
+            -Dquarkus.oidc.credentials.secret=${{ secrets.AUTH0_CLIENT_SECRET }} \
