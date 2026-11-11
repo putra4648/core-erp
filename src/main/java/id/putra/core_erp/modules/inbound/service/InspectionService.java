@@ -35,7 +35,7 @@ public class InspectionService implements BaseService<QualityInspection> {
 
 	@Override
 	public void delete(Long id) {
-		qualityInspectionRepository.deleteById(id);
+		qualityInspectionRepository.softDeleteById(id);
 	}
 
 	@Override

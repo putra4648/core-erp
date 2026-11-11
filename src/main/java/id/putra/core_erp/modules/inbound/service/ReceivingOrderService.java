@@ -45,7 +45,7 @@ public class ReceivingOrderService implements BaseService<Receiving> {
 
 	@Override
 	public void delete(Long id) {
-		receivingRepository.deleteById(id);
+		receivingRepository.softDeleteById(id);
 	}
 
 	@Override

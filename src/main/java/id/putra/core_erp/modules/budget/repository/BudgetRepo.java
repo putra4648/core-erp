@@ -5,11 +5,11 @@ import java.util.List;
 
 import id.putra.core_erp.modules.budget.model.Budget;
 import id.putra.core_erp.modules.department.model.Department;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import id.putra.core_erp.repository.SoftDeleteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class BudgetRepo implements PanacheRepository<Budget> {
+public class BudgetRepo implements SoftDeleteRepository<Budget> {
 
 	public List<Budget> findByDepartmentInAndFiscalYearAfter(Iterable<Department> department, Date fiscalYear) {
 		return find("department IN ?1 AND fiscalYear > ?2", department, fiscalYear).list();

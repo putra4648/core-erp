@@ -40,7 +40,7 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
 
 	@Override
 	public void delete(Long id) {
-		inventoryItemRepository.deleteById(id);
+		inventoryItemRepository.softDeleteById(id);
 	}
 
 }

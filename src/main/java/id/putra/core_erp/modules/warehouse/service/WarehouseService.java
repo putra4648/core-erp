@@ -40,7 +40,7 @@ public class WarehouseService implements BaseService<Warehouse> {
 
 	@Override
 	public void delete(Long id) {
-		warehouseRepository.deleteById(id);
+		warehouseRepository.softDeleteById(id);
 	}
 
 }

@@ -35,7 +35,7 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
 
 	@Override
 	public void delete(Long id) {
-		parameterLookupRepository.deleteById(id);
+		parameterLookupRepository.softDeleteById(id);
 	}
 
 	@Override

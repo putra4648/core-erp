@@ -40,7 +40,7 @@ public class ZoneCoreService implements BaseService<Zone> {
 
 	@Override
 	public void delete(Long id) {
-		zoneRepository.deleteById(id);
+		zoneRepository.softDeleteById(id);
 	}
 
 }

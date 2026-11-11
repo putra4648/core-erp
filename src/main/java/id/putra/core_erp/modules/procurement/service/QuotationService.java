@@ -196,7 +196,7 @@ public class QuotationService implements BaseService<Quotation> {
 
 	@Override
 	public void delete(Long id) {
-		quotationRepository.deleteById(id);
+		quotationRepository.softDeleteById(id);
 	}
 
 }

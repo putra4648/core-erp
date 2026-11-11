@@ -40,7 +40,7 @@ public class RackCoreService implements BaseService<Rack> {
 
 	@Override
 	public void delete(Long id) {
-		rackRepository.deleteById(id);
+		rackRepository.softDeleteById(id);
 	}
 
 }

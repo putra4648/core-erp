@@ -3,11 +3,11 @@ package id.putra.core_erp.modules.procurement.repository;
 import java.util.List;
 
 import id.putra.core_erp.modules.supplier.model.Supplier;
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import id.putra.core_erp.repository.SoftDeleteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class SupplierRepo implements PanacheRepository<Supplier> {
+public class SupplierRepo implements SoftDeleteRepository<Supplier> {
 
 	public List<Supplier> findAllByStatus(String status) {
 		return list("status", status);

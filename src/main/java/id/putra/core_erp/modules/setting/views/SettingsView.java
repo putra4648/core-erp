@@ -12,7 +12,6 @@ import id.putra.core_erp.modules.department.service.DepartmentService;
 import id.putra.core_erp.modules.parameter.service.ParameterLookupService;
 import id.putra.core_erp.modules.setting.views.components.ApprovalWorkflowComponent;
 import id.putra.core_erp.modules.setting.views.components.DepartmentComponent;
-import id.putra.core_erp.modules.setting.views.components.ParameterLookupComponent;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
 
@@ -37,7 +36,8 @@ public class SettingsView extends VerticalLayout {
 	private void initTab(ParameterLookupService parameterLookupService, DepartmentService departmentService,
 			ApprovalWorkflowService approvalWorkflowService) {
 		tabs.setSizeFull();
-		tabs.add("System Parameter", new ParameterLookupComponent(parameterLookupService));
+		// tabs.add("System Parameter", new
+		// ParameterLookupComponent(parameterLookupService));
 		tabs.add("Department", new DepartmentComponent(departmentService));
 		tabs.add("Approval Workflow", new ApprovalWorkflowComponent(approvalWorkflowService));
 

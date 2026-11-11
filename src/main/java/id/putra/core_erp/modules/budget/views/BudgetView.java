@@ -13,6 +13,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -55,6 +56,8 @@ public class BudgetView extends ViewWithDialog {
 	public BudgetView(BudgetService budgetService, DepartmentService departmentService) {
 		super();
 		this.budgetService = budgetService;
+
+		allocated.setPrefixComponent(new Div("Rp."));
 		// Populasi item untuk ComboBox
 		LocalDate now = LocalDate.now(ZoneId.systemDefault());
 		List<Integer> selectableYears = IntStream.range(now.getYear() - 20, now.getYear() + 1).boxed().toList();
@@ -117,6 +120,12 @@ public class BudgetView extends ViewWithDialog {
 		grid.addColumn(b -> b.fiscalYear != null ? b.fiscalYear : "").setHeader("Year").setAutoWidth(true);
 		grid.addColumn(b -> b.allocated != null ? b.allocated : "").setHeader("Amount Allocated (Year)")
 				.setAutoWidth(true);
+
+		grid.addComponentColumn(b -> {
+			Button editBtn = new Button(VaadinIcon.EDIT.create(), e -> openDialog(b));
+			editBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+			return editBtn;
+		}).setHeader("Actions").setAutoWidth(true);
 
 		add(grid);
 

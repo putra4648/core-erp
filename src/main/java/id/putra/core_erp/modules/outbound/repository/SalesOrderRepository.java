@@ -1,10 +1,10 @@
 package id.putra.core_erp.modules.outbound.repository;
 
 import id.putra.core_erp.modules.outbound.model.SalesOrder;
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import id.putra.core_erp.repository.SoftDeleteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class SalesOrderRepository implements PanacheRepositoryBase<SalesOrder, Long> {
+public class SalesOrderRepository implements SoftDeleteRepository<SalesOrder> {
 
 }

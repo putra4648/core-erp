@@ -2,7 +2,6 @@ package id.putra.core_erp.modules.procurement.service;
 
 import java.util.List;
 import id.putra.core_erp.modules.procurement.model.Transfer;
-import id.putra.core_erp.modules.procurement.repository.InventoryRepo;
 import id.putra.core_erp.modules.procurement.repository.TransferRequestRepo;
 import id.putra.core_erp.service.BaseService;
 import io.quarkus.panache.common.Page;
@@ -13,7 +12,7 @@ public class TransferService implements BaseService<Transfer> {
 
 	private final TransferRequestRepo transferRequestRepo;
 
-	public TransferService(InventoryRepo inventoryRepo, TransferRequestRepo transferRequestRepo) {
+	public TransferService(TransferRequestRepo transferRequestRepo) {
 		this.transferRequestRepo = transferRequestRepo;
 	}
 
@@ -56,7 +55,7 @@ public class TransferService implements BaseService<Transfer> {
 
 	@Override
 	public void delete(Long id) {
-		transferRequestRepo.deleteById(id);
+		transferRequestRepo.softDeleteById(id);
 	}
 
 }
