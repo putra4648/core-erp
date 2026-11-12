@@ -18,13 +18,19 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.junit.QuarkusTest;
+
 /**
  * Verifies the formal layout contract of {@link ExcelSheetBuilder}.
  *
- * <p>Plain JUnit — no {@code @QuarkusTest}, because rendering a workbook touches no CDI or
- * database. That keeps this test fast enough to run on every build and means it works
+ * <p>
+ * Plain JUnit — no {@code @QuarkusTest}, because rendering a workbook touches
+ * no CDI or
+ * database. That keeps this test fast enough to run on every build and means it
+ * works
  * without the dev-services Postgres container.
  */
+@QuarkusTest
 class ExcelSheetBuilderTest {
 
 	private static final List<ExcelColumn> COLUMNS = List.of(
@@ -69,7 +75,8 @@ class ExcelSheetBuilderTest {
 		Sheet sheet = renderToSheet(sampleReport());
 
 		assertEquals("No.", sheet.getRow(4).getCell(0).getStringCellValue(), "header sits at row 4");
-		// getCTWorksheet() is XSSF-only, hence the cast; the builder always writes XLSX.
+		// getCTWorksheet() is XSSF-only, hence the cast; the builder always writes
+		// XLSX.
 		assertNotNull(((org.apache.poi.xssf.usermodel.XSSFSheet) sheet).getCTWorksheet().getAutoFilter(),
 				"header must carry an autofilter");
 	}
@@ -109,7 +116,8 @@ class ExcelSheetBuilderTest {
 		Sheet sheet = renderToSheet(new ExcelReport("Empty", "", COLUMNS, List.of()));
 
 		assertEquals("Tidak ada data untuk periode ini.", sheet.getRow(5).getCell(0).getStringCellValue());
-		// A TOTAL row of zeros would read as real data, so an empty report must omit it.
+		// A TOTAL row of zeros would read as real data, so an empty report must omit
+		// it.
 		for (int i = 6; i <= sheet.getLastRowNum(); i++) {
 			Row row = sheet.getRow(i);
 			if (row == null) {

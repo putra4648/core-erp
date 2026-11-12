@@ -89,6 +89,11 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-devui-deployment-spi</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jacoco</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 	<dependencyManagement>
@@ -135,6 +140,19 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<quarkus.jacoco.data-file>
+							${maven.multiModuleProjectDirectory}/target/jacoco.exec</quarkus.jacoco.data-file>
+						<quarkus.jacoco.reuse-data-file>true</quarkus.jacoco.reuse-data-file>
+						<quarkus.jacoco.report-location>
+							${maven.multiModuleProjectDirectory}/target/coverage</quarkus.jacoco.report-location>
+					</systemPropertyVariables>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

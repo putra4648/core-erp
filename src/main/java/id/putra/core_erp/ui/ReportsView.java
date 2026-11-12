@@ -3,8 +3,6 @@ package id.putra.core_erp.ui;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -34,9 +32,13 @@ import jakarta.inject.Inject;
 /**
  * Reports &amp; Analytics screen.
  *
- * <p>This view owns only the selection UI and the download plumbing. Everything about how a
- * report looks lives in {@code service.excel}, and everything about what a report contains
- * lives in {@code modules.report.excel} — so adding a report is a new sheet class plus one
+ * <p>
+ * This view owns only the selection UI and the download plumbing. Everything
+ * about how a
+ * report looks lives in {@code service.excel}, and everything about what a
+ * report contains
+ * lives in {@code modules.report.excel} — so adding a report is a new sheet
+ * class plus one
  * {@link ReportType} constant, with no change here.
  */
 @Route(value = "reports", layout = MainLayout.class)
@@ -79,7 +81,8 @@ public class ReportsView extends ViewWithDialog {
 		startDate = new DatePicker("Start Date", LocalDate.now().minusDays(30));
 		endDate = new DatePicker("End Date", LocalDate.now());
 
-		// The inventory report is a current-state snapshot, not a ranged query. Leaving the
+		// The inventory report is a current-state snapshot, not a ranged query. Leaving
+		// the
 		// pickers enabled would imply a filter that the report does not apply.
 		applyDateRangeState(ReportType.INVENTORY_STOCK_STATUS);
 		reportType.addValueChangeListener(e -> {
@@ -120,7 +123,9 @@ public class ReportsView extends ViewWithDialog {
 		endDate.setHelperText(ranged ? null : "Not used by this report");
 	}
 
-	/** Counts the rows the selected report would contain and reports it to the user. */
+	/**
+	 * Counts the rows the selected report would contain and reports it to the user.
+	 */
 	private void onPreview() {
 		ReportType type = reportType.getValue();
 		if (type == null) {
@@ -150,9 +155,13 @@ public class ReportsView extends ViewWithDialog {
 	/**
 	 * Builds the download handler.
 	 *
-	 * <p>The supplier runs on a background thread, so a failure here cannot surface as an
-	 * exception on the UI — the user would just get nothing. It is caught and rethrown as a
-	 * {@link IllegalStateException} with a readable message, and the view shows the error
+	 * <p>
+	 * The supplier runs on a background thread, so a failure here cannot surface as
+	 * an
+	 * exception on the UI — the user would just get nothing. It is caught and
+	 * rethrown as a
+	 * {@link IllegalStateException} with a readable message, and the view shows the
+	 * error
 	 * notification before the download is attempted.
 	 */
 	private DownloadHandler buildDownloadHandler() {
@@ -173,8 +182,11 @@ public class ReportsView extends ViewWithDialog {
 	/**
 	 * Renders the selected report into an XLSX byte array.
 	 *
-	 * <p>{@code XSSFWorkbook} holds the whole document in memory. That is fine for the row
-	 * counts this ERP produces; if a report ever exceeds roughly 50,000 rows, switch to
+	 * <p>
+	 * {@code XSSFWorkbook} holds the whole document in memory. That is fine for the
+	 * row
+	 * counts this ERP produces; if a report ever exceeds roughly 50,000 rows,
+	 * switch to
 	 * {@code SXSSFWorkbook} — at the cost of losing the merged title block.
 	 */
 	private byte[] buildExcel(ReportType type, LocalDate start, LocalDate end) {
