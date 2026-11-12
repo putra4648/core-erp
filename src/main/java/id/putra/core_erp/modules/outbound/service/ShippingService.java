@@ -43,4 +43,8 @@ public class ShippingService implements BaseService<Shipment> {
 		return shipmentRepository.findAll().list();
 	}
 
+	@Override
+	public long count() {
+		return shipmentRepository.count();
+	}
 }

@@ -21,7 +21,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.enums.ApprovalStatus;
 import id.putra.core_erp.modules.procurement.model.Requisition;
-import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.service.DashboardService;
 import id.putra.core_erp.ui.MainLayout;
 import id.putra.core_erp.ui.ViewWithDialog;
@@ -35,15 +34,13 @@ public class RequisitionDashboardView extends ViewWithDialog {
 	private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private final DashboardService dashboardService;
-	private final RequisitionRepo requisitionRepo;
 
 	private final Grid<Map<String, Object>> spenderGrid = new Grid<>();
 	private final Grid<Requisition> recentGrid = new Grid<>();
 
-	public RequisitionDashboardView(DashboardService dashboardService, RequisitionRepo requisitionRepo) {
+	public RequisitionDashboardView(DashboardService dashboardService) {
 		super();
 		this.dashboardService = dashboardService;
-		this.requisitionRepo = requisitionRepo;
 
 		addHeader();
 		addToolbar();
@@ -59,10 +56,10 @@ public class RequisitionDashboardView extends ViewWithDialog {
 	@Override
 	public void addToolbar() {
 		// --- Requisition status breakdown ---
-		long totalCount = requisitionRepo.count();
-		long pendingCount = requisitionRepo.count("status = ?1", ApprovalStatus.SUBMIT);
-		long approvedCount = requisitionRepo.count("status = ?1", ApprovalStatus.APPROVED);
-		long rejectedCount = requisitionRepo.count("status = ?1", ApprovalStatus.REJECTED);
+		long totalCount = dashboardService.countRequisitions();
+		long pendingCount = dashboardService.countRequisitionsByStatus(ApprovalStatus.SUBMIT);
+		long approvedCount = dashboardService.countRequisitionsByStatus(ApprovalStatus.APPROVED);
+		long rejectedCount = dashboardService.countRequisitionsByStatus(ApprovalStatus.REJECTED);
 
 		HorizontalLayout stats = new HorizontalLayout();
 		stats.setWidthFull();

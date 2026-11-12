@@ -43,4 +43,8 @@ public class CustomerService implements BaseService<Customer> {
 		customerRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return customerRepository.count();
+	}
 }

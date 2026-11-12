@@ -43,4 +43,8 @@ public class SalesOrderService implements BaseService<SalesOrder> {
 		salesOrderRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return salesOrderRepository.count();
+	}
 }

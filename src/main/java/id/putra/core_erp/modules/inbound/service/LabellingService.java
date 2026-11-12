@@ -43,4 +43,8 @@ public class LabellingService implements BaseService<Labelling> {
 		return labellingRepository.findAll().list();
 	}
 
+	@Override
+	public long count() {
+		return labellingRepository.count();
+	}
 }

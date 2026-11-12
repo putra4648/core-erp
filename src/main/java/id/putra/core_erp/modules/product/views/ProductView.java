@@ -1,5 +1,7 @@
 package id.putra.core_erp.modules.product.views;
 
+import java.math.BigDecimal;
+
 import org.jspecify.annotations.NonNull;
 
 import com.vaadin.flow.component.button.Button;
@@ -14,6 +16,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -43,6 +46,7 @@ public class ProductView extends ViewWithDialog {
 	private IntegerField quantity = new IntegerField("Quantity");
 	private IntegerField minStock = new IntegerField("Min Stock");
 	private IntegerField maxStock = new IntegerField("Max Stock");
+	private NumberField price = new NumberField("Unit Price");
 
 	public ProductView(ProductService productService) {
 		super();
@@ -63,6 +67,17 @@ public class ProductView extends ViewWithDialog {
 		binder.bind(quantity, "quantity");
 		binder.bind(minStock, "minStock");
 		binder.bind(maxStock, "maxStock");
+
+		// NumberField is Double-valued; the entity stores BigDecimal. Convert on both
+		// sides rather than switching the field to BigDecimal, which has no Vaadin
+		// field type of its own.
+		price.setStep(0.01);
+		price.setMin(0);
+		price.setClearButtonVisible(true);
+		binder.forField(price)
+				.withConverter(d -> d == null ? null : BigDecimal.valueOf(d),
+						b -> b == null ? null : b.doubleValue())
+				.bind(p -> p.price, (p, v) -> p.price = v);
 	}
 
 	@Override
@@ -100,6 +115,8 @@ public class ProductView extends ViewWithDialog {
 		grid.addColumn(p -> p.name != null ? p.name : "").setHeader("Name").setFlexGrow(1)
 				.setSortable(true);
 		grid.addColumn(p -> p.quantity != null ? p.quantity : 0).setHeader("Total Stock").setAutoWidth(true);
+		grid.addColumn(p -> p.price != null ? String.format("%,.2f", p.price) : "-").setHeader("Unit Price")
+				.setAutoWidth(true);
 		grid.addColumn(p -> p.minStock != null ? p.minStock : 0).setHeader("Min Stock").setAutoWidth(true);
 		grid.addColumn(p -> p.maxStock != null ? p.maxStock : 0).setHeader("Max Stock").setAutoWidth(true);
 
@@ -134,7 +151,7 @@ public class ProductView extends ViewWithDialog {
 		Dialog dialog = new Dialog(product.id == null ? "Add Product" : "Edit Product");
 		dialog.setWidth("600px");
 
-		FormLayout formLayout = new FormLayout(sku, name, quantity, minStock, maxStock, description);
+		FormLayout formLayout = new FormLayout(sku, name, quantity, price, minStock, maxStock, description);
 		formLayout.setColspan(description, 2);
 		dialog.add(formLayout);
 

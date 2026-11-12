@@ -43,4 +43,8 @@ public class DepartmentService implements BaseService<Department> {
 		return departmentRepo.findAll().page(page).list();
 	}
 
+	@Override
+	public long count() {
+		return departmentRepo.count();
+	}
 }

@@ -47,4 +47,8 @@ public class ReturnInboundService implements BaseService<Return> {
 		return returnRepository.findAll().list();
 	}
 
+	@Override
+	public long count() {
+		return returnRepository.count();
+	}
 }

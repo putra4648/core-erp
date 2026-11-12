@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
-import id.putra.core_erp.modules.department.model.Department;
+import id.putra.core_erp.modules.customer.model.Customer;
 import id.putra.core_erp.modules.supplier.model.Supplier;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -24,7 +24,7 @@ public class Transaction extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
-	public Department customer;
+	public Customer customer;
 
 	public String txnNumber;
 	public String txnType;

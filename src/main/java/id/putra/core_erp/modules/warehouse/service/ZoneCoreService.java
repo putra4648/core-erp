@@ -43,4 +43,8 @@ public class ZoneCoreService implements BaseService<Zone> {
 		zoneRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return zoneRepository.count();
+	}
 }

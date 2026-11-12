@@ -43,4 +43,8 @@ public class PackingService implements BaseService<Packing> {
 		return packingRepository.findAll().list();
 	}
 
+	@Override
+	public long count() {
+		return packingRepository.count();
+	}
 }

@@ -4,8 +4,7 @@ Warehouse and procurement ERP — Quarkus 3 backend, Vaadin 25 server-side UI, P
 
 A modular monolith: 16 business modules, each owning its `model` / `repository` / `service` /
 `views` packages. Services are the unit of reuse — a module reaches into another module through
-its service layer, not its tables. The one systematic exception is the dashboard, which queries
-repositories directly for its counters (see [Known issues](#known-issues)).
+its service layer, not its tables.
 
 Rough shape today: 50 repositories, 41 services, 32 views across 19 routes.
 
@@ -98,6 +97,22 @@ That is fine while the model is still moving, but it has two consequences worth 
 - **Adding a `NOT NULL` column to a populated table fails** on PostgreSQL unless the entity
   supplies a default. `BaseEntity.deleted` carries `columnDefinition = "boolean default false"`
   for exactly this reason.
+- **A FK already in the database is not repointed.** Changing a field's type from one entity to
+  another leaves the old constraint in place. `SalesOrder.customer` and `Transaction.customer`
+  were retyped to `Customer`, which needs this applied once by hand:
+
+  ```sql
+  ALTER TABLE sales_order DROP CONSTRAINT IF EXISTS sales_order_customer_id_fkey;
+  ALTER TABLE sales_order ADD CONSTRAINT sales_order_customer_id_fkey
+      FOREIGN KEY (customer_id) REFERENCES customer(id);
+
+  ALTER TABLE transactions DROP CONSTRAINT IF EXISTS transactions_customer_id_fkey;
+  ALTER TABLE transactions ADD CONSTRAINT transactions_customer_id_fkey
+      FOREIGN KEY (customer_id) REFERENCES customer(id);
+  ```
+
+  Any pre-existing `customer_id` values referenced `department` rows, so they must be cleared or
+  the dev volume dropped before the new constraint will hold.
 
 Before production, or as soon as more than one environment holds real data, add Flyway and
 switch `generation` to `validate`.
@@ -126,7 +141,7 @@ src/main/java/id/putra/core_erp/
 | `budget` | model, repository, service, views | Budget per department and fiscal year |
 | `customer` | model, repository, service, views | Customer master |
 | `dashboard` | views | Landing dashboard — no own model |
-| `department` | model, **repo**, service, views | Department master (note: `repo`, not `repository`) |
+| `department` | model, **repo**, service | Department master (note: `repo`, not `repository`) |
 | `inbound` | model, repository, service, views | Receiving, putaway, QC, labelling, returns |
 | `inventory` | model, repository, service, views | Stock items per lot, with expiry and reservation |
 | `outbound` | model, repository, service, views | Sales orders, picking, packing, shipping, carriers |
@@ -140,9 +155,9 @@ src/main/java/id/putra/core_erp/
 | `warehouse` | model, repository, service, views | Warehouse, zone, rack hierarchy |
 
 Packages are not uniform across modules. Most follow `model` / `repository` / `service` /
-`views`, but `department` names its package `repo`, `transaction` has no service, and
-`dashboard`, `report` and `setting` are view- or content-only. Match the module you are working
-in rather than forcing a shape onto it.
+`views`, but `department` names its package `repo` and has no `views`, `transaction` has no
+service, and `dashboard`, `report` and `setting` are view- or content-only. Match the module you
+are working in rather than forcing a shape onto it.
 
 ### Layering rules
 
@@ -151,9 +166,8 @@ What the code actually does, and what to follow when adding to it:
 - **Services own transactions and business rules.** `@ApplicationScoped @Transactional`. This
   is the unit other modules depend on.
 - **Repositories hold queries only.** No business rules, no orchestration.
-- **Views call services, with two exceptions.** `DashboardView` and `RequisitionDashboardView`
-  inject repositories directly to read their counters. Every other view goes through a service.
-  Follow the service path for new work; the two dashboards are debt, not the pattern.
+- **Views call services, never repositories.** A view showing a count calls
+  `<Module>Service.count()`, not the repository behind it. This holds for the dashboards too.
 - **Cross-module access goes through the other module's service.** `RequisitionService` depends
   on `ApprovalService`, not on the approval package's repositories.
 - **Services never build UI.** They return entities or data; the view formats.
@@ -197,6 +211,15 @@ public class Customer extends BaseEntity {
 Fields are **public**. Quarkus Panache works with public fields, and Vaadin binders read them
 directly — there is no getter/setter layer in this codebase. Do not add one for consistency's
 sake.
+
+Money is `BigDecimal` with `@Column(precision = 19, scale = 4, columnDefinition = "numeric(19,4)
+default 0")`. The `columnDefinition` is not decoration: `generation=update` emits
+`add column ... not null` with no default when it adds a `@NotNull` field to an existing table,
+and PostgreSQL rejects that on any table with rows. See `BaseEntity.deleted` for the same trick.
+`Product.price` is the reference.
+
+`NumberField` is `Double`-valued, so binding it to a `BigDecimal` entity field needs
+`withConverter` in both directions — see `ProductView.configureValidation`.
 
 ### Soft delete
 
@@ -332,23 +355,9 @@ JUnit so it stays fast.
 
 ## Known issues
 
-- **`SalesOrder.customer` and `Transaction.customer` map to `Department`.** Both carry
-  `@JoinColumn(name = "customer_id")` but the field type is `Department`, so the generated FK
-  points at the `Department` table. Visible in the Hibernate DDL log at startup. Needs a
-  decision: retype to `Customer`, or rename the field to reflect that it really is a department.
-- **Dashboards bypass the service layer.** `DashboardView` injects seven repositories and
-  `RequisitionDashboardView` injects one, reading counters and grids directly. Every other view
-  goes through a service. Moving these counts into `DashboardService` would restore the pattern.
-- **`DepartmentView` is dead code.** It duplicates `setting/views/components/DepartmentComponent`,
-  which is what `SettingsView` actually renders. Nothing navigates to `DepartmentView`, and its
-  `@Route("department")` has no `layout`, so it would render without the app shell.
-- **`Product` has no price field.** Reports that imply monetary value cannot be built from
-  product master data alone. The inventory report is named *Stock Status* rather than *Stock
-  Valuation* for this reason.
-- **`ReportService`, `GenerateReportService` and `ExportFileService` are empty interfaces**
-  with no implementations. Dead code from an earlier design — either implement or delete.
 - **No rate limiting or retry policy on service boundaries.** Fine for the current single-tenant
-  deployment; revisit before exposing anything publicly.
+  deployment; revisit before exposing anything publicly. `quarkus-smallrye-fault-tolerance` is
+  the entry point for retries.
 
 ---
 

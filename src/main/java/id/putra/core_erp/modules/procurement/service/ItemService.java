@@ -48,4 +48,8 @@ public class ItemService implements BaseService<Item> {
 		return itemRepo.findAll().page(page).list();
 	}
 
+	@Override
+	public long count() {
+		return itemRepo.count();
+	}
 }

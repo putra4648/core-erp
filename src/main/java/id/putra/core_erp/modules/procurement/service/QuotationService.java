@@ -199,4 +199,8 @@ public class QuotationService implements BaseService<Quotation> {
 		quotationRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return quotationRepository.count();
+	}
 }

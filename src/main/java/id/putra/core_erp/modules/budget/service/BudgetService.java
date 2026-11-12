@@ -44,4 +44,8 @@ public class BudgetService implements BaseService<Budget> {
 		return budgetRepo.findAll().page(page).list();
 	}
 
+	@Override
+	public long count() {
+		return budgetRepo.count();
+	}
 }

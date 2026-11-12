@@ -174,4 +174,8 @@ public class ReceivingOrderService implements BaseService<Receiving> {
 		receivingLineRepository.getEntityManager().merge(line);
 	}
 
+	@Override
+	public long count() {
+		return receivingRepository.count();
+	}
 }
