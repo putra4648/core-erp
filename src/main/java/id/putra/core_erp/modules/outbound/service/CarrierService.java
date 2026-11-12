@@ -38,4 +38,9 @@ public class CarrierService implements BaseService<Carrier> {
 	public List<Carrier> findAll(Carrier c, Page p) {
 		return carrierRepository.findAll().list();
 	}
+
+	@Override
+	public long count() {
+		return carrierRepository.count();
+	}
 }

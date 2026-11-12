@@ -75,5 +75,8 @@ public class InspectionService implements BaseService<QualityInspection> {
 		receivingLineRepository.getEntityManager().merge(line);
 	}
 
+	@Override
+	public long count() {
+		return qualityInspectionRepository.count();
+	}
 }
-

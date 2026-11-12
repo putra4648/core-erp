@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import id.putra.core_erp.entity.BaseEntity;
-import id.putra.core_erp.modules.department.model.Department;
+import id.putra.core_erp.modules.customer.model.Customer;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,6 +26,6 @@ public class SalesOrder extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
-	public Department customer;
+	public Customer customer;
 
 }

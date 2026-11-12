@@ -21,15 +21,14 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import id.putra.core_erp.enums.ApprovalStatus;
-import id.putra.core_erp.modules.customer.repository.CustomerRepository;
-import id.putra.core_erp.modules.inbound.repository.PurchaseOrderRepository;
-import id.putra.core_erp.modules.outbound.repository.SalesOrderRepository;
+import id.putra.core_erp.modules.customer.service.CustomerService;
+import id.putra.core_erp.modules.inbound.service.PurchaseOrderService;
+import id.putra.core_erp.modules.outbound.service.SalesOrderService;
 import id.putra.core_erp.modules.procurement.model.Requisition;
-import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import id.putra.core_erp.modules.procurement.service.DashboardService;
-import id.putra.core_erp.modules.product.repository.ProductRepository;
-import id.putra.core_erp.modules.supplier.repository.SupplierRepository;
-import id.putra.core_erp.modules.warehouse.repository.WarehouseRepository;
+import id.putra.core_erp.modules.product.service.ProductService;
+import id.putra.core_erp.modules.supplier.service.SupplierService;
+import id.putra.core_erp.modules.warehouse.service.WarehouseService;
 import id.putra.core_erp.ui.MainLayout;
 import io.quarkus.security.Authenticated;
 
@@ -41,29 +40,27 @@ public class DashboardView extends VerticalLayout {
 	private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private final DashboardService dashboardService;
-	private final ProductRepository productRepository;
-	private final WarehouseRepository warehouseRepository;
-	private final SupplierRepository supplierRepository;
-	private final CustomerRepository customerRepository;
-	private final RequisitionRepo requisitionRepo;
-	private final PurchaseOrderRepository purchaseOrderRepository;
-	private final SalesOrderRepository salesOrderRepository;
+	private final ProductService productService;
+	private final WarehouseService warehouseService;
+	private final SupplierService supplierService;
+	private final CustomerService customerService;
+	private final PurchaseOrderService purchaseOrderService;
+	private final SalesOrderService salesOrderService;
 
 	private final Grid<Requisition> recentGrid = new Grid<>();
 	private final Grid<Map<String, Object>> spenderGrid = new Grid<>();
 
-	public DashboardView(DashboardService dashboardService, ProductRepository productRepository,
-			WarehouseRepository warehouseRepository, SupplierRepository supplierRepository,
-			CustomerRepository customerRepository, RequisitionRepo requisitionRepo,
-			PurchaseOrderRepository purchaseOrderRepository, SalesOrderRepository salesOrderRepository) {
+	public DashboardView(DashboardService dashboardService, ProductService productService,
+			WarehouseService warehouseService, SupplierService supplierService,
+			CustomerService customerService, PurchaseOrderService purchaseOrderService,
+			SalesOrderService salesOrderService) {
 		this.dashboardService = dashboardService;
-		this.productRepository = productRepository;
-		this.warehouseRepository = warehouseRepository;
-		this.supplierRepository = supplierRepository;
-		this.customerRepository = customerRepository;
-		this.requisitionRepo = requisitionRepo;
-		this.purchaseOrderRepository = purchaseOrderRepository;
-		this.salesOrderRepository = salesOrderRepository;
+		this.productService = productService;
+		this.warehouseService = warehouseService;
+		this.supplierService = supplierService;
+		this.customerService = customerService;
+		this.purchaseOrderService = purchaseOrderService;
+		this.salesOrderService = salesOrderService;
 
 		setSizeFull();
 		setPadding(true);
@@ -84,10 +81,10 @@ public class DashboardView extends VerticalLayout {
 
 	private void addMetricCards() {
 		// --- Master Data ---
-		long productCount = productRepository.count();
-		long warehouseCount = warehouseRepository.count();
-		long supplierCount = supplierRepository.count();
-		long customerCount = customerRepository.count();
+		long productCount = productService.count();
+		long warehouseCount = warehouseService.count();
+		long supplierCount = supplierService.count();
+		long customerCount = customerService.count();
 
 		HorizontalLayout masterRow = new HorizontalLayout();
 		masterRow.setWidthFull();
@@ -104,10 +101,10 @@ public class DashboardView extends VerticalLayout {
 		add(masterRow);
 
 		// --- Transactions ---
-		long requisitionCount = requisitionRepo.count();
-		long pendingCount = requisitionRepo.count("status = ?1", ApprovalStatus.SUBMIT);
-		long poCount = purchaseOrderRepository.count();
-		long soCount = salesOrderRepository.count();
+		long requisitionCount = dashboardService.countRequisitions();
+		long pendingCount = dashboardService.countRequisitionsByStatus(ApprovalStatus.SUBMIT);
+		long poCount = purchaseOrderService.count();
+		long soCount = salesOrderService.count();
 
 		HorizontalLayout txnRow = new HorizontalLayout();
 		txnRow.setWidthFull();

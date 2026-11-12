@@ -134,5 +134,8 @@ public class PutawayService implements BaseService<Putaway> {
 		receivingLineRepository.getEntityManager().merge(line);
 	}
 
+	@Override
+	public long count() {
+		return putawayRepository.count();
+	}
 }
-

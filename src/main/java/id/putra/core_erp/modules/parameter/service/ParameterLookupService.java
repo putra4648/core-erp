@@ -48,4 +48,8 @@ public class ParameterLookupService implements BaseService<ParameterLookup> {
 		return parameterLookupRepository.findById(id);
 	}
 
+	@Override
+	public long count() {
+		return parameterLookupRepository.count();
+	}
 }

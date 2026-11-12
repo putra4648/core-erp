@@ -16,9 +16,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 /**
  * Inventory stock status report — product master data with a computed stock classification.
  *
- * <p>Deliberately named <em>status</em>, not valuation: {@link Product} carries no price
- * field, so there is no monetary value to report. Summing quantity alone into a
- * "total value" column would be meaningless, so the total row sums quantities only.
+ * <p>Named <em>status</em>, not valuation: this sheet reports quantities and stock thresholds
+ * only. {@link Product} does carry a {@code price}, so a valuation variant that sums
+ * {@code quantity * price} is now buildable — that would be a separate report type, not a
+ * column added here.
  *
  * <p>Not date ranged — it reflects the current state of the product master.
  */

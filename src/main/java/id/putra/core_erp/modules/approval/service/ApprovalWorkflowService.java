@@ -70,4 +70,8 @@ public class ApprovalWorkflowService implements BaseService<ApprovalWorkflow> {
         return workflow.steps.stream().map(s -> s.roleRequired).toList();
     }
 
+	@Override
+	public long count() {
+		return approvalWorkflowRepo.count();
+	}
 }

@@ -43,4 +43,8 @@ public class PickingService implements BaseService<PickingTask> {
 		return pickingTaskRepository.findAll().list();
 	}
 
+	@Override
+	public long count() {
+		return pickingTaskRepository.count();
+	}
 }

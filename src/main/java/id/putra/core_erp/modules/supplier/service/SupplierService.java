@@ -48,4 +48,8 @@ public class SupplierService implements BaseService<Supplier> {
 		return supplierRepository.findAll().page(page).list();
 	}
 
+	@Override
+	public long count() {
+		return supplierRepository.count();
+	}
 }

@@ -115,4 +115,8 @@ public class PurchaseOrderService implements BaseService<PurchaseOrder> {
 		return po;
 	}
 
+	@Override
+	public long count() {
+		return purchaseOrderRepository.count();
+	}
 }

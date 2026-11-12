@@ -43,4 +43,8 @@ public class WarehouseService implements BaseService<Warehouse> {
 		warehouseRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return warehouseRepository.count();
+	}
 }

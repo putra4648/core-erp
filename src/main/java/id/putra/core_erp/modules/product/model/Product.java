@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "product")
 public class Product extends BaseEntity {
@@ -32,5 +34,15 @@ public class Product extends BaseEntity {
 
 	@NotNull(message = "Quantity is required")
 	public Integer quantity;
+
+	/**
+	 * Unit price. {@code columnDefinition} supplies the database default so adding this
+	 * column to a populated table succeeds — Hibernate's {@code update} generation emits
+	 * {@code add column ... not null} without one, which PostgreSQL rejects on any table
+	 * that already has rows. Same reason {@code BaseEntity.deleted} carries a default.
+	 */
+	@NotNull(message = "Price is required")
+	@Column(precision = 19, scale = 4, columnDefinition = "numeric(19,4) default 0")
+	public BigDecimal price;
 
 }

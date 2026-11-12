@@ -43,4 +43,8 @@ public class ProductService implements BaseService<Product> {
 		productRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return productRepository.count();
+	}
 }

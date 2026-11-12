@@ -43,4 +43,8 @@ public class RackCoreService implements BaseService<Rack> {
 		rackRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return rackRepository.count();
+	}
 }

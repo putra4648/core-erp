@@ -90,7 +90,9 @@ public class OutboundView extends ViewWithDialog {
 				.setSortable(true);
 		grid.addColumn(so -> so.orderDate != null ? so.orderDate.toString() : "-").setHeader("Order Date")
 				.setAutoWidth(true);
-		grid.addColumn(so -> so.customer != null && so.customer.id != null ? "Customer #" + so.customer.id : "-")
+		grid.addColumn(so -> so.customer != null
+				? (so.customer.name != null ? so.customer.name : "Customer #" + so.customer.id)
+				: "-")
 				.setHeader("Customer").setFlexGrow(1);
 
 		grid.addComponentColumn(so -> {

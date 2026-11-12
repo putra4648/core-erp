@@ -58,4 +58,8 @@ public class TransferService implements BaseService<Transfer> {
 		transferRequestRepo.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return transferRequestRepo.count();
+	}
 }

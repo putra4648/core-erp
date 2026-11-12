@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import id.putra.core_erp.enums.ApprovalStatus;
 import id.putra.core_erp.modules.procurement.model.Requisition;
 import id.putra.core_erp.modules.procurement.repository.RequisitionRepo;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,6 +19,16 @@ public class DashboardService {
 
 	public DashboardService(RequisitionRepo requisitionRepo) {
 		this.requisitionRepo = requisitionRepo;
+	}
+
+	/** Total live requisitions, soft-deleted rows excluded. */
+	public long countRequisitions() {
+		return requisitionRepo.count();
+	}
+
+	/** Live requisitions sitting in the given workflow status. */
+	public long countRequisitionsByStatus(ApprovalStatus status) {
+		return requisitionRepo.count("status = ?1", status);
 	}
 
 	/**

@@ -152,4 +152,8 @@ public class RequisitionService implements BaseService<Requisition> {
 		return total;
 	}
 
+	@Override
+	public long count() {
+		return requisitionRepo.count();
+	}
 }

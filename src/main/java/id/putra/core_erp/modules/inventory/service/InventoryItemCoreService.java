@@ -43,4 +43,8 @@ public class InventoryItemCoreService implements BaseService<InventoryItem> {
 		inventoryItemRepository.softDeleteById(id);
 	}
 
+	@Override
+	public long count() {
+		return inventoryItemRepository.count();
+	}
 }
