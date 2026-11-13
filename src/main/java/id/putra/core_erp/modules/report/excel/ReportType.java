@@ -10,7 +10,6 @@ import id.putra.core_erp.service.excel.ExcelReport;
 import id.putra.core_erp.service.excel.ExcelSheetBuilder;
 import id.putra.core_erp.service.excel.ExcelStyles;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
 
 /**

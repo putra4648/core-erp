@@ -9,8 +9,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class SupplierRepo implements SoftDeleteRepository<Supplier> {
 
-	public List<Supplier> findAllByStatus(String status) {
-		return list("status", status);
+	/**
+	 * Suppliers whose code matches exactly.
+	 *
+	 * <p>Queries {@code code}: {@link Supplier} has no {@code status} field, so the previous
+	 * {@code list("status", ...)} failed at parse time with <em>"could not resolve
+	 * property"</em>. Code is the caller-facing identifier, so it is the useful filter.
+	 */
+	public List<Supplier> findAllByCode(String code) {
+		return list("code", code);
 	}
 
 	public int countByNameContainingIgnoreCase(String name) {

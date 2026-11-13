@@ -29,7 +29,7 @@ public class TransferService implements BaseService<Transfer> {
 		String status = (dto != null && dto != null && dto.status != null && !dto.status.isBlank())
 				? dto.status
 				: "%%";
-		String id = (dto != null && dto != null && dto.id != null) ? dto.id.toString() : "%%";
+		Long id = (dto != null && dto != null && dto.id != null) ? dto.id : null;
 
 		return transferRequestRepo.findByStatusLikeAndIdLike(status, id);
 	}
