@@ -58,12 +58,17 @@
 			<artifactId>quarkus-hibernate-orm-panache</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.quarkiverse.bucket4j</groupId>
+			<artifactId>quarkus-bucket4j</artifactId>
+			<version>1.0.7</version>
+		</dependency>
+
+		<!-- JDBC driver dependencies -->
+		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-junit-mockito</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- JDBC driver dependencies -->
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-jdbc-postgresql</artifactId>
@@ -94,7 +99,6 @@
 			<artifactId>quarkus-jacoco</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
